@@ -1,0 +1,6 @@
+10,gdalt gdlatr glonr pl spcst nsamp nsampi jidqc1 jidqc2 jidqc3 jidqc4 roangm azdir7 eldir7 azdir8 eldir8 vipe dvipe vipn dvipn vi7 dvi7 vi8 dvi8
+20,datint gdalt gdalti altav altavi azm elm chisq nel dnel nemaxl hmax ti dti te dte vo dvo phe+ dphe+ ph+ dph+
+30,range rangei az1 az2 el1 el2 pl snp3 chisq mhdqc1 systmp systmi power tfreq popl dpopl ti dti tr dtr vo dvo ph+ dph+ pm dpm fa dfa pnrmd pnrmdi vdopp dvdopp
+80,gdalt gdalti range rangei az1 az2 el1 el2 pl snp3 ctsnq3 popl nel dnel ti dti te dte vo dvo po+ dpo+ col dcol
+95,gdalt azm elm nel dnel ti dti tr dtr vo dvo
+210,kp ap3 ap f10.7 fbar

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Base template for Madrigal ftp format interface
+	
+	$Id: ftp_formats.html 5326 2015-09-25 18:46:21Z brideout $
+{% endcomment %}
+
+{% block title %}Madrigal FTP interface{% endblock %}
+	
+{% block content %}
+	<ul class="breadcrumb">
+	    <li><a href="{% url 'ftp' %}">Instrument</a></li>
+	    <li><span class="glyphicon glyphicon-arrow-right"></span><a href="{% url 'ftp_instrument' fullname email affiliation kinst %}">Year</a></li>
+	    <li><span class="glyphicon glyphicon-arrow-right"></span><a href="{% url 'ftp_year' fullname email affiliation kinst year %}">Kind of data</a></li>
+	    <li class="active"><span class="glyphicon glyphicon-arrow-right"></span>Format</li>
+    </ul>
+
+	<p>Choose file format to download for {{inst_name}}, year {{year}}, kind of data - {{kindat_desc}}:</p>
+	{% for format_desc, format in formatDescList %}
+		<p><a href="{% url 'ftp_files' fullname email affiliation kinst year kindat format %}">{{format_desc}}</a></p>
+	{% endfor %}
+{% endblock %}

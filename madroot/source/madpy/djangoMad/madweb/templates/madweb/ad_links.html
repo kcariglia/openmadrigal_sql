@@ -1,0 +1,85 @@
+{% load static %}
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/doc_template.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>User access logging</title>
+<!-- InstanceEndEditable --><!-- InstanceBeginEditable name="head" --><!-- InstanceEndEditable -->
+<link href="/static/madrigal.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+	html body {
+		background-color: {{bg_color}};
+	}
+</style>
+<!-- InstanceParam name="href_up_top" type="text" value="admin.html" --><!-- InstanceParam name="href_next_top" type="text" value="ad_isprint.html" --><!-- InstanceParam name="href_back_top" type="text" value="ad_other.html" --><!-- InstanceParam name="href_back_bottom" type="text" value="ad_other.html" --><!-- InstanceParam name="href_up_bottom" type="text" value="admin.html" --><!-- InstanceParam name="href_next_bottom" type="text" value="ad_isprint.html" --><!-- InstanceParam name="href_prev_top" type="text" value="ad_other.html" --><!-- InstanceParam name="href_uptitle_top" type="text" value="admin.html" --><!-- InstanceParam name="href_nexttitle_top" type="text" value="ad_isprint.html" --><!-- InstanceParam name="href_prevtitle_bottom" type="text" value="ad_other.html" --><!-- InstanceParam name="href_uptitle_bottom" type="text" value="admin.html" --><!-- InstanceParam name="href_nexttitle_bottom" type="text" value="ad_isprint.html" -->
+</head>
+
+<body>
+<table width="100%" border="1" cellpadding="0" cellspacing="2" class="navigation">
+  <tr>
+    <td width="5%"><a href="{% url 'docs' 'ad_logging.html' %}"><img src="/static/previous.png" alt="previous" width="32" height="32" /></a></td>
+    <td width="5%"><a href="{% url 'docs' 'admin.html' %}"><img src="/static/up.png" alt="up" width="32" height="32" /></a></td>
+    <td width="5%"><a href="{% url 'docs' 'ad_isprint.html' %}"><img src="/static/next.png" alt="next" width="32" height="32" /></a></td>
+    <td width="54%"><!-- InstanceBeginEditable name="EditTitleTop" -->Creating direct links to experiments/files <!-- InstanceEndEditable --></td>
+    <td width="13%"><a href="{% url 'docs' 'madContents.html' %}">Doc home </a></td>
+    <td width="18%"><a href="/">Madrigal home</a></td>
+  </tr>
+</table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" href="{% url 'docs' 'ad_logging.html' %}"><!-- InstanceBeginEditable name="PreviousTitle" -->User access logging<!-- InstanceEndEditable --></A>
+<b class="navlabel">&nbsp;&nbsp;Up:</b>
+<a class="sectref" href="{% url 'docs' 'admin.html' %}"><!-- InstanceBeginEditable name="UpTitle" -->Madrigal admin guide <!-- InstanceEndEditable --></A>
+<b class="navlabel">&nbsp;&nbsp;Next:</b>
+<a class="sectref" href="{% url 'docs' 'ad_isprint.html' %}"><!-- InstanceBeginEditable name="NextTitle" -->Using isprint<!-- InstanceEndEditable --></A></div>
+<hr/>
+<!-- InstanceBeginEditable name="EditDoc" -->
+
+
+<h1 align="center">Creating direct links to experiments/files</h1>
+
+
+<p>There are times you as administrator might want to create urls that directly take a user to a particular experiment, or to a particular 
+file within an experiment.  Below HOME refers to the url to your site's home page.  In all cases, if a user has not yet registered,
+they will first go to the register page, and then directly to the requested url.</p>
+
+<h3>To go directly to a particular Madrigal experiment, follow the example below:</h3>
+
+<pre>HOME/showExperiment?experiment_list=experiments/2017/arg/27jul17</pre>
+
+<h3>To go directly to a particular Madrigal experiment and activate the show plots/docs button, follow the example below:</h3>
+
+<pre>HOME/showExperiment?experiment_list=experiments/2017/arg/27jul17&show_plots</pre>
+
+<h3>To go directly to a particular Madrigal file, follow the example below:</h3>
+
+<pre>HOME/showExperiment?experiment_list=experiments/2017/arg/27jul17&file_list=one_ion_aro20170727topg.000.hdf5</pre>
+
+<h3>To go directly to a particular Madrigal file and activate the show plots/docs button, follow the example below:</h3>
+
+<pre>HOME/showExperiment?experiment_list=experiments/2017/arg/27jul17&file_list=one_ion_aro20170727topg.000.hdf5&show_plots</pre>
+
+<!-- InstanceEndEditable -->
+<table width="100%" border="1" cellpadding="0" cellspacing="2" class="navigation">
+  <tr>
+    <td width="5%"><a href="{% url 'docs' 'ad_logging.html' %}"><img src="/static/previous.png" alt="previous" width="32" height="32" /></a></td>
+    <td width="5%"><a href="{% url 'docs' 'admin.html' %}"><img src="/static/up.png" alt="up" width="32" height="32" /></a></td>
+    <td width="5%"><a href="{% url 'docs' 'ad_isprint.html' %}"><img src="/static/next.png" alt="next" width="32" height="32" /></a></td>
+    <td width="54%"><!-- InstanceBeginEditable name="EditTitleBottom" -->Creating direct links to experiments/files<!-- InstanceEndEditable --></td>
+    <td width="13%"><a href="{% url 'docs' 'madContents.html' %}">Doc home </a></td>
+    <td width="18%"><a href="/">Madrigal home</a></td>
+  </tr>
+</table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" href="{% url 'docs' 'ad_logging.html' %}"><!-- InstanceBeginEditable name="PreviousTitle2" -->User access logging<!-- InstanceEndEditable --></A>
+<b class="navlabel">&nbsp;&nbsp;Up:</b>
+<a class="sectref" href="{% url 'docs' 'admin.html' %}"><!-- InstanceBeginEditable name="UpTitle2" -->Madrigal admin guide <!-- InstanceEndEditable --></A>
+<b class="navlabel">&nbsp;&nbsp;Next:</b>
+<a class="sectref" href="{% url 'docs' 'ad_isprint.html' %}"><!-- InstanceBeginEditable name="NextTitle2" -->Using isprint <!-- InstanceEndEditable --></A></div>
+<hr/>
+<p>&nbsp;</p>
+</body> 
+<!-- InstanceEnd --></html>

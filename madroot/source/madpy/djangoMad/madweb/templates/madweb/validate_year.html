@@ -1,0 +1,14 @@
+
+            // validate year
+            var year_str = $.trim($('#id_year').val());
+			var year = Number(year_str);
+			if (isNaN(year) || year_str.length == 0)
+			{
+				alert('Epoch year is invalid number: ' + year_str);
+				return(false);
+			}
+			if (year < 1950.0)
+			{
+				alert('Epoch year must not be less than 1950, not: ' + year_str);
+				return(false);
+			}

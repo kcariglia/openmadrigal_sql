@@ -1,0 +1,68 @@
+{# Load CSS and JavaScript #}
+{% load static %}
+
+<script type="text/javascript" src="{% static "jquery.min.js" %}"></script>
+
+<link rel="stylesheet" href="{% static "lib/css/bootstrap.min.css" %}" type="text/css" />
+<script type="text/javascript" src="{% static "lib/js/bootstrap.min.js" %}"></script>
+
+{% load bootstrap3 %}
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="shortcut icon" type="image/png" href="/static/favicon.ico"/>
+	<title>{% block title %}{{site_name}} Madrigal database{% endblock %}</title>
+	
+	<style type="text/css">
+		html body {
+	    	background-color: {{bg_color}};
+		}
+		.breadcrumb > li + li:before {
+		    content: none;
+		}
+	</style>
+
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+<div class="container-fluid"> <!-- whole body container -->
+	{% include "navbar.html" %}
+	
+		{% bootstrap_messages %}
+	    
+	    {% block content %}{% endblock %}
+	    
+	    {% block footer %}{% endblock %}
+	
+<div class="container"> <!--  body container -->
+
+	<script>
+	
+		function checkCookie(){
+		    var cookieEnabled=(navigator.cookieEnabled)? true : false   
+		    if (typeof navigator.cookieEnabled=="undefined" && !cookieEnabled){ 
+		        document.cookie="testcookie";
+		        cookieEnabled=(document.cookie.indexOf("testcookie")!=-1)? true : false;
+		    }
+		    return (cookieEnabled)?true:showCookieFail();
+		}
+		
+		function showCookieFail(){
+		  alert('This browser has cookies disabled. Madrigal will not work with cookies disabled.  Please enable cookies before downloading data.');
+		}
+	
+	    $('[data-toggle="tooltip"]').tooltip();
+	    $('[data-toggle="tooltip"]').on('show.bs.tooltip', function() {
+		    // Only one tooltip should ever be open at a time
+		    $('.tooltip').not(this).hide();
+		});
+	    $('.my-dropdown').dropdown();
+		$('.my-dropdown').tooltip();
+		checkCookie();
+	</script>
+	
+</body>
+</html>

@@ -1,0 +1,3721 @@
+{% load static %}
+
+<!doctype html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+
+    <title>madrigal.ui.userData API documentation</title>
+    <meta name="description" content="userData is responsible for interfacing to all persisted user data on the madrigal web site.
+
+This m..." />
+
+  <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300' rel='stylesheet' type='text/css'>
+  
+  <style type="text/css">
+  
+* {
+  box-sizing: border-box;
+}
+/*! normalize.css v1.1.1 | MIT License | git.io/normalize */
+
+/* ==========================================================================
+   HTML5 display definitions
+   ========================================================================== */
+
+/**
+ * Correct `block` display not defined in IE 6/7/8/9 and Firefox 3.
+ */
+
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+main,
+nav,
+section,
+summary {
+    display: block;
+}
+
+/**
+ * Correct `inline-block` display not defined in IE 6/7/8/9 and Firefox 3.
+ */
+
+audio,
+canvas,
+video {
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+}
+
+/**
+ * Prevent modern browsers from displaying `audio` without controls.
+ * Remove excess height in iOS 5 devices.
+ */
+
+audio:not([controls]) {
+    display: none;
+    height: 0;
+}
+
+/**
+ * Address styling not present in IE 7/8/9, Firefox 3, and Safari 4.
+ * Known issue: no IE 6 support.
+ */
+
+[hidden] {
+    display: none;
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+/**
+ * 1. Prevent system color scheme's background color being used in Firefox, IE,
+ *    and Opera.
+ * 2. Prevent system color scheme's text color being used in Firefox, IE, and
+ *    Opera.
+ * 3. Correct text resizing oddly in IE 6/7 when body `font-size` is set using
+ *    `em` units.
+ * 4. Prevent iOS text size adjust after orientation change, without disabling
+ *    user zoom.
+ */
+
+html {
+    background: #fff; /* 1 */
+    color: #000; /* 2 */
+    font-size: 100%; /* 3 */
+    -webkit-text-size-adjust: 100%; /* 4 */
+    -ms-text-size-adjust: 100%; /* 4 */
+}
+
+/**
+ * Address `font-family` inconsistency between `textarea` and other form
+ * elements.
+ */
+
+html,
+button,
+input,
+select,
+textarea {
+    font-family: sans-serif;
+}
+
+/**
+ * Address margins handled incorrectly in IE 6/7.
+ */
+
+body {
+    margin: 0;
+}
+
+/* ==========================================================================
+   Links
+   ========================================================================== */
+
+/**
+ * Address `outline` inconsistency between Chrome and other browsers.
+ */
+
+a:focus {
+    outline: thin dotted;
+}
+
+/**
+ * Improve readability when focused and also mouse hovered in all browsers.
+ */
+
+a:active,
+a:hover {
+    outline: 0;
+}
+
+/* ==========================================================================
+   Typography
+   ========================================================================== */
+
+/**
+ * Address font sizes and margins set differently in IE 6/7.
+ * Address font sizes within `section` and `article` in Firefox 4+, Safari 5,
+ * and Chrome.
+ */
+
+h1 {
+    font-size: 2em;
+    margin: 0.67em 0;
+}
+
+h2 {
+    font-size: 1.5em;
+    margin: 0.83em 0;
+}
+
+h3 {
+    font-size: 1.17em;
+    margin: 1em 0;
+}
+
+h4 {
+    font-size: 1em;
+    margin: 1.33em 0;
+}
+
+h5 {
+    font-size: 0.83em;
+    margin: 1.67em 0;
+}
+
+h6 {
+    font-size: 0.67em;
+    margin: 2.33em 0;
+}
+
+/**
+ * Address styling not present in IE 7/8/9, Safari 5, and Chrome.
+ */
+
+abbr[title] {
+    border-bottom: 1px dotted;
+}
+
+/**
+ * Address style set to `bolder` in Firefox 3+, Safari 4/5, and Chrome.
+ */
+
+b,
+strong {
+    font-weight: bold;
+}
+
+blockquote {
+    margin: 1em 40px;
+}
+
+/**
+ * Address styling not present in Safari 5 and Chrome.
+ */
+
+dfn {
+    font-style: italic;
+}
+
+/**
+ * Address differences between Firefox and other browsers.
+ * Known issue: no IE 6/7 normalization.
+ */
+
+hr {
+    -moz-box-sizing: content-box;
+    box-sizing: content-box;
+    height: 0;
+}
+
+/**
+ * Address styling not present in IE 6/7/8/9.
+ */
+
+mark {
+    background: #ff0;
+    color: #000;
+}
+
+/**
+ * Address margins set differently in IE 6/7.
+ */
+
+p,
+pre {
+    margin: 1em 0;
+}
+
+/**
+ * Correct font family set oddly in IE 6, Safari 4/5, and Chrome.
+ */
+
+code,
+kbd,
+pre,
+samp {
+    font-family: monospace, serif;
+    _font-family: 'courier new', monospace;
+    font-size: 1em;
+}
+
+/**
+ * Improve readability of pre-formatted text in all browsers.
+ */
+
+pre {
+    white-space: pre;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/**
+ * Address CSS quotes not supported in IE 6/7.
+ */
+
+q {
+    quotes: none;
+}
+
+/**
+ * Address `quotes` property not supported in Safari 4.
+ */
+
+q:before,
+q:after {
+    content: '';
+    content: none;
+}
+
+/**
+ * Address inconsistent and variable font size in all browsers.
+ */
+
+small {
+    font-size: 80%;
+}
+
+/**
+ * Prevent `sub` and `sup` affecting `line-height` in all browsers.
+ */
+
+sub,
+sup {
+    font-size: 75%;
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline;
+}
+
+sup {
+    top: -0.5em;
+}
+
+sub {
+    bottom: -0.25em;
+}
+
+/* ==========================================================================
+   Lists
+   ========================================================================== */
+
+/**
+ * Address margins set differently in IE 6/7.
+ */
+
+dl,
+menu,
+ol,
+ul {
+    margin: 1em 0;
+}
+
+dd {
+    margin: 0 0 0 40px;
+}
+
+/**
+ * Address paddings set differently in IE 6/7.
+ */
+
+menu,
+ol,
+ul {
+    padding: 0 0 0 40px;
+}
+
+/**
+ * Correct list images handled incorrectly in IE 7.
+ */
+
+nav ul,
+nav ol {
+    list-style: none;
+    list-style-image: none;
+}
+
+/* ==========================================================================
+   Embedded content
+   ========================================================================== */
+
+/**
+ * 1. Remove border when inside `a` element in IE 6/7/8/9 and Firefox 3.
+ * 2. Improve image quality when scaled in IE 7.
+ */
+
+img {
+    border: 0; /* 1 */
+    -ms-interpolation-mode: bicubic; /* 2 */
+}
+
+/**
+ * Correct overflow displayed oddly in IE 9.
+ */
+
+svg:not(:root) {
+    overflow: hidden;
+}
+
+/* ==========================================================================
+   Figures
+   ========================================================================== */
+
+/**
+ * Address margin not present in IE 6/7/8/9, Safari 5, and Opera 11.
+ */
+
+figure {
+    margin: 0;
+}
+
+/* ==========================================================================
+   Forms
+   ========================================================================== */
+
+/**
+ * Correct margin displayed oddly in IE 6/7.
+ */
+
+form {
+    margin: 0;
+}
+
+/**
+ * Define consistent border, margin, and padding.
+ */
+
+fieldset {
+    border: 1px solid #c0c0c0;
+    margin: 0 2px;
+    padding: 0.35em 0.625em 0.75em;
+}
+
+/**
+ * 1. Correct color not being inherited in IE 6/7/8/9.
+ * 2. Correct text not wrapping in Firefox 3.
+ * 3. Correct alignment displayed oddly in IE 6/7.
+ */
+
+legend {
+    border: 0; /* 1 */
+    padding: 0;
+    white-space: normal; /* 2 */
+    *margin-left: -7px; /* 3 */
+}
+
+/**
+ * 1. Correct font size not being inherited in all browsers.
+ * 2. Address margins set differently in IE 6/7, Firefox 3+, Safari 5,
+ *    and Chrome.
+ * 3. Improve appearance and consistency in all browsers.
+ */
+
+button,
+input,
+select,
+textarea {
+    font-size: 100%; /* 1 */
+    margin: 0; /* 2 */
+    vertical-align: baseline; /* 3 */
+    *vertical-align: middle; /* 3 */
+}
+
+/**
+ * Address Firefox 3+ setting `line-height` on `input` using `!important` in
+ * the UA stylesheet.
+ */
+
+button,
+input {
+    line-height: normal;
+}
+
+/**
+ * Address inconsistent `text-transform` inheritance for `button` and `select`.
+ * All other form control elements do not inherit `text-transform` values.
+ * Correct `button` style inheritance in Chrome, Safari 5+, and IE 6+.
+ * Correct `select` style inheritance in Firefox 4+ and Opera.
+ */
+
+button,
+select {
+    text-transform: none;
+}
+
+/**
+ * 1. Avoid the WebKit bug in Android 4.0.* where (2) destroys native `audio`
+ *    and `video` controls.
+ * 2. Correct inability to style clickable `input` types in iOS.
+ * 3. Improve usability and consistency of cursor style between image-type
+ *    `input` and others.
+ * 4. Remove inner spacing in IE 7 without affecting normal text inputs.
+ *    Known issue: inner spacing remains in IE 6.
+ */
+
+button,
+html input[type="button"], /* 1 */
+input[type="reset"],
+input[type="submit"] {
+    -webkit-appearance: button; /* 2 */
+    cursor: pointer; /* 3 */
+    *overflow: visible;  /* 4 */
+}
+
+/**
+ * Re-set default cursor for disabled elements.
+ */
+
+button[disabled],
+html input[disabled] {
+    cursor: default;
+}
+
+/**
+ * 1. Address box sizing set to content-box in IE 8/9.
+ * 2. Remove excess padding in IE 8/9.
+ * 3. Remove excess padding in IE 7.
+ *    Known issue: excess padding remains in IE 6.
+ */
+
+input[type="checkbox"],
+input[type="radio"] {
+    box-sizing: border-box; /* 1 */
+    padding: 0; /* 2 */
+    *height: 13px; /* 3 */
+    *width: 13px; /* 3 */
+}
+
+/**
+ * 1. Address `appearance` set to `searchfield` in Safari 5 and Chrome.
+ * 2. Address `box-sizing` set to `border-box` in Safari 5 and Chrome
+ *    (include `-moz` to future-proof).
+ */
+
+input[type="search"] {
+    -webkit-appearance: textfield; /* 1 */
+    -moz-box-sizing: content-box;
+    -webkit-box-sizing: content-box; /* 2 */
+    box-sizing: content-box;
+}
+
+/**
+ * Remove inner padding and search cancel button in Safari 5 and Chrome
+ * on OS X.
+ */
+
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration {
+    -webkit-appearance: none;
+}
+
+/**
+ * Remove inner padding and border in Firefox 3+.
+ */
+
+button::-moz-focus-inner,
+input::-moz-focus-inner {
+    border: 0;
+    padding: 0;
+}
+
+/**
+ * 1. Remove default vertical scrollbar in IE 6/7/8/9.
+ * 2. Improve readability and alignment in all browsers.
+ */
+
+textarea {
+    overflow: auto; /* 1 */
+    vertical-align: top; /* 2 */
+}
+
+/* ==========================================================================
+   Tables
+   ========================================================================== */
+
+/**
+ * Remove most spacing between table cells.
+ */
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+  </style>
+
+  <style type="text/css">
+  
+  html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+  }
+  body {
+    background: #fff;
+    font-family: "Source Sans Pro", "Helvetica Neueue", Helvetica, sans;
+    font-weight: 300;
+    font-size: 16px;
+    line-height: 1.6em;
+  }
+  #content {
+    width: 70%;
+    max-width: 850px;
+    float: left;
+    padding: 30px 60px;
+    border-left: 1px solid #ddd;
+  }
+  #sidebar {
+    width: 25%;
+    float: left;
+    padding: 30px;
+    overflow: hidden;
+  }
+  #nav {
+    font-size: 130%;
+    margin: 0 0 15px 0;
+  }
+
+  #top {
+    display: block;
+    position: fixed;
+    bottom: 5px;
+    left: 5px;
+    font-size: .85em;
+    text-transform: uppercase;
+  }
+
+  #footer {
+    font-size: .75em;
+    padding: 5px 30px;
+    border-top: 1px solid #ddd;
+    text-align: right;
+  }
+    #footer p {
+      margin: 0 0 0 30px;
+      display: inline-block;
+    }
+
+  h1, h2, h3, h4, h5 {
+    font-weight: 300;
+  }
+  h1 {
+    font-size: 2.5em;
+    line-height: 1.1em;
+    margin: 0 0 .50em 0;
+  }
+
+  h2 {
+    font-size: 1.75em;
+    margin: 1em 0 .50em 0;
+  }
+
+  h3 {
+    margin: 25px 0 10px 0;
+  }
+
+  h4 {
+    margin: 0;
+    font-size: 105%;
+  }
+
+  a {
+    color: #058;
+    text-decoration: none;
+    transition: color .3s ease-in-out;
+  }
+
+  a:hover {
+    color: #e08524;
+    transition: color .3s ease-in-out;
+  }
+
+  pre, code, .mono, .name {
+    font-family: "Ubuntu Mono", "Cousine", "DejaVu Sans Mono", monospace;
+  }
+
+  .title .name {
+    font-weight: bold;
+  }
+  .section-title {
+    margin-top: 2em;
+  }
+  .ident {
+    color: #900;
+  }
+
+  code {
+    background: #f9f9f9;
+  } 
+
+  pre {
+    background: #fefefe;
+    border: 1px solid #ddd;
+    box-shadow: 2px 2px 0 #f3f3f3;
+    margin: 0 30px;
+    padding: 15px 30px;
+  }
+
+  .codehilite {
+    margin: 0 30px 10px 30px;
+  }
+
+    .codehilite pre {
+      margin: 0;
+    }
+    .codehilite .err { background: #ff3300; color: #fff !important; } 
+
+  table#module-list {
+    font-size: 110%;
+  }
+
+    table#module-list tr td:first-child {
+      padding-right: 10px;
+      white-space: nowrap;
+    }
+
+    table#module-list td {
+      vertical-align: top;
+      padding-bottom: 8px;
+    }
+
+      table#module-list td p {
+        margin: 0 0 7px 0;
+      }
+
+  .def {
+    display: table;
+  }
+
+    .def p {
+      display: table-cell;
+      vertical-align: top;
+      text-align: left;
+    }
+
+    .def p:first-child {
+      white-space: nowrap;
+    }
+
+    .def p:last-child {
+      width: 100%;
+    }
+
+
+  #index {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+    ul#index .class_name {
+      /* font-size: 110%; */
+      font-weight: bold;
+    }
+    #index ul {
+      margin: 0;
+    }
+
+  .item {
+    margin: 0 0 15px 0;
+  }
+
+    .item .class {
+      margin: 0 0 25px 30px;
+    }
+
+      .item .class ul.class_list {
+        margin: 0 0 20px 0;
+      }
+
+    .item .name {
+      background: #fafafa;
+      margin: 0;
+      font-weight: bold;
+      padding: 5px 10px;
+      border-radius: 3px;
+      display: inline-block;
+      min-width: 40%;
+    }
+      .item .name:hover {
+        background: #f6f6f6;
+      }
+
+    .item .empty_desc {
+      margin: 0 0 5px 0;
+      padding: 0;
+    }
+
+    .item .inheritance {
+      margin: 3px 0 0 30px;
+    }
+
+    .item .inherited {
+      color: #666;
+    }
+
+    .item .desc {
+      padding: 0 8px;
+      margin: 0;
+    }
+
+      .item .desc p {
+        margin: 0 0 10px 0;
+      }
+
+    .source_cont {
+      margin: 0;
+      padding: 0;
+    }
+
+    .source_link a {
+      background: #ffc300;
+      font-weight: 400;
+      font-size: .75em;
+      text-transform: uppercase;
+      color: #fff;
+      text-shadow: 1px 1px 0 #f4b700;
+      
+      padding: 3px 8px;
+      border-radius: 2px;
+      transition: background .3s ease-in-out;
+    }
+      .source_link a:hover {
+        background: #FF7200;
+        text-shadow: none;
+        transition: background .3s ease-in-out;
+      }
+
+    .source {
+      display: none;
+      max-height: 600px;
+      overflow-y: scroll;
+      margin-bottom: 15px;
+    }
+
+      .source .codehilite {
+        margin: 0;
+      }
+
+  .desc h1, .desc h2, .desc h3 {
+    font-size: 100% !important;
+  }
+  .clear {
+    clear: both;
+  }
+
+  @media all and (max-width: 950px) {
+    #sidebar {
+      width: 35%;
+    }
+    #content {
+      width: 65%;
+    }
+  }
+  @media all and (max-width: 650px) {
+    #top {
+      display: none;
+    }
+    #sidebar {
+      float: none;
+      width: auto;
+    }
+    #content {
+      float: none;
+      width: auto;
+      padding: 30px;
+    }
+
+    #index ul {
+      padding: 0;
+      margin-bottom: 15px;
+    }
+    #index ul li {
+      display: inline-block;
+      margin-right: 30px;
+    }
+    #footer {
+      text-align: left;
+    }
+    #footer p {
+      display: block;
+      margin: inherit;
+    }
+  }
+
+  /*****************************/
+
+  </style>
+
+  <style type="text/css">
+  .codehilite .hll { background-color: #ffffcc }
+.codehilite  { background: #f8f8f8; }
+.codehilite .c { color: #408080; font-style: italic } /* Comment */
+.codehilite .err { border: 1px solid #FF0000 } /* Error */
+.codehilite .k { color: #008000; font-weight: bold } /* Keyword */
+.codehilite .o { color: #666666 } /* Operator */
+.codehilite .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.codehilite .cp { color: #BC7A00 } /* Comment.Preproc */
+.codehilite .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.codehilite .cs { color: #408080; font-style: italic } /* Comment.Special */
+.codehilite .gd { color: #A00000 } /* Generic.Deleted */
+.codehilite .ge { font-style: italic } /* Generic.Emph */
+.codehilite .gr { color: #FF0000 } /* Generic.Error */
+.codehilite .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.codehilite .gi { color: #00A000 } /* Generic.Inserted */
+.codehilite .go { color: #888888 } /* Generic.Output */
+.codehilite .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.codehilite .gs { font-weight: bold } /* Generic.Strong */
+.codehilite .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.codehilite .gt { color: #0044DD } /* Generic.Traceback */
+.codehilite .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.codehilite .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.codehilite .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.codehilite .kp { color: #008000 } /* Keyword.Pseudo */
+.codehilite .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.codehilite .kt { color: #B00040 } /* Keyword.Type */
+.codehilite .m { color: #666666 } /* Literal.Number */
+.codehilite .s { color: #BA2121 } /* Literal.String */
+.codehilite .na { color: #7D9029 } /* Name.Attribute */
+.codehilite .nb { color: #008000 } /* Name.Builtin */
+.codehilite .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.codehilite .no { color: #880000 } /* Name.Constant */
+.codehilite .nd { color: #AA22FF } /* Name.Decorator */
+.codehilite .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.codehilite .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.codehilite .nf { color: #0000FF } /* Name.Function */
+.codehilite .nl { color: #A0A000 } /* Name.Label */
+.codehilite .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.codehilite .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.codehilite .nv { color: #19177C } /* Name.Variable */
+.codehilite .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.codehilite .w { color: #bbbbbb } /* Text.Whitespace */
+.codehilite .mf { color: #666666 } /* Literal.Number.Float */
+.codehilite .mh { color: #666666 } /* Literal.Number.Hex */
+.codehilite .mi { color: #666666 } /* Literal.Number.Integer */
+.codehilite .mo { color: #666666 } /* Literal.Number.Oct */
+.codehilite .sb { color: #BA2121 } /* Literal.String.Backtick */
+.codehilite .sc { color: #BA2121 } /* Literal.String.Char */
+.codehilite .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.codehilite .s2 { color: #BA2121 } /* Literal.String.Double */
+.codehilite .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.codehilite .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.codehilite .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.codehilite .sx { color: #008000 } /* Literal.String.Other */
+.codehilite .sr { color: #BB6688 } /* Literal.String.Regex */
+.codehilite .s1 { color: #BA2121 } /* Literal.String.Single */
+.codehilite .ss { color: #19177C } /* Literal.String.Symbol */
+.codehilite .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.codehilite .vc { color: #19177C } /* Name.Variable.Class */
+.codehilite .vg { color: #19177C } /* Name.Variable.Global */
+.codehilite .vi { color: #19177C } /* Name.Variable.Instance */
+.codehilite .il { color: #666666 } /* Literal.Number.Integer.Long */
+  </style>
+
+  <style type="text/css">
+  
+/* ==========================================================================
+   EXAMPLE Media Queries for Responsive Design.
+   These examples override the primary ('mobile first') styles.
+   Modify as content requires.
+   ========================================================================== */
+
+@media only screen and (min-width: 35em) {
+    /* Style adjustments for viewports that meet the condition */
+}
+
+@media print,
+       (-o-min-device-pixel-ratio: 5/4),
+       (-webkit-min-device-pixel-ratio: 1.25),
+       (min-resolution: 120dpi) {
+    /* Style adjustments for high resolution devices */
+}
+
+/* ==========================================================================
+   Print styles.
+   Inlined to avoid required HTTP connection: h5bp.com/r
+   ========================================================================== */
+
+@media print {
+    * {
+        background: transparent !important;
+        color: #000 !important; /* Black prints faster: h5bp.com/s */
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+
+    a,
+    a:visited {
+        text-decoration: underline;
+    }
+
+    a[href]:after {
+        content: " (" attr(href) ")";
+    }
+
+    abbr[title]:after {
+        content: " (" attr(title) ")";
+    }
+
+    /*
+     * Don't show links for images, or javascript/internal links
+     */
+
+    .ir a:after,
+    a[href^="javascript:"]:after,
+    a[href^="#"]:after {
+        content: "";
+    }
+
+    pre,
+    blockquote {
+        border: 1px solid #999;
+        page-break-inside: avoid;
+    }
+
+    thead {
+        display: table-header-group; /* h5bp.com/t */
+    }
+
+    tr,
+    img {
+        page-break-inside: avoid;
+    }
+
+    img {
+        max-width: 100% !important;
+    }
+
+    @page {
+        margin: 0.5cm;
+    }
+
+    p,
+    h2,
+    h3 {
+        orphans: 3;
+        widows: 3;
+    }
+
+    h2,
+    h3 {
+        page-break-after: avoid;
+    }
+}
+
+  </style>
+
+  <script type="text/javascript">
+  function toggle(id, $link) {
+    $node = document.getElementById(id);
+    if (!$node)
+    return;
+    if (!$node.style.display || $node.style.display == 'none') {
+    $node.style.display = 'block';
+    $link.innerHTML = 'Hide source &nequiv;';
+    } else {
+    $node.style.display = 'none';
+    $link.innerHTML = 'Show source &equiv;';
+    }
+  }
+  </script>
+  <link href="/static/madrigal.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+	html body {
+		background-color: {{bg_color}};
+	}
+</style>
+</head>
+<body>
+<table width="100%" border="1" cellpadding="0" cellspacing="2" class="navigation">
+  <tr>
+    <td width="5%"><a href="madrigalPlot.m.html"><img src="/static/previous.png" alt="previous" width="32" height="32" /></a></td>
+    <td width="5%"><a href="index.html"><img src="/static/up.png" alt="up" width="32" height="32" /></a></td>
+    <td width="5%"><a href="web.m.html"><img src="/static/next.png" alt="next" width="32" height="32" /></a></td>
+    <td width="54%">madrigal.ui.userData</td>
+    <td width="13%"><a href="../../madContents.html">Doc home </a></td>
+    <td width="18%"><a href="/">Madrigal home</a></td>
+  </tr>
+</table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" href="madrigalPlot.m.html">madrigal.ui.madrigalPlot </A>
+<b class="navlabel">&nbsp;&nbsp;Up:</b>
+<a class="sectref" href="index.html">madrigal.ui</A>
+<b class="navlabel">&nbsp;&nbsp;Next:</b>
+<a class="sectref" href="web.m.html">madrigal.ui.web</A></div>
+<hr/>
+<a href="#" id="top">Top</a>
+
+<div id="container">
+    
+  
+  <div id="sidebar">
+    <h1>Index</h1>
+    <ul id="index">
+
+
+    <li class="set"><h3><a href="#header-classes">Classes</a></h3>
+      <ul>
+        <li class="mono">
+        <span class="class_name"><a href="#madrigal.ui.userData.MadrigalUserData">MadrigalUserData</a></span>
+        
+          
+  <ul>
+    <li class="mono"><a href="#madrigal.ui.userData.MadrigalUserData.__init__">__init__</a></li>
+    <li class="mono"><a href="#madrigal.ui.userData.MadrigalUserData.addUser">addUser</a></li>
+    <li class="mono"><a href="#madrigal.ui.userData.MadrigalUserData.changePassword">changePassword</a></li>
+    <li class="mono"><a href="#madrigal.ui.userData.MadrigalUserData.getRegisteredDict">getRegisteredDict</a></li>
+    <li class="mono"><a href="#madrigal.ui.userData.MadrigalUserData.getRegisteredExperiments">getRegisteredExperiments</a></li>
+    <li class="mono"><a href="#madrigal.ui.userData.MadrigalUserData.getRegisteredInstDict">getRegisteredInstDict</a></li>
+    <li class="mono"><a href="#madrigal.ui.userData.MadrigalUserData.getRegisteredInstUsers">getRegisteredInstUsers</a></li>
+    <li class="mono"><a href="#madrigal.ui.userData.MadrigalUserData.getRegisteredInstruments">getRegisteredInstruments</a></li>
+    <li class="mono"><a href="#madrigal.ui.userData.MadrigalUserData.getRegisteredUsers">getRegisteredUsers</a></li>
+    <li class="mono"><a href="#madrigal.ui.userData.MadrigalUserData.getUsersList">getUsersList</a></li>
+    <li class="mono"><a href="#madrigal.ui.userData.MadrigalUserData.registerExperiment">registerExperiment</a></li>
+    <li class="mono"><a href="#madrigal.ui.userData.MadrigalUserData.registerInstrument">registerInstrument</a></li>
+    <li class="mono"><a href="#madrigal.ui.userData.MadrigalUserData.unregisterExperiment">unregisterExperiment</a></li>
+    <li class="mono"><a href="#madrigal.ui.userData.MadrigalUserData.unregisterInstrument">unregisterInstrument</a></li>
+    <li class="mono"><a href="#madrigal.ui.userData.MadrigalUserData.userExists">userExists</a></li>
+    <li class="mono"><a href="#madrigal.ui.userData.MadrigalUserData.verifyUser">verifyUser</a></li>
+  </ul>
+
+        </li>
+      </ul>
+    </li>
+
+    </ul>
+  </div>
+
+    <article id="content">
+      
+  
+
+  
+
+
+  <header id="section-intro">
+  <h1 class="title"><span class="name">madrigal.ui.userData</span> module</h1>
+  <p>userData is responsible for interfacing to all persisted user data on the madrigal web site.</p>
+<p>This module is meant to hide the storage mechnaism of user data on the madrigal web site, so that
+the present format (xml files) can be changed by only changing this module.  The data stored at the
+moment consists of user login information, and directories (private and public) of stored filters,
+where a filter is all information that determines the output of an isprint display.</p>
+<p>This modules requires that the non-standard python module PyXML be installed (this module may become
+standard in a future release of python).  See the python XML SIG for this module.</p>
+<p>$Id: userData.py 7043 2019-10-07 19:10:59Z brideout $</p>
+  
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-madrigal.ui.userData', this);">Show source &equiv;</a></p>
+  <div id="source-madrigal.ui.userData" class="source">
+    <pre><code>"""userData is responsible for interfacing to all persisted user data on the madrigal web site.
+
+This module is meant to hide the storage mechnaism of user data on the madrigal web site, so that
+the present format (xml files) can be changed by only changing this module.  The data stored at the
+moment consists of user login information, and directories (private and public) of stored filters,
+where a filter is all information that determines the output of an isprint display.
+
+This modules requires that the non-standard python module PyXML be installed (this module may become
+standard in a future release of python).  See the python XML SIG for this module.
+
+$Id: userData.py 7043 2019-10-07 19:10:59Z brideout $
+"""
+# standard python imports
+import os
+import string
+import crypt
+import time
+import stat
+import traceback
+import shutil
+import xml.dom.minidom
+import xml.sax.handler
+
+# Madrigal imports
+import madrigal.metadata
+
+
+class MadrigalUserData:
+    """MadrigalUserData is an object that provides access to all user data.
+
+    The object MadrigalUserData is an object that provides read and write access to
+    all persisted user information on the Madrigal web site.  For the moment this data
+    consists of which instruments and experiments the user is registered with.
+
+    Change history:
+
+    Written by "Bill Rideout":mailto:wrideout@haystack.mit.edu  Dec. 11, 2001
+
+    """
+
+    #constants
+    _userXMLDir   = "userdata"
+    _userXMLFile  = "users.xml"
+    _userXMLFileTemplate = "users.xml.template"
+    _userExpFile = 'regExp.txt'  # contains list of registered experiments
+    _userInstFile = 'regInst.txt' # contains list of registered instruments# maximum number of seconds to wait for a lock
+    _MaxSleep     = 10
+    # 2 char string to use in crypt
+    # Changing this will cause all stored passwords to fail
+    _cryptStr     = 'md'
+    
+
+    def __init__(self, madDB = None):
+        """__init__ initializes MadrigalUserData by reading from MadridalDB..
+
+        Inputs: Existing MadrigalDB object, by default = None.
+        
+        Returns: void
+
+        Affects: Initializes self._metaDir.
+
+        Exceptions: None.
+        """
+
+        # get metadata dir
+        if madDB == None:
+            thisMadDB = madrigal.metadata.MadrigalDB()
+        else:
+            thisMadDB = madDB
+
+        self._metaDir = thisMadDB.getMetadataDir()
+        
+        # check that users.xml exists, if not, copy users.xml.template
+        if not os.path.isfile(self._metaDir + '/' + self._userXMLDir + '/' + self._userXMLFile):
+            shutil.copyfile(self._metaDir + '/' + self._userXMLDir + '/' + self._userXMLFileTemplate,
+                            self._metaDir + '/' + self._userXMLDir + '/' + self._userXMLFile)
+
+    
+    
+    def getRegisteredDict(self):
+        """will return a dictionary with key  
+            + email, and value = tuple of all registered experiments for that  
+            email.
+            
+            This data will be stored in a text file: MADROOT/metadata/userdata/ 
+            regExp.txt.  The format will be two space delimited columns: email  
+            experimentString.
+        """
+        filename = os.path.join(self._metaDir, self._userXMLDir, self._userExpFile)
+        
+        retDict = {}
+
+        try:
+            f = open(filename)
+        except IOError:
+            return(retDict)
+        
+        lines = f.readlines()
+        for line in lines:
+            items = line.split()
+            if len(items) != 2:
+                continue
+            try:
+                retDict[items[0]].append(items[1])
+            except KeyError:
+                retDict[items[0]] = [items[1]]
+                
+        return(retDict)
+    
+    
+    def getRegisteredExperiments(self, email):
+        """getRegisteredExperiments will return a list of  
+            experiments as strings.  For example, getRegisteredExperiments('brideout at haystack.mit.edu') 
+            might return ['experiments/2010/mlh/18jan10', 'experiments/2010/mlh/19jan10', 
+            'experiments/2010/mlh/20jan10'].  If the user has no  
+            registered experiments, it will return an empty list.
+            
+        Inputs: user email
+        """
+        expDict = self.getRegisteredDict()
+        try:
+            return(expDict[email])
+        except KeyError:
+            return(())
+        
+        
+    def getRegisteredUsers(self, experimentString):
+        """ getRegisteredUsers will return a list  
+            of users register for a given experiment as strings.  For example,  
+            getRegisteredUsers('experiments/2010/mlh/18jan10') might return ['brideout at haystack.mit.edu ', 
+            'miguel.urco at jro.igp.gob.pe'].  If the experiment has no registered  
+            users, it will return an empty list
+        """
+        retList = []
+        if experimentString[-1] == '/':
+            experimentString = experimentString[:-1]
+        expDict = self.getRegisteredDict()
+        for key in list(expDict.keys()):
+            for item in expDict[key]:
+                if item == experimentString:
+                    if key not in retList:
+                        retList.append(key)
+                        
+        return(retList)
+    
+    
+    def registerExperiment(self, email, experimentString):
+        """registerExperiment method will  
+            register an experiment for a given email.  For example,  
+            registerExperiment('brideout at haystack.mit.edu', 'experiments/2010/mlh/ 
+            18jan10') would register an experiment.  If the experiment is already  
+            registed, it will not raise an error; it will simply do nothing.
+            
+        Affects: This new data will be stored in a text file: MADROOT/metadata/userdata/ 
+            regExp.txt.  The format will be two space delimited columns: email  
+            experimentString.
+        """
+        # check if already registered
+        expDict = self.getRegisteredDict()
+        if experimentString[-1] == '/':
+            experimentString = experimentString[:-1]
+        try:
+            expList = expDict[email]
+            if experimentString in expList:
+                return
+        except KeyError:
+            pass
+        
+        # not registered
+        filename = os.path.join(self._metaDir, self._userXMLDir, self._userExpFile)
+        self._getLock(filename)
+        # make sure up to date
+        expDict = self.getRegisteredDict()
+        try:
+            expDict[email].append(experimentString)
+        except KeyError:
+            expDict[email] = [experimentString]
+        try:
+            f = open(filename, 'w')
+        except:
+            self._dropLock(filename)
+            raise
+        
+        keys = list(expDict.keys())
+        keys.sort()
+        for key in keys:
+            for item in expDict[key]:
+                f.write('%s %s\n' % (key, item))
+        f.close()
+        
+        self._dropLock(filename)
+        
+        
+    def unregisterExperiment(self, email, experimentString):
+        """unregisterExperiment method will  
+            unregister an experiment for a given email.  For example,  
+            unregisterExperiment('brideout at haystack.mit.edu', 'experiments/2010/ 
+            mlh/18jan10') would unregister an experiment.  If the experiment is  
+            not registed, it will not raise an error; it will simply do nothing.
+            
+        Affects: This data will be removed from a text file: MADROOT/metadata/userdata/ 
+            regExp.txt.  The format will be two space delimited columns: email  
+            experimentString.
+        """
+        # check if already registered
+        found = False
+        expDict = self.getRegisteredDict()
+        if experimentString[-1] == '/':
+            experimentString = experimentString[:-1]
+        try:
+            expList = expDict[email]
+            if experimentString in expList:
+                found = True
+        except KeyError:
+            pass
+        
+        if not found:
+            return
+        
+        # is registered
+        filename = os.path.join(self._metaDir, self._userXMLDir, self._userExpFile)
+        self._getLock(filename)
+        # make sure up to date
+        expDict = self.getRegisteredDict()
+        regExp = expDict[email]
+        regExp.remove(experimentString)
+        expDict[email] = regExp
+        try:
+            f = open(filename, 'w')
+        except:
+            self._dropLock(filename)
+            raise
+        
+        keys = list(expDict.keys())
+        keys.sort()
+        for key in keys:
+            for item in expDict[key]:
+                f.write('%s %s\n' % (key, item))
+        f.close()
+        
+        self._dropLock(filename)
+        
+        
+        
+    def getRegisteredInstDict(self):
+        """will return a dictionary with key  
+            = email, and value = tuple of all registered instrument codes (int) for that  
+            email.
+            
+            This data will be stored in a text file: MADROOT/metadata/userdata/ 
+            regInst.txt.  The format will be two space delimited columns: email  
+            instrument code (int).
+        """
+        filename = os.path.join(self._metaDir, self._userXMLDir, self._userInstFile)
+        
+        retDict = {}
+
+        try:
+            f = open(filename)
+        except IOError:
+            return(retDict)
+        
+        lines = f.readlines()
+        for line in lines:
+            items = line.split()
+            if len(items) != 2:
+                continue
+            try:
+                retDict[items[0]].append(int(items[1]))
+            except KeyError:
+                retDict[items[0]] = [int(items[1])]
+                
+        return(retDict)
+    
+    
+    def getRegisteredInstruments(self, email):
+        """getRegisteredInstruments will return a list of  
+            instruments as ints.  For example, getRegisteredInstruments('brideout at haystack.mit.edu') 
+            might return [30, 31, 10].  If the user has no  
+            registered instruments, it will return an empty list.
+            
+        Inputs: user email
+        """
+        instDict = self.getRegisteredInstDict()
+        try:
+            return(instDict[email])
+        except KeyError:
+            return(())
+        
+        
+    def getRegisteredInstUsers(self, kinst):
+        """ getRegisteredInstUsers will return a list  
+            of users registered for a given instrument code (kinst) as strings.  For example,  
+            getRegisteredInstUsers(30) might return ['brideout at haystack.mit.edu ', 
+            'miguel.urco at jro.igp.gob.pe'].  If the instrument has no registered  
+            users, it will return an empty list
+        """
+        retList = []
+        instDict = self.getRegisteredInstDict()
+        for key in list(instDict.keys()):
+            for item in instDict[key]:
+                if item == kinst:
+                    if key not in retList:
+                        retList.append(key)
+                        
+        return(retList)
+    
+    
+    def registerInstrument(self, email, kinst):
+        """registerInstrument method will  
+            register an instrument for a given email.  For example,  
+            registerInstrument('brideout at haystack.mit.edu', 30) would 
+            register an instrument.  If the instrument is already  
+            registed, it will not raise an error; it will simply do nothing.
+            
+        Affects: This new data will be stored in a text file: MADROOT/metadata/userdata/ 
+            regInst.txt.  The format will be two space delimited columns: email  
+            kinst.
+        """
+        # check if already registered
+        instDict = self.getRegisteredInstDict()
+        try:
+            instList = instDict[email]
+            if kinst in instList:
+                return
+        except KeyError:
+            pass
+        
+        # not registered
+        filename = os.path.join(self._metaDir, self._userXMLDir, self._userInstFile)
+        self._getLock(filename)
+        # make sure up to date
+        instDict = self.getRegisteredInstDict()
+        try:
+            instDict[email].append(kinst)
+        except KeyError:
+            instDict[email] = [kinst]
+        try:
+            f = open(filename, 'w')
+        except:
+            self._dropLock(filename)
+            raise
+        
+        keys = list(instDict.keys())
+        keys.sort()
+        for key in keys:
+            for item in instDict[key]:
+                f.write('%s %s\n' % (key, str(item)))
+        f.close()
+        
+        self._dropLock(filename)
+        
+        
+    def unregisterInstrument(self, email, kinst):
+        """unregisterInstrument method will  
+            unregister an instrument for a given email.  For example,  
+            unregisterInstrument('brideout at haystack.mit.edu', 30) 
+            would unregister an instrument.  If the instrument is  
+            not registed, it will not raise an error; it will simply do nothing.
+            
+        Affects: This data will be removed from a text file: MADROOT/metadata/userdata/ 
+            regInst.txt.  The format will be two space delimited columns: email  
+            kinst.
+        """
+        # check if already registered
+        found = False
+        instDict = self.getRegisteredInstDict()
+        try:
+            instList = instDict[email]
+            if kinst in instList:
+                found = True
+        except KeyError:
+            pass
+        
+        if not found:
+            return
+        
+        # is registered
+        filename = os.path.join(self._metaDir, self._userXMLDir, self._userInstFile)
+        self._getLock(filename)
+        # make sure up to date
+        instDict = self.getRegisteredInstDict()
+        regInst = instDict[email]
+        regInst.remove(kinst)
+        instDict[email] = regInst
+        try:
+            f = open(filename, 'w')
+        except:
+            self._dropLock(filename)
+            raise
+        
+        keys = list(instDict.keys())
+        keys.sort()
+        for key in keys:
+            for item in instDict[key]:
+                f.write('%s %s\n' % (key, item))
+        f.close()
+        
+        self._dropLock(filename)
+        
+        
+    def getUsersList(self):
+        """getUsersList returns a list of user names/encrypted passwords that already exist.
+
+        Inputs: none.
+        
+        Returns: a list of user names/passwords.  Each item in the returned list is itself a
+        list with two strings: 1) username, and 2) encrypted password.
+
+        Usage example:
+
+            import madrigal.ui.userData
+
+            test = madrigal.ui.userData.MadrigalUserData()
+
+            userlist = test.getUsersList()
+
+            for user in userlist:
+
+                print 'User name is ' + user[0] + ' and encrypted password is ' + user[1]
+
+        Affects: None
+
+        Exceptions: none
+        """
+        
+        # update userList
+        self._loadUserData()
+        
+        return self._userList
+
+
+    def userExists(self, username):
+        """userExists returns 1 if username (case insensitive) exists, 0 otherwise.
+
+        Inputs: username string.
+        
+        Returns: 1 if username (case insensitive) exists, 0 otherwise.
+
+        Affects: None
+
+        Exceptions: none
+        """
+
+        # update userList
+        self._loadUserData()
+
+        nameLowCase = username.lower().strip()
+        
+        for name in self._userList:
+            if nameLowCase == name[0].lower().strip():
+                return 1
+
+        #not found
+        return 0
+
+
+    def verifyUser(self, username, password):
+        """verifyUser returns 1 if username, password okay, 0 otherwise.
+
+        Inputs: username string, password string.
+        
+        Returns: 1 if username, password okay, 0 otherwise.
+
+        Affects: None
+
+        Exceptions: none
+        """
+
+        # update userList
+        self._loadUserData()
+
+        nameLowCase = username.lower().strip()
+        
+        for name in self._userList:
+            if nameLowCase == name[0].lower().strip():
+                # username found, now encrypt password
+                pwdEncrypt = crypt.crypt(password, self._cryptStr)
+                # verify password
+                if pwdEncrypt == name[1]:
+                    return 1
+                else:
+                    # wrong password
+                    return 0
+
+        # username not found
+        return 0
+
+
+    def addUser(self, username, password):
+        """addUser returns 1 if user added successfully, error string otherwise.
+
+        Inputs: username string, password string (password is not yet encrypted).
+        
+        Returns: 1 if user added successfully, error string otherwise.   
+
+        Affects: Adds new user to self._userList, writes new empty <username>.xml file
+        username is always converted and stored as lower case, so its case insensitive.
+
+        Exceptions: MadrigalError thrown if unable to write to user xml file
+
+        Notes:  uses getLock and dropLock to insure exclusive access to user file
+        """
+
+        filename = self._metaDir + '/' + self._userXMLDir + '/' + self._userXMLFile
+
+        if username == None:
+            return "Cannot create a user with null user name."
+        
+        # store all usernames as lowercase
+        username = username.lower().strip()
+
+        if len(username) == 0:
+            return "Cannot create a user with blank user name."
+
+        # lock out any method that writes to file
+        self._getLock(filename)
+        
+        # user data loaded by userExists
+
+        if self.userExists(username):
+            # done with user file - allow access to other writing calls
+            self._dropLock(filename)
+            return 'User name ' + username + ' already exists.'
+
+        if not self._isValidFileName(username):
+            # done with user file - allow access to other writing calls
+            self._dropLock(filename)
+            return 'Username ' + username + ' contains illegal characters.'
+
+
+        #encrypt password
+        pwdEncrypt = crypt.crypt(password, self._cryptStr)
+
+        # create dom
+        userDoc = xml.dom.minidom.parse(filename)
+
+        #get root element
+        docRoot = userDoc.documentElement
+
+        # create new user element
+        newUserElem = userDoc.createElementNS(None, 'user')
+
+        # now create new name element under newUserElem
+        newUsernameElem = userDoc.createElementNS(None, 'name')
+
+        # Create a text node
+        newUsernameText = userDoc.createTextNode(username)
+
+        # append text node to newUsernameElem
+        newUsernameElem.appendChild(newUsernameText)
+
+        # append name node to user node
+        newUserElem.appendChild(newUsernameElem)
+
+        #now create new password element under newUserElem
+        newPasswordElem = userDoc.createElementNS(None, 'password')
+
+        #Create a text node
+        newPasswordText = userDoc.createTextNode(pwdEncrypt)
+
+        # append text node to newPasswordElem
+        newPasswordElem.appendChild(newPasswordText)
+
+        # append password node to user node
+        newUserElem.appendChild(newPasswordElem)
+
+        #Add the new user element to the document element
+        docRoot.appendChild(newUserElem)
+
+        #output result
+        outfp = open(filename, 'w')
+        userDoc.writexml(outfp)
+        outfp.write("\n")
+        outfp.close()
+
+        # done with user file - allow access to other writing calls
+        self._dropLock(filename)
+
+        # create new file <username>.xml
+        outfp = open(self._metaDir + '/' + self._userXMLDir + '/' + username + '.xml', 'w')
+        outfp.write('<?xml version=\'1.0\'?>\n')
+        outfp.write('<userInfo>\n')
+        outfp.write('</userInfo>\n')
+        outfp.close()
+                     
+
+        return 1
+
+
+    def changePassword(self, username, password):
+        """changePassword returns 1 if user password changed successfully, error string otherwise.
+
+        Inputs: username string, password string (password is not yet encrypted).
+        
+        Returns: 1 if password changed successfully, error string otherwise.
+
+        Affects: Modifies password in self._userList, writes new user.xml file
+
+        Exceptions: MadrigalError thrown if unable to write user xml file
+        """
+
+        username = username.lower().strip()
+
+        filename = self._metaDir + '/' + self._userXMLDir + '/' + self._userXMLFile
+
+        # lock out any method that writes to file
+        self._getLock(filename)
+
+        # user data loaded by userExists
+
+        #make username lower, without white space
+        username = username.lower().strip()
+
+        if not self.userExists(username):
+            return 'User ' + username + ' does not exist.'
+
+        #encrypt password
+        pwdEncrypt = crypt.crypt(password, self._cryptStr)
+
+        # open dom
+        userDoc = xml.dom.minidom.parse(filename)
+
+        #now create new password element to replace old
+        newPasswordElem = userDoc.createElementNS(None, 'password')
+
+        #Create a text node
+        newPasswordText = userDoc.createTextNode(pwdEncrypt)
+
+        # append text node to newPasswordElem
+        newPasswordElem.appendChild(newPasswordText)
+
+        # get all user elements
+        userElemList = userDoc.getElementsByTagName("user")
+
+        # loop through each user element
+        for user in userElemList:
+            thisUserNameEl = user.getElementsByTagName('name')[0]
+            if username == self._getText(thisUserNameEl.childNodes):
+                # modify password
+                thisPasswordEl = user.getElementsByTagName('password')[0]
+                user.replaceChild(newPasswordElem, thisPasswordEl)
+
+        #output result
+        outfp = open(self._metaDir + '/' + self._userXMLDir + '/' + self._userXMLFile, 'w')
+        userDoc.writexml(outfp)
+        outfp.write("\n")
+        outfp.close()
+
+        # done with user file - allow access to other writing calls
+        self._dropLock(filename)
+                     
+        return 1
+        
+        
+        
+    def _loadUserData(self):
+        """_loadUserData is a private helper function that reads in user information from an xml file.
+
+        Inputs: None.
+        
+        Returns: void
+
+        Affects: Populates self._userList.
+
+        Exceptions: MadrigalError thrown  if problem parsing users.xml.
+
+        Depends on: Existance of file in metadata dir self._userXMLDir + '/' + self._userXMLFile (now userdata/user.xml)
+
+        This file must be of the form of the following format:
+
+            <?xml version='1.0'?>
+            
+            <users>
+            
+              <user>
+              
+                <name>brideout</name>
+                
+                <password>briWy6v1L.z1E</password>
+                
+              </user>
+              
+              possibly more users...
+              
+            </users>
+
+        The password is stored encrypted by crypt.crypt(password, self._cryptStr).  Implemented via xml.dom, since it is
+        only a short file, but for higher speed (and more complex code) could be implemented with sax since read only.
+        
+        """
+
+        filename = self._metaDir + '/' + self._userXMLDir + '/' + self._userXMLFile
+
+        #check that user xml file exists, if not throw error
+        if not os.access(filename, os.F_OK):
+            raise madrigal.admin.MadrigalError("Unable to open " + filename, None)
+        
+
+        #get list of user names
+        userDoc = xml.dom.minidom.parse(filename)
+
+        #userDoc is root element of users.xml
+
+        self._userList = []
+
+        # get all user tags
+        userElemList = userDoc.getElementsByTagName("user")
+        
+        for user in userElemList:
+            # get name from user list
+            nameEl = user.getElementsByTagName("name")[0]
+
+            # get text node, convert from unicode to ascii
+            for elem in nameEl.childNodes:
+                if elem.nodeType == elem.TEXT_NODE:
+                   #self._userList.append(elem.data.encode('utf-8'))
+                   tempName = (elem.data.encode('utf-8'))
+
+            # get encrypted password from user list
+            nameEl = user.getElementsByTagName("password")[0]
+
+            # get text node, convert from unicode to ascii
+            for elem in nameEl.childNodes:
+                if elem.nodeType == elem.TEXT_NODE:
+                    #self._userList.append(elem.data.encode('utf-8'))
+                    tempPassword = (elem.data.encode('utf-8'))
+
+            #append this user's information to user list
+            self._userList.append([tempName, tempPassword])
+            
+            
+            
+    def _isValidFileName(self, name):
+        """_isValidFileName is a private helper function that validates that the string name does not contain excluded characters.
+        
+        Inputs: name - the string to be validated.
+        
+        Returns: 1 if all characters are allowed, 0 otherwise.  Valid if the following characters are not found in the
+        string after leading and trailing whitespace is removed: [' ', '/', '<', '>', '\']
+
+        Affects: None
+
+        Exceptions: None.
+        """
+
+        name = name.strip()
+
+        invalidChars = [' ', '/', '<', '>', '\\']
+
+        # check if any invalid characters found in name
+        for char in invalidChars:
+            if -1 != name.find(char):
+                # invalid char found
+                return 0
+
+        return 1
+            
+            
+    
+    def _getLock(self, filename):
+        """_getLock is a private helper function that provides exclusive access to filename via a locking file.
+
+        Inputs: filename = the file that exclusive access is required to.
+        
+        Returns: None
+
+        Affects: Writes file filename + .LCK as a lock mechanism
+
+        Exceptions: MadrigalError thrown if unable to write lock file
+
+        Notes: Will sleep for 1 second at a time, for a maximum of _MaxSleep seconds (presently 10)
+        if the file is not modified. After each second, it will check for the lock file to be removed
+        or modified. If it was modified, it resets the count to 0 sec and starts counting again. After
+        _MaxSleep counts it then assumes lock file is orphaned and returns.  Orphaned file will be
+        removed when dropLock is called.
+        """
+        gotLock = 0
+        numTries = 0
+        modificationTime = 0
+        
+        while (not gotLock):
+
+            try:
+                file = os.open(filename + '.LCK', os.O_RDWR | os.O_CREAT | os.O_EXCL)
+                os.close(file)
+                gotLock = 1
+
+            except OSError as xxx_todo_changeme:
+                # error 17 is "File exists"
+                (errno, strerror) = xxx_todo_changeme.args
+                # error 17 is "File exists"
+                if errno != 17:
+                    raise madrigal.admin.MadrigalError("Unable to open " + filename + ".LCK as locking file ", None)
+                # get modification time - may throw an error if file has disappearred
+                try:
+                    newModTime = os.stat(filename + '.LCK')[stat.ST_MTIME]
+                except:
+                    #file has disappeared, no need to sleep
+                    continue
+
+                # if the lock file has been modified (or if this is the first time through) set numTries = 0
+                if newModTime > modificationTime:
+                    modificationTime = newModTime
+                    numTries = 0
+                    
+                time.sleep(1)
+                
+            
+            numTries = numTries + 1
+
+            if numTries > self._MaxSleep:
+                return
+
+       
+    def _dropLock(self, filename):
+        """_dropLock is a private helper function that drops exclusive access to filename via a locking file.
+
+        Inputs: filename = the file that exclusive access is required to.
+        
+        Returns: None
+
+        Affects: Removes file filename + .LCK as a lock mechanism
+
+        Exceptions: None.
+        """
+        try:
+            os.remove(filename + '.LCK')
+
+        except IOError:
+            return
+
+    
+</code></pre>
+  </div>
+
+  </header>
+
+  <section id="section-items">
+
+
+    <h2 class="section-title" id="header-classes">Classes</h2>
+      
+      <div class="item">
+      <p id="madrigal.ui.userData.MadrigalUserData" class="name">class <span class="ident">MadrigalUserData</span></p>
+      
+  
+    <div class="desc"><p>MadrigalUserData is an object that provides access to all user data.</p>
+<p>The object MadrigalUserData is an object that provides read and write access to
+all persisted user information on the Madrigal web site.  For the moment this data
+consists of which instruments and experiments the user is registered with.</p>
+<p>Change history:</p>
+<p>Written by "Bill Rideout":mailto:wrideout@haystack.mit.edu  Dec. 11, 2001</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-madrigal.ui.userData.MadrigalUserData', this);">Show source &equiv;</a></p>
+  <div id="source-madrigal.ui.userData.MadrigalUserData" class="source">
+    <pre><code>class MadrigalUserData:
+    """MadrigalUserData is an object that provides access to all user data.
+
+    The object MadrigalUserData is an object that provides read and write access to
+    all persisted user information on the Madrigal web site.  For the moment this data
+    consists of which instruments and experiments the user is registered with.
+
+    Change history:
+
+    Written by "Bill Rideout":mailto:wrideout@haystack.mit.edu  Dec. 11, 2001
+
+    """
+
+    #constants
+    _userXMLDir   = "userdata"
+    _userXMLFile  = "users.xml"
+    _userXMLFileTemplate = "users.xml.template"
+    _userExpFile = 'regExp.txt'  # contains list of registered experiments
+    _userInstFile = 'regInst.txt' # contains list of registered instruments# maximum number of seconds to wait for a lock
+    _MaxSleep     = 10
+    # 2 char string to use in crypt
+    # Changing this will cause all stored passwords to fail
+    _cryptStr     = 'md'
+    
+
+    def __init__(self, madDB = None):
+        """__init__ initializes MadrigalUserData by reading from MadridalDB..
+
+        Inputs: Existing MadrigalDB object, by default = None.
+        
+        Returns: void
+
+        Affects: Initializes self._metaDir.
+
+        Exceptions: None.
+        """
+
+        # get metadata dir
+        if madDB == None:
+            thisMadDB = madrigal.metadata.MadrigalDB()
+        else:
+            thisMadDB = madDB
+
+        self._metaDir = thisMadDB.getMetadataDir()
+        
+        # check that users.xml exists, if not, copy users.xml.template
+        if not os.path.isfile(self._metaDir + '/' + self._userXMLDir + '/' + self._userXMLFile):
+            shutil.copyfile(self._metaDir + '/' + self._userXMLDir + '/' + self._userXMLFileTemplate,
+                            self._metaDir + '/' + self._userXMLDir + '/' + self._userXMLFile)
+
+    
+    
+    def getRegisteredDict(self):
+        """will return a dictionary with key  
+            + email, and value = tuple of all registered experiments for that  
+            email.
+            
+            This data will be stored in a text file: MADROOT/metadata/userdata/ 
+            regExp.txt.  The format will be two space delimited columns: email  
+            experimentString.
+        """
+        filename = os.path.join(self._metaDir, self._userXMLDir, self._userExpFile)
+        
+        retDict = {}
+
+        try:
+            f = open(filename)
+        except IOError:
+            return(retDict)
+        
+        lines = f.readlines()
+        for line in lines:
+            items = line.split()
+            if len(items) != 2:
+                continue
+            try:
+                retDict[items[0]].append(items[1])
+            except KeyError:
+                retDict[items[0]] = [items[1]]
+                
+        return(retDict)
+    
+    
+    def getRegisteredExperiments(self, email):
+        """getRegisteredExperiments will return a list of  
+            experiments as strings.  For example, getRegisteredExperiments('brideout at haystack.mit.edu') 
+            might return ['experiments/2010/mlh/18jan10', 'experiments/2010/mlh/19jan10', 
+            'experiments/2010/mlh/20jan10'].  If the user has no  
+            registered experiments, it will return an empty list.
+            
+        Inputs: user email
+        """
+        expDict = self.getRegisteredDict()
+        try:
+            return(expDict[email])
+        except KeyError:
+            return(())
+        
+        
+    def getRegisteredUsers(self, experimentString):
+        """ getRegisteredUsers will return a list  
+            of users register for a given experiment as strings.  For example,  
+            getRegisteredUsers('experiments/2010/mlh/18jan10') might return ['brideout at haystack.mit.edu ', 
+            'miguel.urco at jro.igp.gob.pe'].  If the experiment has no registered  
+            users, it will return an empty list
+        """
+        retList = []
+        if experimentString[-1] == '/':
+            experimentString = experimentString[:-1]
+        expDict = self.getRegisteredDict()
+        for key in list(expDict.keys()):
+            for item in expDict[key]:
+                if item == experimentString:
+                    if key not in retList:
+                        retList.append(key)
+                        
+        return(retList)
+    
+    
+    def registerExperiment(self, email, experimentString):
+        """registerExperiment method will  
+            register an experiment for a given email.  For example,  
+            registerExperiment('brideout at haystack.mit.edu', 'experiments/2010/mlh/ 
+            18jan10') would register an experiment.  If the experiment is already  
+            registed, it will not raise an error; it will simply do nothing.
+            
+        Affects: This new data will be stored in a text file: MADROOT/metadata/userdata/ 
+            regExp.txt.  The format will be two space delimited columns: email  
+            experimentString.
+        """
+        # check if already registered
+        expDict = self.getRegisteredDict()
+        if experimentString[-1] == '/':
+            experimentString = experimentString[:-1]
+        try:
+            expList = expDict[email]
+            if experimentString in expList:
+                return
+        except KeyError:
+            pass
+        
+        # not registered
+        filename = os.path.join(self._metaDir, self._userXMLDir, self._userExpFile)
+        self._getLock(filename)
+        # make sure up to date
+        expDict = self.getRegisteredDict()
+        try:
+            expDict[email].append(experimentString)
+        except KeyError:
+            expDict[email] = [experimentString]
+        try:
+            f = open(filename, 'w')
+        except:
+            self._dropLock(filename)
+            raise
+        
+        keys = list(expDict.keys())
+        keys.sort()
+        for key in keys:
+            for item in expDict[key]:
+                f.write('%s %s\n' % (key, item))
+        f.close()
+        
+        self._dropLock(filename)
+        
+        
+    def unregisterExperiment(self, email, experimentString):
+        """unregisterExperiment method will  
+            unregister an experiment for a given email.  For example,  
+            unregisterExperiment('brideout at haystack.mit.edu', 'experiments/2010/ 
+            mlh/18jan10') would unregister an experiment.  If the experiment is  
+            not registed, it will not raise an error; it will simply do nothing.
+            
+        Affects: This data will be removed from a text file: MADROOT/metadata/userdata/ 
+            regExp.txt.  The format will be two space delimited columns: email  
+            experimentString.
+        """
+        # check if already registered
+        found = False
+        expDict = self.getRegisteredDict()
+        if experimentString[-1] == '/':
+            experimentString = experimentString[:-1]
+        try:
+            expList = expDict[email]
+            if experimentString in expList:
+                found = True
+        except KeyError:
+            pass
+        
+        if not found:
+            return
+        
+        # is registered
+        filename = os.path.join(self._metaDir, self._userXMLDir, self._userExpFile)
+        self._getLock(filename)
+        # make sure up to date
+        expDict = self.getRegisteredDict()
+        regExp = expDict[email]
+        regExp.remove(experimentString)
+        expDict[email] = regExp
+        try:
+            f = open(filename, 'w')
+        except:
+            self._dropLock(filename)
+            raise
+        
+        keys = list(expDict.keys())
+        keys.sort()
+        for key in keys:
+            for item in expDict[key]:
+                f.write('%s %s\n' % (key, item))
+        f.close()
+        
+        self._dropLock(filename)
+        
+        
+        
+    def getRegisteredInstDict(self):
+        """will return a dictionary with key  
+            = email, and value = tuple of all registered instrument codes (int) for that  
+            email.
+            
+            This data will be stored in a text file: MADROOT/metadata/userdata/ 
+            regInst.txt.  The format will be two space delimited columns: email  
+            instrument code (int).
+        """
+        filename = os.path.join(self._metaDir, self._userXMLDir, self._userInstFile)
+        
+        retDict = {}
+
+        try:
+            f = open(filename)
+        except IOError:
+            return(retDict)
+        
+        lines = f.readlines()
+        for line in lines:
+            items = line.split()
+            if len(items) != 2:
+                continue
+            try:
+                retDict[items[0]].append(int(items[1]))
+            except KeyError:
+                retDict[items[0]] = [int(items[1])]
+                
+        return(retDict)
+    
+    
+    def getRegisteredInstruments(self, email):
+        """getRegisteredInstruments will return a list of  
+            instruments as ints.  For example, getRegisteredInstruments('brideout at haystack.mit.edu') 
+            might return [30, 31, 10].  If the user has no  
+            registered instruments, it will return an empty list.
+            
+        Inputs: user email
+        """
+        instDict = self.getRegisteredInstDict()
+        try:
+            return(instDict[email])
+        except KeyError:
+            return(())
+        
+        
+    def getRegisteredInstUsers(self, kinst):
+        """ getRegisteredInstUsers will return a list  
+            of users registered for a given instrument code (kinst) as strings.  For example,  
+            getRegisteredInstUsers(30) might return ['brideout at haystack.mit.edu ', 
+            'miguel.urco at jro.igp.gob.pe'].  If the instrument has no registered  
+            users, it will return an empty list
+        """
+        retList = []
+        instDict = self.getRegisteredInstDict()
+        for key in list(instDict.keys()):
+            for item in instDict[key]:
+                if item == kinst:
+                    if key not in retList:
+                        retList.append(key)
+                        
+        return(retList)
+    
+    
+    def registerInstrument(self, email, kinst):
+        """registerInstrument method will  
+            register an instrument for a given email.  For example,  
+            registerInstrument('brideout at haystack.mit.edu', 30) would 
+            register an instrument.  If the instrument is already  
+            registed, it will not raise an error; it will simply do nothing.
+            
+        Affects: This new data will be stored in a text file: MADROOT/metadata/userdata/ 
+            regInst.txt.  The format will be two space delimited columns: email  
+            kinst.
+        """
+        # check if already registered
+        instDict = self.getRegisteredInstDict()
+        try:
+            instList = instDict[email]
+            if kinst in instList:
+                return
+        except KeyError:
+            pass
+        
+        # not registered
+        filename = os.path.join(self._metaDir, self._userXMLDir, self._userInstFile)
+        self._getLock(filename)
+        # make sure up to date
+        instDict = self.getRegisteredInstDict()
+        try:
+            instDict[email].append(kinst)
+        except KeyError:
+            instDict[email] = [kinst]
+        try:
+            f = open(filename, 'w')
+        except:
+            self._dropLock(filename)
+            raise
+        
+        keys = list(instDict.keys())
+        keys.sort()
+        for key in keys:
+            for item in instDict[key]:
+                f.write('%s %s\n' % (key, str(item)))
+        f.close()
+        
+        self._dropLock(filename)
+        
+        
+    def unregisterInstrument(self, email, kinst):
+        """unregisterInstrument method will  
+            unregister an instrument for a given email.  For example,  
+            unregisterInstrument('brideout at haystack.mit.edu', 30) 
+            would unregister an instrument.  If the instrument is  
+            not registed, it will not raise an error; it will simply do nothing.
+            
+        Affects: This data will be removed from a text file: MADROOT/metadata/userdata/ 
+            regInst.txt.  The format will be two space delimited columns: email  
+            kinst.
+        """
+        # check if already registered
+        found = False
+        instDict = self.getRegisteredInstDict()
+        try:
+            instList = instDict[email]
+            if kinst in instList:
+                found = True
+        except KeyError:
+            pass
+        
+        if not found:
+            return
+        
+        # is registered
+        filename = os.path.join(self._metaDir, self._userXMLDir, self._userInstFile)
+        self._getLock(filename)
+        # make sure up to date
+        instDict = self.getRegisteredInstDict()
+        regInst = instDict[email]
+        regInst.remove(kinst)
+        instDict[email] = regInst
+        try:
+            f = open(filename, 'w')
+        except:
+            self._dropLock(filename)
+            raise
+        
+        keys = list(instDict.keys())
+        keys.sort()
+        for key in keys:
+            for item in instDict[key]:
+                f.write('%s %s\n' % (key, item))
+        f.close()
+        
+        self._dropLock(filename)
+        
+        
+    def getUsersList(self):
+        """getUsersList returns a list of user names/encrypted passwords that already exist.
+
+        Inputs: none.
+        
+        Returns: a list of user names/passwords.  Each item in the returned list is itself a
+        list with two strings: 1) username, and 2) encrypted password.
+
+        Usage example:
+
+            import madrigal.ui.userData
+
+            test = madrigal.ui.userData.MadrigalUserData()
+
+            userlist = test.getUsersList()
+
+            for user in userlist:
+
+                print 'User name is ' + user[0] + ' and encrypted password is ' + user[1]
+
+        Affects: None
+
+        Exceptions: none
+        """
+        
+        # update userList
+        self._loadUserData()
+        
+        return self._userList
+
+
+    def userExists(self, username):
+        """userExists returns 1 if username (case insensitive) exists, 0 otherwise.
+
+        Inputs: username string.
+        
+        Returns: 1 if username (case insensitive) exists, 0 otherwise.
+
+        Affects: None
+
+        Exceptions: none
+        """
+
+        # update userList
+        self._loadUserData()
+
+        nameLowCase = username.lower().strip()
+        
+        for name in self._userList:
+            if nameLowCase == name[0].lower().strip():
+                return 1
+
+        #not found
+        return 0
+
+
+    def verifyUser(self, username, password):
+        """verifyUser returns 1 if username, password okay, 0 otherwise.
+
+        Inputs: username string, password string.
+        
+        Returns: 1 if username, password okay, 0 otherwise.
+
+        Affects: None
+
+        Exceptions: none
+        """
+
+        # update userList
+        self._loadUserData()
+
+        nameLowCase = username.lower().strip()
+        
+        for name in self._userList:
+            if nameLowCase == name[0].lower().strip():
+                # username found, now encrypt password
+                pwdEncrypt = crypt.crypt(password, self._cryptStr)
+                # verify password
+                if pwdEncrypt == name[1]:
+                    return 1
+                else:
+                    # wrong password
+                    return 0
+
+        # username not found
+        return 0
+
+
+    def addUser(self, username, password):
+        """addUser returns 1 if user added successfully, error string otherwise.
+
+        Inputs: username string, password string (password is not yet encrypted).
+        
+        Returns: 1 if user added successfully, error string otherwise.   
+
+        Affects: Adds new user to self._userList, writes new empty <username>.xml file
+        username is always converted and stored as lower case, so its case insensitive.
+
+        Exceptions: MadrigalError thrown if unable to write to user xml file
+
+        Notes:  uses getLock and dropLock to insure exclusive access to user file
+        """
+
+        filename = self._metaDir + '/' + self._userXMLDir + '/' + self._userXMLFile
+
+        if username == None:
+            return "Cannot create a user with null user name."
+        
+        # store all usernames as lowercase
+        username = username.lower().strip()
+
+        if len(username) == 0:
+            return "Cannot create a user with blank user name."
+
+        # lock out any method that writes to file
+        self._getLock(filename)
+        
+        # user data loaded by userExists
+
+        if self.userExists(username):
+            # done with user file - allow access to other writing calls
+            self._dropLock(filename)
+            return 'User name ' + username + ' already exists.'
+
+        if not self._isValidFileName(username):
+            # done with user file - allow access to other writing calls
+            self._dropLock(filename)
+            return 'Username ' + username + ' contains illegal characters.'
+
+
+        #encrypt password
+        pwdEncrypt = crypt.crypt(password, self._cryptStr)
+
+        # create dom
+        userDoc = xml.dom.minidom.parse(filename)
+
+        #get root element
+        docRoot = userDoc.documentElement
+
+        # create new user element
+        newUserElem = userDoc.createElementNS(None, 'user')
+
+        # now create new name element under newUserElem
+        newUsernameElem = userDoc.createElementNS(None, 'name')
+
+        # Create a text node
+        newUsernameText = userDoc.createTextNode(username)
+
+        # append text node to newUsernameElem
+        newUsernameElem.appendChild(newUsernameText)
+
+        # append name node to user node
+        newUserElem.appendChild(newUsernameElem)
+
+        #now create new password element under newUserElem
+        newPasswordElem = userDoc.createElementNS(None, 'password')
+
+        #Create a text node
+        newPasswordText = userDoc.createTextNode(pwdEncrypt)
+
+        # append text node to newPasswordElem
+        newPasswordElem.appendChild(newPasswordText)
+
+        # append password node to user node
+        newUserElem.appendChild(newPasswordElem)
+
+        #Add the new user element to the document element
+        docRoot.appendChild(newUserElem)
+
+        #output result
+        outfp = open(filename, 'w')
+        userDoc.writexml(outfp)
+        outfp.write("\n")
+        outfp.close()
+
+        # done with user file - allow access to other writing calls
+        self._dropLock(filename)
+
+        # create new file <username>.xml
+        outfp = open(self._metaDir + '/' + self._userXMLDir + '/' + username + '.xml', 'w')
+        outfp.write('<?xml version=\'1.0\'?>\n')
+        outfp.write('<userInfo>\n')
+        outfp.write('</userInfo>\n')
+        outfp.close()
+                     
+
+        return 1
+
+
+    def changePassword(self, username, password):
+        """changePassword returns 1 if user password changed successfully, error string otherwise.
+
+        Inputs: username string, password string (password is not yet encrypted).
+        
+        Returns: 1 if password changed successfully, error string otherwise.
+
+        Affects: Modifies password in self._userList, writes new user.xml file
+
+        Exceptions: MadrigalError thrown if unable to write user xml file
+        """
+
+        username = username.lower().strip()
+
+        filename = self._metaDir + '/' + self._userXMLDir + '/' + self._userXMLFile
+
+        # lock out any method that writes to file
+        self._getLock(filename)
+
+        # user data loaded by userExists
+
+        #make username lower, without white space
+        username = username.lower().strip()
+
+        if not self.userExists(username):
+            return 'User ' + username + ' does not exist.'
+
+        #encrypt password
+        pwdEncrypt = crypt.crypt(password, self._cryptStr)
+
+        # open dom
+        userDoc = xml.dom.minidom.parse(filename)
+
+        #now create new password element to replace old
+        newPasswordElem = userDoc.createElementNS(None, 'password')
+
+        #Create a text node
+        newPasswordText = userDoc.createTextNode(pwdEncrypt)
+
+        # append text node to newPasswordElem
+        newPasswordElem.appendChild(newPasswordText)
+
+        # get all user elements
+        userElemList = userDoc.getElementsByTagName("user")
+
+        # loop through each user element
+        for user in userElemList:
+            thisUserNameEl = user.getElementsByTagName('name')[0]
+            if username == self._getText(thisUserNameEl.childNodes):
+                # modify password
+                thisPasswordEl = user.getElementsByTagName('password')[0]
+                user.replaceChild(newPasswordElem, thisPasswordEl)
+
+        #output result
+        outfp = open(self._metaDir + '/' + self._userXMLDir + '/' + self._userXMLFile, 'w')
+        userDoc.writexml(outfp)
+        outfp.write("\n")
+        outfp.close()
+
+        # done with user file - allow access to other writing calls
+        self._dropLock(filename)
+                     
+        return 1
+        
+        
+        
+    def _loadUserData(self):
+        """_loadUserData is a private helper function that reads in user information from an xml file.
+
+        Inputs: None.
+        
+        Returns: void
+
+        Affects: Populates self._userList.
+
+        Exceptions: MadrigalError thrown  if problem parsing users.xml.
+
+        Depends on: Existance of file in metadata dir self._userXMLDir + '/' + self._userXMLFile (now userdata/user.xml)
+
+        This file must be of the form of the following format:
+
+            <?xml version='1.0'?>
+            
+            <users>
+            
+              <user>
+              
+                <name>brideout</name>
+                
+                <password>briWy6v1L.z1E</password>
+                
+              </user>
+              
+              possibly more users...
+              
+            </users>
+
+        The password is stored encrypted by crypt.crypt(password, self._cryptStr).  Implemented via xml.dom, since it is
+        only a short file, but for higher speed (and more complex code) could be implemented with sax since read only.
+        
+        """
+
+        filename = self._metaDir + '/' + self._userXMLDir + '/' + self._userXMLFile
+
+        #check that user xml file exists, if not throw error
+        if not os.access(filename, os.F_OK):
+            raise madrigal.admin.MadrigalError("Unable to open " + filename, None)
+        
+
+        #get list of user names
+        userDoc = xml.dom.minidom.parse(filename)
+
+        #userDoc is root element of users.xml
+
+        self._userList = []
+
+        # get all user tags
+        userElemList = userDoc.getElementsByTagName("user")
+        
+        for user in userElemList:
+            # get name from user list
+            nameEl = user.getElementsByTagName("name")[0]
+
+            # get text node, convert from unicode to ascii
+            for elem in nameEl.childNodes:
+                if elem.nodeType == elem.TEXT_NODE:
+                   #self._userList.append(elem.data.encode('utf-8'))
+                   tempName = (elem.data.encode('utf-8'))
+
+            # get encrypted password from user list
+            nameEl = user.getElementsByTagName("password")[0]
+
+            # get text node, convert from unicode to ascii
+            for elem in nameEl.childNodes:
+                if elem.nodeType == elem.TEXT_NODE:
+                    #self._userList.append(elem.data.encode('utf-8'))
+                    tempPassword = (elem.data.encode('utf-8'))
+
+            #append this user's information to user list
+            self._userList.append([tempName, tempPassword])
+            
+            
+            
+    def _isValidFileName(self, name):
+        """_isValidFileName is a private helper function that validates that the string name does not contain excluded characters.
+        
+        Inputs: name - the string to be validated.
+        
+        Returns: 1 if all characters are allowed, 0 otherwise.  Valid if the following characters are not found in the
+        string after leading and trailing whitespace is removed: [' ', '/', '<', '>', '\']
+
+        Affects: None
+
+        Exceptions: None.
+        """
+
+        name = name.strip()
+
+        invalidChars = [' ', '/', '<', '>', '\\']
+
+        # check if any invalid characters found in name
+        for char in invalidChars:
+            if -1 != name.find(char):
+                # invalid char found
+                return 0
+
+        return 1
+            
+            
+    
+    def _getLock(self, filename):
+        """_getLock is a private helper function that provides exclusive access to filename via a locking file.
+
+        Inputs: filename = the file that exclusive access is required to.
+        
+        Returns: None
+
+        Affects: Writes file filename + .LCK as a lock mechanism
+
+        Exceptions: MadrigalError thrown if unable to write lock file
+
+        Notes: Will sleep for 1 second at a time, for a maximum of _MaxSleep seconds (presently 10)
+        if the file is not modified. After each second, it will check for the lock file to be removed
+        or modified. If it was modified, it resets the count to 0 sec and starts counting again. After
+        _MaxSleep counts it then assumes lock file is orphaned and returns.  Orphaned file will be
+        removed when dropLock is called.
+        """
+        gotLock = 0
+        numTries = 0
+        modificationTime = 0
+        
+        while (not gotLock):
+
+            try:
+                file = os.open(filename + '.LCK', os.O_RDWR | os.O_CREAT | os.O_EXCL)
+                os.close(file)
+                gotLock = 1
+
+            except OSError as xxx_todo_changeme:
+                # error 17 is "File exists"
+                (errno, strerror) = xxx_todo_changeme.args
+                # error 17 is "File exists"
+                if errno != 17:
+                    raise madrigal.admin.MadrigalError("Unable to open " + filename + ".LCK as locking file ", None)
+                # get modification time - may throw an error if file has disappearred
+                try:
+                    newModTime = os.stat(filename + '.LCK')[stat.ST_MTIME]
+                except:
+                    #file has disappeared, no need to sleep
+                    continue
+
+                # if the lock file has been modified (or if this is the first time through) set numTries = 0
+                if newModTime > modificationTime:
+                    modificationTime = newModTime
+                    numTries = 0
+                    
+                time.sleep(1)
+                
+            
+            numTries = numTries + 1
+
+            if numTries > self._MaxSleep:
+                return
+
+       
+    def _dropLock(self, filename):
+        """_dropLock is a private helper function that drops exclusive access to filename via a locking file.
+
+        Inputs: filename = the file that exclusive access is required to.
+        
+        Returns: None
+
+        Affects: Removes file filename + .LCK as a lock mechanism
+
+        Exceptions: None.
+        """
+        try:
+            os.remove(filename + '.LCK')
+
+        except IOError:
+            return
+</code></pre>
+  </div>
+</div>
+
+
+      <div class="class">
+          <h3>Ancestors (in MRO)</h3>
+          <ul class="class_list">
+          <li><a href="#madrigal.ui.userData.MadrigalUserData">MadrigalUserData</a></li>
+          <li>builtins.object</li>
+          </ul>
+          <h3>Static methods</h3>
+            
+  <div class="item">
+    <div class="name def" id="madrigal.ui.userData.MadrigalUserData.__init__">
+    <p>def <span class="ident">__init__</span>(</p><p>self, madDB=None)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p><strong>init</strong> initializes MadrigalUserData by reading from MadridalDB..</p>
+<p>Inputs: Existing MadrigalDB object, by default = None.</p>
+<p>Returns: void</p>
+<p>Affects: Initializes self._metaDir.</p>
+<p>Exceptions: None.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-madrigal.ui.userData.MadrigalUserData.__init__', this);">Show source &equiv;</a></p>
+  <div id="source-madrigal.ui.userData.MadrigalUserData.__init__" class="source">
+    <pre><code>def __init__(self, madDB = None):
+    """__init__ initializes MadrigalUserData by reading from MadridalDB..
+    Inputs: Existing MadrigalDB object, by default = None.
+    
+    Returns: void
+    Affects: Initializes self._metaDir.
+    Exceptions: None.
+    """
+    # get metadata dir
+    if madDB == None:
+        thisMadDB = madrigal.metadata.MadrigalDB()
+    else:
+        thisMadDB = madDB
+    self._metaDir = thisMadDB.getMetadataDir()
+    
+    # check that users.xml exists, if not, copy users.xml.template
+    if not os.path.isfile(self._metaDir + '/' + self._userXMLDir + '/' + self._userXMLFile):
+        shutil.copyfile(self._metaDir + '/' + self._userXMLDir + '/' + self._userXMLFileTemplate,
+                        self._metaDir + '/' + self._userXMLDir + '/' + self._userXMLFile)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="madrigal.ui.userData.MadrigalUserData.addUser">
+    <p>def <span class="ident">addUser</span>(</p><p>self, username, password)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>addUser returns 1 if user added successfully, error string otherwise.</p>
+<p>Inputs: username string, password string (password is not yet encrypted).</p>
+<p>Returns: 1 if user added successfully, error string otherwise.   </p>
+<p>Affects: Adds new user to self._userList, writes new empty <username>.xml file
+username is always converted and stored as lower case, so its case insensitive.</p>
+<p>Exceptions: MadrigalError thrown if unable to write to user xml file</p>
+<p>Notes:  uses getLock and dropLock to insure exclusive access to user file</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-madrigal.ui.userData.MadrigalUserData.addUser', this);">Show source &equiv;</a></p>
+  <div id="source-madrigal.ui.userData.MadrigalUserData.addUser" class="source">
+    <pre><code>def addUser(self, username, password):
+    """addUser returns 1 if user added successfully, error string otherwise.
+    Inputs: username string, password string (password is not yet encrypted).
+    
+    Returns: 1 if user added successfully, error string otherwise.   
+    Affects: Adds new user to self._userList, writes new empty <username>.xml file
+    username is always converted and stored as lower case, so its case insensitive.
+    Exceptions: MadrigalError thrown if unable to write to user xml file
+    Notes:  uses getLock and dropLock to insure exclusive access to user file
+    """
+    filename = self._metaDir + '/' + self._userXMLDir + '/' + self._userXMLFile
+    if username == None:
+        return "Cannot create a user with null user name."
+    
+    # store all usernames as lowercase
+    username = username.lower().strip()
+    if len(username) == 0:
+        return "Cannot create a user with blank user name."
+    # lock out any method that writes to file
+    self._getLock(filename)
+    
+    # user data loaded by userExists
+    if self.userExists(username):
+        # done with user file - allow access to other writing calls
+        self._dropLock(filename)
+        return 'User name ' + username + ' already exists.'
+    if not self._isValidFileName(username):
+        # done with user file - allow access to other writing calls
+        self._dropLock(filename)
+        return 'Username ' + username + ' contains illegal characters.'
+    #encrypt password
+    pwdEncrypt = crypt.crypt(password, self._cryptStr)
+    # create dom
+    userDoc = xml.dom.minidom.parse(filename)
+    #get root element
+    docRoot = userDoc.documentElement
+    # create new user element
+    newUserElem = userDoc.createElementNS(None, 'user')
+    # now create new name element under newUserElem
+    newUsernameElem = userDoc.createElementNS(None, 'name')
+    # Create a text node
+    newUsernameText = userDoc.createTextNode(username)
+    # append text node to newUsernameElem
+    newUsernameElem.appendChild(newUsernameText)
+    # append name node to user node
+    newUserElem.appendChild(newUsernameElem)
+    #now create new password element under newUserElem
+    newPasswordElem = userDoc.createElementNS(None, 'password')
+    #Create a text node
+    newPasswordText = userDoc.createTextNode(pwdEncrypt)
+    # append text node to newPasswordElem
+    newPasswordElem.appendChild(newPasswordText)
+    # append password node to user node
+    newUserElem.appendChild(newPasswordElem)
+    #Add the new user element to the document element
+    docRoot.appendChild(newUserElem)
+    #output result
+    outfp = open(filename, 'w')
+    userDoc.writexml(outfp)
+    outfp.write("\n")
+    outfp.close()
+    # done with user file - allow access to other writing calls
+    self._dropLock(filename)
+    # create new file <username>.xml
+    outfp = open(self._metaDir + '/' + self._userXMLDir + '/' + username + '.xml', 'w')
+    outfp.write('<?xml version=\'1.0\'?>\n')
+    outfp.write('<userInfo>\n')
+    outfp.write('</userInfo>\n')
+    outfp.close()
+                 
+    return 1
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="madrigal.ui.userData.MadrigalUserData.changePassword">
+    <p>def <span class="ident">changePassword</span>(</p><p>self, username, password)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>changePassword returns 1 if user password changed successfully, error string otherwise.</p>
+<p>Inputs: username string, password string (password is not yet encrypted).</p>
+<p>Returns: 1 if password changed successfully, error string otherwise.</p>
+<p>Affects: Modifies password in self._userList, writes new user.xml file</p>
+<p>Exceptions: MadrigalError thrown if unable to write user xml file</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-madrigal.ui.userData.MadrigalUserData.changePassword', this);">Show source &equiv;</a></p>
+  <div id="source-madrigal.ui.userData.MadrigalUserData.changePassword" class="source">
+    <pre><code>def changePassword(self, username, password):
+    """changePassword returns 1 if user password changed successfully, error string otherwise.
+    Inputs: username string, password string (password is not yet encrypted).
+    
+    Returns: 1 if password changed successfully, error string otherwise.
+    Affects: Modifies password in self._userList, writes new user.xml file
+    Exceptions: MadrigalError thrown if unable to write user xml file
+    """
+    username = username.lower().strip()
+    filename = self._metaDir + '/' + self._userXMLDir + '/' + self._userXMLFile
+    # lock out any method that writes to file
+    self._getLock(filename)
+    # user data loaded by userExists
+    #make username lower, without white space
+    username = username.lower().strip()
+    if not self.userExists(username):
+        return 'User ' + username + ' does not exist.'
+    #encrypt password
+    pwdEncrypt = crypt.crypt(password, self._cryptStr)
+    # open dom
+    userDoc = xml.dom.minidom.parse(filename)
+    #now create new password element to replace old
+    newPasswordElem = userDoc.createElementNS(None, 'password')
+    #Create a text node
+    newPasswordText = userDoc.createTextNode(pwdEncrypt)
+    # append text node to newPasswordElem
+    newPasswordElem.appendChild(newPasswordText)
+    # get all user elements
+    userElemList = userDoc.getElementsByTagName("user")
+    # loop through each user element
+    for user in userElemList:
+        thisUserNameEl = user.getElementsByTagName('name')[0]
+        if username == self._getText(thisUserNameEl.childNodes):
+            # modify password
+            thisPasswordEl = user.getElementsByTagName('password')[0]
+            user.replaceChild(newPasswordElem, thisPasswordEl)
+    #output result
+    outfp = open(self._metaDir + '/' + self._userXMLDir + '/' + self._userXMLFile, 'w')
+    userDoc.writexml(outfp)
+    outfp.write("\n")
+    outfp.close()
+    # done with user file - allow access to other writing calls
+    self._dropLock(filename)
+                 
+    return 1
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="madrigal.ui.userData.MadrigalUserData.getRegisteredDict">
+    <p>def <span class="ident">getRegisteredDict</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>will return a dictionary with key<br />
++ email, and value = tuple of all registered experiments for that<br />
+email.</p>
+<p>This data will be stored in a text file: MADROOT/metadata/userdata/ 
+regExp.txt.  The format will be two space delimited columns: email<br />
+experimentString.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-madrigal.ui.userData.MadrigalUserData.getRegisteredDict', this);">Show source &equiv;</a></p>
+  <div id="source-madrigal.ui.userData.MadrigalUserData.getRegisteredDict" class="source">
+    <pre><code>def getRegisteredDict(self):
+    """will return a dictionary with key  
+        + email, and value = tuple of all registered experiments for that  
+        email.
+        
+        This data will be stored in a text file: MADROOT/metadata/userdata/ 
+        regExp.txt.  The format will be two space delimited columns: email  
+        experimentString.
+    """
+    filename = os.path.join(self._metaDir, self._userXMLDir, self._userExpFile)
+    
+    retDict = {}
+    try:
+        f = open(filename)
+    except IOError:
+        return(retDict)
+    
+    lines = f.readlines()
+    for line in lines:
+        items = line.split()
+        if len(items) != 2:
+            continue
+        try:
+            retDict[items[0]].append(items[1])
+        except KeyError:
+            retDict[items[0]] = [items[1]]
+            
+    return(retDict)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="madrigal.ui.userData.MadrigalUserData.getRegisteredExperiments">
+    <p>def <span class="ident">getRegisteredExperiments</span>(</p><p>self, email)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>getRegisteredExperiments will return a list of<br />
+    experiments as strings.  For example, getRegisteredExperiments('brideout at haystack.mit.edu') 
+    might return ['experiments/2010/mlh/18jan10', 'experiments/2010/mlh/19jan10', 
+    'experiments/2010/mlh/20jan10'].  If the user has no<br />
+    registered experiments, it will return an empty list.</p>
+<p>Inputs: user email</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-madrigal.ui.userData.MadrigalUserData.getRegisteredExperiments', this);">Show source &equiv;</a></p>
+  <div id="source-madrigal.ui.userData.MadrigalUserData.getRegisteredExperiments" class="source">
+    <pre><code>def getRegisteredExperiments(self, email):
+    """getRegisteredExperiments will return a list of  
+        experiments as strings.  For example, getRegisteredExperiments('brideout at haystack.mit.edu') 
+        might return ['experiments/2010/mlh/18jan10', 'experiments/2010/mlh/19jan10', 
+        'experiments/2010/mlh/20jan10'].  If the user has no  
+        registered experiments, it will return an empty list.
+        
+    Inputs: user email
+    """
+    expDict = self.getRegisteredDict()
+    try:
+        return(expDict[email])
+    except KeyError:
+        return(())
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="madrigal.ui.userData.MadrigalUserData.getRegisteredInstDict">
+    <p>def <span class="ident">getRegisteredInstDict</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>will return a dictionary with key<br />
+= email, and value = tuple of all registered instrument codes (int) for that<br />
+email.</p>
+<p>This data will be stored in a text file: MADROOT/metadata/userdata/ 
+regInst.txt.  The format will be two space delimited columns: email<br />
+instrument code (int).</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-madrigal.ui.userData.MadrigalUserData.getRegisteredInstDict', this);">Show source &equiv;</a></p>
+  <div id="source-madrigal.ui.userData.MadrigalUserData.getRegisteredInstDict" class="source">
+    <pre><code>def getRegisteredInstDict(self):
+    """will return a dictionary with key  
+        = email, and value = tuple of all registered instrument codes (int) for that  
+        email.
+        
+        This data will be stored in a text file: MADROOT/metadata/userdata/ 
+        regInst.txt.  The format will be two space delimited columns: email  
+        instrument code (int).
+    """
+    filename = os.path.join(self._metaDir, self._userXMLDir, self._userInstFile)
+    
+    retDict = {}
+    try:
+        f = open(filename)
+    except IOError:
+        return(retDict)
+    
+    lines = f.readlines()
+    for line in lines:
+        items = line.split()
+        if len(items) != 2:
+            continue
+        try:
+            retDict[items[0]].append(int(items[1]))
+        except KeyError:
+            retDict[items[0]] = [int(items[1])]
+            
+    return(retDict)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="madrigal.ui.userData.MadrigalUserData.getRegisteredInstUsers">
+    <p>def <span class="ident">getRegisteredInstUsers</span>(</p><p>self, kinst)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>getRegisteredInstUsers will return a list<br />
+of users registered for a given instrument code (kinst) as strings.  For example,<br />
+getRegisteredInstUsers(30) might return ['brideout at haystack.mit.edu ', 
+'miguel.urco at jro.igp.gob.pe'].  If the instrument has no registered<br />
+users, it will return an empty list</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-madrigal.ui.userData.MadrigalUserData.getRegisteredInstUsers', this);">Show source &equiv;</a></p>
+  <div id="source-madrigal.ui.userData.MadrigalUserData.getRegisteredInstUsers" class="source">
+    <pre><code>def getRegisteredInstUsers(self, kinst):
+    """ getRegisteredInstUsers will return a list  
+        of users registered for a given instrument code (kinst) as strings.  For example,  
+        getRegisteredInstUsers(30) might return ['brideout at haystack.mit.edu ', 
+        'miguel.urco at jro.igp.gob.pe'].  If the instrument has no registered  
+        users, it will return an empty list
+    """
+    retList = []
+    instDict = self.getRegisteredInstDict()
+    for key in list(instDict.keys()):
+        for item in instDict[key]:
+            if item == kinst:
+                if key not in retList:
+                    retList.append(key)
+                    
+    return(retList)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="madrigal.ui.userData.MadrigalUserData.getRegisteredInstruments">
+    <p>def <span class="ident">getRegisteredInstruments</span>(</p><p>self, email)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>getRegisteredInstruments will return a list of<br />
+    instruments as ints.  For example, getRegisteredInstruments('brideout at haystack.mit.edu') 
+    might return [30, 31, 10].  If the user has no<br />
+    registered instruments, it will return an empty list.</p>
+<p>Inputs: user email</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-madrigal.ui.userData.MadrigalUserData.getRegisteredInstruments', this);">Show source &equiv;</a></p>
+  <div id="source-madrigal.ui.userData.MadrigalUserData.getRegisteredInstruments" class="source">
+    <pre><code>def getRegisteredInstruments(self, email):
+    """getRegisteredInstruments will return a list of  
+        instruments as ints.  For example, getRegisteredInstruments('brideout at haystack.mit.edu') 
+        might return [30, 31, 10].  If the user has no  
+        registered instruments, it will return an empty list.
+        
+    Inputs: user email
+    """
+    instDict = self.getRegisteredInstDict()
+    try:
+        return(instDict[email])
+    except KeyError:
+        return(())
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="madrigal.ui.userData.MadrigalUserData.getRegisteredUsers">
+    <p>def <span class="ident">getRegisteredUsers</span>(</p><p>self, experimentString)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>getRegisteredUsers will return a list<br />
+of users register for a given experiment as strings.  For example,<br />
+getRegisteredUsers('experiments/2010/mlh/18jan10') might return ['brideout at haystack.mit.edu ', 
+'miguel.urco at jro.igp.gob.pe'].  If the experiment has no registered<br />
+users, it will return an empty list</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-madrigal.ui.userData.MadrigalUserData.getRegisteredUsers', this);">Show source &equiv;</a></p>
+  <div id="source-madrigal.ui.userData.MadrigalUserData.getRegisteredUsers" class="source">
+    <pre><code>def getRegisteredUsers(self, experimentString):
+    """ getRegisteredUsers will return a list  
+        of users register for a given experiment as strings.  For example,  
+        getRegisteredUsers('experiments/2010/mlh/18jan10') might return ['brideout at haystack.mit.edu ', 
+        'miguel.urco at jro.igp.gob.pe'].  If the experiment has no registered  
+        users, it will return an empty list
+    """
+    retList = []
+    if experimentString[-1] == '/':
+        experimentString = experimentString[:-1]
+    expDict = self.getRegisteredDict()
+    for key in list(expDict.keys()):
+        for item in expDict[key]:
+            if item == experimentString:
+                if key not in retList:
+                    retList.append(key)
+                    
+    return(retList)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="madrigal.ui.userData.MadrigalUserData.getUsersList">
+    <p>def <span class="ident">getUsersList</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>getUsersList returns a list of user names/encrypted passwords that already exist.</p>
+<p>Inputs: none.</p>
+<p>Returns: a list of user names/passwords.  Each item in the returned list is itself a
+list with two strings: 1) username, and 2) encrypted password.</p>
+<p>Usage example:</p>
+<pre><code>import madrigal.ui.userData
+
+test = madrigal.ui.userData.MadrigalUserData()
+
+userlist = test.getUsersList()
+
+for user in userlist:
+
+    print 'User name is ' + user[0] + ' and encrypted password is ' + user[1]
+</code></pre>
+<p>Affects: None</p>
+<p>Exceptions: none</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-madrigal.ui.userData.MadrigalUserData.getUsersList', this);">Show source &equiv;</a></p>
+  <div id="source-madrigal.ui.userData.MadrigalUserData.getUsersList" class="source">
+    <pre><code>def getUsersList(self):
+    """getUsersList returns a list of user names/encrypted passwords that already exist.
+    Inputs: none.
+    
+    Returns: a list of user names/passwords.  Each item in the returned list is itself a
+    list with two strings: 1) username, and 2) encrypted password.
+    Usage example:
+        import madrigal.ui.userData
+        test = madrigal.ui.userData.MadrigalUserData()
+        userlist = test.getUsersList()
+        for user in userlist:
+            print 'User name is ' + user[0] + ' and encrypted password is ' + user[1]
+    Affects: None
+    Exceptions: none
+    """
+    
+    # update userList
+    self._loadUserData()
+    
+    return self._userList
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="madrigal.ui.userData.MadrigalUserData.registerExperiment">
+    <p>def <span class="ident">registerExperiment</span>(</p><p>self, email, experimentString)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>registerExperiment method will<br />
+    register an experiment for a given email.  For example,<br />
+    registerExperiment('brideout at haystack.mit.edu', 'experiments/2010/mlh/ 
+    18jan10') would register an experiment.  If the experiment is already<br />
+    registed, it will not raise an error; it will simply do nothing.</p>
+<p>Affects: This new data will be stored in a text file: MADROOT/metadata/userdata/ 
+    regExp.txt.  The format will be two space delimited columns: email<br />
+    experimentString.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-madrigal.ui.userData.MadrigalUserData.registerExperiment', this);">Show source &equiv;</a></p>
+  <div id="source-madrigal.ui.userData.MadrigalUserData.registerExperiment" class="source">
+    <pre><code>def registerExperiment(self, email, experimentString):
+    """registerExperiment method will  
+        register an experiment for a given email.  For example,  
+        registerExperiment('brideout at haystack.mit.edu', 'experiments/2010/mlh/ 
+        18jan10') would register an experiment.  If the experiment is already  
+        registed, it will not raise an error; it will simply do nothing.
+        
+    Affects: This new data will be stored in a text file: MADROOT/metadata/userdata/ 
+        regExp.txt.  The format will be two space delimited columns: email  
+        experimentString.
+    """
+    # check if already registered
+    expDict = self.getRegisteredDict()
+    if experimentString[-1] == '/':
+        experimentString = experimentString[:-1]
+    try:
+        expList = expDict[email]
+        if experimentString in expList:
+            return
+    except KeyError:
+        pass
+    
+    # not registered
+    filename = os.path.join(self._metaDir, self._userXMLDir, self._userExpFile)
+    self._getLock(filename)
+    # make sure up to date
+    expDict = self.getRegisteredDict()
+    try:
+        expDict[email].append(experimentString)
+    except KeyError:
+        expDict[email] = [experimentString]
+    try:
+        f = open(filename, 'w')
+    except:
+        self._dropLock(filename)
+        raise
+    
+    keys = list(expDict.keys())
+    keys.sort()
+    for key in keys:
+        for item in expDict[key]:
+            f.write('%s %s\n' % (key, item))
+    f.close()
+    
+    self._dropLock(filename)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="madrigal.ui.userData.MadrigalUserData.registerInstrument">
+    <p>def <span class="ident">registerInstrument</span>(</p><p>self, email, kinst)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>registerInstrument method will<br />
+    register an instrument for a given email.  For example,<br />
+    registerInstrument('brideout at haystack.mit.edu', 30) would 
+    register an instrument.  If the instrument is already<br />
+    registed, it will not raise an error; it will simply do nothing.</p>
+<p>Affects: This new data will be stored in a text file: MADROOT/metadata/userdata/ 
+    regInst.txt.  The format will be two space delimited columns: email<br />
+    kinst.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-madrigal.ui.userData.MadrigalUserData.registerInstrument', this);">Show source &equiv;</a></p>
+  <div id="source-madrigal.ui.userData.MadrigalUserData.registerInstrument" class="source">
+    <pre><code>def registerInstrument(self, email, kinst):
+    """registerInstrument method will  
+        register an instrument for a given email.  For example,  
+        registerInstrument('brideout at haystack.mit.edu', 30) would 
+        register an instrument.  If the instrument is already  
+        registed, it will not raise an error; it will simply do nothing.
+        
+    Affects: This new data will be stored in a text file: MADROOT/metadata/userdata/ 
+        regInst.txt.  The format will be two space delimited columns: email  
+        kinst.
+    """
+    # check if already registered
+    instDict = self.getRegisteredInstDict()
+    try:
+        instList = instDict[email]
+        if kinst in instList:
+            return
+    except KeyError:
+        pass
+    
+    # not registered
+    filename = os.path.join(self._metaDir, self._userXMLDir, self._userInstFile)
+    self._getLock(filename)
+    # make sure up to date
+    instDict = self.getRegisteredInstDict()
+    try:
+        instDict[email].append(kinst)
+    except KeyError:
+        instDict[email] = [kinst]
+    try:
+        f = open(filename, 'w')
+    except:
+        self._dropLock(filename)
+        raise
+    
+    keys = list(instDict.keys())
+    keys.sort()
+    for key in keys:
+        for item in instDict[key]:
+            f.write('%s %s\n' % (key, str(item)))
+    f.close()
+    
+    self._dropLock(filename)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="madrigal.ui.userData.MadrigalUserData.unregisterExperiment">
+    <p>def <span class="ident">unregisterExperiment</span>(</p><p>self, email, experimentString)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>unregisterExperiment method will<br />
+    unregister an experiment for a given email.  For example,<br />
+    unregisterExperiment('brideout at haystack.mit.edu', 'experiments/2010/ 
+    mlh/18jan10') would unregister an experiment.  If the experiment is<br />
+    not registed, it will not raise an error; it will simply do nothing.</p>
+<p>Affects: This data will be removed from a text file: MADROOT/metadata/userdata/ 
+    regExp.txt.  The format will be two space delimited columns: email<br />
+    experimentString.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-madrigal.ui.userData.MadrigalUserData.unregisterExperiment', this);">Show source &equiv;</a></p>
+  <div id="source-madrigal.ui.userData.MadrigalUserData.unregisterExperiment" class="source">
+    <pre><code>def unregisterExperiment(self, email, experimentString):
+    """unregisterExperiment method will  
+        unregister an experiment for a given email.  For example,  
+        unregisterExperiment('brideout at haystack.mit.edu', 'experiments/2010/ 
+        mlh/18jan10') would unregister an experiment.  If the experiment is  
+        not registed, it will not raise an error; it will simply do nothing.
+        
+    Affects: This data will be removed from a text file: MADROOT/metadata/userdata/ 
+        regExp.txt.  The format will be two space delimited columns: email  
+        experimentString.
+    """
+    # check if already registered
+    found = False
+    expDict = self.getRegisteredDict()
+    if experimentString[-1] == '/':
+        experimentString = experimentString[:-1]
+    try:
+        expList = expDict[email]
+        if experimentString in expList:
+            found = True
+    except KeyError:
+        pass
+    
+    if not found:
+        return
+    
+    # is registered
+    filename = os.path.join(self._metaDir, self._userXMLDir, self._userExpFile)
+    self._getLock(filename)
+    # make sure up to date
+    expDict = self.getRegisteredDict()
+    regExp = expDict[email]
+    regExp.remove(experimentString)
+    expDict[email] = regExp
+    try:
+        f = open(filename, 'w')
+    except:
+        self._dropLock(filename)
+        raise
+    
+    keys = list(expDict.keys())
+    keys.sort()
+    for key in keys:
+        for item in expDict[key]:
+            f.write('%s %s\n' % (key, item))
+    f.close()
+    
+    self._dropLock(filename)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="madrigal.ui.userData.MadrigalUserData.unregisterInstrument">
+    <p>def <span class="ident">unregisterInstrument</span>(</p><p>self, email, kinst)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>unregisterInstrument method will<br />
+    unregister an instrument for a given email.  For example,<br />
+    unregisterInstrument('brideout at haystack.mit.edu', 30) 
+    would unregister an instrument.  If the instrument is<br />
+    not registed, it will not raise an error; it will simply do nothing.</p>
+<p>Affects: This data will be removed from a text file: MADROOT/metadata/userdata/ 
+    regInst.txt.  The format will be two space delimited columns: email<br />
+    kinst.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-madrigal.ui.userData.MadrigalUserData.unregisterInstrument', this);">Show source &equiv;</a></p>
+  <div id="source-madrigal.ui.userData.MadrigalUserData.unregisterInstrument" class="source">
+    <pre><code>def unregisterInstrument(self, email, kinst):
+    """unregisterInstrument method will  
+        unregister an instrument for a given email.  For example,  
+        unregisterInstrument('brideout at haystack.mit.edu', 30) 
+        would unregister an instrument.  If the instrument is  
+        not registed, it will not raise an error; it will simply do nothing.
+        
+    Affects: This data will be removed from a text file: MADROOT/metadata/userdata/ 
+        regInst.txt.  The format will be two space delimited columns: email  
+        kinst.
+    """
+    # check if already registered
+    found = False
+    instDict = self.getRegisteredInstDict()
+    try:
+        instList = instDict[email]
+        if kinst in instList:
+            found = True
+    except KeyError:
+        pass
+    
+    if not found:
+        return
+    
+    # is registered
+    filename = os.path.join(self._metaDir, self._userXMLDir, self._userInstFile)
+    self._getLock(filename)
+    # make sure up to date
+    instDict = self.getRegisteredInstDict()
+    regInst = instDict[email]
+    regInst.remove(kinst)
+    instDict[email] = regInst
+    try:
+        f = open(filename, 'w')
+    except:
+        self._dropLock(filename)
+        raise
+    
+    keys = list(instDict.keys())
+    keys.sort()
+    for key in keys:
+        for item in instDict[key]:
+            f.write('%s %s\n' % (key, item))
+    f.close()
+    
+    self._dropLock(filename)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="madrigal.ui.userData.MadrigalUserData.userExists">
+    <p>def <span class="ident">userExists</span>(</p><p>self, username)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>userExists returns 1 if username (case insensitive) exists, 0 otherwise.</p>
+<p>Inputs: username string.</p>
+<p>Returns: 1 if username (case insensitive) exists, 0 otherwise.</p>
+<p>Affects: None</p>
+<p>Exceptions: none</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-madrigal.ui.userData.MadrigalUserData.userExists', this);">Show source &equiv;</a></p>
+  <div id="source-madrigal.ui.userData.MadrigalUserData.userExists" class="source">
+    <pre><code>def userExists(self, username):
+    """userExists returns 1 if username (case insensitive) exists, 0 otherwise.
+    Inputs: username string.
+    
+    Returns: 1 if username (case insensitive) exists, 0 otherwise.
+    Affects: None
+    Exceptions: none
+    """
+    # update userList
+    self._loadUserData()
+    nameLowCase = username.lower().strip()
+    
+    for name in self._userList:
+        if nameLowCase == name[0].lower().strip():
+            return 1
+    #not found
+    return 0
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="madrigal.ui.userData.MadrigalUserData.verifyUser">
+    <p>def <span class="ident">verifyUser</span>(</p><p>self, username, password)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>verifyUser returns 1 if username, password okay, 0 otherwise.</p>
+<p>Inputs: username string, password string.</p>
+<p>Returns: 1 if username, password okay, 0 otherwise.</p>
+<p>Affects: None</p>
+<p>Exceptions: none</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-madrigal.ui.userData.MadrigalUserData.verifyUser', this);">Show source &equiv;</a></p>
+  <div id="source-madrigal.ui.userData.MadrigalUserData.verifyUser" class="source">
+    <pre><code>def verifyUser(self, username, password):
+    """verifyUser returns 1 if username, password okay, 0 otherwise.
+    Inputs: username string, password string.
+    
+    Returns: 1 if username, password okay, 0 otherwise.
+    Affects: None
+    Exceptions: none
+    """
+    # update userList
+    self._loadUserData()
+    nameLowCase = username.lower().strip()
+    
+    for name in self._userList:
+        if nameLowCase == name[0].lower().strip():
+            # username found, now encrypt password
+            pwdEncrypt = crypt.crypt(password, self._cryptStr)
+            # verify password
+            if pwdEncrypt == name[1]:
+                return 1
+            else:
+                # wrong password
+                return 0
+    # username not found
+    return 0
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+      </div>
+      </div>
+
+  </section>
+
+    </article>
+  <div class="clear"> </div>
+  <footer id="footer">
+    <p>
+      Documentation generated by
+      <a href="https://github.com/BurntSushi/pdoc">pdoc 0.3.2</a>
+    </p>
+
+    <p>pdoc is in the public domain with the
+      <a href="http://unlicense.org">UNLICENSE</a></p>
+
+    <p>Design by <a href="http://nadh.in">Kailash Nadh</a></p>
+  </footer>
+</div>
+<table width="100%" border="1" cellpadding="0" cellspacing="2" class="navigation">
+  <tr>
+    <td width="5%"><a href="madrigalPlot.m.html"><img src="/static/previous.png" alt="previous" width="32" height="32" /></a></td>
+    <td width="5%"><a href="index.html"><img src="/static/up.png" alt="up" width="32" height="32" /></a></td>
+    <td width="5%"><a href="web.m.html"><img src="/static/next.png" alt="next" width="32" height="32" /></a></td>
+    <td width="54%">madrigal.ui.userData</td>
+    <td width="13%"><a href="../../madContents.html">Doc home </a></td>
+    <td width="18%"><a href="/">Madrigal home</a></td>
+  </tr>
+</table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" href="madrigalPlot.m.html">madrigal.ui.madrigalPlot </A>
+<b class="navlabel">&nbsp;&nbsp;Up:</b>
+<a class="sectref" href="index.html">madrigal.ui</A>
+<b class="navlabel">&nbsp;&nbsp;Next:</b>
+<a class="sectref" href="web.m.html">madrigal.ui.web</A></div>
+<hr/>
+<p>&nbsp;</p>
+</body>
+</html>

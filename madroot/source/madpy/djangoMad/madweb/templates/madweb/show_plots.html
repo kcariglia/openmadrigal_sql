@@ -1,0 +1,20 @@
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Template for show plots in single experiment web interface
+	
+	$Id: show_plots.html 4846 2015-02-27 17:49:15Z brideout $
+{% endcomment %}
+                    <!-- show is its own row in main column -->
+					<div class="row">
+					<ul>
+					{% for value, text in form.plot_list.field.choices %}
+					    {% if text|length > 0 %}
+				        	<li><a href="{{ text }}" target="viewWindow">{{ value }}</a></li>
+				        {% else %}
+				        	<li>{{ value }}</li>
+				        {% endif %}
+				    {% endfor %}
+				    </ul>
+					</div> <!-- end row -->
+					

@@ -1,0 +1,297 @@
+#!/bin/sh
+#
+#   This script installs the entire Madrigal database.
+#   Use -c to skip conversion from Madrigal 2->3 files
+#
+# See the latest documentation at http://madrigal.haystack.mit.edu/madrigal/admin.html
+#   for the latest installation instructions
+#
+# $Id: installMadrigal 7728 2024-09-10 15:53:20Z brideout $
+
+function timer()
+{
+    if [[ $# -eq 0 ]]; then
+        echo $(date '+%s')
+    else
+        local  stime=$1
+        etime=$(date '+%s')
+
+        if [[ -z "$stime" ]]; then stime=$etime; fi
+
+        dt=$((etime - stime))
+        ds=$((dt % 60))
+        dm=$(((dt / 60) % 60))
+        dh=$((dt / 3600))
+        printf '%d:%02d:%02d' $dh $dm $ds
+    fi
+}
+
+tmr=$(timer)
+
+# verify we are indeed in the right pwd
+if [ ! -f installMadrigal ]
+then
+   echo "You must run this script from the MADROOT directory"
+   exit -1
+fi
+
+# if MADROOT is set, be sure it matches PWD
+if [ "$MADROOT" != "" ]
+then
+   if [ $MADROOT != $PWD ]
+   then
+      echo "Environmental variable MADROOT = $MADROOT does not match PWD = $PWD"
+      exit -1
+   fi
+else
+   export MADROOT=$PWD
+fi
+
+# test that h5repack installed
+path_to_executable=$(which h5repack)
+ if [ -x "$path_to_executable" ] ; then
+    echo "h5repack installed"
+ else
+    echo "h5repack needs to be installed"
+    exit -1
+ fi
+
+
+# check whether test experiments have been installed
+if [[ (! -f experiments/1998/mlh/20jan98/mil980120g.002 ) && ( ! -f experiments/1998/mlh/20jan98/mil980120g.002.hdf5)  && ( ! -f experiments/1998/mlh/20jan98/mlh980120g.002.hdf5) ]]
+then
+   echo "The standard test data must be installed before installing Madrigal"
+   echo "See install instructions at http://madrigal.haystack.mit.edu/madrigal/ad_install.html"
+   echo "Standard test experiments can be found at http://madrigal.haystack.mit.edu/madrigal/madDownload.html"
+   exit -1
+fi
+
+# check if should convert to Madrigal3
+convert=1
+if [ $# -gt 0 ]
+then
+   for arg in $@
+   do
+      if [ $arg = "-c" ]
+      then
+         convert=0
+      fi
+   done
+fi
+
+echo "Testing that all required python modules are already installed in the default python 3"
+$MADROOT/bin/python testRequirements.py
+if [ $? -ne 0 ]
+then
+  exit -1
+fi
+
+
+echo "Installing Madrigal in $MADROOT"
+
+# verify correctness of madrigal.cfg
+if [ ! -f madrigal.cfg ]
+then
+   echo
+   echo "madrigal.cfg must be created first by copying madrigal.cfg.template and editing as needed"
+   exit -1
+else
+   $MADROOT/bin/python checkConfig.py
+   if [ $? -ne 0 ]
+   then
+       exit -1
+   fi
+fi
+
+# Set all file permissions to owner and group write
+echo "********** setPermissions **********"
+$MADROOT/bin/python setPermissions.py
+if [ $? -ne 0 ]
+then
+    exit -1
+fi
+
+echo "********** configureSource **********"
+$MADROOT/bin/python configureSource.py
+if [ $? -ne 0 ]
+then
+    exit -1
+fi
+
+# Compile the Libraries and Programs
+# ----------------------------------
+cd source
+
+
+echo "********** rebuilding dist with autotools **********"
+aclocal
+if [ $? -ne 0 ]
+then
+    exit -1
+fi
+autoconf
+if [ $? -ne 0 ]
+then
+    exit -1
+fi
+libtoolize
+if [ $? -ne 0 ]
+then
+    exit -1
+fi
+autoheader
+if [ $? -ne 0 ]
+then
+    exit -1
+fi
+automake --add-missing
+if [ $? -ne 0 ]
+then
+    exit -1
+fi
+
+echo "********** ./configure **********"
+./configure --prefix=$MADROOT
+if [ $? -ne 0 ]
+then
+    exit -1
+fi
+
+echo "********** make clean **********"
+make clean
+if [ $? -ne 0 ]
+then
+    exit -1
+fi
+
+echo "********** make **********"
+make
+if [ $? -ne 0 ]
+then
+    exit -1
+fi
+
+echo "********** make check **********"
+make check
+if [ $? -ne 0 ]
+then
+    exit -1
+fi
+
+echo "********** make install **********"
+make install
+if [ $? -ne 0 ]
+then
+    exit -1
+fi
+
+cd ..
+
+
+echo "********** configureScripts **********"
+$MADROOT/bin/python configureScripts.py
+if [ $? -ne 0 ]
+then
+    exit -1
+fi
+
+echo "********** Installing bootstrap calendar **********"
+cd source/madpy/djangoMad/bootstrap_calendar/dist
+rm -rf django_bootstrap_calendar-0.1.1
+tar -xzf django_bootstrap_calendar-0.1.1.tar.gz
+cd django_bootstrap_calendar-0.1.1
+pip install .
+if [ $? -ne 0 ]
+then
+    exit -1
+fi
+cd ../../../django-bootstrap3-datetimepicker-2.2.3/dist
+rm -rf django_bootstrap3_datetimepicker-2.2.3
+tar -xzf django_bootstrap3_datetimepicker-2.2.3.tar.gz
+cd django_bootstrap3_datetimepicker-2.2.3
+pip install .
+if [ $? -ne 0 ]
+then
+    exit -1
+fi
+cd ../../../../../..
+
+
+echo "********** Installing madrigal python library **********"
+cd source/madpy
+rm -f -r build
+pip install .
+if [ $? -ne 0 ]
+then
+    exit -1
+fi
+rm -f -r build
+
+cd ../..
+
+echo "********** Verifying this site is set to at least 3 in siteTab.txt **********"
+$MADROOT/bin/python source/madpy/scripts/bin/checkSiteIs3.py
+if [ $? -ne 0 ]
+then
+    exit -1
+fi
+
+
+# Install Experiments
+# -------------------
+echo "********** configureExperiments **********"
+./configureExperiments
+if [ $? -ne 0 ]
+then
+    exit -1
+fi
+
+# Update metadata
+# -------------------
+echo "********** Updating metadata tables **********"
+bin/updateMaster
+if [ $? -ne 0 ]
+then
+    exit -1
+fi
+echo "********** The following script will create all the summary and hdf5 files needed **********"
+bin/rebuildInstParmTab.py
+if [ $? -ne 0 ]
+then
+    exit -1
+fi
+
+if [ $convert = 1 ]
+then
+    bin/convertToMadrigal3.py --numCPU=2
+    if [ $? -ne 0 ]
+    then
+        exit -1
+    fi
+fi
+
+
+# Test the Libraries and Programs
+echo "********** Testing installation **********"
+# ------------------------------
+bin/testGeolib
+if [ $? -ne 0 ]
+then
+    exit -1
+fi
+echo "--diff testGeolib.out source/madf/geolib/testGeolib.out.rock"
+diff testGeolib.out source/madf/geolib/testGeolib.out.rock
+
+echo "running test on Madrigal web services..."
+bin/python source/madpy/madrigalWeb/madrigalWeb/examples/testMadrigalWebServices.py
+
+echo "checking whether the web server needs extra configuration"
+bin/python source/madpy/scripts/bin/testWebConfig.py
+
+
+# Install complete
+# ---------------------
+echo ""
+printf 'Elapsed time: %s\n' $(timer $tmr) 
+echo "Madrigal installation complete"
+

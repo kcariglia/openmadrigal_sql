@@ -1,0 +1,45 @@
+
+			// kinst
+	        //check the instrument location numbers
+	        
+	        //latitude
+	        var inst_lat_str = $.trim($('#id_inst_lat').val());
+			var inst_lat = Number(inst_lat_str);
+			if (isNaN(inst_lat) || inst_lat_str.length == 0)
+			{
+				alert('Instrument latitude is invalid number: ' + inst_lat_str);
+				return(false);
+			}
+			if (inst_lat < -90.0 || inst_lat > 90.0)
+			{
+				alert('Instrument latitude must be between -90 and 90, not: ' + inst_lat_str);
+				return(false);
+			}
+			
+			//longitude
+	        var inst_lon_str = $.trim($('#id_inst_lon').val());
+			var inst_lon = Number(inst_lon_str);
+			if (isNaN(inst_lon) || inst_lon_str.length == 0)
+			{
+				alert('Instrument longitude is invalid number: ' + inst_lon_str);
+				return(false);
+			}
+			if (inst_lon < -180.0 || inst_lon > 180.0)
+			{
+				alert('Instrument longitude must be between -180 and 180, not: ' + inst_lon_str);
+				return(false);
+			}
+			
+			//altitude
+	        var inst_alt_str = $.trim($('#id_inst_alt').val());
+			var inst_alt = Number(inst_alt_str);
+			if (isNaN(inst_alt) || inst_alt_str.length == 0)
+			{
+				alert('Instrument altitude is invalid number: ' + inst_alt_str);
+				return(false);
+			}
+			if (inst_alt < 0.0)
+			{
+				alert('Instrument altitude must not be less than 0, not: ' + inst_alt_str);
+				return(false);
+			}

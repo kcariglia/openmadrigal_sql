@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Base template for Looker Geomagnetic From Radar Form
+	
+	$Id: looker_geomagnetic_from_radar.html 5332 2015-09-25 19:45:35Z brideout $
+{% endcomment %}
+
+{% block title %}Madrigal looker{% endblock %}
+	
+{% block content %}
+<form method=get>
+{{ form.looker_options }}
+<div align=center>
+<h4>Convert Azimuth, Elevation, Range to Geomagnetic Coordinates</h4>
+</div>
+<p>Select an instrument location, either by selecting an existing instrument or by
+directly entering the latitude, longitude and altitude of the instrument. 
+Then specify the azimuth/elevation/range grid on which geodetic and geomagnetic coordinates will be calculated. 
+The epoch for which the IGRF geomagnetic coordinates will be calculated may also be specified. </p>
+        
+<table class="table table-condensed">
+	<tr>
+		<td>
+		    <table class="table table-condensed">
+			<caption>
+			Choose an existing instrument, or ...
+			</caption>
+			<tr><td>{{form.instruments}}</td></tr>
+			</table>
+		</td>
+		<td>
+			<table class="table table-condensed">
+			<caption>
+			... set your own instrument coordinates
+			</caption>
+			<tr>
+			<td>Latitude</td>
+			<td>
+				{{form.inst_lat}}
+			</td>
+			</tr>
+			<tr>
+			<td>Longitude (-180 - 180)</td>
+			<td>
+			    {{form.inst_lon}}
+			</td>
+			</tr>
+			<tr>
+			<td>Altitude (km)</td>
+			<td>
+			    {{form.inst_alt}}
+			</td>
+			</tr>
+			</table>
+	</tr>
+	
+	<tr>
+		<td>
+			<table class="table table-condensed">
+			<caption>
+			Set grid of radar azimuth, elevation, and range
+			</caption>
+			<tr>
+			<th align=center></th>
+			<th align=center>start</th>
+			<th align=center>end</th>
+			<th align=center>delta</th>
+			</tr>
+			<tr>
+			<td>Azimuth</td>
+			<td>
+			  {{form.start_az}}
+			</td>
+			<td>
+			  {{form.stop_az}}
+			</td>
+			<td>
+			  {{form.step_az}}
+			</td>
+			</tr>
+			<tr>
+			<td>Elevation</td>
+			<td>
+			  {{form.start_el}}
+			</td>
+			<td>
+			  {{form.stop_el}}
+			</td>
+			<td>
+			  {{form.step_el}}
+			</td>
+			</tr>
+			<tr>
+			<td>Range</td>
+			<td>
+			  {{form.start_range}}
+			</td>
+			<td>
+			  {{form.stop_range}}
+			</td>
+			<td>
+			  {{form.step_range}}
+			</td>
+			</tr>
+			</table>
+		</td>
+		<td style="vertical-align:middle" align="center">
+		    <table class="table table-condensed">
+		    <tr><td style="vertical-align:middle" align="center">Geomagnetic field epoch: {{form.year}}</td></tr>
+		    <tr><td>&nbsp;</td></tr>
+		    <tr><td style="vertical-align:middle" align="center"><button class="btn btn-primary" id="looker_geomagetic_radar_button" data-toggle="tooltip" data-original-title="Click this button to calculate azimuth, elevation, and range to a set of geomagntic points from the set instrument location." data-placement="top">Calculate</button></td></tr>
+		    </table>
+		</td>
+    </tr>
+
+</table>
+</form>
+
+	
+	<script>
+		$('#looker_geomagetic_radar_button').on('click', function (e) {
+		    if (!validateForm(this.form))
+		        return(false);
+			this.form.action = "{% url 'looker_output' %}";
+			this.form.submit();
+		})
+		
+		function validateForm(madForm)
+		{
+{% include "madweb/validate_kinst_location.html" %}
+{% include "madweb/validate_radar_grid.html" %}
+{% include "madweb/validate_year.html" %}
+
+			// passed all tests
+			return(true);
+		}
+	</script>
+{% endblock %}

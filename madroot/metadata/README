@@ -1,0 +1,4 @@
+The metadata contains data about the madrigal database. The data are in
+the form of a set of relational tables, in comma-delimite format, which
+can be imported into a relational database system.  They are also used
+to create the index tables used by the holdings interface to madrigal.

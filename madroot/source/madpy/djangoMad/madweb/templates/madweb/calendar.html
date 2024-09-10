@@ -1,0 +1,50 @@
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Template for calendar html in single experiment web interface
+	
+	$Id: calendar.html 5137 2015-06-25 04:17:18Z brideout $
+{% endcomment %}
+					<!-- the following javascript will be called when this html load is complete -->
+					<script type="text/javascript">
+					function createCalendar () {
+					    var is_global = 0;
+			            if ($("#id_isGlobal")[0].checked) {
+			            	is_global = 1;
+			            }
+			            var kinst = {{ instruments }};
+			            var year = {{ years }};
+			            var month = {{ months }};
+						theMonths = ["January","February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+						theDays = ["S", "M", "T", "W", "T", "F", "S"];
+						selMonths = [theMonths[{{ months }}-1]];
+						selMonthsNumbers = ["{{ months }}"];
+					    var calUrl = '{% url 'populate_calendar_experiment' %}' + '?isGlobal=' + is_global + '&instruments=' + kinst + '&years=' + year + '&months=' + month;
+					    
+						$('#calendar_div').calendar({
+					        months: theMonths,
+					        selectedMonths: selMonths,
+					        selectedMonthsNumbers: selMonthsNumbers,
+					        days: theDays,
+					        startDate: "12",
+					        startMonth: selMonthsNumbers[0],
+					        startYear: "{{ years }}",
+					        
+					        
+					        req_ajax: {
+					        	type: 'get',
+					        	url: calUrl
+					        }
+					    });
+					}
+					</script>
+					
+					<!-- label is its own row in selections column -->
+					<div class="row">
+						Date:
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<div id="calendar_div"></div>
+						</div> <!-- end span -->
+					</div> <!-- end row -->

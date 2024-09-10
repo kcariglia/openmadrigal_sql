@@ -1,0 +1,463 @@
+#!PYTHONEXE
+
+"""This script is the isprint application for Madrigal 3.0, that uses the new Hdf5 format
+
+$Id: isprint 7046 2019-10-07 19:57:14Z brideout $
+"""
+
+# standard python imports
+import sys
+import os
+
+# third party imports
+import numpy
+
+
+usageStr = """Usage: isprint file=<path to file>
+     output=<output file>. If not given, default is text file to stdout.  If given and extension is one of
+         <.hdf5, .h5, .hdf>, then will save as Hdf5 file.  If extension is .nc, will be saved as netCDF4. In
+         all other cases, will be saved as ascii text.  If hdf5 or netCDF4, arguments (header, summary, badval,
+         assumed, and knownbad) ignored if given.
+     date1=<mm/dd/yyyy - starting date to be examined - defaults to first day>
+     time1=<hh:mm:ss - starting UT time to be examined - defaults to 0>
+     date2=<mm/dd/yyyy - ending date to be examined - defaults to last day>
+     time2=<hh:mm:ss - ending UT time to be examined - defaults to 24>
+     (in the follow arguments, any value missing may be used to indicate no lower or upper limit)
+     z=<lower alt limit1>,<upper alt limit1>[or<lower alt limit2>,<upper alt limit2>...] (km)
+     az=<lower az limit1>,<upper az limit1>[or<lower az limit2>,<upper az limit2>...] (from -180 to 180)
+     el=<lower el limit1>,<upper el limit1>[or<lower el limit2>,<upper el limit2>...] (from 0 to 90)
+     plen=<lower pl limit1>,<upper pl limit1>[or<lower pl limit2>,<upper pl limit2>...] (pulse len in sec)
+     header=<t or f> (defaults to header=t, show headers)
+     summary=<t or f> (defaults to summary=t, show summary)
+     badval=<bad value string> (defaults to "NaN")
+     assumed=<assumed value string> (defaults to "-1")
+     knownbad=<known bad value string> (defaults to "-2")
+     filter=<[mnemonic] or [mnemonic1,[+-*/]mnemonic2]>,<lower limit1>,<upper limit1>[or<lower limit2>,<upper limit2>...]
+        (any number of filters may be added)
+    indSpatialParms=<comma separated list of parms>.  Used only if saving to an hdf5 or netCDF4 file.  If not given,
+        the default is to use the independent parms in the original file. Ignored if only 1D parms requested.
+     <list of mnemonics to display> (will be show in order listed, but duplicates are ignored)
+     ignoreEmptyFile=<t or f> If False, raise IOError when trying to create an Hdf5 or netCDF4
+        file with no records.  If True (the default), then simply create 0 byte file. Ignored
+        if output not hdf5 or netCDF4.
+
+Example:
+
+    isprint file=/opt/madrigal/experiments/1998/mlh/20jan98/mil980120g.003 date1=01/20/1998
+    time1=15:00:00 date2=01/20/1998 time2=16:00:00 z=200,300or500,600 badval=noData
+    filter=gdalt,-,sdwht,0, filter=ti,500,1000 uth gdalt gdlat glon ti te
+
+This example would show data from mil980120g.003 between 15 and 16 UT on 01/20/1998 where
+altitude is either between 200 and 300 km or between 500 and 600 km, and where gdalt-sdwht is
+greater than 0 (point is in sunlight), and where ti is between 500 and 1000.  "noData" would
+be printed if data was not available.
+
+See complete instructions at http://www.haystack.mit.edu/madrigal/isprint.html
+"""
+
+# catch any exception, and write an appropriate message
+try:
+
+    # check if pythonlibpath env variable exists
+    # written 'PYTHON' + 'LIBPATH' to stop automatic replacement during setup
+    temp = os.environ.get('PYTHON' + 'LIBPATH')
+    if temp != None:
+            sys.path.append(temp)
+            
+    # append path madroot/lib (needed only if python not installed by setup)
+    # what is this????sys.path.append('MADROOT/lib/python')
+
+    # prepare to handle MadrigalError
+    import madrigal.admin
+    
+except ImportError:
+    
+    # Fatal error - madpy library not found
+    print("Unable to import the madrigal python library - please alert the sys admin!")
+    sys.exit(0)
+
+
+import madrigal.metadata
+import madrigal.data
+import madrigal._derive
+import madrigal.derivation
+import madrigal.isprint
+
+# create MadrigalDB obj
+madDBObj = madrigal.metadata.MadrigalDB()
+
+# create MadrigalParm obj
+madParmObj = madrigal.data.MadrigalParameters(madDBObj)
+
+# create an empty filter
+filterList = []
+
+# inital values
+desiredParmList = []
+filename = ''
+header = True
+summary = 'summary'
+badvalStr = None
+assumedStr = None
+knownbadStr = None
+date1 = ''
+time1 = ''
+date2 = ''
+time2 = ''
+output = None
+format = 'text'
+indSpatialParms = None
+ignoreEmptyFile = True
+
+
+
+# parse arguments
+if len(sys.argv) == 1:
+    print(usageStr)
+    sys.exit(0)
+
+for arg in sys.argv[1:]:
+    
+    rangeList = []
+    
+    # check if its a parameter
+    if arg.find('=') == -1:
+        if madParmObj.getParmType(arg) == -1:
+            raise IOError("Illegal parameter: " + str(arg))
+        if madParmObj.getParmMnemonic(arg).lower() not in desiredParmList:
+            desiredParmList.append(madParmObj.getParmMnemonic(arg).lower())
+        continue
+
+    # check if its a file
+    if arg.find('file=') != -1:
+        filename = arg[arg.find('=')+1:]
+        continue
+    
+    # check if its output
+    if arg.find('output=') != -1:
+        output = arg[arg.find('=')+1:]
+        # see if its an Hdf5 or nbetCDF4 file
+        fileName, fileExtension = os.path.splitext(output)
+        if fileExtension.lower() in ('.hdf5', '.h5', '.hdf'):
+            format = 'hdf5'
+        elif fileExtension.lower() in ('.nc'):
+            format = 'netCDF4'
+        else:
+            format = 'text'
+        continue
+
+    # check for header
+    if arg[:7] == 'header=':
+        if arg[7] in ['f', 'F']:
+            header = False
+        elif arg[7] not in ['t', 'T']:
+            raise IOError("Bad argument for header, must be t or f")
+        continue
+
+    # check for summary
+    if arg[:8] == 'summary=':
+        if arg[8] in ['f', 'F']:
+            summary = 'plain'
+        elif arg[8] not in ['t', 'T']:
+            raise IOError("Bad argument for summary, must be t, or T or f or F")
+        continue
+            
+    # check for badval
+    if arg[:7] == 'badval=':
+        badvalStr = arg[7:]
+        continue
+
+    # check for assumed
+    if arg[:8] == 'assumed=':
+        assumedStr = arg[8:]
+        continue
+
+    # check for knownbad
+    if arg[:9] == 'knownbad=':
+        knownbadStr = arg[9:]
+        continue
+    
+    # check for summary
+    if arg[:8] == 'ignoreEmptyFile=':
+        if arg[8] in ['f', 'F']:
+            ignoreEmptyFile = False
+        elif arg[8] not in ['t', 'T']:
+            raise IOError("Bad argument for ignoreEmptyFile, must be t, or T or f or F")
+        continue
+    
+    # check if its date1
+    if arg[:6] == 'date1=':
+        date1 = arg[arg.find('=')+1:]
+        continue
+
+    # check if its time1
+    if arg[:6] == 'time1=':
+        time1 = arg[arg.find('=')+1:]
+        continue
+
+    # check if its date2
+    if arg[:6] == 'date2=':
+        date2 = arg[arg.find('=')+1:]
+        continue
+
+    # check if its time2
+    if arg[:6] == 'time2=':
+        time2 = arg[arg.find('=')+1:]
+        continue
+
+    # check if its z argument
+    if arg[:2] == 'z=':
+        argStr = arg[arg.find('=')+1:]
+        # get number of ranges
+        zRangeList = argStr.split('or')
+        for zRange in zRangeList:
+            limList = zRange.split(',')
+            if len(limList) != 2:
+                raise IOError("Illegal range in z filter")
+            lower, upper = numpy.nan, numpy.nan
+            if len(limList[0]):
+                lower = float(limList[0])
+            if len(limList[1]):
+                upper = float(limList[1])
+            rangeList.append((lower,upper))
+
+        #append filter
+        filterList.append(madrigal.derivation.MadrigalFilter('gdalt', rangeList, madParmObj))
+        
+        continue
+        
+    # check if its az argument
+    if arg[:3] == 'az=':
+        argStr = arg[arg.find('=')+1:]
+        # get number of ranges
+        azList = argStr.split('or')
+        for az in azList:
+            limList = az.split(',')
+            if len(limList) != 2:
+                raise IOError("Illegal range in az filter")
+            lower, upper = numpy.nan, numpy.nan
+            if len(limList[0]):
+                lower = float(limList[0])
+            if len(limList[1]):
+                upper = float(limList[1])
+            rangeList.append((lower,upper))
+            # check for valid az
+            for az in (lower, upper):
+                if not numpy.isnan(az):
+                    if az < -180.0 or az > 180.0:
+                        raise IOError("Illegal az %f - must be -180 to 180: " % (az))
+
+        #append filter
+        filterList.append(madrigal.derivation.MadrigalFilter('azm', rangeList, madParmObj))
+        continue
+
+
+    # check if its el argument
+    if arg[:3] == 'el=':
+        argStr = arg[arg.find('=')+1:]
+        # get number of ranges
+        elList = argStr.split('or')
+        for el in elList:
+            limList = el.split(',')
+            if len(limList) != 2:
+                raise IOError("Illegal range in el filter")
+            lower, upper = numpy.nan, numpy.nan
+            if len(limList[0]):
+                lower = float(limList[0])
+            if len(limList[1]):
+                upper = float(limList[1])
+            rangeList.append((lower,upper))
+            # check for valid el
+            for el in (lower, upper):
+                if not numpy.isnan(el):
+                    if el < -90.0 or el > 90.0:
+                        raise IOError("Illegal el %f - must be -90 to 90: " % (az))
+
+        #append filter
+        filterList.append(madrigal.derivation.MadrigalFilter('elm', rangeList, madParmObj))
+        continue
+
+    # check if its plen argument
+    if arg[:5] == 'plen=':
+        argStr = arg[arg.find('=')+1:]
+        # get number of ranges
+        plList = argStr.split('or')
+        for pl in plList:
+            limList = pl.split(',')
+            if len(limList) != 2:
+                raise IOError("Illegal range in pulse length filter")
+            lower, upper = numpy.nan, numpy.nan
+            if len(limList[0]):
+                lower = float(limList[0])
+            if len(limList[1]):
+                upper = float(limList[1])
+            rangeList.append((lower,upper))
+
+        #append filter
+        filterList.append(madrigal.derivation.MadrigalFilter('pl', rangeList, madParmObj))
+        continue
+    
+    if arg[:16] == 'indSpatialParms=':
+        indSpatialParms = []
+        indSpatialParmsStr = arg[arg.find('=')+1:]
+        parmList = indSpatialParmsStr.split(',')
+        for parm in parmList:
+            if madParmObj.getParmType(parm) == -1:
+                raise IOError("Illegal indSpatialParm: " + str(parm))
+        indSpatialParms.append(madParmObj.getParmMnemonic(parm))
+        if indSpatialParms[-1] not in desiredParmList:
+            desiredParmList.append(indSpatialParms[-1])
+
+    # finally, check if its a filter argument
+    if arg[:7] == 'filter=':
+        argStr = arg[arg.find('=')+1:]
+        #get mnemonic string
+        itemList = argStr.split(',')
+        if itemList[1] in ['+','-','*','/']:
+            # two mnemonics used
+            twoMnem = 1
+            mnem1 = itemList[0]
+            operator = itemList[1]
+            mnem2 = itemList[2]
+            # check that both are valid
+            if madParmObj.getParmType(mnem1) == -1:
+                raise IOError("Illegal parameter: " + str(mnem1))
+            if madParmObj.getParmType(mnem2) == -1:
+                raise IOError("Illegal parameter: " + str(mnem2))
+        else:
+            # one menmonic
+            twoMnem = 0
+            mnem1 = itemList[0]
+            operator = None
+            mnem2 = None
+            # check mnem1 is valid
+            if madParmObj.getParmType(mnem1) == -1:
+                raise IOError("Illegal parameter: " + str(mnem1))
+
+        
+        # get ranges
+        delimiter = ','
+        rangeStr = delimiter.join(itemList[1 + 2*twoMnem:])
+        rangeStrList = rangeStr.split('or')
+        rangeList = []
+        for thisRange in rangeStrList:
+            limList = thisRange.split(',')
+            if len(limList) != 2:
+                raise IOError("Illegal range in filter")
+            lower, upper = numpy.nan, numpy.nan
+            if len(limList[0]):
+                lower = float(limList[0])
+            if len(limList[1]):
+                upper = float(limList[1])
+            rangeList.append((lower,upper))
+
+        #append filter
+        filterList.append(madrigal.derivation.MadrigalFilter(mnem1, rangeList, madParmObj, mnem2, operator))
+        continue
+
+    # unknown argument
+    print('Argument %s is unknown - see usage' % arg)
+    print()
+    print(usageStr)
+    sys.exit(0)
+    
+
+# command line fully parsed - finally set up the time filter based on
+# date, time args if needed
+
+if len(date1) or len(time1) or len(date2) or len(time2):
+    # if time1 is given but not date1, set up a UTH filter
+    if len(time1) and len(date1)==0:
+        time1List = time1.split(':')
+        if len(time1List) != 3:
+            raise IOError("Illegal value for time1: " + time1)
+        beg_uth = float(time1List[0])
+        beg_uth += float(time1List[1])/60.0
+        beg_uth += float(time1List[2])/3600.0
+        rangeList = [(beg_uth,numpy.nan)]
+        filterList.append(madrigal.derivation.MadrigalFilter('uth', rangeList, madParmObj))
+
+    # if time2 is given but not date1 or date2, set up a UTH filter
+    if len(time2) and len(date1)==0 and len(date2)==0:
+        time2List = time2.split(':')
+        if len(time2List) != 3:
+            raise IOError("Illegal value for time2: " + time2)
+        end_uth = float(time2List[0])
+        end_uth += float(time2List[1])/60.0
+        end_uth += float(time2List[2])/3600.0
+        rangeList = [(numpy.nan, end_uth)]
+        filterList.append(madrigal.derivation.MadrigalFilter('uth', rangeList, madParmObj))
+
+    # set up UT1 filter if both date and times given
+    beg_ut1 = numpy.nan
+    end_ut1 = numpy.nan
+    
+    if (date1):
+        if time1 == '':
+            time1 = '00:00:00'
+        time1List = time1.split(':')
+        if len(time1List) != 3:
+            raise IOError("Illegal value for time1: " + time1)
+        date1List = date1.split('/')
+        if len(date1List) != 3:
+            raise IOError("Illegal value for date1: " + date1)
+        beg_ut1 = madrigal._derive.getUtFromDate(int(date1List[2]),
+                                                 int(date1List[0]),
+                                                 int(date1List[1]),
+                                                 int(time1List[0]),
+                                                 int(time1List[1]),
+                                                 int(time1List[2]),
+                                                 0)
+
+        # now check for the case that time2 given, but not date2
+        # in which case time2 referes to date1
+        if len(time2) and len(date2)==0:
+            end_ut1 = madrigal._derive.getUtFromDate(int(date1List[2]),
+                                                     int(date1List[0]),
+                                                     int(date1List[1]),
+                                                     0,
+                                                     0,
+                                                     0,
+                                                     0)
+            time2List = time2.split(':')
+            if len(time2List) != 3:
+                raise IOError("Illegal value for time2: " + time2)
+            end_ut1 += float(time2List[0]) * 3600.0
+            end_ut1 += float(time2List[1]) * 60.0
+            end_ut1 += float(time2List[2])
+            
+
+    if len(date2):
+        if time2 == '':
+            time2 = '00:00:00'
+        time2List = time2.split(':')
+        if len(time2List) != 3:
+            raise IOError("Illegal value for time2: " + time2)
+        date2List = date2.split('/')
+        if len(date2List) != 3:
+            raise IOError("Illegal value for date2: " + date2)
+        end_ut1 = madrigal._derive.getUtFromDate(int(date2List[2]),
+                                                 int(date2List[0]),
+                                                 int(date2List[1]),
+                                                 int(time2List[0]),
+                                                 int(time2List[1]),
+                                                 int(time2List[2]),
+                                                 0)
+
+    # append ut1 filter if needed
+    if not numpy.isnan(beg_ut1) or not numpy.isnan(end_ut1):
+        rangeList = [(beg_ut1, end_ut1)]
+        filterList.append(madrigal.derivation.MadrigalFilter('ut1', rangeList, madParmObj))
+
+# check that filename was given
+if len(filename) == 0:
+    raise IOError('Required argument file missing')
+
+
+madrigal.isprint.Isprint(filename, output, desiredParmList, filterList, indSpatialParms,
+                 summary, header, 
+                 badvalStr, assumedStr, knownbadStr, ignoreEmptyFile=ignoreEmptyFile)
+
+# end script
+
+

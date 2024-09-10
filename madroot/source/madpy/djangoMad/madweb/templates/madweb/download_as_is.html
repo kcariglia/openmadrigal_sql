@@ -1,0 +1,90 @@
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Template for download as is in single experiment web interface
+	
+	$Id: download_as_is.html 5069 2015-06-03 15:38:36Z brideout $
+{% endcomment %}
+                    <!-- show is its own row in main column -->
+					<div class="row">
+					{{ form.format_select }}
+					</div> <!-- end row -->
+					<div class="row">
+					<button type="button" id="download_file_as_is" class="btn btn-default" onclick="downloadFile()">Download {{ form.format_select.field.choices.0.0|safe }}</button>
+					</div> <!-- end row -->
+					
+					<script>
+					function changeFormat (select) {
+						$("#download_file_as_is").text("Download " + select.value);
+					}
+					
+					function downloadFile () {
+						var user_fullname = "{{ user_fullname }}";
+						var user_email = "{{ user_email }}";
+						var user_affiliation = "{{ user_affiliation }}";
+						var exp_id = "{{ exp_id }}";
+						var basename = $('input[name=format_select]:checked').val()
+						var url = '{% url 'download_file_as_is' %}' + '?user_fullname=' + user_fullname + '&user_email=' + user_email + '&user_affiliation=' + user_affiliation + '&exp_id=' + exp_id + '&basename=' + basename;
+						$('#download_started').modal('show');
+				 
+				        $.fileDownload(url, {
+				            successCallback: function(url) {
+				 
+				                $('#download_started').modal('hide');
+				                $('#download_success').modal('show');
+				                setTimeout(function(){$('#download_success').modal('hide');},3000);
+				            },
+				            failCallback: function(responseHtml, url) {
+				 
+				                $('#download_started').modal('hide');
+				                $('#download_failure').modal('show');
+				            }
+				        });
+					}
+					</script>
+					
+					<!-- modal dialogs to support download status -->
+					
+					<div class="modal fade" id="download_started">
+					  <div class="modal-dialog">
+					    <div class="modal-content">
+					      <div class="modal-header">
+					        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					        <h4 class="modal-title">File download status</h4>
+					      </div>
+					      <div class="modal-body">
+					        <p>In process&hellip;</p>
+					      </div>
+					    </div><!-- /.modal-content -->
+					  </div><!-- /.modal-dialog -->
+					</div><!-- /.modal -->
+					
+					<div class="modal fade" id="download_success">
+					  <div class="modal-dialog">
+					    <div class="modal-content">
+					      <div class="modal-header">
+					        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					        <h4 class="modal-title">File download status</h4>
+					      </div>
+					      <div class="modal-body">
+					        <p>Success&hellip;</p>
+					      </div>
+					    </div><!-- /.modal-content -->
+					  </div><!-- /.modal-dialog -->
+					</div><!-- /.modal -->
+					
+					<div class="modal fade" id="download_failure">
+					  <div class="modal-dialog">
+					    <div class="modal-content">
+					      <div class="modal-header">
+					        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					        <h4 class="modal-title">File download status</h4>
+					      </div>
+					      <div class="modal-body">
+					        <p>Failure&hellip;</p>
+					      </div>
+					    </div><!-- /.modal-content -->
+					  </div><!-- /.modal-dialog -->
+					</div><!-- /.modal -->
+					
+					

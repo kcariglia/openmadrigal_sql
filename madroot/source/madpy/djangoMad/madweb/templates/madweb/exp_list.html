@@ -1,0 +1,17 @@
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Template for multiple exp select in single experiment web interface
+	
+	$Id: exp_list.html 4789 2015-02-12 15:07:25Z brideout $
+{% endcomment %}
+					<!-- label is its own row in main column -->
+					<div class="row">
+						{{ form.experiment_list.label }}
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<!-- experiment_list select is its own row in main column -->
+							{{ form.experiment_list }}
+						</div> <!-- end span -->
+					</div> <!-- end row -->

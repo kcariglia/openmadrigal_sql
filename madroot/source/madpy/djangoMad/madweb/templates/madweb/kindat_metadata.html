@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Base template for Madrigal kindat metadata page
+	
+	$Id: kindat_metadata.html 5328 2015-09-25 19:02:21Z brideout $
+{% endcomment %}
+
+{% block title %}Madrigal site metadata{% endblock %}
+
+{% block content %}
+	<center><h4>List of Madrigal kind of data file types</h4></center>
+	
+	<table class="table table-condensed">
+		<thead>
+		    <tr>
+		    	<th>Kind of data file code (kindat)</th>
+		        <th>Description</th>
+		        <th>Associated instrument code</th>
+		        <th>Associated instrument</th>
+		    </tr>
+		</thead>
+		<tbody>
+		{% for kindat in kindatList %}
+		    {% if forloop.counter|divisibleby:2 %}
+		    <tr class="active">
+		    {% else %}
+		    <tr class="success">
+		    {% endif %}
+		        <td>{{ kindat.0 }}</td>
+		        <td>{{ kindat.1 }}</td>
+		        <td>{{ kindat.2 }}</td>
+		        <td>{{ kindat.3 }}</td>
+		    </tr>
+		{% endfor %}
+		</tbody>
+	</table>
+{% endblock %}

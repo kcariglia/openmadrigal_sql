@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Base template for Madrigal list experiment web interface
+	
+	$Id: list.html 5315 2015-09-25 16:52:18Z brideout $
+{% endcomment %}
+
+{% block title %}List Madrigal experiments{% endblock %}
+
+{% block extra_head %}
+    {% include "madweb/list_script.html" %}
+{% endblock %}
+  
+{% block content %}
+	<center><h4>List Madrigal experiments</h4></center>
+	
+	<div class="row">
+	<form name="id_list">
+		
+		<div class="col-sm-6">
+			<div class="col-md-12" id="isGlobal">
+				{{ form.isGlobal.label }} {{ form.isGlobal }}
+				<p></p>
+			</div> <!-- end subdivide -->
+			<div class="col-md-12" id="categories">
+				{{ form.categories.label }}<br>
+				{{ form.categories }}
+				<p></p>
+			</div> <!-- end subdivide -->
+			<div class="col-md-12" id="instruments">
+				{{ form.instruments.label }}&nbsp;&nbsp;<i>(Year range shows data available):</i><br>
+				{{ form.instruments }}
+			</div> <!-- end subdivide -->
+		</div>
+		
+		<div class="col-sm-6">
+		    <div class="col-md-12" id="showDefault">
+				{{ form.showDefault.label }} {{ form.showDefault }}
+				<p></p>
+			</div> <!-- end subdivide -->
+			<div class="col-md-12" id="start_date">
+				{{ form.start_date.label }}<br>
+				{{ form.start_date }}
+			    <p></p>
+			</div> <!-- end subdivide -->
+			<div class="col-md-12" id="end_date">
+				{{ form.end_date.label }}<br>
+				{{ form.end_date }}
+			    <p></p>
+			</div> <!-- end subdivide -->
+		
+		</div>
+		
+
+	</div>
+	
+	<div> <!-- button div -->
+	<p></p>
+    <center>
+        <button class="btn btn-primary" id="list_button" data-toggle="tooltip" data-original-title="Click this button to list selected experiments." data-placement="bottom" onclick="listExperiments(this.form)">List experiments</button>
+    </center>
+	</div>
+	
+	</form>
+{% endblock %}

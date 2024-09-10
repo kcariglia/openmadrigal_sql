@@ -1,0 +1,4945 @@
+{% load static %}
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300' rel='stylesheet' type='text/css'>
+  
+  <style type="text/css">
+  
+* {
+  box-sizing: border-box;
+}
+/*! normalize.css v1.1.1 | MIT License | git.io/normalize */
+
+/* ==========================================================================
+   HTML5 display definitions
+   ========================================================================== */
+
+/**
+ * Correct `block` display not defined in IE 6/7/8/9 and Firefox 3.
+ */
+
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+main,
+nav,
+section,
+summary {
+    display: block;
+}
+
+/**
+ * Correct `inline-block` display not defined in IE 6/7/8/9 and Firefox 3.
+ */
+
+audio,
+canvas,
+video {
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+}
+
+/**
+ * Prevent modern browsers from displaying `audio` without controls.
+ * Remove excess height in iOS 5 devices.
+ */
+
+audio:not([controls]) {
+    display: none;
+    height: 0;
+}
+
+/**
+ * Address styling not present in IE 7/8/9, Firefox 3, and Safari 4.
+ * Known issue: no IE 6 support.
+ */
+
+[hidden] {
+    display: none;
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+/**
+ * 1. Prevent system color scheme's background color being used in Firefox, IE,
+ *    and Opera.
+ * 2. Prevent system color scheme's text color being used in Firefox, IE, and
+ *    Opera.
+ * 3. Correct text resizing oddly in IE 6/7 when body `font-size` is set using
+ *    `em` units.
+ * 4. Prevent iOS text size adjust after orientation change, without disabling
+ *    user zoom.
+ */
+
+html {
+    background: #fff; /* 1 */
+    color: #000; /* 2 */
+    font-size: 100%; /* 3 */
+    -webkit-text-size-adjust: 100%; /* 4 */
+    -ms-text-size-adjust: 100%; /* 4 */
+}
+
+/**
+ * Address `font-family` inconsistency between `textarea` and other form
+ * elements.
+ */
+
+html,
+button,
+input,
+select,
+textarea {
+    font-family: sans-serif;
+}
+
+/**
+ * Address margins handled incorrectly in IE 6/7.
+ */
+
+body {
+    margin: 0;
+}
+
+/* ==========================================================================
+   Links
+   ========================================================================== */
+
+/**
+ * Address `outline` inconsistency between Chrome and other browsers.
+ */
+
+a:focus {
+    outline: thin dotted;
+}
+
+/**
+ * Improve readability when focused and also mouse hovered in all browsers.
+ */
+
+a:active,
+a:hover {
+    outline: 0;
+}
+
+/* ==========================================================================
+   Typography
+   ========================================================================== */
+
+/**
+ * Address font sizes and margins set differently in IE 6/7.
+ * Address font sizes within `section` and `article` in Firefox 4+, Safari 5,
+ * and Chrome.
+ */
+
+h1 {
+    font-size: 2em;
+    margin: 0.67em 0;
+}
+
+h2 {
+    font-size: 1.5em;
+    margin: 0.83em 0;
+}
+
+h3 {
+    font-size: 1.17em;
+    margin: 1em 0;
+}
+
+h4 {
+    font-size: 1em;
+    margin: 1.33em 0;
+}
+
+h5 {
+    font-size: 0.83em;
+    margin: 1.67em 0;
+}
+
+h6 {
+    font-size: 0.67em;
+    margin: 2.33em 0;
+}
+
+/**
+ * Address styling not present in IE 7/8/9, Safari 5, and Chrome.
+ */
+
+abbr[title] {
+    border-bottom: 1px dotted;
+}
+
+/**
+ * Address style set to `bolder` in Firefox 3+, Safari 4/5, and Chrome.
+ */
+
+b,
+strong {
+    font-weight: bold;
+}
+
+blockquote {
+    margin: 1em 40px;
+}
+
+/**
+ * Address styling not present in Safari 5 and Chrome.
+ */
+
+dfn {
+    font-style: italic;
+}
+
+/**
+ * Address differences between Firefox and other browsers.
+ * Known issue: no IE 6/7 normalization.
+ */
+
+hr {
+    -moz-box-sizing: content-box;
+    box-sizing: content-box;
+    height: 0;
+}
+
+/**
+ * Address styling not present in IE 6/7/8/9.
+ */
+
+mark {
+    background: #ff0;
+    color: #000;
+}
+
+/**
+ * Address margins set differently in IE 6/7.
+ */
+
+p,
+pre {
+    margin: 1em 0;
+}
+
+/**
+ * Correct font family set oddly in IE 6, Safari 4/5, and Chrome.
+ */
+
+code,
+kbd,
+pre,
+samp {
+    font-family: monospace, serif;
+    _font-family: 'courier new', monospace;
+    font-size: 1em;
+}
+
+/**
+ * Improve readability of pre-formatted text in all browsers.
+ */
+
+pre {
+    white-space: pre;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/**
+ * Address CSS quotes not supported in IE 6/7.
+ */
+
+q {
+    quotes: none;
+}
+
+/**
+ * Address `quotes` property not supported in Safari 4.
+ */
+
+q:before,
+q:after {
+    content: '';
+    content: none;
+}
+
+/**
+ * Address inconsistent and variable font size in all browsers.
+ */
+
+small {
+    font-size: 80%;
+}
+
+/**
+ * Prevent `sub` and `sup` affecting `line-height` in all browsers.
+ */
+
+sub,
+sup {
+    font-size: 75%;
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline;
+}
+
+sup {
+    top: -0.5em;
+}
+
+sub {
+    bottom: -0.25em;
+}
+
+/* ==========================================================================
+   Lists
+   ========================================================================== */
+
+/**
+ * Address margins set differently in IE 6/7.
+ */
+
+dl,
+menu,
+ol,
+ul {
+    margin: 1em 0;
+}
+
+dd {
+    margin: 0 0 0 40px;
+}
+
+/**
+ * Address paddings set differently in IE 6/7.
+ */
+
+menu,
+ol,
+ul {
+    padding: 0 0 0 40px;
+}
+
+/**
+ * Correct list images handled incorrectly in IE 7.
+ */
+
+nav ul,
+nav ol {
+    list-style: none;
+    list-style-image: none;
+}
+
+/* ==========================================================================
+   Embedded content
+   ========================================================================== */
+
+/**
+ * 1. Remove border when inside `a` element in IE 6/7/8/9 and Firefox 3.
+ * 2. Improve image quality when scaled in IE 7.
+ */
+
+img {
+    border: 0; /* 1 */
+    -ms-interpolation-mode: bicubic; /* 2 */
+}
+
+/**
+ * Correct overflow displayed oddly in IE 9.
+ */
+
+svg:not(:root) {
+    overflow: hidden;
+}
+
+/* ==========================================================================
+   Figures
+   ========================================================================== */
+
+/**
+ * Address margin not present in IE 6/7/8/9, Safari 5, and Opera 11.
+ */
+
+figure {
+    margin: 0;
+}
+
+/* ==========================================================================
+   Forms
+   ========================================================================== */
+
+/**
+ * Correct margin displayed oddly in IE 6/7.
+ */
+
+form {
+    margin: 0;
+}
+
+/**
+ * Define consistent border, margin, and padding.
+ */
+
+fieldset {
+    border: 1px solid #c0c0c0;
+    margin: 0 2px;
+    padding: 0.35em 0.625em 0.75em;
+}
+
+/**
+ * 1. Correct color not being inherited in IE 6/7/8/9.
+ * 2. Correct text not wrapping in Firefox 3.
+ * 3. Correct alignment displayed oddly in IE 6/7.
+ */
+
+legend {
+    border: 0; /* 1 */
+    padding: 0;
+    white-space: normal; /* 2 */
+    *margin-left: -7px; /* 3 */
+}
+
+/**
+ * 1. Correct font size not being inherited in all browsers.
+ * 2. Address margins set differently in IE 6/7, Firefox 3+, Safari 5,
+ *    and Chrome.
+ * 3. Improve appearance and consistency in all browsers.
+ */
+
+button,
+input,
+select,
+textarea {
+    font-size: 100%; /* 1 */
+    margin: 0; /* 2 */
+    vertical-align: baseline; /* 3 */
+    *vertical-align: middle; /* 3 */
+}
+
+/**
+ * Address Firefox 3+ setting `line-height` on `input` using `!important` in
+ * the UA stylesheet.
+ */
+
+button,
+input {
+    line-height: normal;
+}
+
+/**
+ * Address inconsistent `text-transform` inheritance for `button` and `select`.
+ * All other form control elements do not inherit `text-transform` values.
+ * Correct `button` style inheritance in Chrome, Safari 5+, and IE 6+.
+ * Correct `select` style inheritance in Firefox 4+ and Opera.
+ */
+
+button,
+select {
+    text-transform: none;
+}
+
+/**
+ * 1. Avoid the WebKit bug in Android 4.0.* where (2) destroys native `audio`
+ *    and `video` controls.
+ * 2. Correct inability to style clickable `input` types in iOS.
+ * 3. Improve usability and consistency of cursor style between image-type
+ *    `input` and others.
+ * 4. Remove inner spacing in IE 7 without affecting normal text inputs.
+ *    Known issue: inner spacing remains in IE 6.
+ */
+
+button,
+html input[type="button"], /* 1 */
+input[type="reset"],
+input[type="submit"] {
+    -webkit-appearance: button; /* 2 */
+    cursor: pointer; /* 3 */
+    *overflow: visible;  /* 4 */
+}
+
+/**
+ * Re-set default cursor for disabled elements.
+ */
+
+button[disabled],
+html input[disabled] {
+    cursor: default;
+}
+
+/**
+ * 1. Address box sizing set to content-box in IE 8/9.
+ * 2. Remove excess padding in IE 8/9.
+ * 3. Remove excess padding in IE 7.
+ *    Known issue: excess padding remains in IE 6.
+ */
+
+input[type="checkbox"],
+input[type="radio"] {
+    box-sizing: border-box; /* 1 */
+    padding: 0; /* 2 */
+    *height: 13px; /* 3 */
+    *width: 13px; /* 3 */
+}
+
+/**
+ * 1. Address `appearance` set to `searchfield` in Safari 5 and Chrome.
+ * 2. Address `box-sizing` set to `border-box` in Safari 5 and Chrome
+ *    (include `-moz` to future-proof).
+ */
+
+input[type="search"] {
+    -webkit-appearance: textfield; /* 1 */
+    -moz-box-sizing: content-box;
+    -webkit-box-sizing: content-box; /* 2 */
+    box-sizing: content-box;
+}
+
+/**
+ * Remove inner padding and search cancel button in Safari 5 and Chrome
+ * on OS X.
+ */
+
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration {
+    -webkit-appearance: none;
+}
+
+/**
+ * Remove inner padding and border in Firefox 3+.
+ */
+
+button::-moz-focus-inner,
+input::-moz-focus-inner {
+    border: 0;
+    padding: 0;
+}
+
+/**
+ * 1. Remove default vertical scrollbar in IE 6/7/8/9.
+ * 2. Improve readability and alignment in all browsers.
+ */
+
+textarea {
+    overflow: auto; /* 1 */
+    vertical-align: top; /* 2 */
+}
+
+/* ==========================================================================
+   Tables
+   ========================================================================== */
+
+/**
+ * Remove most spacing between table cells.
+ */
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+  </style>
+
+  <style type="text/css">
+  
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+  }
+  body {
+    background: #fff;
+    font-family: "Source Sans Pro", "Helvetica Neueue", Helvetica, sans;
+    font-weight: 300;
+    font-size: 16px;
+    line-height: 1.6em;
+  }
+  #content {
+    width: 70%;
+    max-width: 850px;
+    float: left;
+    padding: 30px 60px;
+    border-left: 1px solid #ddd;
+  }
+  #sidebar {
+    width: 25%;
+    float: left;
+    padding: 30px;
+    overflow: hidden;
+  }
+  #nav {
+    font-size: 130%;
+    margin: 0 0 15px 0;
+  }
+
+  #top {
+    display: block;
+    position: fixed;
+    bottom: 5px;
+    left: 5px;
+    font-size: .85em;
+    text-transform: uppercase;
+  }
+
+  #footer {
+    font-size: .75em;
+    padding: 5px 30px;
+    border-top: 1px solid #ddd;
+    text-align: right;
+  }
+    #footer p {
+      margin: 0 0 0 30px;
+      display: inline-block;
+    }
+
+  h1, h2, h3, h4, h5 {
+    font-weight: 300;
+  }
+  h1 {
+    font-size: 2.5em;
+    line-height: 1.1em;
+    margin: 0 0 .50em 0;
+  }
+
+  h2 {
+    font-size: 1.75em;
+    margin: 1em 0 .50em 0;
+  }
+
+  h3 {
+    margin: 25px 0 10px 0;
+  }
+
+  h4 {
+    margin: 0;
+    font-size: 105%;
+  }
+
+  a {
+    color: #058;
+    text-decoration: none;
+    transition: color .3s ease-in-out;
+  }
+
+  a:hover {
+    color: #e08524;
+    transition: color .3s ease-in-out;
+  }
+
+  pre, code, .mono, .name {
+    font-family: "Ubuntu Mono", "Cousine", "DejaVu Sans Mono", monospace;
+  }
+
+  .title .name {
+    font-weight: bold;
+  }
+  .section-title {
+    margin-top: 2em;
+  }
+  .ident {
+    color: #900;
+  }
+
+  code {
+    background: #f9f9f9;
+  } 
+
+  pre {
+    background: #fefefe;
+    border: 1px solid #ddd;
+    box-shadow: 2px 2px 0 #f3f3f3;
+    margin: 0 30px;
+    padding: 15px 30px;
+  }
+
+  .codehilite {
+    margin: 0 30px 10px 30px;
+  }
+
+    .codehilite pre {
+      margin: 0;
+    }
+    .codehilite .err { background: #ff3300; color: #fff !important; } 
+
+  table#module-list {
+    font-size: 110%;
+  }
+
+    table#module-list tr td:first-child {
+      padding-right: 10px;
+      white-space: nowrap;
+    }
+
+    table#module-list td {
+      vertical-align: top;
+      padding-bottom: 8px;
+    }
+
+      table#module-list td p {
+        margin: 0 0 7px 0;
+      }
+
+  .def {
+    display: table;
+  }
+
+    .def p {
+      display: table-cell;
+      vertical-align: top;
+      text-align: left;
+    }
+
+    .def p:first-child {
+      white-space: nowrap;
+    }
+
+    .def p:last-child {
+      width: 100%;
+    }
+
+
+  #index {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+    ul#index .class_name {
+      /* font-size: 110%; */
+      font-weight: bold;
+    }
+    #index ul {
+      margin: 0;
+    }
+
+  .item {
+    margin: 0 0 15px 0;
+  }
+
+    .item .class {
+      margin: 0 0 25px 30px;
+    }
+
+      .item .class ul.class_list {
+        margin: 0 0 20px 0;
+      }
+
+    .item .name {
+      background: #fafafa;
+      margin: 0;
+      font-weight: bold;
+      padding: 5px 10px;
+      border-radius: 3px;
+      display: inline-block;
+      min-width: 40%;
+    }
+      .item .name:hover {
+        background: #f6f6f6;
+      }
+
+    .item .empty_desc {
+      margin: 0 0 5px 0;
+      padding: 0;
+    }
+
+    .item .inheritance {
+      margin: 3px 0 0 30px;
+    }
+
+    .item .inherited {
+      color: #666;
+    }
+
+    .item .desc {
+      padding: 0 8px;
+      margin: 0;
+    }
+
+      .item .desc p {
+        margin: 0 0 10px 0;
+      }
+
+    .source_cont {
+      margin: 0;
+      padding: 0;
+    }
+
+    .source_link a {
+      background: #ffc300;
+      font-weight: 400;
+      font-size: .75em;
+      text-transform: uppercase;
+      color: #fff;
+      text-shadow: 1px 1px 0 #f4b700;
+      
+      padding: 3px 8px;
+      border-radius: 2px;
+      transition: background .3s ease-in-out;
+    }
+      .source_link a:hover {
+        background: #FF7200;
+        text-shadow: none;
+        transition: background .3s ease-in-out;
+      }
+
+    .source {
+      display: none;
+      max-height: 600px;
+      overflow-y: scroll;
+      margin-bottom: 15px;
+    }
+
+      .source .codehilite {
+        margin: 0;
+      }
+
+  .desc h1, .desc h2, .desc h3 {
+    font-size: 100% !important;
+  }
+  .clear {
+    clear: both;
+  }
+
+  @media all and (max-width: 950px) {
+    #sidebar {
+      width: 35%;
+    }
+    #content {
+      width: 65%;
+    }
+  }
+  @media all and (max-width: 650px) {
+    #top {
+      display: none;
+    }
+    #sidebar {
+      float: none;
+      width: auto;
+    }
+    #content {
+      float: none;
+      width: auto;
+      padding: 30px;
+    }
+
+    #index ul {
+      padding: 0;
+      margin-bottom: 15px;
+    }
+    #index ul li {
+      display: inline-block;
+      margin-right: 30px;
+    }
+    #footer {
+      text-align: left;
+    }
+    #footer p {
+      display: block;
+      margin: inherit;
+    }
+  }
+
+  /*****************************/
+
+  </style>
+
+  <style type="text/css">
+  .codehilite .hll { background-color: #ffffcc }
+.codehilite  { background: #f8f8f8; }
+.codehilite .c { color: #408080; font-style: italic } /* Comment */
+.codehilite .err { border: 1px solid #FF0000 } /* Error */
+.codehilite .k { color: #008000; font-weight: bold } /* Keyword */
+.codehilite .o { color: #666666 } /* Operator */
+.codehilite .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.codehilite .cp { color: #BC7A00 } /* Comment.Preproc */
+.codehilite .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.codehilite .cs { color: #408080; font-style: italic } /* Comment.Special */
+.codehilite .gd { color: #A00000 } /* Generic.Deleted */
+.codehilite .ge { font-style: italic } /* Generic.Emph */
+.codehilite .gr { color: #FF0000 } /* Generic.Error */
+.codehilite .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.codehilite .gi { color: #00A000 } /* Generic.Inserted */
+.codehilite .go { color: #888888 } /* Generic.Output */
+.codehilite .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.codehilite .gs { font-weight: bold } /* Generic.Strong */
+.codehilite .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.codehilite .gt { color: #0044DD } /* Generic.Traceback */
+.codehilite .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.codehilite .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.codehilite .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.codehilite .kp { color: #008000 } /* Keyword.Pseudo */
+.codehilite .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.codehilite .kt { color: #B00040 } /* Keyword.Type */
+.codehilite .m { color: #666666 } /* Literal.Number */
+.codehilite .s { color: #BA2121 } /* Literal.String */
+.codehilite .na { color: #7D9029 } /* Name.Attribute */
+.codehilite .nb { color: #008000 } /* Name.Builtin */
+.codehilite .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.codehilite .no { color: #880000 } /* Name.Constant */
+.codehilite .nd { color: #AA22FF } /* Name.Decorator */
+.codehilite .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.codehilite .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.codehilite .nf { color: #0000FF } /* Name.Function */
+.codehilite .nl { color: #A0A000 } /* Name.Label */
+.codehilite .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.codehilite .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.codehilite .nv { color: #19177C } /* Name.Variable */
+.codehilite .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.codehilite .w { color: #bbbbbb } /* Text.Whitespace */
+.codehilite .mf { color: #666666 } /* Literal.Number.Float */
+.codehilite .mh { color: #666666 } /* Literal.Number.Hex */
+.codehilite .mi { color: #666666 } /* Literal.Number.Integer */
+.codehilite .mo { color: #666666 } /* Literal.Number.Oct */
+.codehilite .sb { color: #BA2121 } /* Literal.String.Backtick */
+.codehilite .sc { color: #BA2121 } /* Literal.String.Char */
+.codehilite .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.codehilite .s2 { color: #BA2121 } /* Literal.String.Double */
+.codehilite .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.codehilite .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.codehilite .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.codehilite .sx { color: #008000 } /* Literal.String.Other */
+.codehilite .sr { color: #BB6688 } /* Literal.String.Regex */
+.codehilite .s1 { color: #BA2121 } /* Literal.String.Single */
+.codehilite .ss { color: #19177C } /* Literal.String.Symbol */
+.codehilite .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.codehilite .vc { color: #19177C } /* Name.Variable.Class */
+.codehilite .vg { color: #19177C } /* Name.Variable.Global */
+.codehilite .vi { color: #19177C } /* Name.Variable.Instance */
+.codehilite .il { color: #666666 } /* Literal.Number.Integer.Long */
+  </style>
+
+  <style type="text/css">
+  
+/* ==========================================================================
+   EXAMPLE Media Queries for Responsive Design.
+   These examples override the primary ('mobile first') styles.
+   Modify as content requires.
+   ========================================================================== */
+
+@media only screen and (min-width: 35em) {
+    /* Style adjustments for viewports that meet the condition */
+}
+
+@media print,
+       (-o-min-device-pixel-ratio: 5/4),
+       (-webkit-min-device-pixel-ratio: 1.25),
+       (min-resolution: 120dpi) {
+    /* Style adjustments for high resolution devices */
+}
+
+/* ==========================================================================
+   Print styles.
+   Inlined to avoid required HTTP connection: h5bp.com/r
+   ========================================================================== */
+
+@media print {
+    * {
+        background: transparent !important;
+        color: #000 !important; /* Black prints faster: h5bp.com/s */
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+
+    a,
+    a:visited {
+        text-decoration: underline;
+    }
+
+    a[href]:after {
+        content: " (" attr(href) ")";
+    }
+
+    abbr[title]:after {
+        content: " (" attr(title) ")";
+    }
+
+    /*
+     * Don't show links for images, or javascript/internal links
+     */
+
+    .ir a:after,
+    a[href^="javascript:"]:after,
+    a[href^="#"]:after {
+        content: "";
+    }
+
+    pre,
+    blockquote {
+        border: 1px solid #999;
+        page-break-inside: avoid;
+    }
+
+    thead {
+        display: table-header-group; /* h5bp.com/t */
+    }
+
+    tr,
+    img {
+        page-break-inside: avoid;
+    }
+
+    img {
+        max-width: 100% !important;
+    }
+
+    @page {
+        margin: 0.5cm;
+    }
+
+    p,
+    h2,
+    h3 {
+        orphans: 3;
+        widows: 3;
+    }
+
+    h2,
+    h3 {
+        page-break-after: avoid;
+    }
+}
+
+  </style>
+
+  <script type="text/javascript">
+  function toggle(id, $link) {
+    $node = document.getElementById(id);
+    if (!$node)
+    return;
+    if (!$node.style.display || $node.style.display == 'none') {
+    $node.style.display = 'block';
+    $link.innerHTML = 'Hide source &nequiv;';
+    } else {
+    $node.style.display = 'none';
+    $link.innerHTML = 'Show source &equiv;';
+    }
+  }
+  </script>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Madrigal web services</title>
+<link href="/static/madrigal.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+	html body {
+		background-color: {{bg_color}};
+	}
+</style>
+</head>
+
+<body>
+<table width="100%" border="1" cellpadding="0" cellspacing="2" class="navigation">
+  <tr>
+    <td width="5%"><a href="{% url 'docs' 'rr_contents.html' %}"><img src="/static/previous.png" alt="previous" width="32" height="32" /></a></td>
+    <td width="5%"><a href="{% url 'docs' 'rr_contents.html' %}"><img src="/static/up.png" alt="up" width="32" height="32" /></a></td>
+    <td width="5%"><a href="{% url 'docs' 'rr_matlab.html' %}"><img src="/static/next.png" alt="next" width="32" height="32" /></a></td>
+    <td width="54%">Madrigal web services </td>
+    <td width="13%"><a href="{% url 'docs' 'madContents.html' %}">Doc home </a></td>
+    <td width="18%"><a href="/">Madrigal home</a></td>
+  </tr>
+</table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" href="{% url 'docs' 'rr_contents.html' %}">Remote access reference toc </A>
+<b class="navlabel">&nbsp;&nbsp;Up:</b>
+<a class="sectref" href="{% url 'docs' 'rr_contents.html' %}">Remote access reference toc </A>
+<b class="navlabel">&nbsp;&nbsp;Next:</b>
+<a class="sectref" href="{% url 'docs' 'rr_matlab.html' %}">Matlab remote access reference </A></div>
+<hr/>
+<h1 align="center">Madrigal web services reference </h1>
+<a href="#" id="top">Top</a>
+
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>services</code></h1>
+</header>
+<section id="section-intro">
+<p>@author: Bill Rideout
+@contact: brideout@haystack.mit.edu</p>
+<p>$Id: views.py 7163 2020-08-21 14:15:04Z brideout $</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#39;&#39;&#39;
+
+@author: Bill Rideout
+@contact: brideout@haystack.mit.edu
+
+$Id: views.py 7163 2020-08-21 14:15:04Z brideout $
+&#39;&#39;&#39;
+
+
+    
+def get_version_service(request):
+    &#34;&#34;&#34;get_version_service runs the getVersionService.py service.  
+    
+    Inputs:
+        request (ignored)
+        
+        Returns a single line of text, with the version in the form &lt;major_version_int&gt;.&lt;minor_version_int&gt;[.&lt;sub_version_int&gt;]
+    &#34;&#34;&#34;
+    madDB = madrigal.metadata.MadrigalDB()
+    siteID = madDB.getSiteID()
+    madSiteObj = madrigal.metadata.MadrigalSite(madDB)
+    return(HttpResponse(madSiteObj.getSiteVersion(siteID)))
+    
+    
+    
+def get_instruments_service(request):
+    &#34;&#34;&#34;get_instruments_service runs the getInstrumentsService.py service.  
+    
+    Inputs:
+        request (ignored)
+        
+        Returns comma-delimited data, one line for each experiment, with the following fields:
+
+        1. instrument.name  Example: &#39;Millstone Hill Incoherent Scatter Radar&#39;
+
+        2. instrument.code Example: 30
+
+        3. instrument.mnemonic (3 char string) Example: &#39;mlh&#39;
+
+        4. instrument.latitude  Example: 45.0
+
+        5. instrument.longitude  Example: 110.0
+
+        6. instrument.altitude   Example: 0.015 (km) 
+        
+        7. instrument.category  Example: &#39;Incoherent Scatter Radars&#39;
+        
+        8. contact name
+        
+        9. contact email
+    &#34;&#34;&#34;
+    # create MadrigalDB obj
+    madDBObj = madrigal.metadata.MadrigalDB()
+
+    # create MadrigalInstument object
+    madInst = madrigal.metadata.MadrigalInstrument(madDBObj)
+
+    # get instrument list
+    instList = madInst.getInstrumentList()
+
+    # loop through each instrument
+    instStr = &#39;&#39;
+    for inst in instList:
+        name = inst[0]
+        code = inst[2]
+        mnemonic = inst[1]
+        latitude = madInst.getLatitude(code)
+        if latitude == None:
+            latitude = 0.0
+        longitude = madInst.getLongitude(code)
+        if longitude == None:
+            longitude = 0.0
+        altitude = madInst.getAltitude(code)
+        if altitude == None:
+            altitude = 0.0
+        category = madInst.getCategory(code)
+        if category == None:
+            category = &#39;&#39;
+        # print data
+        contactName = madInst.getContactName(code)
+        contactEmail = madInst.getContactEmail(code)
+        instStr += &#39;%s,%i,%s,%f,%f,%f,%s,%s,%s\n&#39; % (name,
+                                                     code,
+                                                     mnemonic,
+                                                     latitude,
+                                                     longitude,
+                                                     altitude,
+                                                     category,
+                                                     str(contactName),
+                                                     str(contactEmail))
+        
+    return render(request, &#39;madweb/service.html&#39;, {&#39;text&#39;: instStr})
+
+
+def get_experiments_service(request):
+    &#34;&#34;&#34;get_experiments_service runs the getExperimentsService.py service.  
+    
+    Inputs:
+        request/url - contains arguments:
+        
+            code - one or more kindat values
+            
+            startyear, startmonth, startday, starthour, startmin, startsec
+            
+            endyear, endmonth, endday, endhour, endmin, endsec
+            
+            local (defaults to True)
+            
+    Returns comma-delimited data, one line for each experiment, with the following fields:
+
+        1. experiment.id (int) Example: 10000111
+        
+        2. experiment.url (string) Example: &#39;http://www.haystack.mit.edu/cgi-bin/madtoc/1997/mlh/03dec97&#39;
+        
+        3. experiment.name (string) Example: &#39;Wide Latitude Substorm Study&#39;
+        
+        4. experiment.siteid (int) Example: 1
+        
+        5. experiment.sitename (string) Example: &#39;Millstone Hill Observatory&#39;
+        
+        6. experiment.instcode (int) Code of instrument. Example: 30
+        
+        7. experiment.instname (string) Instrument name. Example: &#39;Millstone Hill Incoherent Scatter Radar&#39;
+        
+        8. experiment.start year (int) year of experiment start
+        
+        9. experiment.start month (int) month of experiment start
+        
+        10. experiment.start day (int) day of experiment start
+        
+        11. experiment.start hour (int) hour of experiment start
+        
+        12. experiment.start minute (int) min of experiment start
+        
+        13. experiment.start second (int) sec of experiment start
+        
+        14. experiment.end year (int) year of experiment end
+        
+        15. experiment.end month (int) month of experiment end
+        
+        16. experiment.end day (int) day of experiment end
+        
+        17. experiment.end hour (int) hour of experiment end
+        
+        18. experiment.end minute (int) min of experiment end
+        
+        19. experiment.end second (int) sec of experiment end
+        
+        20. experiment.isLocal (int) 1 if local, 0 if not
+        
+        21.experiment.PI (string) Experiment PI name Example: &#39;Phil Erickson&#39;
+
+        22. experiment.PIEmail (string) Experiment PI email Example: &#39;perickson@haystack.mit.edu&#39;
+        
+        23. utc timestamp of last update to experiment
+        
+        24. security value
+        
+    &#34;&#34;&#34;
+    codeList = request.GET.getlist(&#39;code&#39;)
+    codeList = [int(code) for code in codeList]
+    startyear = int(request.GET[&#39;startyear&#39;])
+    startmonth = int(request.GET[&#39;startmonth&#39;])
+    startday = int(request.GET[&#39;startday&#39;])
+    starthour = int(request.GET[&#39;starthour&#39;])
+    startmin = int(request.GET[&#39;startmin&#39;])
+    startsec = int(request.GET[&#39;startsec&#39;])
+    endyear = int(request.GET[&#39;endyear&#39;])
+    endmonth = int(request.GET[&#39;endmonth&#39;])
+    endday = int(request.GET[&#39;endday&#39;])
+    endhour = int(request.GET[&#39;endhour&#39;])
+    endmin = int(request.GET[&#39;endmin&#39;])
+    endsec = int(request.GET[&#39;endsec&#39;])
+    try:
+        local = int(request.GET[&#39;local&#39;])
+    except:
+        local = 1
+    
+    
+    # if startsec or endsec in (60, 61), handle correctly
+    if startsec in (60, 61):
+        tmpTime = datetime.datetime(startyear,
+                                    startmonth,
+                                    startday,
+                                    starthour,
+                                    startmin,
+                                    59)
+        tmpTime += datetime.timedelta(0, startsec - 59)
+        startyear = tmpTime.year
+        startmonth = tmpTime.month
+        startday = tmpTime.day
+        starthour = tmpTime.hour
+        startmin = tmpTime.minute
+        startsec = tmpTime.second
+
+    if endsec in (60, 61):
+        tmpTime = datetime.datetime(endyear,
+                                    endmonth,
+                                    endday,
+                                    endhour,
+                                    endmin,
+                                    59)
+        tmpTime += datetime.timedelta(0, endsec - 59)
+        endyear = tmpTime.year
+        endmonth = tmpTime.month
+        endday = tmpTime.day
+        endhour = tmpTime.hour
+        endmin = tmpTime.minute
+        endsec = tmpTime.second
+        
+    # if codeList is empty or contains 0, change it to only contain 0
+    if len(codeList) == 0 or 0 in codeList:
+        codeList = [0]
+        
+    retStr = &#39;&#39;
+
+    # create MadrigalDB obj
+    madDBObj = madrigal.metadata.MadrigalDB()
+
+    # get the local site id
+    localSiteId = madDBObj.getSiteID()
+
+    # create MadrigalInstrument obj to convert kinst to instrument names
+    madInstObj = madrigal.metadata.MadrigalInstrument(madDBObj)
+
+    # create MadrigalSite obj to convert site id to site name
+    madSiteObj = madrigal.metadata.MadrigalSite(madDBObj)
+    
+    madWebObj = madrigal.ui.web.MadrigalWeb(madDBObj)
+    trusted = madWebObj.isTrusted()
+
+    # create starttime for filter, if possible
+    if startyear != None:
+        startTimeFilter = datetime.datetime(startyear,
+                        startmonth,
+                        startday,
+                        starthour,
+                        startmin,
+                        startsec) 
+    else:
+        startTimeFilter = None
+
+    # create endtime for filter, if possible
+    if endyear != None:
+        endTimeFilter = datetime.datetime(endyear,
+                          endmonth,
+                      endday,
+                      endhour,
+                      endmin,
+                      endsec) 
+    else:
+        endTimeFilter = None
+
+    # create MadrigalExperiments for local or all files
+    if local == 1:
+        madExpObj = madrigal.metadata.MadrigalExperiment(madDBObj)
+    else:
+        # use file expTabAll.txt to get all experiments
+        filename = madDBObj.getMadroot()
+        if filename[-1] != &#39;/&#39;:
+            filename += &#39;/&#39;
+        filename += &#39;metadata/expTabAll.txt&#39;
+        madExpObj = madrigal.metadata.MadrigalExperiment(madDBObj, filename)
+        
+    madExpObj.sortByDateSite()
+
+
+    # loop through the data
+    if not startTimeFilter is None:
+        position = madExpObj.getStartPosition(startTimeFilter)
+    else:
+        position = 0
+    while(True):
+        thisId = madExpObj.getExpIdByPosition(position)
+        # check for end
+        if thisId == None:
+            break
+        thisUrl = madExpObj.getExpUrlByPosition(position)
+        thisName = madExpObj.getExpNameByPosition(position)
+        thisSiteId = madExpObj.getExpSiteIdByPosition(position)
+        thisSiteName = madSiteObj.getSiteName(thisSiteId)
+        thisInstCode = madExpObj.getKinstByPosition(position)
+        thisInstName =madInstObj.getInstrumentName(thisInstCode)
+        thisStart = madExpObj.getExpStartDateTimeByPosition(position)
+        thisEnd = madExpObj.getExpEndDateTimeByPosition(position)
+        thisSecurity = madExpObj.getSecurityByPosition(position)
+        if thisSiteId == localSiteId:
+            thisLocal = 1
+        else:
+            thisLocal = 0
+        thisPI = madExpObj.getPIByPosition(position)
+        if thisPI in (None, &#39;&#39;):
+            thisPI = madInstObj.getContactName(thisInstCode)
+        thisPIEmail = madExpObj.getPIEmailByPosition(position)
+        if thisPIEmail in (None, &#39;&#39;):
+            thisPIEmail = madInstObj.getContactEmail(thisInstCode)
+        expDir = madExpObj.getExpDirByPosition(position)
+            
+        position += 1
+
+        # some experiments set the end of the day to 24:00:00 - not
+        # technically correct - reset to 23:59:59
+        
+        if (thisStart[3] == 24 and thisStart[4] == 0 and thisStart[5] == 0):
+            thisStart[3] = 23
+            thisStart[4] = 59
+            thisStart[5] = 59
+
+        if (thisEnd[3] == 24 and thisEnd[4] == 0 and thisEnd[5] == 0):
+            thisEnd[3] = 23
+            thisEnd[4] = 59
+            thisEnd[5] = 59
+        
+        # apply filters
+        
+        # first apply instrument code filter
+        if codeList[0] != 0:
+            if thisInstCode not in codeList:
+                continue
+
+        # apply starttime and endtime filters
+        thisStartTime = datetime.datetime(thisStart[0],
+                                          thisStart[1],
+                                          thisStart[2],
+                                          thisStart[3],
+                                          thisStart[4],
+                                          thisStart[5])
+
+        thisEndTime = datetime.datetime(thisEnd[0],
+                                        thisEnd[1],
+                                        thisEnd[2],
+                                        thisEnd[3],
+                                        thisEnd[4],
+                                        thisEnd[5])
+        
+        if startTimeFilter != None:
+            if thisEndTime &lt; startTimeFilter:
+                continue
+
+        if endTimeFilter != None:
+            if thisStartTime &gt; endTimeFilter:
+                continue
+
+        # apply local filer
+        if local == 1 and thisLocal == 0:
+            continue
+
+        # apply security filter
+        if trusted == 0 and thisSecurity not in (0,2):
+            continue
+        
+        # create exp timestamp
+        if local == 1:
+            thisUTTimestamp = int(os.stat(expDir).st_mtime + time.timezone)
+        else:
+            thisUTTimestamp = 0
+
+        # add this experiment
+        retStr += &#39;%i,%s,%s,%i,%s,%i,%s,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i,%s,%s,%i,%i\n&#39; % \
+                (thisId,
+                thisUrl,
+                thisName,
+                thisSiteId,
+                thisSiteName,
+                thisInstCode,
+                thisInstName,
+                thisStart[0],
+                thisStart[1],
+                thisStart[2],
+                thisStart[3],
+                thisStart[4],
+                thisStart[5],
+                thisEnd[0],
+                thisEnd[1],
+                thisEnd[2],
+                thisEnd[3],
+                thisEnd[4],
+                thisEnd[5],
+                thisLocal,
+                str(thisPI),
+                str(thisPIEmail),
+                thisUTTimestamp,
+                thisSecurity)
+                
+    return render(request, &#39;madweb/service.html&#39;, {&#39;text&#39;: retStr})
+
+
+def get_experiment_files_service(request):
+    &#34;&#34;&#34;get_experiment_files_service runs the getExperimentFilesService.py service.  
+    
+    Inputs:
+        request/url - contains arguments:
+        
+            id - local experiment id
+            
+        Returns comma-delimited data, one line for each experiment file, with the following fields:
+
+            1. file.name (string) Example &#39;/opt/mdarigal/blah/mlh980120g.001&#39;
+            
+            2. file.kindat (int) Kindat code.  Example: 3001
+            
+            3. file.kindat desc (string) Kindat description: Example &#39;Basic Derived Parameters&#39;
+            
+            4. file.category (int) (1=default, 2=variant, 3=history, 4=real-time)
+            
+            5. file.status (string)(&#39;preliminary&#39;, &#39;final&#39;, or any other description)
+            
+            6. file.permission (int)  0 for public, 1 for private.  For now will not return private files.
+            
+            7. file DOI (string) - citable url to file
+        
+        Returns empty string if experiment id not found.  Skips files that are not Hdf5
+    &#34;&#34;&#34;
+    id = int(request.GET[&#39;id&#39;])
+    
+    # create MadrigalDB obj
+    madDBObj = madrigal.metadata.MadrigalDB()
+
+    # create MadrigalExperiments object to get full file name
+    madExpObj = madrigal.metadata.MadrigalExperiment(madDBObj)
+
+    # create Madrigal Kindat to get Kindat descriptions
+    madKindatObj = madrigal.metadata.MadrigalKindat(madDBObj)
+    
+    madWebObj = madrigal.ui.web.MadrigalWeb(madDBObj)
+    trusted = madWebObj.isTrusted()
+
+        
+    retStr = &#39;&#39;
+    thisUrl = madExpObj.getExpUrlByExpId(id)
+    if thisUrl is None:
+        raise IOError(&#39;No such id: %i&#39; % (id))
+    expPath = madExpObj.getExpDirByExpId(id)
+    kinst = madExpObj.getKinstByExpId(id)
+    if os.access(os.path.join(expPath, &#39;fileTab.txt&#39;), os.R_OK):
+        madFileObj = madrigal.metadata.MadrigalMetaFile(madDBObj, os.path.join(expPath, &#39;fileTab.txt&#39;))
+        for i in range(madFileObj.getFileCount()):
+            basename = madFileObj.getFilenameByPosition(i)
+            name = os.path.join(expPath, basename)
+            base_filename, file_extension = os.path.splitext(name)
+            if file_extension not in (&#39;.hdf5&#39;, &#39;.hdf&#39;, &#39;.h5&#39;):
+                continue
+            kindat = madFileObj.getKindatByPosition(i)
+            kindatdesc = madKindatObj.getKindatDescription(kindat, kinst)
+            category = madFileObj.getCategoryByPosition(i)
+            status = madFileObj.getStatusByPosition(i)
+            permission = madFileObj.getAccessByPosition(i)
+            doi = madFileObj.getFileDOIUrlByPosition(i)
+    
+            # skip private files if not trusted
+            if trusted == 0 and int(permission) != 0:
+                continue
+                
+            retStr += &#39;%s,%i,%s,%i,%s,%i,%s\n&#39; % \
+                   (name,
+                    kindat,
+                    kindatdesc,
+                    category,
+                    status,
+                    permission,
+                    doi)
+        
+    
+    
+    return render(request, &#39;madweb/service.html&#39;, {&#39;text&#39;: django.utils.safestring.mark_safe(retStr)})
+
+
+def get_parameters_service(request):
+    &#34;&#34;&#34;get_parameters_service runs the getParametersService.py service.  
+    
+    Inputs:
+        request/url - contains arguments:
+        
+            filename=&lt;full path to data file&gt;
+            
+        Returns backslash-delimited data, one for each parameter either measured or derivable, with the following fields:
+
+            1. parameter.mnemonic (string) Example &#39;dti&#39;
+            
+            2. parameter.description (string) Example:
+                &#34;F10.7 Multiday average observed (Ott)&#34;
+                
+            3. parameter.isError (int) 1 if error parameter, 0 if not
+            
+            4. parameter.units (string) Example &#34;W/m2/Hz&#34;
+            
+            5. parameter.isMeasured (int) 1 if measured, 0 if derivable
+            
+            6. parameter.category (string) Example: &#34;Time Related Parameter&#34;
+            
+            7. parameter.isSure (int) - 1 if parameter can be found for every record, 0 if can only be found for some.
+                Not relevant to Madrigal 3, where always 1
+    
+            8. parameter.isAddIncrement - 1 if additional increment, 0 if normal (Added in Madrigal 2.5)
+                Not relevant to Madrigal 3, where always -1
+    &#34;&#34;&#34;
+    filename = request.GET[&#39;filename&#39;]
+    
+    # create MadrigalDB obj
+    madDBObj = madrigal.metadata.MadrigalDB()
+
+    # create Madrigal File object 
+    madFileObj = madrigal.data.MadrigalFile(filename, madDBObj)
+
+    # create Madrigal Parameter object
+    madParmObj = madrigal.data.MadrigalParameters(madDBObj)
+    
+    # create Madrigal web object 
+    madWebObj = madrigal.ui.web.MadrigalWebFormat()
+    
+
+    # create lists of parameters
+    measParmList = []
+    derivedParmList = []
+    allParmList = []
+    sureParmList = []
+
+    # use the comprehensive list of parameters to check if derivable
+    parmList = madWebObj.getFormat(&#39;Comprehensive&#39;)
+
+    # populate lists
+    madFileObj.getMeasDervBothParmLists(parmList,
+                                        measParmList,
+                                        derivedParmList,
+                                        allParmList,
+                                        sureParmList)
+
+    retStr = &#39;&#39;
+    
+    # loop through allParmList and output results
+    for parm in allParmList:
+        description = madParmObj.getSimpleParmDescription(parm)
+        isNorm = madParmObj.getParmType(parm)
+        if isNorm == 1:
+            isError = 0
+        else:
+            isError = 1
+        units = madParmObj.getParmUnits(parm)
+        if parm in measParmList:
+            isMeasured = 1
+        else:
+            isMeasured = 0
+        if parm in sureParmList:
+            isSure = 1
+        else:
+            isSure = 0
+        category = madParmObj.getParmCategory(parm)
+        try:
+            if madParmObj.isAddIncrement(parm):
+                isAddIncrement = 1
+            else:
+                isAddIncrement = 0
+        except:
+            isAddIncrement = -1
+        # print out this parm
+        retStr += &#39;%s\\%s\\%i\\%s\\%i\\%s\\%i\\%i\n&#39; % (parm,
+                                                description,
+                                                isError,
+                                                units,
+                                                isMeasured,
+                                                category,
+                                                isSure,
+                                                isAddIncrement)
+        
+    return render(request, &#39;madweb/service.html&#39;, {&#39;text&#39;: retStr})
+
+
+
+def isprint_service(request):
+    &#34;&#34;&#34;isprint_service runs the isprintService.py service.  
+    
+    Inputs:
+        request/url - contains arguments:
+        
+            &#39;file&#39;: The full path to the file to be analyzed by isprint.  If over 50 MB, returns error message.
+            
+            &#39;parms&#39;: Multiple requested parameters, space (+) separated.
+            
+            &#39;filters&#39;: Multiple of filters desired, as in isprint command
+            
+            &#39;user_fullname&#39;     user name 
+            
+            &#39;user_email&#39;        user email
+            
+            &#39;user_affiliation&#39;  user affiliation
+            
+            &#39;output&#39; - option argument specifying output file basename.  Will be Hdf5 format if extension in
+                (&#39;hdf5&#39;, &#39;h5&#39;, &#39;hdf&#39;).  Will be netCDF4 is extension is &#39;.nc&#39;. Otherwise ascii. If not
+                given, output is ascii.
+                
+            &#39;header&#39;:  t for headers, f for no header.  Defaults to no header. Ignored if not ascii output
+    
+    Returns data as either column delimited ascii, Hdf5, or netCDF4.
+    &#34;&#34;&#34;
+    madDB = madrigal.metadata.MadrigalDB()
+    madWebObj = madrigal.ui.web.MadrigalWeb(madDB)
+    
+    # get required arguments
+    thisFile = request.GET[&#39;file&#39;]
+    parms = request.GET.getlist(&#39;parms&#39;)
+    filters = request.GET.getlist(&#39;filters&#39;)
+    user_fullname = request.GET[&#39;user_fullname&#39;]
+    user_email = request.GET[&#39;user_email&#39;]
+    user_affiliation = request.GET[&#39;user_affiliation&#39;]
+        
+    # get optional arguments
+    try:
+        output = os.path.basename(request.GET[&#39;output&#39;])
+        filename, file_extension = os.path.splitext(output)
+        if file_extension in (&#39;.hdf5&#39;, &#39;.h5&#39;, &#39;.hdf&#39;):
+            format = &#39;Hdf5&#39;
+        elif file_extension in (&#39;.nc&#39;,):
+            format = &#39;netCDF4&#39;
+        else:
+            format = &#39;ascii&#39;
+    except:
+        format = &#39;ascii&#39;
+        output = None
+        
+    # verify thisFile exists, not too big
+    errorMessage = None
+    if not os.access(thisFile, os.R_OK):
+        errorMessage = &#39;File %s not found&#39; % (thisFile)
+    elif os.path.getsize(thisFile) &gt; 200.0E6:
+        errorMessage = &#39;File %s greater than 200 MB in size - running dynamic file creation not possible.  Please use  -- download as is -- instead.&#39; % (thisFile)
+    if not errorMessage is None:
+        return render(request, &#39;madweb/service.html&#39;, {&#39;text&#39;: errorMessage})
+                
+    if not output is None:
+        # we need to write to a download file
+        downloadFile = os.path.join(tempfile.gettempdir(), output)
+        if os.access(downloadFile, os.R_OK):
+            try:
+                os.remove(downloadFile)
+            except:
+                pass
+    try:
+        header = request.GET[&#39;header&#39;]
+        if header not in (&#39;t&#39;, &#39;f&#39;):
+            raise ValueError(&#39;Unknown header value &lt;%s&gt;&#39; % (header))
+    except:
+        header = &#39;f&#39;
+        
+    # log data access
+    madWebObj.logDataAccess(thisFile, user_fullname, user_email, user_affiliation)
+        
+    # run isprint command
+    cmd = &#39;%s/bin/isprint file=%s &#39; % (madDB.getMadroot(), thisFile)
+    if not output is None:
+        cmd += &#39;output=%s &#39; % (downloadFile)
+    delimiter = &#39; &#39;
+    cmd += delimiter.join(parms) + &#39; &#39;
+    filterStr = delimiter.join(filters)
+    cmd += filterStr + &#39; &#39;
+    if format == &#39;ascii&#39;:
+        cmd += &#39;summary=f &#39;
+        cmd += &#39;header=%s &#39; % (header)
+        
+    if output is None:
+        # text response
+        #result = subprocess.check_output(cmd.split())
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        result,errtext = p.communicate()
+        if p.returncode != 0:
+            result = errtext
+        if type(result) in (bytes, numpy.bytes_):
+            result = result.decode(&#39;utf-8&#39;)
+        if header == &#39;f&#39;:
+            index = result.find(&#39;\n&#39;)
+            result = result[index+1:]
+        return render(request, &#39;madweb/service.html&#39;, {&#39;text&#39;: result})
+    else:
+        # file download response
+        #subprocess.check_call(cmd.split())
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        result,errtext = p.communicate()
+        if p.returncode != 0:
+            # write the error to result file
+            f = open(downloadFile, &#39;w&#39;)
+            if type(errtext) in (bytes, numpy.bytes_):
+                errtext = errtext.decode(&#39;utf-8&#39;)
+            f.write(errtext)
+            f.close()
+        
+        f = open(downloadFile, &#39;rb&#39;)
+        filename = os.path.basename(downloadFile)
+        chunk_size = 8192
+        file_type = mimetypes.guess_type(downloadFile)[0]
+        if file_type is None:
+            file_type = &#39;application/octet-stream&#39;
+        response = StreamingHttpResponse(FileWrapper(f, chunk_size),
+                                         content_type=file_type)
+        response[&#39;Content-Length&#39;] = os.path.getsize(downloadFile)    
+        response[&#39;Content-Disposition&#39;] = &#34;attachment; filename=%s&#34; % (filename)
+        os.remove(downloadFile)
+        return(response)
+    
+    
+def get_madfile_service(request):
+    &#34;&#34;&#34;get_madfile_service runs the getMadfile.cgi service.  
+    
+    Inputs:
+        request/url - contains arguments:
+        
+            &#39;fileName&#39;: The full path to the file to be downloaded as.
+            
+            &#39;fileType&#39;: -1 for ascii, -2 for Hdf5, -3 for netCDF4. No other values supported
+            
+            &#39;user_fullname&#39;     user name 
+            
+            &#39;user_email&#39;        user email
+            
+            &#39;user_affiliation&#39;  user affiliation
+    
+    Returns file as either column delimited ascii, Hdf5, or netCDF4.
+    &#34;&#34;&#34;
+    madDB = madrigal.metadata.MadrigalDB()
+    madWebObj = madrigal.ui.web.MadrigalWeb(madDB)
+    
+    # get required arguments
+    fileName = request.GET[&#39;fileName&#39;]
+    fileType = int(request.GET[&#39;fileType&#39;])
+    user_fullname = request.GET[&#39;user_fullname&#39;]
+    user_email = request.GET[&#39;user_email&#39;]
+    user_affiliation = request.GET[&#39;user_affiliation&#39;]
+    
+    if fileType not in (-1, -2, -3):
+        return(HttpResponse(&#39;&lt;p&gt;fileType %i not allowed: -1 for ascii, -2 for Hdf5, -3 for netCDF4&lt;/p&gt;&#39; % (fileType)))
+    
+    # log data access
+    madWebObj.logDataAccess(fileName, user_fullname, user_email, user_affiliation)
+    
+    if fileType in (-1, -3):
+        # may need to create temp file
+        filepath, file_extension = os.path.splitext(fileName)
+        basename = os.path.basename(filepath)
+        dirname = os.path.dirname(fileName)
+        if fileType == -1:
+            cachedTxtFile = os.path.join(dirname, &#39;overview&#39;, os.path.basename(fileName) + &#39;.txt.gz&#39;)
+            tmpFile = os.path.join(tempfile.gettempdir(), basename + &#39;.txt.gz&#39;)
+            if os.access(cachedTxtFile, os.R_OK):
+                shutil.copy(cachedTxtFile, tmpFile)
+            else:
+                tmpFile = os.path.join(tempfile.gettempdir(), basename + &#39;.txt&#39;)
+                madrigal.cedar.convertToText(fileName, tmpFile)
+        else:
+            cachedNCFile = os.path.join(dirname, &#39;overview&#39;, os.path.basename(fileName) + &#39;.nc&#39;)
+            tmpFile = os.path.join(tempfile.gettempdir(), basename + &#39;.nc&#39;)
+            if os.access(cachedNCFile, os.R_OK):
+                shutil.copy(cachedNCFile, tmpFile)
+            else:
+                try:
+                    madrigal.cedar.convertToNetCDF4(fileName, tmpFile)
+                except IOError:
+                    cedarObj = madrigal.cedar.MadrigalCedarFile(fileName)
+                    cedarObj.write(&#39;netCDF4&#39;, tmpFile)
+        
+    else:
+        tmpFile = fileName
+        
+    f = open(tmpFile, &#39;rb&#39;)
+    filename = os.path.basename(tmpFile)
+    chunk_size = 8192
+    file_type = mimetypes.guess_type(tmpFile)[0]
+    if file_type is None:
+        file_type = &#39;application/octet-stream&#39;
+    response = StreamingHttpResponse(FileWrapper(f, chunk_size),
+                                     content_type=file_type)
+    response[&#39;Content-Length&#39;] = os.path.getsize(tmpFile)    
+    response[&#39;Content-Disposition&#39;] = &#34;attachment; filename=%s&#34; % (filename)
+    if fileType in (-1, -3):
+        os.remove(tmpFile)
+    return(response)
+        
+    
+def mad_calculator_service(request):
+    &#34;&#34;&#34;mad_calculator_service runs the madCalculator service.  
+    
+    Inputs:
+        request/url - contains arguments:
+        
+            year, month, day, hour, min, sec 
+            
+            startLat - Starting geodetic latitude, -90 to 90 (float)
+            
+            endLat - Ending geodetic latitude, -90 to 90 (float)
+            
+            stepLat - Latitude step (0.1 to 90) (float)
+            
+            startLong - Starting geodetic longitude, -180 to 180  (float)
+            
+            endLong - Ending geodetic longitude, -180 to 180 (float)
+            
+            stepLong - Longitude step (0.1 to 180) (float)
+            
+            startAlt - Starting geodetic altitude, &gt;= 0 (float)
+            
+            endAlt - Ending geodetic altitude, &gt; 0 (float)
+            
+            stepAlt - Altitude step (&gt;= 0.1) (float)
+            
+            parms - comma delimited string of Madrigal parameters desired
+            
+            oneD - zero or more mnemonics,float values to set input 1D values
+    
+    Returns comma-delimited data, one line for each combination of lat, long, and alt,
+    with the following fields:
+
+        1. latitude
+        
+        2. longitude
+        
+        3. altitude
+        
+        4. Values for each Madrigal parameter listed in argument parms, separated by whitespace
+    &#34;&#34;&#34;
+    year = int(request.GET[&#39;year&#39;])
+    month = int(request.GET[&#39;month&#39;])
+    day = int(request.GET[&#39;day&#39;])
+    hour = int(request.GET[&#39;hour&#39;])
+    minute = int(request.GET[&#39;min&#39;])
+    second = int(request.GET[&#39;sec&#39;])
+    try:
+        dt = datetime.datetime(year, month, day, hour, minute, second)
+    except:
+        return(HttpResponse(&#39;Illegal time: year %i, month %i, day %i, hour %i, minute %i, second %i&#39; % (year, month, day, hour, minute, second)))
+    
+    startLat = float(request.GET[&#39;startLat&#39;])
+    endLat = float(request.GET[&#39;endLat&#39;])
+    if startLat == endLat:
+        endLat += 0.001
+    elif startLat &gt; endLat:
+        return(HttpResponse(&#39;startLat %s cannot be greater than endLat %s&#39; % (str(startLat), str(endLat))))
+    stepLat = float(request.GET[&#39;stepLat&#39;])
+    if stepLat &lt; 0.0:
+        return(HttpResponse(&#39;stepLat %s cannot be less than zero&#39; % (str(stepLat))))
+    elif stepLat == 0.0:
+        stepLat = 0.001
+    latList = list(numpy.arange(startLat, endLat, stepLat))
+    
+    startLong = float(request.GET[&#39;startLong&#39;])
+    endLong = float(request.GET[&#39;endLong&#39;])
+    if startLong == endLong:
+        endLong += 0.001
+    elif startLong &gt; endLong:
+        return(HttpResponse(&#39;startLong %s cannot be greater than endLong %s&#39; % (str(startLong), str(endLong))))
+    stepLong = float(request.GET[&#39;stepLong&#39;])
+    if stepLong &lt; 0.0:
+        return(HttpResponse(&#39;stepLong %s cannot be less than zero&#39; % (str(stepLong))))
+    elif stepLong == 0.0:
+        stepLong = 0.001
+    lonList = list(numpy.arange(startLong, endLong, stepLong))
+    
+    startAlt = float(request.GET[&#39;startAlt&#39;])
+    endAlt = float(request.GET[&#39;endAlt&#39;])
+    if startAlt == endAlt:
+        endAlt += 0.001
+    elif startAlt &gt; endAlt:
+        return(HttpResponse(&#39;startAlt %s cannot be greater than endAlt %s&#39; % (str(startAlt), str(endAlt))))
+    stepAlt = float(request.GET[&#39;stepAlt&#39;])
+    if stepAlt &lt; 0.0:
+        return(HttpResponse(&#39;stepAlt %s cannot be less than zero&#39; % (str(stepAlt))))
+    elif stepAlt == 0.0:
+        stepAlt = 0.01
+    altList = list(numpy.arange(startAlt, endAlt, stepAlt))
+    
+    # limit total calculations to 1E5
+    total = len(latList) * len(lonList) * len(altList)
+    if total &gt; 1.0E5:
+        return(HttpResponse(&#39;Too many points for madCalculatorService: %i&#39; % (total)))
+    
+    parms = request.GET[&#39;parms&#39;]
+    desiredParmList = [item.strip() for item in [&#39;gdlat&#39;,&#39;glon&#39;,&#39;gdalt&#39;] + parms.split(&#39;,&#39;)]
+    
+    oneDList = request.GET.getlist(&#39;oneD&#39;)
+    oneDParmDict = {}
+    for oneDStr in oneDList:
+        mnem, strValue = oneDStr.split(&#39;,&#39;)
+        oneDParmDict[mnem] = [float(strValue)]
+    
+    # capture stdout
+    old_stdout = sys.stdout
+    sys.stdout = mystdout = io.StringIO()
+    madrigal.isprint.MadCalculatorGrid(None, desiredParmList, [dt], latList, lonList, altList, 
+                                   oneDParmDict, summary=None)
+    text = mystdout.getvalue()
+    sys.stdout = old_stdout
+    
+    return render(request, &#39;madweb/service.html&#39;, {&#39;text&#39;: text})
+
+
+def mad_time_calculator_service(request):
+    &#34;&#34;&#34;mad_time_calculator_service runs the madTimeCalculator service.  Input parameters must not be location dependent
+    
+    Inputs:
+        request/url - contains arguments:
+        
+            1. startyear - int 
+            
+            2. startmonth - int 
+            
+            3. startday - int
+            
+            4. starthour - int 
+            
+            5. startmin - int 
+            
+            6. startsec - int
+            
+            7. endyear - int 
+            
+            8. endmonth - int 
+            
+            9. endday - int
+            
+            10. endhour - int 
+            
+            11. endmin - int 
+            
+            12. endsec - int
+            
+            13. stephours - float - number of hours per time step
+            
+            14. parms - comma delimited string of Madrigal parameters desired (must not depend on location)
+    
+    Returns comma-delimited data, one line for each year, month, day, hour, minute, and second,
+    with the following fields:
+
+        1-6: year, month, day, hour, minute, and second
+        
+        2. requested parm fields
+    &#34;&#34;&#34;
+    startyear = int(request.GET[&#39;startyear&#39;])
+    startmonth = int(request.GET[&#39;startmonth&#39;])
+    startday = int(request.GET[&#39;startday&#39;])
+    starthour = int(request.GET[&#39;starthour&#39;])
+    startminute = int(request.GET[&#39;startmin&#39;])
+    startsecond = int(request.GET[&#39;startsec&#39;])
+    endyear = int(request.GET[&#39;endyear&#39;])
+    endmonth = int(request.GET[&#39;endmonth&#39;])
+    endday = int(request.GET[&#39;endday&#39;])
+    endhour = int(request.GET[&#39;endhour&#39;])
+    endminute = int(request.GET[&#39;endmin&#39;])
+    endsecond = int(request.GET[&#39;endsec&#39;])
+    dt1 = datetime.datetime(startyear, startmonth, startday, starthour, startminute, startsecond)
+    dt2 = datetime.datetime(endyear, endmonth, endday, endhour, endminute, endsecond)
+    if dt1 &gt; dt2:
+        return(HttpResponse(&#39;End Datetime %s cannot be before start datetime %s&#39; % (str(dt2), str(dt1))))
+    
+    stephours = float(request.GET[&#39;stephours&#39;])
+    if stephours &lt;= 0.0:
+        return(HttpResponse(&#39;stephours cannot be non-positive: %f&#39; % (stephours)))
+    
+    dtList = []
+    while dt1 &lt;= dt2:
+        dtList.append(dt1)
+        dt1 += datetime.timedelta(hours=stephours)
+    
+    parms = request.GET[&#39;parms&#39;]
+    desiredParmList = [item.strip() for item in [&#39;year&#39;,&#39;month&#39;,&#39;day&#39;,&#39;hour&#39;,&#39;min&#39;,&#39;sec&#39;] + parms.split(&#39;,&#39;)]
+    
+    # no spatial data
+    latList = lonList = altList = []
+    # capture stdout
+    old_stdout = sys.stdout
+    sys.stdout = mystdout = io.StringIO()
+    madrigal.isprint.MadCalculatorGrid(None, desiredParmList, dtList, latList, lonList, altList, 
+                                   summary=None)
+    text = mystdout.getvalue()
+    sys.stdout = old_stdout
+    
+    return render(request, &#39;madweb/service.html&#39;, {&#39;text&#39;: text})
+
+
+
+def mad_calculator2_service(request):
+    &#34;&#34;&#34;mad_calculator2_service runs the madCalculator2 service.
+    
+    Differs from madCalulator in that positions are a list rather than a grid.  
+    
+    Inputs:
+        request/url - contains arguments:
+        
+            year, month, day, hour, min, sec 
+            
+            lats - comma separated list of latitudes to analyze
+            
+            longs - comma separated list of longitudes to analyze. Len must == len(lats)
+            
+            alts - comma separated list of altitudes to analyze. Len must == len(lats)
+            
+            parms - comma delimited string of Madrigal parameters desired
+            
+            oneD - zero or more mnemonics,float values to set input 1D values
+                Example:  &amp;oneD=kinst,31.0&amp;oneD=elm,45.0
+                
+            twoD - zero or more mnemonics,comma-separate float list of len(lats) to set input 2D values
+                Example:  twoD=te,1000,1100,1200  twoD=ti,1000,1000,1000
+                          where there are 3 lats
+    
+    Returns comma-delimited data, one line for each lat value,
+    with the following fields:
+
+        1. latitude
+        
+        2. longitude
+        
+        3. altitude
+        
+        4. Values for each Madrigal parameter listed in argument parms, separated by whitespace
+    &#34;&#34;&#34;
+    if request.method == &#39;POST&#39;:
+        reqDict = request.POST
+    else:
+        reqDict = request.GET
+    try:
+        year = int(reqDict.get(&#39;year&#39;))
+    except TypeError:
+        return(HttpResponse(&#39;&lt;p&gt;madCalculator2Service requires year&lt;/p&gt;&#39;))
+    month = int(reqDict[&#39;month&#39;])
+    day = int(reqDict[&#39;day&#39;])
+    hour = int(reqDict[&#39;hour&#39;])
+    minute = int(reqDict[&#39;min&#39;])
+    second = int(reqDict[&#39;sec&#39;])
+    dt = datetime.datetime(year, month, day, hour, minute, second)
+    
+    latsStr = reqDict[&#39;lats&#39;]
+    lats = [float(item) for item in latsStr.split(&#39;,&#39;)]
+    longsStr = reqDict[&#39;longs&#39;]
+    longs = [float(item) for item in longsStr.split(&#39;,&#39;)]
+    altsStr = reqDict[&#39;alts&#39;]
+    alts = [float(item) for item in altsStr.split(&#39;,&#39;)]
+    
+    parms = reqDict[&#39;parms&#39;]
+    desiredParmList = [item.strip() for item in [&#39;gdlat&#39;,&#39;glon&#39;,&#39;gdalt&#39;] + parms.split(&#39;,&#39;)]
+    
+    oneDList = reqDict.getlist(&#39;oneD&#39;)
+    oneDParmDict = {}
+    for oneDStr in oneDList:
+        mnem, strValue = oneDStr.split(&#39;,&#39;)
+        oneDParmDict[mnem] = [float(strValue)]
+        
+    twoDList = reqDict.getlist(&#39;twoD&#39;)
+        
+    twoDParmDict = {}
+    for twoDStr in twoDList:
+        items = twoDStr.split(&#39;,&#39;)
+        if len(items) != 1 + len(lats):
+            raise ValueError(&#39;twoDstr %s not correct number of points&#39; % (str(twoDStr)))
+        mnem = items[0]
+        floatValues = [float(item) for item in items[1:]]
+        # now we need to expand these values to be two dimensional 1 x len(lats)
+        values = numpy.zeros((1,len(lats)), dtype=numpy.float)
+        values[0][:] = floatValues
+        twoDParmDict[mnem] = values
+
+    # capture stdout
+    old_stdout = sys.stdout
+    sys.stdout = mystdout = io.StringIO()
+    madrigal.isprint.MadCalculatorList(None, desiredParmList, [dt], lats, longs, alts, 
+                                       oneDParmDict, twoDParmDict, summary=None)
+    text = mystdout.getvalue()
+    sys.stdout = old_stdout
+    
+    return render(request, &#39;madweb/service.html&#39;, {&#39;text&#39;: text})
+    
+    
+    
+def mad_calculator3_service(request):
+    &#34;&#34;&#34;mad_calculator3_service runs the madCalculator3 service.
+    
+    Differs from madCalulator in that multiple times, each with a unique list of positions, can be passed in.
+    
+    Inputs:
+      request/url - contains arguments:
+      
+        year - a comma-separated list of years - (required)
+        
+        month  - a comma-separated list of months - (required)
+        
+        day - a comma-separated list of days - (required)
+        
+        hour - a comma-separated list of hours - (required)
+        
+        min - a comma-separated list of minutes - (required)
+        
+        sec - a comma-separated list of seconds - (required)
+        
+        numPos - a comma-sepatated list of the number of positions for each time - (required)
+        
+        lats - a comma-separated list of geodetic latitudes, -90 to 90 (required).  Listed
+                  for first time, then second, etc.  Total must be equal to the sum
+                  of numPos.
+                  
+        longs - a comma-separated list of longitudes (required) Listed
+                  for first time, then second, etc.  Total must be equal to the sum
+                  of numPos.
+                  
+        alts - a comma-separated list of geodetic altitudes in km (required) Listed
+                  for first time, then second, etc.  Total must be equal to the sum
+                  of numPos.
+                  
+        parms - comma delimited string of Madrigal parameters desired (required)
+        
+        oneD - string in form &lt;parm&gt;,&lt;comma-separated values&gt; This argument allows the user to
+                            set any number of one-D parameters to be used in the calculation.
+                            Value must be parameter name, comma, list of values as double,
+                            where length of list is equal to number of times.
+                            Example:  &amp;oneD=kinst,31.0,31.0&amp;oneD=elm,45.0,50
+                            (optional - 0 or more allowed)        
+                            
+         twoD=&lt;parm&gt;,&lt;values&gt;  (optional - 0 or more allowed) This argument allows the user to
+                            set any number of two-D parameters to be used in the calculation.
+                            Value must be parameter name, comma, comma-separated values.
+                            Number of values must equal the sum of numPos.  Order is
+                            first time values first, then second time values, etc
+                            Example:  twoD=te,1000,1100,1200,1000,1100,1200 &amp;twoD=ti,1000,1000,1000,1000,1000,1000
+                            where numPos=3,3
+
+    Returns comma-delimited data, one line for each location.  Separate times are delimited by line
+
+    TIME MM/DD/YYYY HH:MM:SS
+    
+    Data lines have the following fields:
+    
+    1. latitude
+    
+    2. longitude
+    
+    3. altitude
+    
+    4. Values for each Madrigal parameter listed in argument parms, separated by whitespace
+    &#34;&#34;&#34;
+    if request.method == &#39;POST&#39;:
+        reqDict = request.POST
+    else:
+        reqDict = request.GET
+    try:
+        yearList = [int(item) for item in reqDict.get(&#39;year&#39;).split(&#39;,&#39;)]
+    except AttributeError:
+        return(HttpResponse(&#39;&lt;p&gt;madCalculator3Service requires year&lt;/p&gt;&#39;))
+    monthList = [int(item) for item in reqDict.get(&#39;month&#39;).split(&#39;,&#39;)]
+    dayList = [int(item) for item in reqDict.get(&#39;day&#39;).split(&#39;,&#39;)]
+    hourList = [int(item) for item in reqDict.get(&#39;hour&#39;).split(&#39;,&#39;)]
+    minList = [int(item) for item in reqDict.get(&#39;min&#39;).split(&#39;,&#39;)]
+    secList = [int(item) for item in reqDict.get(&#39;sec&#39;).split(&#39;,&#39;)]
+    dtList = [datetime.datetime(yearList[i], monthList[i], dayList[i],
+                                hourList[i], minList[i], secList[i]) for i in range(len(yearList))]
+    numPosStr = reqDict[&#39;numPos&#39;]
+    numPosList = [int(item) for item in numPosStr.split(&#39;,&#39;)]
+    totalPos = 0
+    for numPos in numPosList:
+        totalPos += numPos
+    latsStr = reqDict[&#39;lats&#39;]
+    lats = [float(item) for item in latsStr.split(&#39;,&#39;)]
+    if len(lats) != totalPos:
+        return(HttpResponse(&#39;wrong number of lats, expected %i&#39; % (totalPos)))
+    longsStr = reqDict[&#39;longs&#39;]
+    longs = [float(item) for item in longsStr.split(&#39;,&#39;)]
+    if len(longs) != totalPos:
+        return(HttpResponse(&#39;wrong number of longs, expected %i&#39; % (totalPos)))
+    altsStr = reqDict[&#39;alts&#39;]
+    alts = [float(item) for item in altsStr.split(&#39;,&#39;)]
+    if len(alts) != totalPos:
+        return(HttpResponse(&#39;wrong number of alts, expected %i&#39; % (totalPos)))
+    
+    parms = reqDict[&#39;parms&#39;]
+    desiredParmList = [item.strip() for item in [&#39;gdlat&#39;,&#39;glon&#39;,&#39;gdalt&#39;] + parms.split(&#39;,&#39;)]
+    
+    oneDList = reqDict.getlist(&#39;oneD&#39;)
+    twoDList = reqDict.getlist(&#39;twoD&#39;)
+    
+    # since the positions can change with each call, we need to call madrigal.isprint.MadCalculatorGrid once for each time
+    startIndex = 0
+    endIndex = 0
+    fullText = &#39;&#39;
+    for timeIndex, numPos in enumerate(numPosList):
+        startIndex = endIndex
+        endIndex += numPos
+        thisLats = lats[startIndex:endIndex]
+        thisLongs = longs[startIndex:endIndex]
+        thisAlts = alts[startIndex:endIndex]
+    
+        oneDParmDict = {}
+        for oneDStr in oneDList:
+            values = oneDStr.split(&#39;,&#39;)
+            if len(values) != 1+len(dtList):
+                return(HttpResponse(&#39;wrong number of values given for 1D parm %s&#39; % (values[0])))
+            oneDParmDict[values[0]] = [float(values[timeIndex+1])]
+        
+        twoDParmDict = {}
+        
+        for twoDStr in twoDList:
+            values = twoDStr.split(&#39;,&#39;)
+            if len(values) != 1 + totalPos:
+                return(HttpResponse(&#39;twoDstr %s not correct number of points&#39; % (str(twoDStr))))
+            mnem = values[0]
+            floatValues = [float(item) for item in values[1+startIndex:1+endIndex]]
+            # now we need to expand these values to be two dimensional - 1,len(thisLats)
+            values2D = numpy.zeros((1,len(thisLats)), dtype=numpy.float)
+            values2D[0][:] = floatValues
+            twoDParmDict[mnem] = values2D
+            
+            
+    
+        # capture stdout
+        old_stdout = sys.stdout
+        sys.stdout = mystdout = io.StringIO()
+        madrigal.isprint.MadCalculatorList(None, desiredParmList, [dtList[timeIndex]], thisLats, 
+                                           thisLongs, thisAlts, 
+                                           oneDParmDict, twoDParmDict, summary=None)
+        text = mystdout.getvalue()
+        sys.stdout = old_stdout
+        
+        fullText += &#39;TIME %s\n&#39; % (dtList[timeIndex].strftime(&#39;%m/%d/%Y %H:%M:%S&#39;))
+        fullText += text
+    
+    return render(request, &#39;madweb/service.html&#39;, {&#39;text&#39;: fullText})
+    
+    
+    
+def geodetic_to_radar_service(request):
+    &#34;&#34;&#34;geodetic_to_radar_service runs the geodeticToRadar service.
+    
+    Inputs:
+      request/url - contains arguments:
+      
+        slatgd  - radar geodetic latitude
+        
+        slon - radar longitude
+        
+        saltgd - radar geodetic altitude
+        
+        gdlat - a comma-separated list of geodetic latitude of point
+        
+        glon - a comma-separated list of longitude of point. Len must be same as gdlat
+        
+        gdalt - a comma-separated list of geodetic altitude of point. Len must be same as gdlat
+
+
+    Returns comma-delimited data, one line for point in lists (points treated as individual combinations, not grids):
+
+        1. radar azimuth in degrees (0 = north)
+        
+        2. radar elevation in degrees 
+        
+        3. radar range in km
+    &#34;&#34;&#34;
+    slatgd = float(request.GET[&#39;slatgd&#39;])
+    slon = float(request.GET[&#39;slon&#39;])
+    saltgd = float(request.GET[&#39;saltgd&#39;])
+    oneDParmDict = {&#39;GDLATR&#39;: [slatgd],
+                    &#39;GDLONR&#39;: [slon],
+                    &#39;GALTR&#39;: [saltgd]}
+    gdlatStr = request.GET[&#39;gdlat&#39;]
+    gdlatList = [float(item) for item in gdlatStr.split(&#39;,&#39;)]
+    glonStr = request.GET[&#39;glon&#39;]
+    glonList = [float(item) for item in glonStr.split(&#39;,&#39;)]
+    gdaltStr = request.GET[&#39;gdalt&#39;]
+    gdaltList = [float(item) for item in gdaltStr.split(&#39;,&#39;)]
+    desiredParmList = [&#39;azm&#39;, &#39;elm&#39;, &#39;range&#39;]
+    dtList = [datetime.datetime(2001,1,1)] # not relevant
+    if len(gdlatList) != len(glonList) or len(gdlatList) != len(gdaltList):
+        return(HttpResponse(&#39;all point list lengths must be equal&#39;))
+    
+    fullText = &#39;&#39;
+    
+    delimiter = &#39;,&#39;
+    for i in range(len(gdlatList)):
+         # capture stdout
+        old_stdout = sys.stdout
+        sys.stdout = mystdout = io.StringIO()
+        madrigal.isprint.MadCalculatorGrid(None, desiredParmList, dtList, [gdlatList[i]], 
+                                       [glonList[i]], [gdaltList[i]], summary=None,
+                                       oneDParmDict=oneDParmDict)
+        text = mystdout.getvalue()
+        sys.stdout = old_stdout
+        for line in text.split(&#39;\n&#39;):
+            items = line.split()
+            fullText += delimiter.join(items) + &#39;\n&#39;
+    
+    return render(request, &#39;madweb/service.html&#39;, {&#39;text&#39;: fullText})
+
+
+def radar_to_geodetic_service(request):
+    &#34;&#34;&#34;radar_to_geodetic_service runs the radarToGeodetic service.
+    
+    Inputs:
+      request/url - contains arguments:
+      
+        slatgd  - radar geodetic latitude
+        
+        slon - radar longitude
+        
+        saltgd - radar geodetic altitude
+        
+        azs - a comma-separated list of azimuths of point
+        
+        els - a comma-separated list of elevations of point. Len must be same as azs
+        
+        ranges - a comma-separated list of ranges to point. Len must be same as azs
+
+
+    Returns comma-delimited data, one line for point in lists  (points treated as individual combinations, not grids):
+
+        1. geodetic latitude
+        
+        2. longitude (-180 to 180)
+        
+        3. geodetic altitude in km
+    &#34;&#34;&#34;
+    slatgd = float(request.GET[&#39;slatgd&#39;])
+    slon = float(request.GET[&#39;slon&#39;])
+    saltgd = float(request.GET[&#39;saltgd&#39;])
+    azStr = request.GET[&#39;az&#39;]
+    azList = [float(item) for item in azStr.split(&#39;,&#39;)]
+    elStr = request.GET[&#39;el&#39;]
+    elList = [float(item) for item in elStr.split(&#39;,&#39;)]
+    rangeStr = request.GET[&#39;range&#39;]
+    rangeList = [float(item) for item in rangeStr.split(&#39;,&#39;)]
+    if len(azList) != len(elList) or len(azList) != len(rangeList):
+        return(HttpResponse(&#39;all point list lengths must be equal&#39;))
+    
+    fullText = &#39;&#39;
+    
+    for i in range(len(azList)):
+        gdlat,glon,gdalt = madrigal._derive.radarToGeodetic(slatgd, slon, saltgd,
+                                                            azList[i], elList[i], rangeList[i])
+        fullText += &#39;%f,%f,%f\n&#39; % (gdlat,glon,gdalt)
+        
+    return render(request, &#39;madweb/service.html&#39;, {&#39;text&#39;: fullText})
+    
+    
+
+def list_file_times_service(request):
+    &#34;&#34;&#34;list_file_times_service runs the listFileTimes service.
+    
+    Inputs:
+      request/url - contains arguments:
+      
+        Optional: expDir - experiment directory to list.  Can be absolute or relative to
+            experiments[0-9]*. Default is all files in $MADROOT/experiments*
+
+    Returns comma-delimited data, one for each file:
+    
+        1. Full path of file
+        
+        2. File modification time in form YYYY-MM-DD HH:MM:SS (UT time)
+    &#34;&#34;&#34;
+    expDir = None
+    try:
+        expDir = request.GET[&#39;expDir&#39;]
+    except:
+        pass
+    madDB = madrigal.metadata.MadrigalDB()
+    fileList = madDB.listFileTimes(expDir)
+    fullText = &#39;\n\n&#39;
+    for filename, filetime in fileList:
+        fullText += &#34;\&#39;%s\&#39;, %s\n&#34; % (filename, filetime.strftime(&#39;%Y-%m-%d %H:%M:%S&#39;))
+        
+    return render(request, &#39;madweb/service.html&#39;, {&#39;text&#39;: django.utils.safestring.mark_safe(fullText)})
+
+
+def download_web_file_service(request):
+    &#34;&#34;&#34;download_web_file_service runs the downloadWebFile service.
+    
+    Inputs:
+      request/url - contains arguments:
+      
+        expPath - path to file starting at experiments*
+
+    Returns comma-delimited data, one for each file:
+    
+        1. Full path of file
+        
+        2. File modification time in form YYYY-MM-DD HH:MM:SS (UT time)
+    &#34;&#34;&#34;
+    expPath = request.GET[&#39;expPath&#39;]
+    madDB = madrigal.metadata.MadrigalDB()
+    downloadFile = os.path.join(madDB.getMadroot(), expPath)
+    f = open(downloadFile, &#39;rb&#39;)
+    thisFile = django.core.files.File(f)
+    response = HttpResponse(thisFile, content_type=&#39;application/x-octet-stream&#39;)
+    response[&#39;Content-Disposition&#39;] = &#39;attachment; filename=&#34;&#39; + os.path.basename(downloadFile) + &#39;&#34;&#39;
+    response[&#39;Content-Length&#39;] = os.path.getsize(downloadFile)
+    return(response)
+
+
+def trace_magnetic_field_service(request):
+    &#34;&#34;&#34;trace_magnetic_field_service runs the traceMagneticField service.
+    
+    Inputs:
+      request/url - contains arguments:
+      
+        year, month, day, hour, min, sec
+        
+        inputType (0 for geodetic, 1 for GSM)
+        
+        outputType (0 for geodetic, 1 for GSM)
+        
+            The following parameter depend on inputType:
+            
+        in1 - a comma-separated list of geodetic altitudes or ZGSMs of starting point
+        
+        in2 - a comma-separated list of geodetic latitudes or XGSMs of starting point
+        
+        in3 - a comma-separated list of longitude or YGSM of starting point
+
+            Length of all three lists must be the same
+        
+        model - 0 for Tsyganenko, 1 for IGRF
+        
+        qualifier - 0 for conjugate, 1 for north_alt, 2 for south_alt, 3 for apex, 4 for GSM XY plane
+        
+        stopAlt - altitude in km to stop trace at, if qualifier is north_alt or south_alt.
+        
+        If other qualifier, this parameter is not required.
+
+    Returns comma-delimited data, one line for point in in lists:
+
+        1. geodetic altitude or ZGSM of ending point
+        
+        2. geodetic latitude or XGSM of ending point
+        
+        3. longitude or YGSM of ending point
+    &#34;&#34;&#34;
+    year = int(request.GET[&#39;year&#39;])
+    month = int(request.GET[&#39;month&#39;])
+    day = int(request.GET[&#39;day&#39;])
+    hour = int(request.GET[&#39;hour&#39;])
+    minute = int(request.GET[&#39;min&#39;])
+    second = int(request.GET[&#39;sec&#39;])
+    dt = datetime.datetime(year, month, day, hour, minute, second)
+    inputType = int(request.GET[&#39;inputType&#39;])
+    if inputType not in (0,1):
+        return(HttpResponse(&#39;inputType must be 0 or 1, not %i&#39; % (inputType)))
+    outputType = int(request.GET[&#39;outputType&#39;])
+    if outputType not in (0,1):
+        return(HttpResponse(&#39;outputType must be 0 or 1, not %i&#39; % (outputType)))
+    in1Str = request.GET[&#39;in1&#39;]
+    in1List = [float(item) for item in in1Str.split(&#39;,&#39;)]
+    in2Str = request.GET[&#39;in2&#39;]
+    in2List = [float(item) for item in in2Str.split(&#39;,&#39;)]
+    in3Str = request.GET[&#39;in3&#39;]
+    in3List = [float(item) for item in in3Str.split(&#39;,&#39;)]
+    if len(in1List) != len(in2List) or len(in1List) != len(in3List):
+        return(HttpResponse(&#39;All three in* lists must have same length&#39;))
+    model = int(request.GET[&#39;model&#39;])
+    if model not in (0,1):
+        return(HttpResponse(&#39;model must be 0 or 1, not %i&#39; % (model)))
+    qualifier = int(request.GET[&#39;qualifier&#39;])
+    if qualifier not in (0,1,2,3,4):
+        return(HttpResponse(&#39;model must be in 0,1,2,3,4 not %i&#39; % (model)))
+    try:
+        stopAlt = float(request.GET[&#39;stopAlt&#39;])
+    except:
+        stopAlt = 0.0
+        
+    fullText = &#39;&#39;
+    resultArr = numpy.zeros((3,), dtype=&#39;f8&#39;)
+    madDB = madrigal.metadata.MadrigalDB()
+    madDeriveObj = madrigal.derivation.MadrigalDerivationMethods(madDB.getMadroot())
+    for i in range(len(in1List)):
+        madDeriveObj.traceMagneticField(year, month, day, hour, minute, second, 
+                                        inputType, outputType, in1List[i], in2List[i], in3List[i], 
+                                        model, qualifier, stopAlt, resultArr)
+        fullText += &#39;%f,%f,%f\n&#39; % (resultArr[0], resultArr[1], resultArr[2])
+
+    return render(request, &#39;madweb/service.html&#39;, {&#39;text&#39;: fullText})
+
+
+def global_file_search_service(request):
+    &#34;&#34;&#34;global_file_search_service returns a list of full paths to files or citable urls based on search arguments
+    
+    Inputs:
+        request/url - contains arguments:
+        
+            startDate: start date in form YYYY-MM-DD to filter experiments before
+            endDate: end date in form YYYY-MM-DD to filter experiments after 
+            inst: (optional, multiple allowed) an instrument code or name. For names,
+                fnmatch will be used. If not set, all instruments used. 
+            kindat: (optional, multiple allowed) a kind of data codes or name. For names,
+                fnmatch will be used. If not set, all kinds of data used.
+            seasonalStartDate: (optional) in form MM/DD, rejects all days earlier in year. If not set
+                implies 01/01
+            seasonalEndDate: (optional) in form MM/DD, rejects all days later in year. If not set
+                implies 12/31
+            includeNonDefault: (optional) if &#34;True&#34;, include realtime files when there are no default. 
+                If not set, only default files.
+            expName: (optional)  - filter experiments by the experiment name.  fnmatch rules
+                If not set, no filtering by experiment name.
+            excludeExpName: (optional)  - exclude experiments by the experiment name.  fnmatch rules  
+                If not set, no excluding experiments by experiment name.
+            fileDesc: (optional) filter files using input file Description string via fnmatch. 
+                If not set, in no filtering by file name
+            returnCitation: (optional) if True, return a list of file citations.  If not set, return
+                a list of full paths to the files selected
+    
+    &#34;&#34;&#34;
+    madDB = madrigal.metadata.MadrigalDB()
+    madWebObj = madrigal.ui.web.MadrigalWeb(madDB)
+    
+    # get required arguments
+    startDate = request.GET[&#39;startDate&#39;]
+    endDate = request.GET[&#39;endDate&#39;]
+    startDate = datetime.datetime.strptime(startDate, &#39;%Y-%m-%d&#39;)
+    endDate = datetime.datetime.strptime(endDate, &#39;%Y-%m-%d&#39;)
+        
+    # get optional arguments
+    inst = request.GET.getlist(&#39;inst&#39;)
+    if inst == []:
+        inst = None
+    kindat = request.GET.getlist(&#39;kindat&#39;)
+    if kindat == []:
+        kindat = None
+    seasonalStartDate = request.GET.get(&#39;seasonalStartDate&#39;, default = None)
+    seasonalEndDate = request.GET.get(&#39;seasonalEndDate&#39;, default = None)
+    includeNonDefault = bool(request.GET.get(&#39;includeNonDefault&#39;, default = False))
+    expName = request.GET.get(&#39;expName&#39;, default = None)
+    excludeExpName = request.GET.get(&#39;excludeExpName&#39;, default = None)
+    fileDesc = request.GET.get(&#39;fileDesc&#39;, default = None)
+    returnCitation = bool(request.GET.get(&#39;returnCitation&#39;, default = False))
+    
+    result = madWebObj.global_file_search(startDate, endDate, inst, kindat, 
+                                          seasonalStartDate, seasonalEndDate, 
+                                          includeNonDefault, expName, excludeExpName, 
+                                          fileDesc, returnCitation)
+    
+    fullText = &#39;&#39;
+    for item in result:
+        fullText += &#39;%s\n&#39; % (item)
+    
+    return render(request, &#39;madweb/service.html&#39;, {&#39;text&#39;: django.utils.safestring.mark_safe(fullText)})
+    
+    
+
+
+def get_url_list_from_group_id_service(request):
+    &#34;&#34;&#34;get_url_list_from_group_id_service returns a list of citable urls associated with group id.  
+    
+    Inputs:
+        request/url - contains arguments:
+        
+            id - group id
+            
+        Returns one line for each citable url
+        
+        Returns empty string if experiment id not found.  Skips files that are not Hdf5
+    &#34;&#34;&#34;
+    id = int(request.GET[&#39;id&#39;])
+    
+    # create MadrigalDB obj
+    madDBObj = madrigal.metadata.MadrigalDB()
+
+    urlList = madDBObj.getListFromGroupId(id)
+        
+    retStr = &#39;&#39;
+    for url in urlList:
+        retStr += &#39;%s\n&#39; % (url)
+    
+    return render(request, &#39;madweb/service.html&#39;, {&#39;text&#39;: django.utils.safestring.mark_safe(retStr)})
+
+
+def set_group_id_from_url_list_service(request):
+    &#34;&#34;&#34;set_group_id_from_url_list sets a list of citable urls to a group id .  
+    
+    Inputs:
+        request/url - contains arguments:
+            
+            &#39;user_fullname&#39;     user name 
+            
+            &#39;user_email&#39;        user email
+            
+            &#39;user_affiliation&#39;  user affiliation
+            
+            &#39;url&#39; -  citable url.  Multiple arguments allowed
+    
+    Returns group id (integer) set
+    &#34;&#34;&#34;
+    madDB = madrigal.metadata.MadrigalDB()
+    
+    print(request.GET)
+    
+    # get required arguments
+    urls = request.GET.getlist(&#39;url&#39;)
+    user_fullname = request.GET[&#39;user_fullname&#39;]
+    user_email = request.GET[&#39;user_email&#39;]
+    user_affiliation = request.GET[&#39;user_affiliation&#39;]
+    
+    id = madDB.createGroupIdWithList(user_fullname, user_email, user_affiliation, urls)
+    
+    return render(request, &#39;madweb/service.html&#39;, {&#39;text&#39;: str(id)})
+
+
+    </code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="services.download_web_file_service"><code class="name flex">
+<span>def <span class="ident">download_web_file_service</span></span>(<span>request)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>download_web_file_service runs the downloadWebFile service.</p>
+<h2 id="inputs">Inputs</h2>
+<p>request/url - contains arguments:</p>
+<p>expPath - path to file starting at experiments*</p>
+<p>Returns comma-delimited data, one for each file:</p>
+<pre><code>1. Full path of file
+
+2. File modification time in form YYYY-MM-DD HH:MM:SS (UT time)
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def download_web_file_service(request):
+    &#34;&#34;&#34;download_web_file_service runs the downloadWebFile service.
+    
+    Inputs:
+      request/url - contains arguments:
+      
+        expPath - path to file starting at experiments*
+
+    Returns comma-delimited data, one for each file:
+    
+        1. Full path of file
+        
+        2. File modification time in form YYYY-MM-DD HH:MM:SS (UT time)
+    &#34;&#34;&#34;
+    expPath = request.GET[&#39;expPath&#39;]
+    madDB = madrigal.metadata.MadrigalDB()
+    downloadFile = os.path.join(madDB.getMadroot(), expPath)
+    f = open(downloadFile, &#39;rb&#39;)
+    thisFile = django.core.files.File(f)
+    response = HttpResponse(thisFile, content_type=&#39;application/x-octet-stream&#39;)
+    response[&#39;Content-Disposition&#39;] = &#39;attachment; filename=&#34;&#39; + os.path.basename(downloadFile) + &#39;&#34;&#39;
+    response[&#39;Content-Length&#39;] = os.path.getsize(downloadFile)
+    return(response)</code></pre>
+</details>
+</dd>
+<dt id="services.geodetic_to_radar_service"><code class="name flex">
+<span>def <span class="ident">geodetic_to_radar_service</span></span>(<span>request)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>geodetic_to_radar_service runs the geodeticToRadar service.</p>
+<h2 id="inputs">Inputs</h2>
+<p>request/url - contains arguments:</p>
+<p>slatgd
+- radar geodetic latitude</p>
+<p>slon - radar longitude</p>
+<p>saltgd - radar geodetic altitude</p>
+<p>gdlat - a comma-separated list of geodetic latitude of point</p>
+<p>glon - a comma-separated list of longitude of point. Len must be same as gdlat</p>
+<p>gdalt - a comma-separated list of geodetic altitude of point. Len must be same as gdlat</p>
+<p>Returns comma-delimited data, one line for point in lists (points treated as individual combinations, not grids):</p>
+<pre><code>1. radar azimuth in degrees (0 = north)
+
+2. radar elevation in degrees
+
+3. radar range in km
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def geodetic_to_radar_service(request):
+    &#34;&#34;&#34;geodetic_to_radar_service runs the geodeticToRadar service.
+    
+    Inputs:
+      request/url - contains arguments:
+      
+        slatgd  - radar geodetic latitude
+        
+        slon - radar longitude
+        
+        saltgd - radar geodetic altitude
+        
+        gdlat - a comma-separated list of geodetic latitude of point
+        
+        glon - a comma-separated list of longitude of point. Len must be same as gdlat
+        
+        gdalt - a comma-separated list of geodetic altitude of point. Len must be same as gdlat
+
+
+    Returns comma-delimited data, one line for point in lists (points treated as individual combinations, not grids):
+
+        1. radar azimuth in degrees (0 = north)
+        
+        2. radar elevation in degrees 
+        
+        3. radar range in km
+    &#34;&#34;&#34;
+    slatgd = float(request.GET[&#39;slatgd&#39;])
+    slon = float(request.GET[&#39;slon&#39;])
+    saltgd = float(request.GET[&#39;saltgd&#39;])
+    oneDParmDict = {&#39;GDLATR&#39;: [slatgd],
+                    &#39;GDLONR&#39;: [slon],
+                    &#39;GALTR&#39;: [saltgd]}
+    gdlatStr = request.GET[&#39;gdlat&#39;]
+    gdlatList = [float(item) for item in gdlatStr.split(&#39;,&#39;)]
+    glonStr = request.GET[&#39;glon&#39;]
+    glonList = [float(item) for item in glonStr.split(&#39;,&#39;)]
+    gdaltStr = request.GET[&#39;gdalt&#39;]
+    gdaltList = [float(item) for item in gdaltStr.split(&#39;,&#39;)]
+    desiredParmList = [&#39;azm&#39;, &#39;elm&#39;, &#39;range&#39;]
+    dtList = [datetime.datetime(2001,1,1)] # not relevant
+    if len(gdlatList) != len(glonList) or len(gdlatList) != len(gdaltList):
+        return(HttpResponse(&#39;all point list lengths must be equal&#39;))
+    
+    fullText = &#39;&#39;
+    
+    delimiter = &#39;,&#39;
+    for i in range(len(gdlatList)):
+         # capture stdout
+        old_stdout = sys.stdout
+        sys.stdout = mystdout = io.StringIO()
+        madrigal.isprint.MadCalculatorGrid(None, desiredParmList, dtList, [gdlatList[i]], 
+                                       [glonList[i]], [gdaltList[i]], summary=None,
+                                       oneDParmDict=oneDParmDict)
+        text = mystdout.getvalue()
+        sys.stdout = old_stdout
+        for line in text.split(&#39;\n&#39;):
+            items = line.split()
+            fullText += delimiter.join(items) + &#39;\n&#39;
+    
+    return render(request, &#39;madweb/service.html&#39;, {&#39;text&#39;: fullText})</code></pre>
+</details>
+</dd>
+<dt id="services.get_experiment_files_service"><code class="name flex">
+<span>def <span class="ident">get_experiment_files_service</span></span>(<span>request)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>get_experiment_files_service runs the getExperimentFilesService.py service.
+</p>
+<h2 id="inputs">Inputs</h2>
+<p>request/url - contains arguments:</p>
+<pre><code>id - local experiment id
+</code></pre>
+<p>Returns comma-delimited data, one line for each experiment file, with the following fields:</p>
+<pre><code>1. file.name (string) Example '/opt/mdarigal/blah/mlh980120g.001'
+
+2. file.kindat (int) Kindat code.  Example: 3001
+
+3. file.kindat desc (string) Kindat description: Example 'Basic Derived Parameters'
+
+4. file.category (int) (1=default, 2=variant, 3=history, 4=real-time)
+
+5. file.status (string)('preliminary', 'final', or any other description)
+
+6. file.permission (int)  0 for public, 1 for private.  For now will not return private files.
+
+7. file DOI (string) - citable url to file
+</code></pre>
+<p>Returns empty string if experiment id not found.
+Skips files that are not Hdf5</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_experiment_files_service(request):
+    &#34;&#34;&#34;get_experiment_files_service runs the getExperimentFilesService.py service.  
+    
+    Inputs:
+        request/url - contains arguments:
+        
+            id - local experiment id
+            
+        Returns comma-delimited data, one line for each experiment file, with the following fields:
+
+            1. file.name (string) Example &#39;/opt/mdarigal/blah/mlh980120g.001&#39;
+            
+            2. file.kindat (int) Kindat code.  Example: 3001
+            
+            3. file.kindat desc (string) Kindat description: Example &#39;Basic Derived Parameters&#39;
+            
+            4. file.category (int) (1=default, 2=variant, 3=history, 4=real-time)
+            
+            5. file.status (string)(&#39;preliminary&#39;, &#39;final&#39;, or any other description)
+            
+            6. file.permission (int)  0 for public, 1 for private.  For now will not return private files.
+            
+            7. file DOI (string) - citable url to file
+        
+        Returns empty string if experiment id not found.  Skips files that are not Hdf5
+    &#34;&#34;&#34;
+    id = int(request.GET[&#39;id&#39;])
+    
+    # create MadrigalDB obj
+    madDBObj = madrigal.metadata.MadrigalDB()
+
+    # create MadrigalExperiments object to get full file name
+    madExpObj = madrigal.metadata.MadrigalExperiment(madDBObj)
+
+    # create Madrigal Kindat to get Kindat descriptions
+    madKindatObj = madrigal.metadata.MadrigalKindat(madDBObj)
+    
+    madWebObj = madrigal.ui.web.MadrigalWeb(madDBObj)
+    trusted = madWebObj.isTrusted()
+
+        
+    retStr = &#39;&#39;
+    thisUrl = madExpObj.getExpUrlByExpId(id)
+    if thisUrl is None:
+        raise IOError(&#39;No such id: %i&#39; % (id))
+    expPath = madExpObj.getExpDirByExpId(id)
+    kinst = madExpObj.getKinstByExpId(id)
+    if os.access(os.path.join(expPath, &#39;fileTab.txt&#39;), os.R_OK):
+        madFileObj = madrigal.metadata.MadrigalMetaFile(madDBObj, os.path.join(expPath, &#39;fileTab.txt&#39;))
+        for i in range(madFileObj.getFileCount()):
+            basename = madFileObj.getFilenameByPosition(i)
+            name = os.path.join(expPath, basename)
+            base_filename, file_extension = os.path.splitext(name)
+            if file_extension not in (&#39;.hdf5&#39;, &#39;.hdf&#39;, &#39;.h5&#39;):
+                continue
+            kindat = madFileObj.getKindatByPosition(i)
+            kindatdesc = madKindatObj.getKindatDescription(kindat, kinst)
+            category = madFileObj.getCategoryByPosition(i)
+            status = madFileObj.getStatusByPosition(i)
+            permission = madFileObj.getAccessByPosition(i)
+            doi = madFileObj.getFileDOIUrlByPosition(i)
+    
+            # skip private files if not trusted
+            if trusted == 0 and int(permission) != 0:
+                continue
+                
+            retStr += &#39;%s,%i,%s,%i,%s,%i,%s\n&#39; % \
+                   (name,
+                    kindat,
+                    kindatdesc,
+                    category,
+                    status,
+                    permission,
+                    doi)
+        
+    
+    
+    return render(request, &#39;madweb/service.html&#39;, {&#39;text&#39;: django.utils.safestring.mark_safe(retStr)})</code></pre>
+</details>
+</dd>
+<dt id="services.get_experiments_service"><code class="name flex">
+<span>def <span class="ident">get_experiments_service</span></span>(<span>request)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>get_experiments_service runs the getExperimentsService.py service.
+</p>
+<h2 id="inputs">Inputs</h2>
+<p>request/url - contains arguments:</p>
+<pre><code>code - one or more kindat values
+
+startyear, startmonth, startday, starthour, startmin, startsec
+
+endyear, endmonth, endday, endhour, endmin, endsec
+
+local (defaults to True)
+</code></pre>
+<p>Returns comma-delimited data, one line for each experiment, with the following fields:</p>
+<pre><code>1. experiment.id (int) Example: 10000111
+
+2. experiment.url (string) Example: 'http://www.haystack.mit.edu/cgi-bin/madtoc/1997/mlh/03dec97'
+
+3. experiment.name (string) Example: 'Wide Latitude Substorm Study'
+
+4. experiment.siteid (int) Example: 1
+
+5. experiment.sitename (string) Example: 'Millstone Hill Observatory'
+
+6. experiment.instcode (int) Code of instrument. Example: 30
+
+7. experiment.instname (string) Instrument name. Example: 'Millstone Hill Incoherent Scatter Radar'
+
+8. experiment.start year (int) year of experiment start
+
+9. experiment.start month (int) month of experiment start
+
+10. experiment.start day (int) day of experiment start
+
+11. experiment.start hour (int) hour of experiment start
+
+12. experiment.start minute (int) min of experiment start
+
+13. experiment.start second (int) sec of experiment start
+
+14. experiment.end year (int) year of experiment end
+
+15. experiment.end month (int) month of experiment end
+
+16. experiment.end day (int) day of experiment end
+
+17. experiment.end hour (int) hour of experiment end
+
+18. experiment.end minute (int) min of experiment end
+
+19. experiment.end second (int) sec of experiment end
+
+20. experiment.isLocal (int) 1 if local, 0 if not
+
+21.experiment.PI (string) Experiment PI name Example: 'Phil Erickson'
+
+22. experiment.PIEmail (string) Experiment PI email Example: 'perickson@haystack.mit.edu'
+
+23. utc timestamp of last update to experiment
+
+24. security value
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_experiments_service(request):
+    &#34;&#34;&#34;get_experiments_service runs the getExperimentsService.py service.  
+    
+    Inputs:
+        request/url - contains arguments:
+        
+            code - one or more kindat values
+            
+            startyear, startmonth, startday, starthour, startmin, startsec
+            
+            endyear, endmonth, endday, endhour, endmin, endsec
+            
+            local (defaults to True)
+            
+    Returns comma-delimited data, one line for each experiment, with the following fields:
+
+        1. experiment.id (int) Example: 10000111
+        
+        2. experiment.url (string) Example: &#39;http://www.haystack.mit.edu/cgi-bin/madtoc/1997/mlh/03dec97&#39;
+        
+        3. experiment.name (string) Example: &#39;Wide Latitude Substorm Study&#39;
+        
+        4. experiment.siteid (int) Example: 1
+        
+        5. experiment.sitename (string) Example: &#39;Millstone Hill Observatory&#39;
+        
+        6. experiment.instcode (int) Code of instrument. Example: 30
+        
+        7. experiment.instname (string) Instrument name. Example: &#39;Millstone Hill Incoherent Scatter Radar&#39;
+        
+        8. experiment.start year (int) year of experiment start
+        
+        9. experiment.start month (int) month of experiment start
+        
+        10. experiment.start day (int) day of experiment start
+        
+        11. experiment.start hour (int) hour of experiment start
+        
+        12. experiment.start minute (int) min of experiment start
+        
+        13. experiment.start second (int) sec of experiment start
+        
+        14. experiment.end year (int) year of experiment end
+        
+        15. experiment.end month (int) month of experiment end
+        
+        16. experiment.end day (int) day of experiment end
+        
+        17. experiment.end hour (int) hour of experiment end
+        
+        18. experiment.end minute (int) min of experiment end
+        
+        19. experiment.end second (int) sec of experiment end
+        
+        20. experiment.isLocal (int) 1 if local, 0 if not
+        
+        21.experiment.PI (string) Experiment PI name Example: &#39;Phil Erickson&#39;
+
+        22. experiment.PIEmail (string) Experiment PI email Example: &#39;perickson@haystack.mit.edu&#39;
+        
+        23. utc timestamp of last update to experiment
+        
+        24. security value
+        
+    &#34;&#34;&#34;
+    codeList = request.GET.getlist(&#39;code&#39;)
+    codeList = [int(code) for code in codeList]
+    startyear = int(request.GET[&#39;startyear&#39;])
+    startmonth = int(request.GET[&#39;startmonth&#39;])
+    startday = int(request.GET[&#39;startday&#39;])
+    starthour = int(request.GET[&#39;starthour&#39;])
+    startmin = int(request.GET[&#39;startmin&#39;])
+    startsec = int(request.GET[&#39;startsec&#39;])
+    endyear = int(request.GET[&#39;endyear&#39;])
+    endmonth = int(request.GET[&#39;endmonth&#39;])
+    endday = int(request.GET[&#39;endday&#39;])
+    endhour = int(request.GET[&#39;endhour&#39;])
+    endmin = int(request.GET[&#39;endmin&#39;])
+    endsec = int(request.GET[&#39;endsec&#39;])
+    try:
+        local = int(request.GET[&#39;local&#39;])
+    except:
+        local = 1
+    
+    
+    # if startsec or endsec in (60, 61), handle correctly
+    if startsec in (60, 61):
+        tmpTime = datetime.datetime(startyear,
+                                    startmonth,
+                                    startday,
+                                    starthour,
+                                    startmin,
+                                    59)
+        tmpTime += datetime.timedelta(0, startsec - 59)
+        startyear = tmpTime.year
+        startmonth = tmpTime.month
+        startday = tmpTime.day
+        starthour = tmpTime.hour
+        startmin = tmpTime.minute
+        startsec = tmpTime.second
+
+    if endsec in (60, 61):
+        tmpTime = datetime.datetime(endyear,
+                                    endmonth,
+                                    endday,
+                                    endhour,
+                                    endmin,
+                                    59)
+        tmpTime += datetime.timedelta(0, endsec - 59)
+        endyear = tmpTime.year
+        endmonth = tmpTime.month
+        endday = tmpTime.day
+        endhour = tmpTime.hour
+        endmin = tmpTime.minute
+        endsec = tmpTime.second
+        
+    # if codeList is empty or contains 0, change it to only contain 0
+    if len(codeList) == 0 or 0 in codeList:
+        codeList = [0]
+        
+    retStr = &#39;&#39;
+
+    # create MadrigalDB obj
+    madDBObj = madrigal.metadata.MadrigalDB()
+
+    # get the local site id
+    localSiteId = madDBObj.getSiteID()
+
+    # create MadrigalInstrument obj to convert kinst to instrument names
+    madInstObj = madrigal.metadata.MadrigalInstrument(madDBObj)
+
+    # create MadrigalSite obj to convert site id to site name
+    madSiteObj = madrigal.metadata.MadrigalSite(madDBObj)
+    
+    madWebObj = madrigal.ui.web.MadrigalWeb(madDBObj)
+    trusted = madWebObj.isTrusted()
+
+    # create starttime for filter, if possible
+    if startyear != None:
+        startTimeFilter = datetime.datetime(startyear,
+                        startmonth,
+                        startday,
+                        starthour,
+                        startmin,
+                        startsec) 
+    else:
+        startTimeFilter = None
+
+    # create endtime for filter, if possible
+    if endyear != None:
+        endTimeFilter = datetime.datetime(endyear,
+                          endmonth,
+                      endday,
+                      endhour,
+                      endmin,
+                      endsec) 
+    else:
+        endTimeFilter = None
+
+    # create MadrigalExperiments for local or all files
+    if local == 1:
+        madExpObj = madrigal.metadata.MadrigalExperiment(madDBObj)
+    else:
+        # use file expTabAll.txt to get all experiments
+        filename = madDBObj.getMadroot()
+        if filename[-1] != &#39;/&#39;:
+            filename += &#39;/&#39;
+        filename += &#39;metadata/expTabAll.txt&#39;
+        madExpObj = madrigal.metadata.MadrigalExperiment(madDBObj, filename)
+        
+    madExpObj.sortByDateSite()
+
+
+    # loop through the data
+    if not startTimeFilter is None:
+        position = madExpObj.getStartPosition(startTimeFilter)
+    else:
+        position = 0
+    while(True):
+        thisId = madExpObj.getExpIdByPosition(position)
+        # check for end
+        if thisId == None:
+            break
+        thisUrl = madExpObj.getExpUrlByPosition(position)
+        thisName = madExpObj.getExpNameByPosition(position)
+        thisSiteId = madExpObj.getExpSiteIdByPosition(position)
+        thisSiteName = madSiteObj.getSiteName(thisSiteId)
+        thisInstCode = madExpObj.getKinstByPosition(position)
+        thisInstName =madInstObj.getInstrumentName(thisInstCode)
+        thisStart = madExpObj.getExpStartDateTimeByPosition(position)
+        thisEnd = madExpObj.getExpEndDateTimeByPosition(position)
+        thisSecurity = madExpObj.getSecurityByPosition(position)
+        if thisSiteId == localSiteId:
+            thisLocal = 1
+        else:
+            thisLocal = 0
+        thisPI = madExpObj.getPIByPosition(position)
+        if thisPI in (None, &#39;&#39;):
+            thisPI = madInstObj.getContactName(thisInstCode)
+        thisPIEmail = madExpObj.getPIEmailByPosition(position)
+        if thisPIEmail in (None, &#39;&#39;):
+            thisPIEmail = madInstObj.getContactEmail(thisInstCode)
+        expDir = madExpObj.getExpDirByPosition(position)
+            
+        position += 1
+
+        # some experiments set the end of the day to 24:00:00 - not
+        # technically correct - reset to 23:59:59
+        
+        if (thisStart[3] == 24 and thisStart[4] == 0 and thisStart[5] == 0):
+            thisStart[3] = 23
+            thisStart[4] = 59
+            thisStart[5] = 59
+
+        if (thisEnd[3] == 24 and thisEnd[4] == 0 and thisEnd[5] == 0):
+            thisEnd[3] = 23
+            thisEnd[4] = 59
+            thisEnd[5] = 59
+        
+        # apply filters
+        
+        # first apply instrument code filter
+        if codeList[0] != 0:
+            if thisInstCode not in codeList:
+                continue
+
+        # apply starttime and endtime filters
+        thisStartTime = datetime.datetime(thisStart[0],
+                                          thisStart[1],
+                                          thisStart[2],
+                                          thisStart[3],
+                                          thisStart[4],
+                                          thisStart[5])
+
+        thisEndTime = datetime.datetime(thisEnd[0],
+                                        thisEnd[1],
+                                        thisEnd[2],
+                                        thisEnd[3],
+                                        thisEnd[4],
+                                        thisEnd[5])
+        
+        if startTimeFilter != None:
+            if thisEndTime &lt; startTimeFilter:
+                continue
+
+        if endTimeFilter != None:
+            if thisStartTime &gt; endTimeFilter:
+                continue
+
+        # apply local filer
+        if local == 1 and thisLocal == 0:
+            continue
+
+        # apply security filter
+        if trusted == 0 and thisSecurity not in (0,2):
+            continue
+        
+        # create exp timestamp
+        if local == 1:
+            thisUTTimestamp = int(os.stat(expDir).st_mtime + time.timezone)
+        else:
+            thisUTTimestamp = 0
+
+        # add this experiment
+        retStr += &#39;%i,%s,%s,%i,%s,%i,%s,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i,%s,%s,%i,%i\n&#39; % \
+                (thisId,
+                thisUrl,
+                thisName,
+                thisSiteId,
+                thisSiteName,
+                thisInstCode,
+                thisInstName,
+                thisStart[0],
+                thisStart[1],
+                thisStart[2],
+                thisStart[3],
+                thisStart[4],
+                thisStart[5],
+                thisEnd[0],
+                thisEnd[1],
+                thisEnd[2],
+                thisEnd[3],
+                thisEnd[4],
+                thisEnd[5],
+                thisLocal,
+                str(thisPI),
+                str(thisPIEmail),
+                thisUTTimestamp,
+                thisSecurity)
+                
+    return render(request, &#39;madweb/service.html&#39;, {&#39;text&#39;: retStr})</code></pre>
+</details>
+</dd>
+<dt id="services.get_instruments_service"><code class="name flex">
+<span>def <span class="ident">get_instruments_service</span></span>(<span>request)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>get_instruments_service runs the getInstrumentsService.py service.
+</p>
+<h2 id="inputs">Inputs</h2>
+<p>request (ignored)</p>
+<p>Returns comma-delimited data, one line for each experiment, with the following fields:</p>
+<ol>
+<li>
+<p>instrument.name
+Example: 'Millstone Hill Incoherent Scatter Radar'</p>
+</li>
+<li>
+<p>instrument.code Example: 30</p>
+</li>
+<li>
+<p>instrument.mnemonic (3 char string) Example: 'mlh'</p>
+</li>
+<li>
+<p>instrument.latitude
+Example: 45.0</p>
+</li>
+<li>
+<p>instrument.longitude
+Example: 110.0</p>
+</li>
+<li>
+<p>instrument.altitude
+Example: 0.015 (km) </p>
+</li>
+<li>
+<p>instrument.category
+Example: 'Incoherent Scatter Radars'</p>
+</li>
+<li>
+<p>contact name</p>
+</li>
+<li>
+<p>contact email</p>
+</li>
+</ol></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_instruments_service(request):
+    &#34;&#34;&#34;get_instruments_service runs the getInstrumentsService.py service.  
+    
+    Inputs:
+        request (ignored)
+        
+        Returns comma-delimited data, one line for each experiment, with the following fields:
+
+        1. instrument.name  Example: &#39;Millstone Hill Incoherent Scatter Radar&#39;
+
+        2. instrument.code Example: 30
+
+        3. instrument.mnemonic (3 char string) Example: &#39;mlh&#39;
+
+        4. instrument.latitude  Example: 45.0
+
+        5. instrument.longitude  Example: 110.0
+
+        6. instrument.altitude   Example: 0.015 (km) 
+        
+        7. instrument.category  Example: &#39;Incoherent Scatter Radars&#39;
+        
+        8. contact name
+        
+        9. contact email
+    &#34;&#34;&#34;
+    # create MadrigalDB obj
+    madDBObj = madrigal.metadata.MadrigalDB()
+
+    # create MadrigalInstument object
+    madInst = madrigal.metadata.MadrigalInstrument(madDBObj)
+
+    # get instrument list
+    instList = madInst.getInstrumentList()
+
+    # loop through each instrument
+    instStr = &#39;&#39;
+    for inst in instList:
+        name = inst[0]
+        code = inst[2]
+        mnemonic = inst[1]
+        latitude = madInst.getLatitude(code)
+        if latitude == None:
+            latitude = 0.0
+        longitude = madInst.getLongitude(code)
+        if longitude == None:
+            longitude = 0.0
+        altitude = madInst.getAltitude(code)
+        if altitude == None:
+            altitude = 0.0
+        category = madInst.getCategory(code)
+        if category == None:
+            category = &#39;&#39;
+        # print data
+        contactName = madInst.getContactName(code)
+        contactEmail = madInst.getContactEmail(code)
+        instStr += &#39;%s,%i,%s,%f,%f,%f,%s,%s,%s\n&#39; % (name,
+                                                     code,
+                                                     mnemonic,
+                                                     latitude,
+                                                     longitude,
+                                                     altitude,
+                                                     category,
+                                                     str(contactName),
+                                                     str(contactEmail))
+        
+    return render(request, &#39;madweb/service.html&#39;, {&#39;text&#39;: instStr})</code></pre>
+</details>
+</dd>
+<dt id="services.get_madfile_service"><code class="name flex">
+<span>def <span class="ident">get_madfile_service</span></span>(<span>request)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>get_madfile_service runs the getMadfile.cgi service.
+</p>
+<h2 id="inputs">Inputs</h2>
+<p>request/url - contains arguments:</p>
+<pre><code>'fileName': The full path to the file to be downloaded as.
+
+'fileType': -1 for ascii, -2 for Hdf5, -3 for netCDF4. No other values supported
+
+'user_fullname'     user name
+
+'user_email'        user email
+
+'user_affiliation'  user affiliation
+</code></pre>
+<p>Returns file as either column delimited ascii, Hdf5, or netCDF4.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_madfile_service(request):
+    &#34;&#34;&#34;get_madfile_service runs the getMadfile.cgi service.  
+    
+    Inputs:
+        request/url - contains arguments:
+        
+            &#39;fileName&#39;: The full path to the file to be downloaded as.
+            
+            &#39;fileType&#39;: -1 for ascii, -2 for Hdf5, -3 for netCDF4. No other values supported
+            
+            &#39;user_fullname&#39;     user name 
+            
+            &#39;user_email&#39;        user email
+            
+            &#39;user_affiliation&#39;  user affiliation
+    
+    Returns file as either column delimited ascii, Hdf5, or netCDF4.
+    &#34;&#34;&#34;
+    madDB = madrigal.metadata.MadrigalDB()
+    madWebObj = madrigal.ui.web.MadrigalWeb(madDB)
+    
+    # get required arguments
+    fileName = request.GET[&#39;fileName&#39;]
+    fileType = int(request.GET[&#39;fileType&#39;])
+    user_fullname = request.GET[&#39;user_fullname&#39;]
+    user_email = request.GET[&#39;user_email&#39;]
+    user_affiliation = request.GET[&#39;user_affiliation&#39;]
+    
+    if fileType not in (-1, -2, -3):
+        return(HttpResponse(&#39;&lt;p&gt;fileType %i not allowed: -1 for ascii, -2 for Hdf5, -3 for netCDF4&lt;/p&gt;&#39; % (fileType)))
+    
+    # log data access
+    madWebObj.logDataAccess(fileName, user_fullname, user_email, user_affiliation)
+    
+    if fileType in (-1, -3):
+        # may need to create temp file
+        filepath, file_extension = os.path.splitext(fileName)
+        basename = os.path.basename(filepath)
+        dirname = os.path.dirname(fileName)
+        if fileType == -1:
+            cachedTxtFile = os.path.join(dirname, &#39;overview&#39;, os.path.basename(fileName) + &#39;.txt.gz&#39;)
+            tmpFile = os.path.join(tempfile.gettempdir(), basename + &#39;.txt.gz&#39;)
+            if os.access(cachedTxtFile, os.R_OK):
+                shutil.copy(cachedTxtFile, tmpFile)
+            else:
+                tmpFile = os.path.join(tempfile.gettempdir(), basename + &#39;.txt&#39;)
+                madrigal.cedar.convertToText(fileName, tmpFile)
+        else:
+            cachedNCFile = os.path.join(dirname, &#39;overview&#39;, os.path.basename(fileName) + &#39;.nc&#39;)
+            tmpFile = os.path.join(tempfile.gettempdir(), basename + &#39;.nc&#39;)
+            if os.access(cachedNCFile, os.R_OK):
+                shutil.copy(cachedNCFile, tmpFile)
+            else:
+                try:
+                    madrigal.cedar.convertToNetCDF4(fileName, tmpFile)
+                except IOError:
+                    cedarObj = madrigal.cedar.MadrigalCedarFile(fileName)
+                    cedarObj.write(&#39;netCDF4&#39;, tmpFile)
+        
+    else:
+        tmpFile = fileName
+        
+    f = open(tmpFile, &#39;rb&#39;)
+    filename = os.path.basename(tmpFile)
+    chunk_size = 8192
+    file_type = mimetypes.guess_type(tmpFile)[0]
+    if file_type is None:
+        file_type = &#39;application/octet-stream&#39;
+    response = StreamingHttpResponse(FileWrapper(f, chunk_size),
+                                     content_type=file_type)
+    response[&#39;Content-Length&#39;] = os.path.getsize(tmpFile)    
+    response[&#39;Content-Disposition&#39;] = &#34;attachment; filename=%s&#34; % (filename)
+    if fileType in (-1, -3):
+        os.remove(tmpFile)
+    return(response)</code></pre>
+</details>
+</dd>
+<dt id="services.get_parameters_service"><code class="name flex">
+<span>def <span class="ident">get_parameters_service</span></span>(<span>request)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>get_parameters_service runs the getParametersService.py service.
+</p>
+<h2 id="inputs">Inputs</h2>
+<p>request/url - contains arguments:</p>
+<pre><code>filename=&lt;full path to data file&gt;
+</code></pre>
+<p>Returns backslash-delimited data, one for each parameter either measured or derivable, with the following fields:</p>
+<pre><code>1. parameter.mnemonic (string) Example 'dti'
+
+2. parameter.description (string) Example:
+    "F10.7 Multiday average observed (Ott)"
+
+3. parameter.isError (int) 1 if error parameter, 0 if not
+
+4. parameter.units (string) Example "W/m2/Hz"
+
+5. parameter.isMeasured (int) 1 if measured, 0 if derivable
+
+6. parameter.category (string) Example: "Time Related Parameter"
+
+7. parameter.isSure (int) - 1 if parameter can be found for every record, 0 if can only be found for some.
+    Not relevant to Madrigal 3, where always 1
+
+8. parameter.isAddIncrement - 1 if additional increment, 0 if normal (Added in Madrigal 2.5)
+    Not relevant to Madrigal 3, where always -1
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_parameters_service(request):
+    &#34;&#34;&#34;get_parameters_service runs the getParametersService.py service.  
+    
+    Inputs:
+        request/url - contains arguments:
+        
+            filename=&lt;full path to data file&gt;
+            
+        Returns backslash-delimited data, one for each parameter either measured or derivable, with the following fields:
+
+            1. parameter.mnemonic (string) Example &#39;dti&#39;
+            
+            2. parameter.description (string) Example:
+                &#34;F10.7 Multiday average observed (Ott)&#34;
+                
+            3. parameter.isError (int) 1 if error parameter, 0 if not
+            
+            4. parameter.units (string) Example &#34;W/m2/Hz&#34;
+            
+            5. parameter.isMeasured (int) 1 if measured, 0 if derivable
+            
+            6. parameter.category (string) Example: &#34;Time Related Parameter&#34;
+            
+            7. parameter.isSure (int) - 1 if parameter can be found for every record, 0 if can only be found for some.
+                Not relevant to Madrigal 3, where always 1
+    
+            8. parameter.isAddIncrement - 1 if additional increment, 0 if normal (Added in Madrigal 2.5)
+                Not relevant to Madrigal 3, where always -1
+    &#34;&#34;&#34;
+    filename = request.GET[&#39;filename&#39;]
+    
+    # create MadrigalDB obj
+    madDBObj = madrigal.metadata.MadrigalDB()
+
+    # create Madrigal File object 
+    madFileObj = madrigal.data.MadrigalFile(filename, madDBObj)
+
+    # create Madrigal Parameter object
+    madParmObj = madrigal.data.MadrigalParameters(madDBObj)
+    
+    # create Madrigal web object 
+    madWebObj = madrigal.ui.web.MadrigalWebFormat()
+    
+
+    # create lists of parameters
+    measParmList = []
+    derivedParmList = []
+    allParmList = []
+    sureParmList = []
+
+    # use the comprehensive list of parameters to check if derivable
+    parmList = madWebObj.getFormat(&#39;Comprehensive&#39;)
+
+    # populate lists
+    madFileObj.getMeasDervBothParmLists(parmList,
+                                        measParmList,
+                                        derivedParmList,
+                                        allParmList,
+                                        sureParmList)
+
+    retStr = &#39;&#39;
+    
+    # loop through allParmList and output results
+    for parm in allParmList:
+        description = madParmObj.getSimpleParmDescription(parm)
+        isNorm = madParmObj.getParmType(parm)
+        if isNorm == 1:
+            isError = 0
+        else:
+            isError = 1
+        units = madParmObj.getParmUnits(parm)
+        if parm in measParmList:
+            isMeasured = 1
+        else:
+            isMeasured = 0
+        if parm in sureParmList:
+            isSure = 1
+        else:
+            isSure = 0
+        category = madParmObj.getParmCategory(parm)
+        try:
+            if madParmObj.isAddIncrement(parm):
+                isAddIncrement = 1
+            else:
+                isAddIncrement = 0
+        except:
+            isAddIncrement = -1
+        # print out this parm
+        retStr += &#39;%s\\%s\\%i\\%s\\%i\\%s\\%i\\%i\n&#39; % (parm,
+                                                description,
+                                                isError,
+                                                units,
+                                                isMeasured,
+                                                category,
+                                                isSure,
+                                                isAddIncrement)
+        
+    return render(request, &#39;madweb/service.html&#39;, {&#39;text&#39;: retStr})</code></pre>
+</details>
+</dd>
+<dt id="services.get_url_list_from_group_id_service"><code class="name flex">
+<span>def <span class="ident">get_url_list_from_group_id_service</span></span>(<span>request)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>get_url_list_from_group_id_service returns a list of citable urls associated with group id.
+</p>
+<h2 id="inputs">Inputs</h2>
+<p>request/url - contains arguments:</p>
+<pre><code>id - group id
+</code></pre>
+<p>Returns one line for each citable url</p>
+<p>Returns empty string if experiment id not found.
+Skips files that are not Hdf5</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_url_list_from_group_id_service(request):
+    &#34;&#34;&#34;get_url_list_from_group_id_service returns a list of citable urls associated with group id.  
+    
+    Inputs:
+        request/url - contains arguments:
+        
+            id - group id
+            
+        Returns one line for each citable url
+        
+        Returns empty string if experiment id not found.  Skips files that are not Hdf5
+    &#34;&#34;&#34;
+    id = int(request.GET[&#39;id&#39;])
+    
+    # create MadrigalDB obj
+    madDBObj = madrigal.metadata.MadrigalDB()
+
+    urlList = madDBObj.getListFromGroupId(id)
+        
+    retStr = &#39;&#39;
+    for url in urlList:
+        retStr += &#39;%s\n&#39; % (url)
+    
+    return render(request, &#39;madweb/service.html&#39;, {&#39;text&#39;: django.utils.safestring.mark_safe(retStr)})</code></pre>
+</details>
+</dd>
+<dt id="services.get_version_service"><code class="name flex">
+<span>def <span class="ident">get_version_service</span></span>(<span>request)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>get_version_service runs the getVersionService.py service.
+</p>
+<h2 id="inputs">Inputs</h2>
+<p>request (ignored)</p>
+<p>Returns a single line of text, with the version in the form <major_version_int>.<minor_version_int>[.<sub_version_int>]</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_version_service(request):
+    &#34;&#34;&#34;get_version_service runs the getVersionService.py service.  
+    
+    Inputs:
+        request (ignored)
+        
+        Returns a single line of text, with the version in the form &lt;major_version_int&gt;.&lt;minor_version_int&gt;[.&lt;sub_version_int&gt;]
+    &#34;&#34;&#34;
+    madDB = madrigal.metadata.MadrigalDB()
+    siteID = madDB.getSiteID()
+    madSiteObj = madrigal.metadata.MadrigalSite(madDB)
+    return(HttpResponse(madSiteObj.getSiteVersion(siteID)))</code></pre>
+</details>
+</dd>
+<dt id="services.global_file_search_service"><code class="name flex">
+<span>def <span class="ident">global_file_search_service</span></span>(<span>request)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>global_file_search_service returns a list of full paths to files or citable urls based on search arguments</p>
+<h2 id="inputs">Inputs</h2>
+<p>request/url - contains arguments:</p>
+<pre><code>startDate: start date in form YYYY-MM-DD to filter experiments before
+endDate: end date in form YYYY-MM-DD to filter experiments after 
+inst: (optional, multiple allowed) an instrument code or name. For names,
+    fnmatch will be used. If not set, all instruments used. 
+kindat: (optional, multiple allowed) a kind of data codes or name. For names,
+    fnmatch will be used. If not set, all kinds of data used.
+seasonalStartDate: (optional) in form MM/DD, rejects all days earlier in year. If not set
+    implies 01/01
+seasonalEndDate: (optional) in form MM/DD, rejects all days later in year. If not set
+    implies 12/31
+includeNonDefault: (optional) if "True", include realtime files when there are no default. 
+    If not set, only default files.
+expName: (optional)  - filter experiments by the experiment name.  fnmatch rules
+    If not set, no filtering by experiment name.
+excludeExpName: (optional)  - exclude experiments by the experiment name.  fnmatch rules  
+    If not set, no excluding experiments by experiment name.
+fileDesc: (optional) filter files using input file Description string via fnmatch. 
+    If not set, in no filtering by file name
+returnCitation: (optional) if True, return a list of file citations.  If not set, return
+    a list of full paths to the files selected
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def global_file_search_service(request):
+    &#34;&#34;&#34;global_file_search_service returns a list of full paths to files or citable urls based on search arguments
+    
+    Inputs:
+        request/url - contains arguments:
+        
+            startDate: start date in form YYYY-MM-DD to filter experiments before
+            endDate: end date in form YYYY-MM-DD to filter experiments after 
+            inst: (optional, multiple allowed) an instrument code or name. For names,
+                fnmatch will be used. If not set, all instruments used. 
+            kindat: (optional, multiple allowed) a kind of data codes or name. For names,
+                fnmatch will be used. If not set, all kinds of data used.
+            seasonalStartDate: (optional) in form MM/DD, rejects all days earlier in year. If not set
+                implies 01/01
+            seasonalEndDate: (optional) in form MM/DD, rejects all days later in year. If not set
+                implies 12/31
+            includeNonDefault: (optional) if &#34;True&#34;, include realtime files when there are no default. 
+                If not set, only default files.
+            expName: (optional)  - filter experiments by the experiment name.  fnmatch rules
+                If not set, no filtering by experiment name.
+            excludeExpName: (optional)  - exclude experiments by the experiment name.  fnmatch rules  
+                If not set, no excluding experiments by experiment name.
+            fileDesc: (optional) filter files using input file Description string via fnmatch. 
+                If not set, in no filtering by file name
+            returnCitation: (optional) if True, return a list of file citations.  If not set, return
+                a list of full paths to the files selected
+    
+    &#34;&#34;&#34;
+    madDB = madrigal.metadata.MadrigalDB()
+    madWebObj = madrigal.ui.web.MadrigalWeb(madDB)
+    
+    # get required arguments
+    startDate = request.GET[&#39;startDate&#39;]
+    endDate = request.GET[&#39;endDate&#39;]
+    startDate = datetime.datetime.strptime(startDate, &#39;%Y-%m-%d&#39;)
+    endDate = datetime.datetime.strptime(endDate, &#39;%Y-%m-%d&#39;)
+        
+    # get optional arguments
+    inst = request.GET.getlist(&#39;inst&#39;)
+    if inst == []:
+        inst = None
+    kindat = request.GET.getlist(&#39;kindat&#39;)
+    if kindat == []:
+        kindat = None
+    seasonalStartDate = request.GET.get(&#39;seasonalStartDate&#39;, default = None)
+    seasonalEndDate = request.GET.get(&#39;seasonalEndDate&#39;, default = None)
+    includeNonDefault = bool(request.GET.get(&#39;includeNonDefault&#39;, default = False))
+    expName = request.GET.get(&#39;expName&#39;, default = None)
+    excludeExpName = request.GET.get(&#39;excludeExpName&#39;, default = None)
+    fileDesc = request.GET.get(&#39;fileDesc&#39;, default = None)
+    returnCitation = bool(request.GET.get(&#39;returnCitation&#39;, default = False))
+    
+    result = madWebObj.global_file_search(startDate, endDate, inst, kindat, 
+                                          seasonalStartDate, seasonalEndDate, 
+                                          includeNonDefault, expName, excludeExpName, 
+                                          fileDesc, returnCitation)
+    
+    fullText = &#39;&#39;
+    for item in result:
+        fullText += &#39;%s\n&#39; % (item)
+    
+    return render(request, &#39;madweb/service.html&#39;, {&#39;text&#39;: django.utils.safestring.mark_safe(fullText)})</code></pre>
+</details>
+</dd>
+<dt id="services.isprint_service"><code class="name flex">
+<span>def <span class="ident">isprint_service</span></span>(<span>request)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>isprint_service runs the isprintService.py service.
+</p>
+<h2 id="inputs">Inputs</h2>
+<p>request/url - contains arguments:</p>
+<pre><code>'file': The full path to the file to be analyzed by isprint.  If over 50 MB, returns error message.
+
+'parms': Multiple requested parameters, space (+) separated.
+
+'filters': Multiple of filters desired, as in isprint command
+
+'user_fullname'     user name
+
+'user_email'        user email
+
+'user_affiliation'  user affiliation
+
+'output' - option argument specifying output file basename.  Will be Hdf5 format if extension in
+    ('hdf5', 'h5', 'hdf').  Will be netCDF4 is extension is '.nc'. Otherwise ascii. If not
+    given, output is ascii.
+
+'header':  t for headers, f for no header.  Defaults to no header. Ignored if not ascii output
+</code></pre>
+<p>Returns data as either column delimited ascii, Hdf5, or netCDF4.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def isprint_service(request):
+    &#34;&#34;&#34;isprint_service runs the isprintService.py service.  
+    
+    Inputs:
+        request/url - contains arguments:
+        
+            &#39;file&#39;: The full path to the file to be analyzed by isprint.  If over 50 MB, returns error message.
+            
+            &#39;parms&#39;: Multiple requested parameters, space (+) separated.
+            
+            &#39;filters&#39;: Multiple of filters desired, as in isprint command
+            
+            &#39;user_fullname&#39;     user name 
+            
+            &#39;user_email&#39;        user email
+            
+            &#39;user_affiliation&#39;  user affiliation
+            
+            &#39;output&#39; - option argument specifying output file basename.  Will be Hdf5 format if extension in
+                (&#39;hdf5&#39;, &#39;h5&#39;, &#39;hdf&#39;).  Will be netCDF4 is extension is &#39;.nc&#39;. Otherwise ascii. If not
+                given, output is ascii.
+                
+            &#39;header&#39;:  t for headers, f for no header.  Defaults to no header. Ignored if not ascii output
+    
+    Returns data as either column delimited ascii, Hdf5, or netCDF4.
+    &#34;&#34;&#34;
+    madDB = madrigal.metadata.MadrigalDB()
+    madWebObj = madrigal.ui.web.MadrigalWeb(madDB)
+    
+    # get required arguments
+    thisFile = request.GET[&#39;file&#39;]
+    parms = request.GET.getlist(&#39;parms&#39;)
+    filters = request.GET.getlist(&#39;filters&#39;)
+    user_fullname = request.GET[&#39;user_fullname&#39;]
+    user_email = request.GET[&#39;user_email&#39;]
+    user_affiliation = request.GET[&#39;user_affiliation&#39;]
+        
+    # get optional arguments
+    try:
+        output = os.path.basename(request.GET[&#39;output&#39;])
+        filename, file_extension = os.path.splitext(output)
+        if file_extension in (&#39;.hdf5&#39;, &#39;.h5&#39;, &#39;.hdf&#39;):
+            format = &#39;Hdf5&#39;
+        elif file_extension in (&#39;.nc&#39;,):
+            format = &#39;netCDF4&#39;
+        else:
+            format = &#39;ascii&#39;
+    except:
+        format = &#39;ascii&#39;
+        output = None
+        
+    # verify thisFile exists, not too big
+    errorMessage = None
+    if not os.access(thisFile, os.R_OK):
+        errorMessage = &#39;File %s not found&#39; % (thisFile)
+    elif os.path.getsize(thisFile) &gt; 200.0E6:
+        errorMessage = &#39;File %s greater than 200 MB in size - running dynamic file creation not possible.  Please use  -- download as is -- instead.&#39; % (thisFile)
+    if not errorMessage is None:
+        return render(request, &#39;madweb/service.html&#39;, {&#39;text&#39;: errorMessage})
+                
+    if not output is None:
+        # we need to write to a download file
+        downloadFile = os.path.join(tempfile.gettempdir(), output)
+        if os.access(downloadFile, os.R_OK):
+            try:
+                os.remove(downloadFile)
+            except:
+                pass
+    try:
+        header = request.GET[&#39;header&#39;]
+        if header not in (&#39;t&#39;, &#39;f&#39;):
+            raise ValueError(&#39;Unknown header value &lt;%s&gt;&#39; % (header))
+    except:
+        header = &#39;f&#39;
+        
+    # log data access
+    madWebObj.logDataAccess(thisFile, user_fullname, user_email, user_affiliation)
+        
+    # run isprint command
+    cmd = &#39;%s/bin/isprint file=%s &#39; % (madDB.getMadroot(), thisFile)
+    if not output is None:
+        cmd += &#39;output=%s &#39; % (downloadFile)
+    delimiter = &#39; &#39;
+    cmd += delimiter.join(parms) + &#39; &#39;
+    filterStr = delimiter.join(filters)
+    cmd += filterStr + &#39; &#39;
+    if format == &#39;ascii&#39;:
+        cmd += &#39;summary=f &#39;
+        cmd += &#39;header=%s &#39; % (header)
+        
+    if output is None:
+        # text response
+        #result = subprocess.check_output(cmd.split())
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        result,errtext = p.communicate()
+        if p.returncode != 0:
+            result = errtext
+        if type(result) in (bytes, numpy.bytes_):
+            result = result.decode(&#39;utf-8&#39;)
+        if header == &#39;f&#39;:
+            index = result.find(&#39;\n&#39;)
+            result = result[index+1:]
+        return render(request, &#39;madweb/service.html&#39;, {&#39;text&#39;: result})
+    else:
+        # file download response
+        #subprocess.check_call(cmd.split())
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        result,errtext = p.communicate()
+        if p.returncode != 0:
+            # write the error to result file
+            f = open(downloadFile, &#39;w&#39;)
+            if type(errtext) in (bytes, numpy.bytes_):
+                errtext = errtext.decode(&#39;utf-8&#39;)
+            f.write(errtext)
+            f.close()
+        
+        f = open(downloadFile, &#39;rb&#39;)
+        filename = os.path.basename(downloadFile)
+        chunk_size = 8192
+        file_type = mimetypes.guess_type(downloadFile)[0]
+        if file_type is None:
+            file_type = &#39;application/octet-stream&#39;
+        response = StreamingHttpResponse(FileWrapper(f, chunk_size),
+                                         content_type=file_type)
+        response[&#39;Content-Length&#39;] = os.path.getsize(downloadFile)    
+        response[&#39;Content-Disposition&#39;] = &#34;attachment; filename=%s&#34; % (filename)
+        os.remove(downloadFile)
+        return(response)</code></pre>
+</details>
+</dd>
+<dt id="services.list_file_times_service"><code class="name flex">
+<span>def <span class="ident">list_file_times_service</span></span>(<span>request)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>list_file_times_service runs the listFileTimes service.</p>
+<h2 id="inputs">Inputs</h2>
+<p>request/url - contains arguments:</p>
+<p>Optional: expDir - experiment directory to list.
+Can be absolute or relative to
+experiments[0-9]<em>. Default is all files in $MADROOT/experiments</em></p>
+<p>Returns comma-delimited data, one for each file:</p>
+<pre><code>1. Full path of file
+
+2. File modification time in form YYYY-MM-DD HH:MM:SS (UT time)
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def list_file_times_service(request):
+    &#34;&#34;&#34;list_file_times_service runs the listFileTimes service.
+    
+    Inputs:
+      request/url - contains arguments:
+      
+        Optional: expDir - experiment directory to list.  Can be absolute or relative to
+            experiments[0-9]*. Default is all files in $MADROOT/experiments*
+
+    Returns comma-delimited data, one for each file:
+    
+        1. Full path of file
+        
+        2. File modification time in form YYYY-MM-DD HH:MM:SS (UT time)
+    &#34;&#34;&#34;
+    expDir = None
+    try:
+        expDir = request.GET[&#39;expDir&#39;]
+    except:
+        pass
+    madDB = madrigal.metadata.MadrigalDB()
+    fileList = madDB.listFileTimes(expDir)
+    fullText = &#39;\n\n&#39;
+    for filename, filetime in fileList:
+        fullText += &#34;\&#39;%s\&#39;, %s\n&#34; % (filename, filetime.strftime(&#39;%Y-%m-%d %H:%M:%S&#39;))
+        
+    return render(request, &#39;madweb/service.html&#39;, {&#39;text&#39;: django.utils.safestring.mark_safe(fullText)})</code></pre>
+</details>
+</dd>
+<dt id="services.mad_calculator2_service"><code class="name flex">
+<span>def <span class="ident">mad_calculator2_service</span></span>(<span>request)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>mad_calculator2_service runs the madCalculator2 service.</p>
+<p>Differs from madCalulator in that positions are a list rather than a grid.
+</p>
+<h2 id="inputs">Inputs</h2>
+<p>request/url - contains arguments:</p>
+<pre><code>year, month, day, hour, min, sec
+
+lats - comma separated list of latitudes to analyze
+
+longs - comma separated list of longitudes to analyze. Len must == len(lats)
+
+alts - comma separated list of altitudes to analyze. Len must == len(lats)
+
+parms - comma delimited string of Madrigal parameters desired
+
+oneD - zero or more mnemonics,float values to set input 1D values
+    Example:  &amp;oneD=kinst,31.0&amp;oneD=elm,45.0
+
+twoD - zero or more mnemonics,comma-separate float list of len(lats) to set input 2D values
+    Example:  twoD=te,1000,1100,1200  twoD=ti,1000,1000,1000
+              where there are 3 lats
+</code></pre>
+<p>Returns comma-delimited data, one line for each lat value,
+with the following fields:</p>
+<pre><code>1. latitude
+
+2. longitude
+
+3. altitude
+
+4. Values for each Madrigal parameter listed in argument parms, separated by whitespace
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def mad_calculator2_service(request):
+    &#34;&#34;&#34;mad_calculator2_service runs the madCalculator2 service.
+    
+    Differs from madCalulator in that positions are a list rather than a grid.  
+    
+    Inputs:
+        request/url - contains arguments:
+        
+            year, month, day, hour, min, sec 
+            
+            lats - comma separated list of latitudes to analyze
+            
+            longs - comma separated list of longitudes to analyze. Len must == len(lats)
+            
+            alts - comma separated list of altitudes to analyze. Len must == len(lats)
+            
+            parms - comma delimited string of Madrigal parameters desired
+            
+            oneD - zero or more mnemonics,float values to set input 1D values
+                Example:  &amp;oneD=kinst,31.0&amp;oneD=elm,45.0
+                
+            twoD - zero or more mnemonics,comma-separate float list of len(lats) to set input 2D values
+                Example:  twoD=te,1000,1100,1200  twoD=ti,1000,1000,1000
+                          where there are 3 lats
+    
+    Returns comma-delimited data, one line for each lat value,
+    with the following fields:
+
+        1. latitude
+        
+        2. longitude
+        
+        3. altitude
+        
+        4. Values for each Madrigal parameter listed in argument parms, separated by whitespace
+    &#34;&#34;&#34;
+    if request.method == &#39;POST&#39;:
+        reqDict = request.POST
+    else:
+        reqDict = request.GET
+    try:
+        year = int(reqDict.get(&#39;year&#39;))
+    except TypeError:
+        return(HttpResponse(&#39;&lt;p&gt;madCalculator2Service requires year&lt;/p&gt;&#39;))
+    month = int(reqDict[&#39;month&#39;])
+    day = int(reqDict[&#39;day&#39;])
+    hour = int(reqDict[&#39;hour&#39;])
+    minute = int(reqDict[&#39;min&#39;])
+    second = int(reqDict[&#39;sec&#39;])
+    dt = datetime.datetime(year, month, day, hour, minute, second)
+    
+    latsStr = reqDict[&#39;lats&#39;]
+    lats = [float(item) for item in latsStr.split(&#39;,&#39;)]
+    longsStr = reqDict[&#39;longs&#39;]
+    longs = [float(item) for item in longsStr.split(&#39;,&#39;)]
+    altsStr = reqDict[&#39;alts&#39;]
+    alts = [float(item) for item in altsStr.split(&#39;,&#39;)]
+    
+    parms = reqDict[&#39;parms&#39;]
+    desiredParmList = [item.strip() for item in [&#39;gdlat&#39;,&#39;glon&#39;,&#39;gdalt&#39;] + parms.split(&#39;,&#39;)]
+    
+    oneDList = reqDict.getlist(&#39;oneD&#39;)
+    oneDParmDict = {}
+    for oneDStr in oneDList:
+        mnem, strValue = oneDStr.split(&#39;,&#39;)
+        oneDParmDict[mnem] = [float(strValue)]
+        
+    twoDList = reqDict.getlist(&#39;twoD&#39;)
+        
+    twoDParmDict = {}
+    for twoDStr in twoDList:
+        items = twoDStr.split(&#39;,&#39;)
+        if len(items) != 1 + len(lats):
+            raise ValueError(&#39;twoDstr %s not correct number of points&#39; % (str(twoDStr)))
+        mnem = items[0]
+        floatValues = [float(item) for item in items[1:]]
+        # now we need to expand these values to be two dimensional 1 x len(lats)
+        values = numpy.zeros((1,len(lats)), dtype=numpy.float)
+        values[0][:] = floatValues
+        twoDParmDict[mnem] = values
+
+    # capture stdout
+    old_stdout = sys.stdout
+    sys.stdout = mystdout = io.StringIO()
+    madrigal.isprint.MadCalculatorList(None, desiredParmList, [dt], lats, longs, alts, 
+                                       oneDParmDict, twoDParmDict, summary=None)
+    text = mystdout.getvalue()
+    sys.stdout = old_stdout
+    
+    return render(request, &#39;madweb/service.html&#39;, {&#39;text&#39;: text})</code></pre>
+</details>
+</dd>
+<dt id="services.mad_calculator3_service"><code class="name flex">
+<span>def <span class="ident">mad_calculator3_service</span></span>(<span>request)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>mad_calculator3_service runs the madCalculator3 service.</p>
+<p>Differs from madCalulator in that multiple times, each with a unique list of positions, can be passed in.</p>
+<h2 id="inputs">Inputs</h2>
+<p>request/url - contains arguments:</p>
+<p>year - a comma-separated list of years - (required)</p>
+<p>month
+- a comma-separated list of months - (required)</p>
+<p>day - a comma-separated list of days - (required)</p>
+<p>hour - a comma-separated list of hours - (required)</p>
+<p>min - a comma-separated list of minutes - (required)</p>
+<p>sec - a comma-separated list of seconds - (required)</p>
+<p>numPos - a comma-sepatated list of the number of positions for each time - (required)</p>
+<p>lats - a comma-separated list of geodetic latitudes, -90 to 90 (required).
+Listed
+for first time, then second, etc.
+Total must be equal to the sum
+of numPos.</p>
+<p>longs - a comma-separated list of longitudes (required) Listed
+for first time, then second, etc.
+Total must be equal to the sum
+of numPos.</p>
+<p>alts - a comma-separated list of geodetic altitudes in km (required) Listed
+for first time, then second, etc.
+Total must be equal to the sum
+of numPos.</p>
+<p>parms - comma delimited string of Madrigal parameters desired (required)</p>
+<p>oneD - string in form <parm>,<comma-separated values> This argument allows the user to
+set any number of one-D parameters to be used in the calculation.
+Value must be parameter name, comma, list of values as double,
+where length of list is equal to number of times.
+Example:
+&amp;oneD=kinst,31.0,31.0&amp;oneD=elm,45.0,50
+(optional - 0 or more allowed)
+</p>
+<p>twoD=<parm>,<values>
+(optional - 0 or more allowed) This argument allows the user to
+set any number of two-D parameters to be used in the calculation.
+Value must be parameter name, comma, comma-separated values.
+Number of values must equal the sum of numPos.
+Order is
+first time values first, then second time values, etc
+Example:
+twoD=te,1000,1100,1200,1000,1100,1200 &amp;twoD=ti,1000,1000,1000,1000,1000,1000
+where numPos=3,3</p>
+<p>Returns comma-delimited data, one line for each location.
+Separate times are delimited by line</p>
+<p>TIME MM/DD/YYYY HH:MM:SS</p>
+<p>Data lines have the following fields:</p>
+<ol>
+<li>
+<p>latitude</p>
+</li>
+<li>
+<p>longitude</p>
+</li>
+<li>
+<p>altitude</p>
+</li>
+<li>
+<p>Values for each Madrigal parameter listed in argument parms, separated by whitespace</p>
+</li>
+</ol></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def mad_calculator3_service(request):
+    &#34;&#34;&#34;mad_calculator3_service runs the madCalculator3 service.
+    
+    Differs from madCalulator in that multiple times, each with a unique list of positions, can be passed in.
+    
+    Inputs:
+      request/url - contains arguments:
+      
+        year - a comma-separated list of years - (required)
+        
+        month  - a comma-separated list of months - (required)
+        
+        day - a comma-separated list of days - (required)
+        
+        hour - a comma-separated list of hours - (required)
+        
+        min - a comma-separated list of minutes - (required)
+        
+        sec - a comma-separated list of seconds - (required)
+        
+        numPos - a comma-sepatated list of the number of positions for each time - (required)
+        
+        lats - a comma-separated list of geodetic latitudes, -90 to 90 (required).  Listed
+                  for first time, then second, etc.  Total must be equal to the sum
+                  of numPos.
+                  
+        longs - a comma-separated list of longitudes (required) Listed
+                  for first time, then second, etc.  Total must be equal to the sum
+                  of numPos.
+                  
+        alts - a comma-separated list of geodetic altitudes in km (required) Listed
+                  for first time, then second, etc.  Total must be equal to the sum
+                  of numPos.
+                  
+        parms - comma delimited string of Madrigal parameters desired (required)
+        
+        oneD - string in form &lt;parm&gt;,&lt;comma-separated values&gt; This argument allows the user to
+                            set any number of one-D parameters to be used in the calculation.
+                            Value must be parameter name, comma, list of values as double,
+                            where length of list is equal to number of times.
+                            Example:  &amp;oneD=kinst,31.0,31.0&amp;oneD=elm,45.0,50
+                            (optional - 0 or more allowed)        
+                            
+         twoD=&lt;parm&gt;,&lt;values&gt;  (optional - 0 or more allowed) This argument allows the user to
+                            set any number of two-D parameters to be used in the calculation.
+                            Value must be parameter name, comma, comma-separated values.
+                            Number of values must equal the sum of numPos.  Order is
+                            first time values first, then second time values, etc
+                            Example:  twoD=te,1000,1100,1200,1000,1100,1200 &amp;twoD=ti,1000,1000,1000,1000,1000,1000
+                            where numPos=3,3
+
+    Returns comma-delimited data, one line for each location.  Separate times are delimited by line
+
+    TIME MM/DD/YYYY HH:MM:SS
+    
+    Data lines have the following fields:
+    
+    1. latitude
+    
+    2. longitude
+    
+    3. altitude
+    
+    4. Values for each Madrigal parameter listed in argument parms, separated by whitespace
+    &#34;&#34;&#34;
+    if request.method == &#39;POST&#39;:
+        reqDict = request.POST
+    else:
+        reqDict = request.GET
+    try:
+        yearList = [int(item) for item in reqDict.get(&#39;year&#39;).split(&#39;,&#39;)]
+    except AttributeError:
+        return(HttpResponse(&#39;&lt;p&gt;madCalculator3Service requires year&lt;/p&gt;&#39;))
+    monthList = [int(item) for item in reqDict.get(&#39;month&#39;).split(&#39;,&#39;)]
+    dayList = [int(item) for item in reqDict.get(&#39;day&#39;).split(&#39;,&#39;)]
+    hourList = [int(item) for item in reqDict.get(&#39;hour&#39;).split(&#39;,&#39;)]
+    minList = [int(item) for item in reqDict.get(&#39;min&#39;).split(&#39;,&#39;)]
+    secList = [int(item) for item in reqDict.get(&#39;sec&#39;).split(&#39;,&#39;)]
+    dtList = [datetime.datetime(yearList[i], monthList[i], dayList[i],
+                                hourList[i], minList[i], secList[i]) for i in range(len(yearList))]
+    numPosStr = reqDict[&#39;numPos&#39;]
+    numPosList = [int(item) for item in numPosStr.split(&#39;,&#39;)]
+    totalPos = 0
+    for numPos in numPosList:
+        totalPos += numPos
+    latsStr = reqDict[&#39;lats&#39;]
+    lats = [float(item) for item in latsStr.split(&#39;,&#39;)]
+    if len(lats) != totalPos:
+        return(HttpResponse(&#39;wrong number of lats, expected %i&#39; % (totalPos)))
+    longsStr = reqDict[&#39;longs&#39;]
+    longs = [float(item) for item in longsStr.split(&#39;,&#39;)]
+    if len(longs) != totalPos:
+        return(HttpResponse(&#39;wrong number of longs, expected %i&#39; % (totalPos)))
+    altsStr = reqDict[&#39;alts&#39;]
+    alts = [float(item) for item in altsStr.split(&#39;,&#39;)]
+    if len(alts) != totalPos:
+        return(HttpResponse(&#39;wrong number of alts, expected %i&#39; % (totalPos)))
+    
+    parms = reqDict[&#39;parms&#39;]
+    desiredParmList = [item.strip() for item in [&#39;gdlat&#39;,&#39;glon&#39;,&#39;gdalt&#39;] + parms.split(&#39;,&#39;)]
+    
+    oneDList = reqDict.getlist(&#39;oneD&#39;)
+    twoDList = reqDict.getlist(&#39;twoD&#39;)
+    
+    # since the positions can change with each call, we need to call madrigal.isprint.MadCalculatorGrid once for each time
+    startIndex = 0
+    endIndex = 0
+    fullText = &#39;&#39;
+    for timeIndex, numPos in enumerate(numPosList):
+        startIndex = endIndex
+        endIndex += numPos
+        thisLats = lats[startIndex:endIndex]
+        thisLongs = longs[startIndex:endIndex]
+        thisAlts = alts[startIndex:endIndex]
+    
+        oneDParmDict = {}
+        for oneDStr in oneDList:
+            values = oneDStr.split(&#39;,&#39;)
+            if len(values) != 1+len(dtList):
+                return(HttpResponse(&#39;wrong number of values given for 1D parm %s&#39; % (values[0])))
+            oneDParmDict[values[0]] = [float(values[timeIndex+1])]
+        
+        twoDParmDict = {}
+        
+        for twoDStr in twoDList:
+            values = twoDStr.split(&#39;,&#39;)
+            if len(values) != 1 + totalPos:
+                return(HttpResponse(&#39;twoDstr %s not correct number of points&#39; % (str(twoDStr))))
+            mnem = values[0]
+            floatValues = [float(item) for item in values[1+startIndex:1+endIndex]]
+            # now we need to expand these values to be two dimensional - 1,len(thisLats)
+            values2D = numpy.zeros((1,len(thisLats)), dtype=numpy.float)
+            values2D[0][:] = floatValues
+            twoDParmDict[mnem] = values2D
+            
+            
+    
+        # capture stdout
+        old_stdout = sys.stdout
+        sys.stdout = mystdout = io.StringIO()
+        madrigal.isprint.MadCalculatorList(None, desiredParmList, [dtList[timeIndex]], thisLats, 
+                                           thisLongs, thisAlts, 
+                                           oneDParmDict, twoDParmDict, summary=None)
+        text = mystdout.getvalue()
+        sys.stdout = old_stdout
+        
+        fullText += &#39;TIME %s\n&#39; % (dtList[timeIndex].strftime(&#39;%m/%d/%Y %H:%M:%S&#39;))
+        fullText += text
+    
+    return render(request, &#39;madweb/service.html&#39;, {&#39;text&#39;: fullText})</code></pre>
+</details>
+</dd>
+<dt id="services.mad_calculator_service"><code class="name flex">
+<span>def <span class="ident">mad_calculator_service</span></span>(<span>request)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>mad_calculator_service runs the madCalculator service.
+</p>
+<h2 id="inputs">Inputs</h2>
+<p>request/url - contains arguments:</p>
+<pre><code>year, month, day, hour, min, sec
+
+startLat - Starting geodetic latitude, -90 to 90 (float)
+
+endLat - Ending geodetic latitude, -90 to 90 (float)
+
+stepLat - Latitude step (0.1 to 90) (float)
+
+startLong - Starting geodetic longitude, -180 to 180  (float)
+
+endLong - Ending geodetic longitude, -180 to 180 (float)
+
+stepLong - Longitude step (0.1 to 180) (float)
+
+startAlt - Starting geodetic altitude, &gt;= 0 (float)
+
+endAlt - Ending geodetic altitude, &gt; 0 (float)
+
+stepAlt - Altitude step (&gt;= 0.1) (float)
+
+parms - comma delimited string of Madrigal parameters desired
+
+oneD - zero or more mnemonics,float values to set input 1D values
+</code></pre>
+<p>Returns comma-delimited data, one line for each combination of lat, long, and alt,
+with the following fields:</p>
+<pre><code>1. latitude
+
+2. longitude
+
+3. altitude
+
+4. Values for each Madrigal parameter listed in argument parms, separated by whitespace
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def mad_calculator_service(request):
+    &#34;&#34;&#34;mad_calculator_service runs the madCalculator service.  
+    
+    Inputs:
+        request/url - contains arguments:
+        
+            year, month, day, hour, min, sec 
+            
+            startLat - Starting geodetic latitude, -90 to 90 (float)
+            
+            endLat - Ending geodetic latitude, -90 to 90 (float)
+            
+            stepLat - Latitude step (0.1 to 90) (float)
+            
+            startLong - Starting geodetic longitude, -180 to 180  (float)
+            
+            endLong - Ending geodetic longitude, -180 to 180 (float)
+            
+            stepLong - Longitude step (0.1 to 180) (float)
+            
+            startAlt - Starting geodetic altitude, &gt;= 0 (float)
+            
+            endAlt - Ending geodetic altitude, &gt; 0 (float)
+            
+            stepAlt - Altitude step (&gt;= 0.1) (float)
+            
+            parms - comma delimited string of Madrigal parameters desired
+            
+            oneD - zero or more mnemonics,float values to set input 1D values
+    
+    Returns comma-delimited data, one line for each combination of lat, long, and alt,
+    with the following fields:
+
+        1. latitude
+        
+        2. longitude
+        
+        3. altitude
+        
+        4. Values for each Madrigal parameter listed in argument parms, separated by whitespace
+    &#34;&#34;&#34;
+    year = int(request.GET[&#39;year&#39;])
+    month = int(request.GET[&#39;month&#39;])
+    day = int(request.GET[&#39;day&#39;])
+    hour = int(request.GET[&#39;hour&#39;])
+    minute = int(request.GET[&#39;min&#39;])
+    second = int(request.GET[&#39;sec&#39;])
+    try:
+        dt = datetime.datetime(year, month, day, hour, minute, second)
+    except:
+        return(HttpResponse(&#39;Illegal time: year %i, month %i, day %i, hour %i, minute %i, second %i&#39; % (year, month, day, hour, minute, second)))
+    
+    startLat = float(request.GET[&#39;startLat&#39;])
+    endLat = float(request.GET[&#39;endLat&#39;])
+    if startLat == endLat:
+        endLat += 0.001
+    elif startLat &gt; endLat:
+        return(HttpResponse(&#39;startLat %s cannot be greater than endLat %s&#39; % (str(startLat), str(endLat))))
+    stepLat = float(request.GET[&#39;stepLat&#39;])
+    if stepLat &lt; 0.0:
+        return(HttpResponse(&#39;stepLat %s cannot be less than zero&#39; % (str(stepLat))))
+    elif stepLat == 0.0:
+        stepLat = 0.001
+    latList = list(numpy.arange(startLat, endLat, stepLat))
+    
+    startLong = float(request.GET[&#39;startLong&#39;])
+    endLong = float(request.GET[&#39;endLong&#39;])
+    if startLong == endLong:
+        endLong += 0.001
+    elif startLong &gt; endLong:
+        return(HttpResponse(&#39;startLong %s cannot be greater than endLong %s&#39; % (str(startLong), str(endLong))))
+    stepLong = float(request.GET[&#39;stepLong&#39;])
+    if stepLong &lt; 0.0:
+        return(HttpResponse(&#39;stepLong %s cannot be less than zero&#39; % (str(stepLong))))
+    elif stepLong == 0.0:
+        stepLong = 0.001
+    lonList = list(numpy.arange(startLong, endLong, stepLong))
+    
+    startAlt = float(request.GET[&#39;startAlt&#39;])
+    endAlt = float(request.GET[&#39;endAlt&#39;])
+    if startAlt == endAlt:
+        endAlt += 0.001
+    elif startAlt &gt; endAlt:
+        return(HttpResponse(&#39;startAlt %s cannot be greater than endAlt %s&#39; % (str(startAlt), str(endAlt))))
+    stepAlt = float(request.GET[&#39;stepAlt&#39;])
+    if stepAlt &lt; 0.0:
+        return(HttpResponse(&#39;stepAlt %s cannot be less than zero&#39; % (str(stepAlt))))
+    elif stepAlt == 0.0:
+        stepAlt = 0.01
+    altList = list(numpy.arange(startAlt, endAlt, stepAlt))
+    
+    # limit total calculations to 1E5
+    total = len(latList) * len(lonList) * len(altList)
+    if total &gt; 1.0E5:
+        return(HttpResponse(&#39;Too many points for madCalculatorService: %i&#39; % (total)))
+    
+    parms = request.GET[&#39;parms&#39;]
+    desiredParmList = [item.strip() for item in [&#39;gdlat&#39;,&#39;glon&#39;,&#39;gdalt&#39;] + parms.split(&#39;,&#39;)]
+    
+    oneDList = request.GET.getlist(&#39;oneD&#39;)
+    oneDParmDict = {}
+    for oneDStr in oneDList:
+        mnem, strValue = oneDStr.split(&#39;,&#39;)
+        oneDParmDict[mnem] = [float(strValue)]
+    
+    # capture stdout
+    old_stdout = sys.stdout
+    sys.stdout = mystdout = io.StringIO()
+    madrigal.isprint.MadCalculatorGrid(None, desiredParmList, [dt], latList, lonList, altList, 
+                                   oneDParmDict, summary=None)
+    text = mystdout.getvalue()
+    sys.stdout = old_stdout
+    
+    return render(request, &#39;madweb/service.html&#39;, {&#39;text&#39;: text})</code></pre>
+</details>
+</dd>
+<dt id="services.mad_time_calculator_service"><code class="name flex">
+<span>def <span class="ident">mad_time_calculator_service</span></span>(<span>request)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>mad_time_calculator_service runs the madTimeCalculator service.
+Input parameters must not be location dependent</p>
+<h2 id="inputs">Inputs</h2>
+<p>request/url - contains arguments:</p>
+<pre><code>1. startyear - int
+
+2. startmonth - int
+
+3. startday - int
+
+4. starthour - int
+
+5. startmin - int
+
+6. startsec - int
+
+7. endyear - int
+
+8. endmonth - int
+
+9. endday - int
+
+10. endhour - int
+
+11. endmin - int
+
+12. endsec - int
+
+13. stephours - float - number of hours per time step
+
+14. parms - comma delimited string of Madrigal parameters desired (must not depend on location)
+</code></pre>
+<p>Returns comma-delimited data, one line for each year, month, day, hour, minute, and second,
+with the following fields:</p>
+<pre><code>1-6: year, month, day, hour, minute, and second
+
+2. requested parm fields
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def mad_time_calculator_service(request):
+    &#34;&#34;&#34;mad_time_calculator_service runs the madTimeCalculator service.  Input parameters must not be location dependent
+    
+    Inputs:
+        request/url - contains arguments:
+        
+            1. startyear - int 
+            
+            2. startmonth - int 
+            
+            3. startday - int
+            
+            4. starthour - int 
+            
+            5. startmin - int 
+            
+            6. startsec - int
+            
+            7. endyear - int 
+            
+            8. endmonth - int 
+            
+            9. endday - int
+            
+            10. endhour - int 
+            
+            11. endmin - int 
+            
+            12. endsec - int
+            
+            13. stephours - float - number of hours per time step
+            
+            14. parms - comma delimited string of Madrigal parameters desired (must not depend on location)
+    
+    Returns comma-delimited data, one line for each year, month, day, hour, minute, and second,
+    with the following fields:
+
+        1-6: year, month, day, hour, minute, and second
+        
+        2. requested parm fields
+    &#34;&#34;&#34;
+    startyear = int(request.GET[&#39;startyear&#39;])
+    startmonth = int(request.GET[&#39;startmonth&#39;])
+    startday = int(request.GET[&#39;startday&#39;])
+    starthour = int(request.GET[&#39;starthour&#39;])
+    startminute = int(request.GET[&#39;startmin&#39;])
+    startsecond = int(request.GET[&#39;startsec&#39;])
+    endyear = int(request.GET[&#39;endyear&#39;])
+    endmonth = int(request.GET[&#39;endmonth&#39;])
+    endday = int(request.GET[&#39;endday&#39;])
+    endhour = int(request.GET[&#39;endhour&#39;])
+    endminute = int(request.GET[&#39;endmin&#39;])
+    endsecond = int(request.GET[&#39;endsec&#39;])
+    dt1 = datetime.datetime(startyear, startmonth, startday, starthour, startminute, startsecond)
+    dt2 = datetime.datetime(endyear, endmonth, endday, endhour, endminute, endsecond)
+    if dt1 &gt; dt2:
+        return(HttpResponse(&#39;End Datetime %s cannot be before start datetime %s&#39; % (str(dt2), str(dt1))))
+    
+    stephours = float(request.GET[&#39;stephours&#39;])
+    if stephours &lt;= 0.0:
+        return(HttpResponse(&#39;stephours cannot be non-positive: %f&#39; % (stephours)))
+    
+    dtList = []
+    while dt1 &lt;= dt2:
+        dtList.append(dt1)
+        dt1 += datetime.timedelta(hours=stephours)
+    
+    parms = request.GET[&#39;parms&#39;]
+    desiredParmList = [item.strip() for item in [&#39;year&#39;,&#39;month&#39;,&#39;day&#39;,&#39;hour&#39;,&#39;min&#39;,&#39;sec&#39;] + parms.split(&#39;,&#39;)]
+    
+    # no spatial data
+    latList = lonList = altList = []
+    # capture stdout
+    old_stdout = sys.stdout
+    sys.stdout = mystdout = io.StringIO()
+    madrigal.isprint.MadCalculatorGrid(None, desiredParmList, dtList, latList, lonList, altList, 
+                                   summary=None)
+    text = mystdout.getvalue()
+    sys.stdout = old_stdout
+    
+    return render(request, &#39;madweb/service.html&#39;, {&#39;text&#39;: text})</code></pre>
+</details>
+</dd>
+<dt id="services.radar_to_geodetic_service"><code class="name flex">
+<span>def <span class="ident">radar_to_geodetic_service</span></span>(<span>request)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>radar_to_geodetic_service runs the radarToGeodetic service.</p>
+<h2 id="inputs">Inputs</h2>
+<p>request/url - contains arguments:</p>
+<p>slatgd
+- radar geodetic latitude</p>
+<p>slon - radar longitude</p>
+<p>saltgd - radar geodetic altitude</p>
+<p>azs - a comma-separated list of azimuths of point</p>
+<p>els - a comma-separated list of elevations of point. Len must be same as azs</p>
+<p>ranges - a comma-separated list of ranges to point. Len must be same as azs</p>
+<p>Returns comma-delimited data, one line for point in lists
+(points treated as individual combinations, not grids):</p>
+<pre><code>1. geodetic latitude
+
+2. longitude (-180 to 180)
+
+3. geodetic altitude in km
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def radar_to_geodetic_service(request):
+    &#34;&#34;&#34;radar_to_geodetic_service runs the radarToGeodetic service.
+    
+    Inputs:
+      request/url - contains arguments:
+      
+        slatgd  - radar geodetic latitude
+        
+        slon - radar longitude
+        
+        saltgd - radar geodetic altitude
+        
+        azs - a comma-separated list of azimuths of point
+        
+        els - a comma-separated list of elevations of point. Len must be same as azs
+        
+        ranges - a comma-separated list of ranges to point. Len must be same as azs
+
+
+    Returns comma-delimited data, one line for point in lists  (points treated as individual combinations, not grids):
+
+        1. geodetic latitude
+        
+        2. longitude (-180 to 180)
+        
+        3. geodetic altitude in km
+    &#34;&#34;&#34;
+    slatgd = float(request.GET[&#39;slatgd&#39;])
+    slon = float(request.GET[&#39;slon&#39;])
+    saltgd = float(request.GET[&#39;saltgd&#39;])
+    azStr = request.GET[&#39;az&#39;]
+    azList = [float(item) for item in azStr.split(&#39;,&#39;)]
+    elStr = request.GET[&#39;el&#39;]
+    elList = [float(item) for item in elStr.split(&#39;,&#39;)]
+    rangeStr = request.GET[&#39;range&#39;]
+    rangeList = [float(item) for item in rangeStr.split(&#39;,&#39;)]
+    if len(azList) != len(elList) or len(azList) != len(rangeList):
+        return(HttpResponse(&#39;all point list lengths must be equal&#39;))
+    
+    fullText = &#39;&#39;
+    
+    for i in range(len(azList)):
+        gdlat,glon,gdalt = madrigal._derive.radarToGeodetic(slatgd, slon, saltgd,
+                                                            azList[i], elList[i], rangeList[i])
+        fullText += &#39;%f,%f,%f\n&#39; % (gdlat,glon,gdalt)
+        
+    return render(request, &#39;madweb/service.html&#39;, {&#39;text&#39;: fullText})</code></pre>
+</details>
+</dd>
+<dt id="services.set_group_id_from_url_list_service"><code class="name flex">
+<span>def <span class="ident">set_group_id_from_url_list_service</span></span>(<span>request)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>set_group_id_from_url_list sets a list of citable urls to a group id .
+</p>
+<h2 id="inputs">Inputs</h2>
+<p>request/url - contains arguments:</p>
+<pre><code>'user_fullname'     user name
+
+'user_email'        user email
+
+'user_affiliation'  user affiliation
+
+'url' -  citable url.  Multiple arguments allowed
+</code></pre>
+<p>Returns group id (integer) set</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_group_id_from_url_list_service(request):
+    &#34;&#34;&#34;set_group_id_from_url_list sets a list of citable urls to a group id .  
+    
+    Inputs:
+        request/url - contains arguments:
+            
+            &#39;user_fullname&#39;     user name 
+            
+            &#39;user_email&#39;        user email
+            
+            &#39;user_affiliation&#39;  user affiliation
+            
+            &#39;url&#39; -  citable url.  Multiple arguments allowed
+    
+    Returns group id (integer) set
+    &#34;&#34;&#34;
+    madDB = madrigal.metadata.MadrigalDB()
+    
+    print(request.GET)
+    
+    # get required arguments
+    urls = request.GET.getlist(&#39;url&#39;)
+    user_fullname = request.GET[&#39;user_fullname&#39;]
+    user_email = request.GET[&#39;user_email&#39;]
+    user_affiliation = request.GET[&#39;user_affiliation&#39;]
+    
+    id = madDB.createGroupIdWithList(user_fullname, user_email, user_affiliation, urls)
+    
+    return render(request, &#39;madweb/service.html&#39;, {&#39;text&#39;: str(id)})</code></pre>
+</details>
+</dd>
+<dt id="services.trace_magnetic_field_service"><code class="name flex">
+<span>def <span class="ident">trace_magnetic_field_service</span></span>(<span>request)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>trace_magnetic_field_service runs the traceMagneticField service.</p>
+<h2 id="inputs">Inputs</h2>
+<p>request/url - contains arguments:</p>
+<p>year, month, day, hour, min, sec</p>
+<p>inputType (0 for geodetic, 1 for GSM)</p>
+<p>outputType (0 for geodetic, 1 for GSM)</p>
+<pre><code>  The following parameter depend on inputType:
+</code></pre>
+<p>in1 - a comma-separated list of geodetic altitudes or ZGSMs of starting point</p>
+<p>in2 - a comma-separated list of geodetic latitudes or XGSMs of starting point</p>
+<p>in3 - a comma-separated list of longitude or YGSM of starting point</p>
+<pre><code>  Length of all three lists must be the same
+</code></pre>
+<p>model - 0 for Tsyganenko, 1 for IGRF</p>
+<p>qualifier - 0 for conjugate, 1 for north_alt, 2 for south_alt, 3 for apex, 4 for GSM XY plane</p>
+<p>stopAlt - altitude in km to stop trace at, if qualifier is north_alt or south_alt.</p>
+<p>If other qualifier, this parameter is not required.</p>
+<p>Returns comma-delimited data, one line for point in in lists:</p>
+<pre><code>1. geodetic altitude or ZGSM of ending point
+
+2. geodetic latitude or XGSM of ending point
+
+3. longitude or YGSM of ending point
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def trace_magnetic_field_service(request):
+    &#34;&#34;&#34;trace_magnetic_field_service runs the traceMagneticField service.
+    
+    Inputs:
+      request/url - contains arguments:
+      
+        year, month, day, hour, min, sec
+        
+        inputType (0 for geodetic, 1 for GSM)
+        
+        outputType (0 for geodetic, 1 for GSM)
+        
+            The following parameter depend on inputType:
+            
+        in1 - a comma-separated list of geodetic altitudes or ZGSMs of starting point
+        
+        in2 - a comma-separated list of geodetic latitudes or XGSMs of starting point
+        
+        in3 - a comma-separated list of longitude or YGSM of starting point
+
+            Length of all three lists must be the same
+        
+        model - 0 for Tsyganenko, 1 for IGRF
+        
+        qualifier - 0 for conjugate, 1 for north_alt, 2 for south_alt, 3 for apex, 4 for GSM XY plane
+        
+        stopAlt - altitude in km to stop trace at, if qualifier is north_alt or south_alt.
+        
+        If other qualifier, this parameter is not required.
+
+    Returns comma-delimited data, one line for point in in lists:
+
+        1. geodetic altitude or ZGSM of ending point
+        
+        2. geodetic latitude or XGSM of ending point
+        
+        3. longitude or YGSM of ending point
+    &#34;&#34;&#34;
+    year = int(request.GET[&#39;year&#39;])
+    month = int(request.GET[&#39;month&#39;])
+    day = int(request.GET[&#39;day&#39;])
+    hour = int(request.GET[&#39;hour&#39;])
+    minute = int(request.GET[&#39;min&#39;])
+    second = int(request.GET[&#39;sec&#39;])
+    dt = datetime.datetime(year, month, day, hour, minute, second)
+    inputType = int(request.GET[&#39;inputType&#39;])
+    if inputType not in (0,1):
+        return(HttpResponse(&#39;inputType must be 0 or 1, not %i&#39; % (inputType)))
+    outputType = int(request.GET[&#39;outputType&#39;])
+    if outputType not in (0,1):
+        return(HttpResponse(&#39;outputType must be 0 or 1, not %i&#39; % (outputType)))
+    in1Str = request.GET[&#39;in1&#39;]
+    in1List = [float(item) for item in in1Str.split(&#39;,&#39;)]
+    in2Str = request.GET[&#39;in2&#39;]
+    in2List = [float(item) for item in in2Str.split(&#39;,&#39;)]
+    in3Str = request.GET[&#39;in3&#39;]
+    in3List = [float(item) for item in in3Str.split(&#39;,&#39;)]
+    if len(in1List) != len(in2List) or len(in1List) != len(in3List):
+        return(HttpResponse(&#39;All three in* lists must have same length&#39;))
+    model = int(request.GET[&#39;model&#39;])
+    if model not in (0,1):
+        return(HttpResponse(&#39;model must be 0 or 1, not %i&#39; % (model)))
+    qualifier = int(request.GET[&#39;qualifier&#39;])
+    if qualifier not in (0,1,2,3,4):
+        return(HttpResponse(&#39;model must be in 0,1,2,3,4 not %i&#39; % (model)))
+    try:
+        stopAlt = float(request.GET[&#39;stopAlt&#39;])
+    except:
+        stopAlt = 0.0
+        
+    fullText = &#39;&#39;
+    resultArr = numpy.zeros((3,), dtype=&#39;f8&#39;)
+    madDB = madrigal.metadata.MadrigalDB()
+    madDeriveObj = madrigal.derivation.MadrigalDerivationMethods(madDB.getMadroot())
+    for i in range(len(in1List)):
+        madDeriveObj.traceMagneticField(year, month, day, hour, minute, second, 
+                                        inputType, outputType, in1List[i], in2List[i], in3List[i], 
+                                        model, qualifier, stopAlt, resultArr)
+        fullText += &#39;%f,%f,%f\n&#39; % (resultArr[0], resultArr[1], resultArr[2])
+
+    return render(request, &#39;madweb/service.html&#39;, {&#39;text&#39;: fullText})</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="services.download_web_file_service" href="#services.download_web_file_service">download_web_file_service</a></code></li>
+<li><code><a title="services.geodetic_to_radar_service" href="#services.geodetic_to_radar_service">geodetic_to_radar_service</a></code></li>
+<li><code><a title="services.get_experiment_files_service" href="#services.get_experiment_files_service">get_experiment_files_service</a></code></li>
+<li><code><a title="services.get_experiments_service" href="#services.get_experiments_service">get_experiments_service</a></code></li>
+<li><code><a title="services.get_instruments_service" href="#services.get_instruments_service">get_instruments_service</a></code></li>
+<li><code><a title="services.get_madfile_service" href="#services.get_madfile_service">get_madfile_service</a></code></li>
+<li><code><a title="services.get_parameters_service" href="#services.get_parameters_service">get_parameters_service</a></code></li>
+<li><code><a title="services.get_url_list_from_group_id_service" href="#services.get_url_list_from_group_id_service">get_url_list_from_group_id_service</a></code></li>
+<li><code><a title="services.get_version_service" href="#services.get_version_service">get_version_service</a></code></li>
+<li><code><a title="services.global_file_search_service" href="#services.global_file_search_service">global_file_search_service</a></code></li>
+<li><code><a title="services.isprint_service" href="#services.isprint_service">isprint_service</a></code></li>
+<li><code><a title="services.list_file_times_service" href="#services.list_file_times_service">list_file_times_service</a></code></li>
+<li><code><a title="services.mad_calculator2_service" href="#services.mad_calculator2_service">mad_calculator2_service</a></code></li>
+<li><code><a title="services.mad_calculator3_service" href="#services.mad_calculator3_service">mad_calculator3_service</a></code></li>
+<li><code><a title="services.mad_calculator_service" href="#services.mad_calculator_service">mad_calculator_service</a></code></li>
+<li><code><a title="services.mad_time_calculator_service" href="#services.mad_time_calculator_service">mad_time_calculator_service</a></code></li>
+<li><code><a title="services.radar_to_geodetic_service" href="#services.radar_to_geodetic_service">radar_to_geodetic_service</a></code></li>
+<li><code><a title="services.set_group_id_from_url_list_service" href="#services.set_group_id_from_url_list_service">set_group_id_from_url_list_service</a></code></li>
+<li><code><a title="services.trace_magnetic_field_service" href="#services.trace_magnetic_field_service">trace_magnetic_field_service</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+
+<table width="100%" border="1" cellpadding="0" cellspacing="2" class="navigation">
+  <tr>
+    <td width="5%"><a href="rr_contents.html"><img src="/static/previous.png" alt="previous" width="32" height="32" /></a></td>
+    <td width="5%"><a href="rr_contents.html"><img src="/static/up.png" alt="up" width="32" height="32" /></a></td>
+    <td width="5%"><a href="rt_python.html"><img src="/static/next.png" alt="next" width="32" height="32" /></a></td>
+    <td width="54%">Madrigal web services </td>
+    <td width="13%"><a href="madContents.html">Doc home </a></td>
+    <td width="18%"><a href="/">Madrigal home</a></td>
+  </tr>
+</table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" href="rr_contents.html">Remote access reference toc</A>
+<b class="navlabel">&nbsp;&nbsp;Up:</b>
+<a class="sectref" href="rr_contents.html">Remote access reference toc </A>
+<b class="navlabel">&nbsp;&nbsp;Next:</b>
+<a class="sectref" href="rr_matlab.html">Matlab remote access reference </A></div>
+<hr/>
+<p>&nbsp;</p>
+</body>
+</html>

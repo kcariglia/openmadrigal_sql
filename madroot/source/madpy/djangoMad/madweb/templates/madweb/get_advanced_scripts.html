@@ -1,0 +1,435 @@
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Script for adding form validation scripts to get_advanced page
+	
+	$Id: get_advanced_scripts.html 5916 2016-12-05 19:17:54Z brideout $
+{% endcomment %}
+		function validateForm(madForm)
+		{
+		    // declarations
+		    var js_start_date, js_end_date;
+		    
+		    // read some form info
+		    var format = $("input[name=formats]:checked").val();
+		    var selectedParms = $("input[name=parameters]:checked");
+		    var showHeaders = $("input[name=showHeaders]:checked");
+		    var missing=$.trim($('#id_missing').val());
+		    var missingLength = missing.length;
+		    var start_date = $.trim($('#id_start_date').val());
+		    var end_date = $.trim($('#id_end_date').val());
+		    var parm_1 = $("#id_parm_1").val();
+		    var parm_1_lower_str = $.trim($("#id_parm_1_lower").val());
+		    var parm_1_upper_str = $.trim($("#id_parm_1_upper").val());
+		    var parm_2 = $("#id_parm_2").val();
+		    var parm_2_lower_str = $.trim($("#id_parm_2_lower").val());
+		    var parm_2_upper_str = $.trim($("#id_parm_2_upper").val());
+		    var parm_3 = $("#id_parm_3").val();
+		    var parm_3_lower_str = $.trim($("#id_parm_3_lower").val());
+		    var parm_3_upper_str = $.trim($("#id_parm_3_upper").val());
+		    
+		    // file format tests
+		    if (format != 'ascii' && selectedParms.length == 0)
+		    {
+			    alert('No parameters selected; required for Hdf5 and netCDF4 - see <Select Parameters to include>');
+			    return(false);
+			}
+			if (format == 'ascii' && selectedParms.length == 0 && showHeaders.length == 0)
+		    {
+			    alert('No parameters selected; required for ascii file if not <Show headers> selected - see <Select Parameters to include>');
+			    return(false);
+			}
+			if (format == 'ascii')
+			{
+			    if (missingLength == 0)
+			    {
+			        alert('Missing string cannot be empty');
+			        return(false);
+			    }
+			    if (missingLength > 11)
+			    {
+			        alert('Maximum length of missing string is 11, your string is length ' + missingLength.toString());
+			        return(false);
+			    }
+			}
+			
+			//start_date and end_date
+			if (start_date.length > 0)
+			{
+				js_start_date = Date.parse(start_date);
+				if (isNaN(js_start_date))
+				{
+				    alert('Illegal start date: ' + start_date);
+				    return(false);
+				}
+			}
+			
+			if (end_date.length > 0)
+			{
+				js_end_date = Date.parse(end_date);
+				if (isNaN(js_end_date))
+				{
+				    alert('Illegal end date: ' + end_date);
+				    return(false);
+				}
+			}
+			if (js_start_date > js_end_date)
+			{
+			    alert('Start date ' + start_date + ' is later than end date ' + end_date);
+			    return(false);
+			}
+			
+			{% if form.min_alt %}
+			var min_alt_str = $.trim($('#id_min_alt').val());
+			if (min_alt_str.length > 0)
+			{
+				var min_alt = Number(min_alt_str);
+				if (isNaN(min_alt))
+				{
+					alert('Minimum altitude is invalid number: ' + min_alt_str);
+					return(false);
+				}
+				if (min_alt < 0.0)
+				{
+					alert('Minimum altitude cannot be negative: ' + min_alt_str);
+					return(false);
+				}
+			}
+			
+			var max_alt_str = $.trim($('#id_max_alt').val());
+			if (max_alt_str.length > 0)
+			{
+				var max_alt = Number(max_alt_str);
+				if (isNaN(max_alt))
+				{
+					alert('Maximum altitude is invalid number: ' + max_alt_str);
+					return(false);
+				}
+				if (max_alt < 0.0)
+				{
+					alert('Maximum altitude cannot be negative: ' + max_alt_str);
+					return(false);
+				}
+			}
+			
+			if (min_alt_str.length > 0 && max_alt_str.length > 0)
+			{
+				if (min_alt > max_alt)
+				{
+					alert('Minimum altitude ' + min_alt_str + ' cannot be greater than maximum altitude ' + max_alt_str);
+					return(false);
+				}
+			}
+			
+			{% endif %}
+			
+			{% if form.min_az %}
+			var min_az_str = $.trim($('#id_min_az').val());
+			if (min_az_str.length > 0)
+			{
+				var min_az = Number(min_az_str);
+				if (isNaN(min_az))
+				{
+					alert('Minimum azimuth is invalid number: ' + min_az_str);
+					return(false);
+				}
+				if (min_az < -180.0 || min_az > 180.0)
+				{
+					alert('Minimum azimuth must be between -180 and 180, not: ' + min_az_str);
+					return(false);
+				}
+			}
+			
+			var max_az_str = $.trim($('#id_max_az').val());
+			if (max_az_str.length > 0)
+			{
+				var max_az = Number(max_az_str);
+				if (isNaN(max_az))
+				{
+					alert('Maximum azimuth is invalid number: ' + max_az_str);
+					return(false);
+				}
+				if (max_az < -180.0 || max_az > 180.0)
+				{
+					alert('Maximum azimuth must be between -180 and 180, not: ' + max_az_str);
+					return(false);
+				}
+			}
+			
+			if (min_az_str.length > 0 && max_az_str.length > 0)
+			{
+				if (min_az > max_az)
+				{
+					alert('Minimum azimuth ' + min_az_str + ' cannot be greater than maximum azimuth ' + max_az_str);
+					return(false);
+				}
+			}
+			
+			{% endif %}
+			
+			{% if form.min_el %}
+			var min_el_str = $.trim($('#id_min_el').val());
+			if (min_el_str.length > 0)
+			{
+				var min_el = Number(min_el_str);
+				if (isNaN(min_el))
+				{
+					alert('Minimum elevation is invalid number: ' + min_el_str);
+					return(false);
+				}
+				if (min_el < 0.0 || min_el > 90.0)
+				{
+					alert('Minimum elevation must be between 0 and 90, not: ' + min_el_str);
+					return(false);
+				}
+			}
+			
+			var max_el_str = $.trim($('#id_max_el').val());
+			if (max_el_str.length > 0)
+			{
+				var max_el = Number(max_el_str);
+				if (isNaN(max_el))
+				{
+					alert('Maximum elevation is invalid number: ' + max_el_str);
+					return(false);
+				}
+				if (max_el < 0.0 || max_el > 90.0)
+				{
+					alert('Maximum elevation must be between 0 and 90, not: ' + max_el_str);
+					return(false);
+				}
+			}
+			
+			if (min_el_str.length > 0 && max_el_str.length > 0)
+			{
+				if (min_el > max_el)
+				{
+					alert('Minimum elevation ' + min_el_str + ' cannot be greater than maximum elevation ' + max_el_str);
+					return(false);
+				}
+			}
+			
+			{% endif %}
+			
+			
+			{% if form.min_pl %}
+			
+			var min_pl_str = $.trim($('#id_min_pl').val());
+			if (min_pl_str.length > 0)
+			{
+				var min_pl = Number(min_pl_str);
+				if (isNaN(min_pl))
+				{
+					alert('Minimum pulse length is invalid number: ' + min_pl_str);
+					return(false);
+				}
+				if (min_pl < 0.0)
+				{
+					alert('Minimum pulse length cannot be negative: ' + min_pl_str);
+					return(false);
+				}
+			}
+			
+			var max_pl_str = $.trim($('#id_max_pl').val());
+			if (max_pl_str.length > 0)
+			{
+				var max_pl = Number(max_pl_str);
+				if (isNaN(max_pl))
+				{
+					alert('Maximum pulse length is invalid number: ' + max_pl_str);
+					return(false);
+				}
+				if (max_pl < 0.0)
+				{
+					alert('Maximum pulse length cannot be negative: ' + max_pl_str);
+					return(false);
+				}
+			}
+			
+			if (min_pl_str.length > 0 && max_pl_str.length > 0)
+			{
+				if (min_pl > max_pl)
+				{
+					alert('Minimum pulse length ' + min_pl_str + ' cannot be greater than maximum pulse length ' + max_pl_str);
+					return(false);
+				}
+			}
+			
+			{% endif %}
+			
+			
+			
+			{% if form.min_az2 %}
+			var min_az2_str = $.trim($('#id_min_az2').val());
+			if (min_az2_str.length > 0)
+			{
+				var min_az2 = Number(min_az2_str);
+				if (isNaN(min_az2))
+				{
+					alert('Minimum azimuth 2 is invalid number: ' + min_az2_str);
+					return(false);
+				}
+				if (min_az2 < -180.0 || min_az2 > 180.0)
+				{
+					alert('Minimum azimuth 2 must be between -180 and 180, not: ' + min_az2_str);
+					return(false);
+				}
+			}
+			
+			var max_az2_str = $.trim($('#id_max_az2').val());
+			if (max_az2_str.length > 0)
+			{
+				var max_az2 = Number(max_az2_str);
+				if (isNaN(max_az2))
+				{
+					alert('Maximum azimuth 2 is invalid number: ' + max_az2_str);
+					return(false);
+				}
+				if (max_az2 < -180.0 || max_az2 > 180.0)
+				{
+					alert('Maximum azimuth 2 must be between -180 and 180, not: ' + max_az2_str);
+					return(false);
+				}
+			}
+			
+			if (min_az2_str.length > 0 && max_az2_str.length > 0)
+			{
+				if (min_az2 > max_az2)
+				{
+					alert('Minimum azimuth 2 <' + min_az2_str + '> cannot be greater than maximum azimuth 2 <' + max_az2_str + '>');
+					return(false);
+				}
+			}
+			
+			{% endif %}
+			
+			{% if form.min_el2 %}
+			var min_el2_str = $.trim($('#id_min_el2').val());
+			if (min_el2_str.length > 0)
+			{
+				var min_el2 = Number(min_el2_str);
+				if (isNaN(min_el2))
+				{
+					alert('Minimum elevation 2 is invalid number: ' + min_el2_str);
+					return(false);
+				}
+				if (min_el2 < 0.0 || min_el2 > 90.0)
+				{
+					alert('Minimum elevation 2 must be between 0 and 90, not: ' + min_el2_str);
+					return(false);
+				}
+			}
+			
+			var max_el2_str = $.trim($('#id_max_el2').val());
+			if (max_el2_str.length > 0)
+			{
+				var max_el2 = Number(max_el2_str);
+				if (isNaN(max_el2))
+				{
+					alert('Maximum elevation 2 is invalid number: ' + max_el2_str);
+					return(false);
+				}
+				if (max_el2 < 0.0 || max_el2 > 90.0)
+				{
+					alert('Maximum elevation 2 must be between 0 and 90, not: ' + max_el2_str);
+					return(false);
+				}
+			}
+			
+			if (min_el2_str.length > 0 && max_el2_str.length > 0)
+			{
+				if (min_el2 > max_el2)
+				{
+					alert('Minimum elevation 2 <' + min_el2_str + '> cannot be greater than maximum elevation 2 <' + max_el2_str + '>');
+					return(false);
+				}
+			}
+			
+			{% endif %}
+			
+
+		    if (parm_1_lower_str.length > 0)
+		    {
+		        var parm_1_lower = Number(parm_1_lower_str);
+		        if (isNaN(parm_1_lower))
+				{
+					alert('Minimum value for parm 1 (' + parm_1 + ') is invalid number: ' + parm_1_lower_str);
+					return(false);
+				}
+		    }
+		    if (parm_1_upper_str.length > 0)
+		    {
+		        var parm_1_upper = Number(parm_1_upper_str);
+		        if (isNaN(parm_1_upper))
+				{
+					alert('Maximum value for parm 1 (' + parm_1 + ') is invalid number: ' + parm_1_upper_str);
+					return(false);
+				}
+		    }
+		    if (parm_1_lower_str.length > 0 && parm_1_upper_str.length > 0)
+		    {
+		        if (parm_1_lower > parm_1_upper)
+		        {
+		            alert('Minimum parm 1 (' + parm_1 + ') <' + parm_1_lower_str + '> cannot be greater than maximum parm 1 <' + parm_1_upper_str + '>');
+					return(false);
+		        }
+		    }
+		    
+		    if (parm_2_lower_str.length > 0)
+		    {
+		        var parm_2_lower = Number(parm_2_lower_str);
+		        if (isNaN(parm_2_lower))
+				{
+					alert('Minimum value for parm 2 (' + parm_2 + ') is invalid number: ' + parm_2_lower_str);
+					return(false);
+				}
+		    }
+		    if (parm_2_upper_str.length > 0)
+		    {
+		        var parm_2_upper = Number(parm_2_upper_str);
+		        if (isNaN(parm_2_upper))
+				{
+					alert('Maximum value for parm 2 (' + parm_2 + ') is invalid number: ' + parm_2_upper_str);
+					return(false);
+				}
+		    }
+		    if (parm_2_lower_str.length > 0 && parm_2_upper_str.length > 0)
+		    {
+		        if (parm_2_lower > parm_2_upper)
+		        {
+		            alert('Minimum parm 2 (' + parm_2 + ') <' + parm_2_lower_str + '> cannot be greater than maximum parm 2 <' + parm_2_upper_str + '>');
+					return(false);
+		        }
+		    }
+		    
+		    if (parm_3_lower_str.length > 0)
+		    {
+		        var parm_3_lower = Number(parm_3_lower_str);
+		        if (isNaN(parm_3_lower))
+				{
+					alert('Minimum value for parm 3 (' + parm_3 + ') is invalid number: ' + parm_3_lower_str);
+					return(false);
+				}
+		    }
+		    if (parm_3_upper_str.length > 0)
+		    {
+		        var parm_3_upper = Number(parm_3_upper_str);
+		        if (isNaN(parm_3_upper))
+				{
+					alert('Maximum value for parm 3 (' + parm_3 + ') is invalid number: ' + parm_3_upper_str);
+					return(false);
+				}
+		    }
+		    if (parm_3_lower_str.length > 0 && parm_3_upper_str.length > 0)
+		    {
+		        if (parm_3_lower > parm_3_upper)
+		        {
+		            alert('Minimum parm 3 (' + parm_3 + ') <' + parm_3_lower_str + '> cannot be greater than maximum parm 3  <' + parm_3_upper_str + '>');
+					return(false);
+		        }
+		    }
+			
+			
+			// passed all tests
+			return(true);
+		}

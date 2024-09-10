@@ -1,0 +1,259 @@
+{% extends "base_single.html" %}
+
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Final template for Madrigal single experiment web interface
+	
+	$Id: single.html 7290 2021-01-13 21:07:21Z brideout $
+{% endcomment %}
+
+
+{% block ajax_js %}
+    <script type="text/javascript">
+    
+    
+        {% if years %}
+        $( document ).ready(function() {
+		    createCalendar();
+		});
+        {% endif %}
+    
+    	var redirectLookup = {
+    	  "0": function() { return ""; },
+    	  {% for redirect in redirect_list %}
+		  "{{ redirect.0 }}": function() { return "{{ redirect.1|safe }}"; },
+		  {% endfor %}
+		};
+		
+        function populateCat (checkbox) {
+            var is_global = 0;
+            if (checkbox.checked) {
+            	is_global = 1;
+            }
+            var url = '{% url 'get_categories' %}' + '?isGlobal=' + is_global;
+            // first delete all forms that are now out of date
+            divIndex = $(".single_form").index($( "#categories" ))
+            $(".single_form").slice(divIndex).empty()
+            // second populate the categories html
+            $(".single_form").slice(divIndex,divIndex+1).load(url);
+        }
+        
+        function populateInst (select) {
+            var is_global = 0;
+            if ($("#id_isGlobal")[0].checked) {
+            	is_global = 1;
+            }
+            var category = select.options[select.selectedIndex].value;
+            var url = '{% url 'get_instruments' %}' + '?isGlobal=' + is_global + '&categories=' + category;
+            // first delete all forms that are now out of date
+            divIndex = $(".single_form").index($( "#instruments" ))
+            $(".single_form").slice(divIndex).empty()
+            // second populate the instruments html if '0' not selected
+            if (category != '0') {
+            	$(".single_form").slice(divIndex,divIndex+1).load(url);
+            }
+        }
+        
+        function populateYear (select) {
+            var is_global = 0;
+            if ($("#id_isGlobal")[0].checked) {
+            	is_global = 1;
+            }
+            // this method may redirect if instrument is not local
+            var kinst = select.options[select.selectedIndex].value;
+            var redirectUrl = redirectLookup[kinst]();
+            if (redirectUrl.length > 0) {
+               // redirect
+               alert('Because this data is not local, you will be redirected to ' + redirectUrl);
+               window.location.href = redirectUrl;
+            } else {
+            	var url = '{% url 'get_years' %}' + '?isGlobal=' + is_global + '&instruments=' + kinst;
+	            // first delete all forms that are now out of date
+	            divIndex = $(".single_form").index($( "#years" ))
+            	$(".single_form").slice(divIndex).empty()
+	            // second populate the years html if '0' not selected
+	            if (kinst != '0') {
+	            	$(".single_form").slice(divIndex,divIndex+1).load(url);
+	            }
+            }
+        }
+        
+        function populateMonth (select) {
+            var year = select.options[select.selectedIndex].value;
+			var kinst = $("#id_instruments")[0].options[$("#id_instruments")[0].selectedIndex].value;
+			var is_global = 0;
+            if ($("#id_isGlobal")[0].checked) {
+            	is_global = 1;
+            }
+
+        	var url = '{% url 'get_months' %}' + '?isGlobal=' + is_global + '&instruments=' + kinst + '&years=' + year;
+            // first delete all forms that are now out of date
+            divIndex = $(".single_form").index($( "#months" ))
+        	$(".single_form").slice(divIndex).empty()
+            // second populate the years html if '0' not selected
+            if (kinst != '0') {
+            	$(".single_form").slice(divIndex,divIndex+1).load(url);
+            }
+        }
+        
+        function populateCalendar (select) {
+        	var year = $("#id_years")[0].options[$("#id_years")[0].selectedIndex].value;
+        	var month = select.options[select.selectedIndex].value;
+			var kinst = $("#id_instruments")[0].options[$("#id_instruments")[0].selectedIndex].value;
+			var is_global = 0;
+            if ($("#id_isGlobal")[0].checked) {
+            	is_global = 1;
+            }
+			var url = '{% url 'get_calendar' %}' + '?isGlobal=' + is_global + '&instruments=' + kinst + '&years=' + year + '&months=' + month;
+            // first delete all forms that are now out of date
+            divIndex = $(".single_form").index($( "#calendar" ))
+            $(".single_form").slice(divIndex).empty()
+            // second populate the calendar html if '0' not selected
+            if (year != '0') {
+            	$(".single_form").slice(divIndex,divIndex+1).load(url, function() {
+  					createCalendar();
+				});
+            }
+        }
+        
+        function populateFile (select) {
+        	var expId = select.options[select.selectedIndex].value;
+			var url = '{% url 'get_files' %}' + '?experiment_list=' + expId;
+            // first delete all forms that are now out of date
+	        divIndex = $(".single_form").index($( "#file_select" ))
+            $(".single_form").slice(divIndex).empty()
+            // second populate the file_list html if '0' not selected
+            if (expId != '0') {
+            	$(".single_form").slice(divIndex,divIndex+1).load(url);
+            }
+        }
+        
+        function changeFile (select) {
+        	var basename = select.options[select.selectedIndex].value;
+        {% if form.exp_id %}
+			var url = '{% url 'change_files' %}' + '?experiment_list={{ form.exp_id.label }}&file_list=' + basename;
+		{% else %}
+			var exp_id = $("#id_experiment_list")[0].options[$("#id_experiment_list")[0].selectedIndex].value;
+			var url = '{% url 'change_files' %}' + '?experiment_list=' + exp_id + '&file_list=' + basename;
+		{% endif %}
+            // first delete all forms that are now out of date
+            divIndex = $(".single_form").index($( "#file_buttons" ))
+            $(".single_form").slice(divIndex).empty()
+            // second populate the file_list html if '0' not selected
+            if (basename != '0') {
+            	$(".single_form").slice(divIndex,divIndex+1).load(url);
+            }
+        }
+        
+        {% include "madweb/fileDownload.js" %}
+
+    </script>
+{% endblock %}
+
+
+{% block isGlobal %}
+				<div class="col-md-12 single_form" id="isGlobal">
+				{{ form.isGlobal.label }} {{ form.isGlobal }}
+				</div> <!-- end subdivide -->
+{% endblock %}
+
+{% block categories %}
+                <!-- subdivide selection column for categories to be possibly filled in by ajax - single_form 0 -->
+				<div class="col-md-12  single_form" id="categories">
+				
+		{% if form.categories %}
+			{% include "madweb/categories.html" %}
+		{% endif %}
+				
+				</div> <!-- end subdivide -->
+{% endblock %}
+
+
+{% block instruments %}		
+				<!-- subdivide selection column for instruments to be possibly filled in by ajax - single_form 0 -->
+				<div class="col-md-12 single_form" id="instruments">
+				
+		{% if form.instruments %}
+			{% include "madweb/instruments.html" %}
+		{% endif %}
+				
+				</div> <!-- end subdivide -->
+{% endblock %}
+
+
+{% block years %}
+				<!-- subdivide selection column for year to be possibly filled in by ajax - single_form 1 -->
+				<div class="col-md-12 single_form" id="years">
+				
+		{% if form.years %}
+			{% include "madweb/years.html" %}
+		{% endif %}
+
+				</div> <!-- end subdivide -->
+{% endblock %}
+
+
+{% block months %}
+				<!-- subdivide selection column for month  to be possibly filled in by ajax - single_form 1 -->
+				<div class="col-md-12 single_form" id="months">
+				
+		{% if form.months %}
+			{% include "madweb/months.html" %}
+		{% endif %}
+
+				</div> <!-- end subdivide -->
+{% endblock %}
+
+
+{% block calendar %}
+				<!-- subdivide selection column for calendar to be possibly filled in by ajax - single_form 2 -->
+				<div class="col-md-12 single_form" id="calendar">
+				
+		{% if form.days %}
+			{% include "madweb/calendar.html" %}
+		{% endif %}
+
+				</div> <!-- end subdivide -->
+{% endblock %}
+
+{% block experiment_select %}
+				<!-- this select only appears if there are multiple experiments in the day -->
+				<div class="col-md-12 single_form" id="experiment_select">
+		{% if form.experiment_list %}
+			{% include "madweb/exp_list.html" %}
+		{% endif %}
+				</div> <!-- end subdivide -->
+{% endblock %}
+
+{% block file_select %}
+				<!-- file select div -->
+				<div class="col-md-12 single_form" id="file_select">
+		{% if form.file_list|length > 1 %}
+			{% include "madweb/file_list.html" %}
+		{% elif form.days and not form.experiment_list %}
+		    <center><p> This experiment has no Madrigal CEDAR format Hdf5 files. Showing only plots and auxillary files instead.</p></center>
+			{% include "madweb/show_plots.html" %}
+		{% endif %}
+				</div> <!-- end subdivide -->
+{% endblock %}
+
+{% block file_buttons %}
+				<!-- file select div -->
+				<div class="col-md-12 single_form" id="file_buttons">
+		{% if form.file_buttons %}
+			{% include "madweb/file_buttons.html" %}
+		{% endif %}
+				</div> <!-- end subdivide -->
+				<div>&nbsp;</div>
+{% endblock %}
+
+{% block file_data %}
+				<!-- file select div -->
+				<div class="col-md-12 single_form" id="file_data">
+		{% if form.show_plots %}
+			{% include "madweb/show_plots.html" %}
+		{% endif %}
+				</div> <!-- end subdivide -->
+{% endblock %}
+

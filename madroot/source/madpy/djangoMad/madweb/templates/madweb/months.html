@@ -1,0 +1,17 @@
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Template for month select in single experiment web interface
+	
+	$Id: months.html 5138 2015-06-25 04:18:03Z brideout $
+{% endcomment %}
+					<!-- label is its own row in selections column -->
+					<div class="row">
+						{{ form.months.label }}
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<!-- Month select is its own row in selections column -->
+							{{ form.months }}
+						</div> <!-- end span -->
+					</div> <!-- end row -->

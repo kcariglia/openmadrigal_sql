@@ -1,0 +1,4 @@
+This README file exists simply to create an experiments/stage directory
+when Madrigal is installed.  This directory holds temporary data files
+that getMadfiles.cgi is sending to users.  Old files should be automatically
+deleted when getMadfile.cgi is run.

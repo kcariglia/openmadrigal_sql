@@ -1,0 +1,227 @@
+10,jro,Jicamarca IS Radar,-11.95,283.13,0.525,Danny Scipion,Jicamarca Radio Observatory,,,Lima,Lima-13,,PERU,0511-317-2313,dscipion@igp.gob.pe,1
+11,jbr,Jicamarca Bistatic Radar,-11.95,283.13,0.525,David L. Hysell,Earth and Atmospheric Science,Cornell University,2108 Snee Hall,Ithaca,N.Y.,14853,USA,607-255-0630,dlh37@cornell.edu,15
+12,jmp,JULIA MP ISR,-11.95,283.13,0.525,Danny Scipion,Jicamarca Radio Observatory,,,Lima,Lima-13,,PERU,,dscipion@igp.gob.pe,1
+13,jas,JASMET Jicamarca All-Sky Specular Meteor Radar,-11.95,283.13,0.525,Danny Scipion,Jicamarca Radio Observatory,,,Lima,Lima-13,,PERU,0511-317-2313,dscipion@igp.gob.pe,7
+14,jmp,JULIA MP CSR,-11.95,283.13,0.525,Danny Scipion,Jicamarca Radio Observatory,,,Lima,Lima-13,,PERU,,dscipion@igp.gob.pe,15
+20,arl,Arecibo IS Radar - Linefeed,18.345,293.25,0.0,Mike Sulzer,National Astronomy and Ionosphere Center,Arecibo Observatory,HC3 Box 53995,Arecibo,PR,00612,USA,787-878-2612,msulzer@naic.edu,1
+21,arg,Arecibo IS Radar - Gregorian,18.345,293.25,0.0,Mike Sulzer,National Astronomy and Ionosphere Center,Arecibo Observatory,HC3 Box 53995,Arecibo,PR,00612,USA,787-878-2612,msulzer@naic.edu,1
+22,aro,Arecibo IS Radar - Velocity Vector,18.345,293.25,0.0,Mike Sulzer,National Astronomy and Ionosphere Center,Arecibo Observatory,HC3 Box 53995,Arecibo,PR,00612,USA,787-878-2612,msulzer@naic.edu,1
+25,mui,MU IS Radar,34.8,136.1,0.0,Shoichiro Fukao,Radio Science Center for Atmosphere and Space,Kyoto University,Uji,Kyoto 611-0011,,,Japan,81-774-33-5343,fukao@kurasc.kyoto-u.ac.jp,1
+30,mlh,Millstone Hill IS Radar,42.619,288.51,0.146,Phil Erickson,MIT/Haystack Observatory,Off Route 40,,Westford,MA,01886,USA,781-981-5769,perickson@haystack.mit.edu,1
+31,mlh,Millstone Hill UHF Steerable Antenna,42.619,288.51,0.146,Phil Erickson,MIT/Haystack Observatory,Off Route 40,,Westford,MA,01886,USA,781-981-5769,perickson@haystack.mit.edu,1
+32,mlh,Millstone Hill UHF Zenith Antenna,42.619,288.51,0.146,Phil Erickson,MIT/Haystack Observatory,Off Route 40,,Westford,MA,01886,USA,781-981-5769,perickson@haystack.mit.edu,1
+40,sts,St. Santin IS Radar,44.65,2.19,0.0,Christine Amory-Mazaudier,4,CNET/CRPE,avenue de Neptune,St.-Maur des Fosses,,94107,FRANCE,33-1-48-86-1263-x3378,christine.amory@lpp.polytechnique.fr,1
+41,sts,St. Santin Nançay Receiver,47.4,2.2,0.0,Christine Amory-Mazaudier,4,CNET/CRPE,avenue de Neptune,St.-Maur des Fosses,,94107,FRANCE,33-1-48-86-1263-x3378,christine.amory@lpp.polytechnique.fr,1
+42,sts,St. Santin Mende Receiver,44.7,0.8,0.0,Christine Amory-Mazaudier,4,CNET/CRPE,avenue de Neptune,St.-Maur des Fosses,,94107,FRANCE,33-1-48-86-1263-x3378,christine.amory@lpp.polytechnique.fr,1
+43,sts,St. Santin Monpazier Receiver,44.5,3.4,0.0,Christine Amory-Mazaudier,4,CNET/CRPE,avenue de Neptune,St.-Maur des Fosses,,94107,FRANCE,33-1-48-86-1263-x3378,christine.amory@lpp.polytechnique.fr,1
+45,kpi,Kharkov Ukraine IS Radar,50.0,36.2,0.0,Prof. Igor F. Domnin,Radiophysical Building,Institute of the Ionosphere,16 Krasnoznamennaya Street,,Kharkov,310002,UKRAINE,7-0572-45-11-23,iion@kpi.kharkov.ua,1
+50,cht,Chatanika IS Radar,65.103,212.55,0.0,Asti Bhatt,SRI International,333 Ravenswood Avenue,,Menlo Park,CA,94025,USA,415-859-3749,asti.bhatt@sri.com,1
+53,ist,ISTP Irkutsk Radar,52.85,103.1,0.0,Geliy Alexandrovich Zherebtsov,Institute of Solar-Terrestrial Physics,P.O.Box 4026,,Irkutsk,,664033,RUSSIA,3952-460265,uzel@iszf.irk.ru,1
+57,mlv,UK Malvern IS Radar,52.1,2.3,0.0,Tony van Eyken,SRI International,333 Ravenswood Avenue,,Menlo Park,CA,94025,USA,650-859-3777,anthony.vaneyken@sri.com,1
+61,pfa,Poker Flat IS Radar,65.130,212.529,0.215,Asti Bhatt,SRI International,333 Ravenswood Avenue,,Menlo Park,CA,94025,USA,650-859-2726,asti.bhatt@sri.com,1
+70,esa,EISCAT combined IS Radars,,,,Ingemar Häggström,EISCAT Scientific Association,Box 812,,Kiruna,,SE-98128,SWEDEN,+46-980 79155,ingemar@eiscat.se,1
+71,kir,EISCAT Kiruna UHF IS Receiver,67.9,20.4,0.0,Ingemar Häggström,EISCAT Scientific Association,Box 812,,Kiruna,,SE-98128,SWEDEN,+46-980 79155,ingemar@eiscat.se,1
+72,tro,EISCAT Tromsø UHF IS radar,69.583,19.21,0.030,Ingemar Häggström,EISCAT Scientific Association,Box 812,,Kiruna,,SE-98128,SWEDEN,+46-980 79155,ingemar@eiscat.se,1
+73,sod,EISCAT Sodankylä UHF IS Receiver,67.4,26.6,0.030,Ingemar Häggström,EISCAT Scientific Association,Box 812,,Kiruna,,SE-98128,SWEDEN,+46-980 79155,ingemar@eiscat.se,1
+74,eis,EISCAT Tromso VHF IS radar,69.6,19.2,0.030,Ingemar Häggström,EISCAT Scientific Association,Box 812,,Kiruna,,SE-98128,SWEDEN,+46-980 79155,ingemar@eiscat.se,1
+75,krv,EISCAT Kiruna VHF IS Receiver,67.9,20.4,0.0,Ingemar Häggström,EISCAT Scientific Association,Box 812,,Kiruna,,SE-98128,SWEDEN,+46-980 79155,ingemar@eiscat.se,1
+76,sdv,EISCAT Sodankylä VHF IS Receiver,67.4,26.6,0.030,Ingemar Häggström,EISCAT Scientific Association,Box 812,,Kiruna,,SE-98128,SWEDEN,+46-980 79155,ingemar@eiscat.se,1
+80,son,Sondrestrom IS Radar,67.,309.,0.0,Asti Bhatt,SRI International,333 Ravenswood Avenue,,Menlo Park,CA,94025,USA,650-859-3777,asti.bhatt@sri.com,1
+85,alt,ALTAIR IS Radar,9.395,167.479,0.0,David L. Hysell,Earth and Atmospheric Science,Cornell University,2108 Snee Hall,Ithaca,N.Y.,14853,USA,607-255-0630,dlh37@cornell.edu,1
+91,ran,Resolute Bay North IS Radar,74.72955,265.09424,0.145,Asti Bhatt,SRI International,333 Ravenswood Avenue,,Menlo Park,CA,94025,USA,650-859-2726,asti.bhatt@sri.com,1
+92,ras,Resolute Bay Canada IS Radar,74.72955,265.09424,0.145,Eric Donovan,Dept. of Physics and Astronomy,University of Calgary,2500 University Drive,Calgary,Alberta,T2N 1N4,Canada,403-220-6337,edonovan@ucalgary.ca,1
+95,lyr,EISCAT Svalbard IS Radar Longyearbyen,78.09,16.02,0.434,Ingemar Häggström,EISCAT Scientific Association,Box 812,,Kiruna,,SE-98128,SWEDEN,+46-980 79155,ingemar@eiscat.se,1
+100,quj,QuJing IS radar,25.6381,103.7151,2.0448,Ding Zonghua,China Research Institute of Radiowave Propagation,,Qingdao,266107,Xianshan Road 36,Chengyang District,China,+86-532-89079153,zhdingmou@163.com,1
+120,imf,Interplanetary Mag Field and Solar Wind,0.0,0.0,0.0,,,,,,,,,,,2
+170,pfx,POES Spacecraft Particle Flux,,,,David Evans,Space Environment Lab,NOAA,325 Broadway,Boulder,CO,80302,USA,(303) 497-3269,devans@sec.noaa.gov,9
+180,dmp,DMSP-Auroral Boundary Index,,,,Gordon Wilson,,Air Force Research Lab,3550 Aberdeen Avenue SE Bldg 570,Kirtland Air Force Base,NM,87117-5776,USA,505-853-2027,gordon.wilson@kirtland.af.mil,9
+210,gpi,Geophysical Indicies,0.0,0.0,0.0,,,,,,,,,,,2
+211,aei,AE Index,0.0,0.0,0.0,,,,,,,,,,,2
+212,dst,DST Index,0.0,0.0,0.0,,,,,,,,,,,2
+310,gcm,TGCM/TIGCM model,,,,Raymond Roble,High Altitude Observatory,NCAR,P.O. Box 3000,Boulder,CO,80307-3000,USA,303-497-1562,roble@ucar.edu,3
+311,ami,AMIE model,,,,Arthur D. Richmond,High Altitude Observatory,NCAR,P.O. Box 3000,Boulder,CO,80307-3000,USA,303-497-1570,richmond@ncar.ucar.edu,3
+312,tdi,USU-TDIM Model,,,,Don Thompson,Center for Atmospheric & Space Sciences,Utah State University,,Logan,Utah,84322-4405,USA,(435)-797-2357,thompson@gaim.cass.usu.edu,3
+320,sdt,Solar sd Tides,,,,Jeffrey Forbes,Aerospace Engineering Sciences,University of Colorado,Campus Box 429,Boulder,CO,80309-0429,USA,303-492-4359,forbes@zeke.colorado.edu,3
+321,sdl,Lunar sd Tides,,,,Jeffrey Forbes,Aerospace Engineering Sciences,University of Colorado,Campus Box 429,Boulder,CO,80309-0429,USA,303-492-4359,forbes@zeke.colorado.edu,3
+322,gsw,GSWM model,,,,Maura Hagan,High Altitude Observatory,NCAR,P.O. Box 3000,Boulder,CO,80307-3000,USA,303-497-1537,hagan@ucar.edu,3
+820,hhf,Halley HF Radar,-76.,333.,0.0,Michael Pinnock,British Antarctic Survey,High Cross,Madingley road,Cambridge,,CB3 OET,United Kingdom,44-223-251534,mpi@pcmail.nerc-bas.ac.uk,4
+830,syf,Syowa Station HF Radar,,,,Natsuo Sato,,,,Tokyo 173 ,,,Japan,81-3-3962-4711,,4
+840,jul,JULIA,-11.95,283.13,0.525,Marco Milla,Jicamarca Radio Observatory,,,Lima,Lima-13,,PERU,0511-317-2313,marco.milla@jro.igp.gob.pe,15
+841,jhf,Jicamarca Multistatic HF Sounding System,,,,Marco Milla,Jicamarca Radio Observatory,,,Lima,Lima-13,,PERU,0511-317-2313,mmilla@igp.gob.pe,4
+845,khf,Kapuskasing HF Radar,,,,Michael Ruohoniemi,Applied Physics Laboratory,The Johns Hopkins University,Johns Hopkins Road,Laurel,MD,20723-6099,USA,301-953-5000-x4572,ruohoniemi@jhuapl.edu,4
+861,shf,Saskatoon HF Radar,,,,George Sofko,Institute of Space and Atmospheric Studies,University of Saskatchewan,,,Saskatoon,Saskatoon,S7N 0W0 Canada,306-966-6444,sofko@skisas.usask.ca,4
+870,gbf,Goose Bay HF Radar,53.3,299.5,0.0,Michael Ruohoniemi,Applied Physics Laboratory,The Johns Hopkins University,Johns Hopkins Road,Laurel,MD,20723-6099,USA,301-953-5000-x4572,ruohoniemi@jhuapl.edu,4
+900,fhf,Hankasalmi HF Radar,70.,19.,0.0,Tudor Jones,Physics Department,University of Leicester,,Leicester,,LE1 7RH,England,44-533-523-561,tbj@iono.le.ac.uk,4
+910,whf,Stokkseyri HF Radar,,,,Jean-Paul Villain,CNRS/LPCE,3,avenue Recherche Scientifique,Orleans,,45071,France,33-38-515-287,jvillain@cnrs-orleans.fr,4
+911,ehf,Pykkvibaer HF Radar,,,,Tudor B. Jones,Physics Department,University of Leicester,,Leicester,,LE1 7RH,England,44-533-523-561,tbj@iono.le.ac.uk,4
+1040,arm,Arecibo MST Radar,19.,293.,0.0,Qihou Zhou,National Astronomy and Ionosphere Center,Arecibo Observatory,P.O. Box 995,Arecibo,PR,00613-0995,USA,809-878-2512,zhou@naic.edu,5
+1140,pkr,Poker Flat MST Radar,65.,213.,0.0,Anthony Riddle,Aeronomy Laboratory,NOAA,325 Broadway,Boulder,CO,80302,USA,303-497-3752,ariddle@al.noaa.gov,5
+1180,ssr,SOUSY Svalbard MST Radar Longyearbyen,78.10,16.00,0.0,Juergen Roettger,MPAe,Max-Planck-Str.,D-37191,Katlenburg-Lindau,,,GERMANY,49-5556-979163,roettger@linmpi.mpg.de,5
+1210,sbf,Scott Base MF Radar,-78.,167.,0.0,Grahame J. Fraser,Department of Physics and Astronomy,University of Canterbury,Private Bag 4800,Christchurch,,,New Zealand,64-3-642-581,grahame.fraser@canterbury.ac.nz,6
+1215,dav,Davis Antarctica MF radar,-68.60,282.03,0.0,Robert Vincent,Department of Physics and Math Physics,University of Adelaide,,Adelaide,,SA 5005,Australia,(61) 8-8303-5758,robert.vincent@adelaide.edu.au,6
+1220,maf,Mawson MF Radar,-68.,63.,0.0,Robert Vincent,Department of Physics and Mathematical Physics,University of Adelaide,,Adelaide,,SA 5005,Australia,61-8-303-5758,rvincent@physics.adelaide.edu.au,6
+1221,rth,Rothera MF radar,-67.57,291.88,0.005,Andrew Kavanagh,British Antarctic Survey,High Cross,Madingley road,Cambridge,,CB3 OET,United Kingdom,44-223-251534,andkav@bas.ac.uk,6
+1230,ccf,Christchurch MF Radar,-44.,173.,0.0,Grahame Fraser,Department of Physics and Astronomy,University of Canterbury,Private Bag 4800,Christchurch,,,New Zealand,64-3-642-581,grahame.fraser@canterbury.ac.nz,6
+1240,adf,Adelaide MF Radar,-35.,138.,0.0,Robert Vincent,Department of Physics and Mathematical Physics,University of Adelaide,,Adelaide,,SA 5005,Australia,61-8-303-5758,rvincent@physics.adelaide.edu.au,6
+1245,rtg,Rarotonga MF radar,-21.21,200.23,0.002,Dennis Riggin,,University of Colorado,Colorado Research Associates,Boulder,CO,80301,USA,(303) 415-9701x208,riggin@colorado-research.com,6
+1254,tir,Tirunelveli MF radar,8.67,77.82,0.03,Dr. S. Gurubaran,Equatorial Geophysical Research Laboratory,Indian Institute of Geomagnetism,Krishnapuram,Tirunelveli,Tamil Nadu,627 011,India,(0091)-462-573305,su.gurubaran@gmail.com,6
+1270,kau,Kauai MF radar,22.0,159.3,0.002,Dennis Riggin,,University of Colorado,Colorado Research Associates,Boulder,CO,80301,USA,(303) 415-9701x208,riggin@colorado-research.com,6
+1275,yam,Yamagawa MF radar,31.20,130.62,0.07,Yasuhiro Murayama,Communications Research Laboratory,International Arctic Environment Research Team,4-2-1 Nukui-kita-Machi Koganei-shi,Tokyo,,184-8795,Japan,(81) 42-327-6685,murayama@nict.go.jp,6
+1285,plr,Platteville MF radar,40.18,255.3,1.505,Alan Manson,Institute Space and Atmospheric Studies,University of Saskatchewan,116 Science Place,Saskatoon,Saskatchewan,S7N 5E2,Canada,306-966-6449,alan.manson@usask.ca,6
+1310,wak,Wakkanai MF radar,45.36,141.81,0.01,Yasuhiro Murayama,Communications Research Laboratory,International Arctic Environment Research Team,4-2-1 Nukui-kita-Machi Koganei-shi,Tokyo,,184-8795,Japan,(81) 42-327-6685,murayama@nict.go.jp,6
+1320,cof,Collm LF Radar,51.,13.,0.0,Rudolf Schminder,Universitaet Leipzig,HH 16-10,Augustusplatz 9,Leipzig,,D-04109,Germany,49-3435-920320,schminde@rz.uni-leipzig.de,6
+1340,saf,Saskatoon MF Radar,52.,253.,0.0,Alan Manson,Institute Space and Atmospheric Studies,University of Saskatchewan,116 Science Place,Saskatoon,Saskatchewan,S7N 5E2,Canada,306-966-6449,alan.manson@usask.ca,6
+1375,rpk,The Poker Flat MF radar,65.126,212.505,0.208,Yasuhiro Murayama,Communications Research Laboratory,International Arctic Environment Research Team,4-2-1 Nukui-kita-Machi Koganei-shi,Tokyo,,184-8795,Japan,(81) 42-327-6685,murayama@nict.go.jp,6
+1390,trf,Tromsø MF Radar,70.,19.,0.0,Chris Hall,The Auroral Observatory,P.O. Box 953,,Tromsø,,N-9001,Norway,47-83-44000,chris.hall@tgo.uit.no,6
+1395,sym,Syowa MF Radar,-69.0,39.6,0.0,Masaki Tsutsumi,National Institute of Polar Research,Midori-cho,Tachikawa-shi,Tokyo,,190-8518,Japan,,tutumi@nipr.ac.jp,6
+1400,hmf,Halley MF Radar,-75.6,-26.2,0.0,Andrew Kavanagh,British Antarctic Survey,High Cross,Madingley road,Cambridge,,CB3 OET,United Kingdom,44-223-251534,andkav@bas.ac.uk,6
+1539,asc,Ascension Island Meteor Radar,-7.96,345.62,0.17,Nicholas Mitchell,Electronic and Electrical Engineering,University of Bath,Claverton Down,Bath,,BA2 7AY,United Kingdom,(44) 1225-386826,n.j.mitchell@bath.ac.uk,7
+1540,rmr,Rothera Meteor Radar,-67.3,-68.1,0.0,Nicholas Mitchell,Electronic and Electrical Engineering,University of Bath,Claverton Down,Bath,,BA2 7AY,United Kingdom,(44) 1225-386826,n.j.mitchell@bath.ac.uk,7
+1560,atm,Atlanta meteor Radar,34.,276.,0.0,Robert G. Roper,Earth and Atmospheric Sciences,Georgia Institute of Technology,30332-0340,Atlanta,GA,,USA,404-894-3892,roper@eas.gatech.edu,7
+1620,dum,Durham meteor Radar,43.1,289.1,0.0,Ronald Clark,Electrical & Computer Engineering,University of New Hampshire,Kingsbury-ECE,Durham,NH,03824,USA,603-862-1033,ron.clark@unh.edu,7 
+1750,obn,Obninsk meteor radar,55.11,36.51,0.172,Yuri Portnyagin,,Institute for Experimental Meteorology,Lenin Str. 82,Obninsk,,249038,Russia,7-08439-715-20,yportgin@typhoon.obninsk.org,7
+1775,emr,Esrange meteor radar,67.89,338.92,0.32,Nicholas Mitchell,Electronic and Electrical Engineering,University of Bath,Claverton Down,Bath,,BA2 7AY,United Kingdom,(44) 1225-386826,n.j.mitchell@bath.ac.uk,7
+1780,wmr,Wuhan meteor radar,30.5,114.2,0.0,Baiqi Ning,Institute of Geology and Geophysics,Chinese Academy of Sciences,,Beijing,,,China,86-10-82998360,zxk@mail.iggcas.ac.cn,7
+1781,mmr,Mohe meteor radar,53.5,122.3,0.0,Baiqi Ning,Institute of Geology and Geophysics,Chinese Academy of Sciences,,Beijing,,,China,86-10-82998360,zxk@mail.iggcas.ac.cn,7
+1782,bmr,Beijing meteor radar,40.3,116.2,0.0,Baiqi Ning,Institute of Geology and Geophysics,Chinese Academy of Sciences,,Beijing,,,China,86-10-82998360,zxk@mail.iggcas.ac.cn,7
+1783,smr,Sanya meteor radar,18.4,109.6,0.0,Baiqi Ning,Institute of Geology and Geophysics,Chinese Academy of Sciences,,Beijing,,,China,86-10-82998360,zxk@mail.iggcas.ac.cn,7
+1784,som,South Pole meteor radar,-90,0.0,3.0,Scott Palo,Aerospace Engineering and Sciences Department,University of Colorado at Boulder,,Boulder,CO,,USA,303-492-4289,Palo@colorado.edu,7
+1785,amr,Southern Argentina Agile Meteor Radar,-53.8,-67.8,0.0,Dave C. Fritts,GATS Inc.,Colorado Division,3360 Mitchell Lane  Ste C,Boulder,CO,80301,USA,720-274-4744,dave@gats-inc.com,7
+1786,cpr,Cachoeira Paulista Meteor Radar,-22.7,-45,0.0,Paulo Batista,Instituto Nacional de Pesquisas da Amazônia,,,,Amazonas,,Brazil,,paulo.batista@inpe.br,7
+1787,bpr,Buckland Park Meteor Radar,-34.7,138.6,0.0,Iain Reid,University of Adelaide,,,Adelaide,,,Australia,,iain.reid@adelaide.edu.au,7
+1788,kgr,Kingston Meteor Radar,-43,147.3,0.0,Iain Reid,University of Adelaide,,,Adelaide,,,Australia,,iain.reid@adelaide.edu.au,7
+1790,ame,Andes Meteor Radar,-30.3,-70.0,2.530,Alan Z. Liu,Department of Physical Sciences,Embry-Riddle Aeronautical University,1 Aerospace Boulevard,Daytona Beach,FL,32119,USA,386.226.6538,LIUZ2@erau.edu,7
+1791,sco,Southern Cross Meteor Radar,-31.17,-71.0,0.9,Alan Z. Liu,Department of Physical Sciences,Embry-Riddle Aeronautical University,1 Aerospace Boulevard,Daytona Beach,FL,32119,USA,386.226.6538,LIUZ2@erau.edu,7
+1792,lcm,Las Campanas Meteor Radar,-29.018,-70.69,2.275,Alan Z. Liu,Department of Physical Sciences,Embry-Riddle Aeronautical University,1 Aerospace Boulevard,Daytona Beach,FL,32119,USA,386.226.6538,LIUZ2@erau.edu,7
+1793,cms,CONDOR multi-static meteor radar system,0.0,0.0,0.0,Alan Z. Liu,Department of Physical Sciences,Embry-Riddle Aeronautical University,1 Aerospace Boulevard,Daytona Beach,FL,32119,USA,386.226.6538,LIUZ2@erau.edu,7
+1794,mcr,McMurdo Meteor Radar,-77.8297,166.6625,0.24,Scott Palo,Aerospace Engineering and Sciences Department,University of Colorado at Boulder,,Boulder,CO,,USA,303-492-4289,Palo@colorado.edu,7
+1800,nmn,MMARIA Norway Meteor Radar Network,69.07,18.54,0.0,Jorge Chau,Leibniz-Institut für Atmosphärenphysik (IAP),Abteilung Radarsondierungen,Schlossstraße 6,Kühlungsborn,,18225,Germany,,chau@iap-kborn.org,7
+1801,gmn,MMARIA Germany Meteor Radar Network,53.0,13.5,0.0,Jorge Chau,Leibniz-Institut für Atmosphärenphysik (IAP),Abteilung Radarsondierungen,Schlossstraße 6,Kühlungsborn,,18225,Germany,,chau@iap-kborn.org,7
+1802,amn,SIMONe Argentina Meteor Radar Network,69.07,18.54,0.0,Jorge Chau,Leibniz-Institut für Atmosphärenphysik (IAP),Abteilung Radarsondierungen,Schlossstraße 6,Kühlungsborn,,18225,Germany,,chau@iap-kborn.org,7
+1803,jmn,SIMONe Jicamarca Meteor Radar Network,-11.949,-76.871,0.0,Jorge Chau,Leibniz-Institut für Atmosphärenphysik (IAP),Abteilung Radarsondierungen,Schlossstraße 6,Kühlungsborn,,18225,Germany,,chau@iap-kborn.org,7
+1804,pmn,SIMONe Piura Meteor Radar Network,-5.17,-80.639,0.0,Jorge Chau,Leibniz-Institut für Atmosphärenphysik (IAP),Abteilung Radarsondierungen,Schlossstraße 6,Kühlungsborn,,18225,Germany,,chau@iap-kborn.org,7
+1805,smn,MMARIA South Argentina Meteor Radar Network,-54.0,-68.0,0.0,Jorge Chau,Leibniz-Institut für Atmosphärenphysik (IAP),Abteilung Radarsondierungen,Schlossstraße 6,Kühlungsborn,,18225,Germany,,chau@iap-kborn.org,7
+2090,cia,Christmas Island ST/MEDAC Radar,2.,203.,0.0,Susan Avery,CIRES Director,University of Colorado,Campus Box 216,Boulder,CO,80309-0216,USA,303-492-8773,Susan.Avery@colorado.edu,7
+2200,pla,Platteville ST/MEDAC Radar,40.13,255.5,0.0,Susan Avery,CIRES Director,University of Colorado,Campus Box 216,Boulder,CO,80309-0216,USA,303-492-8773,Susan.Avery@colorado.edu,7
+2550,uld,ULowell Digisonde MLH Radar,42.619,288.51,0.0,Bodo Reinisch,Center for Atmospheric Research,University of Massachusetts Lowell,600 Suffolk Street,Lowell,MA,01854,USA,978-934-4903,bodo_reinisch@uml.edu,8
+2890,ssd,Sondre Stromfjord Digisonde,67.0,309.05,0.0,Bodo Reinisch,Center for Atmospheric Research,University of Massachusetts Lowell,600 Suffolk Street,Lowell,MA,01854,USA,978-934-4903,bodo_reinisch@uml.edu,8
+2900,sdi,Sodankylä Ionosonde (SO166),67.4,26.6,0.0,Alexander Kozlovsky,,Sodankylä Geophysical Observatory,Tähteläntie 62,Sodankylä,,FIN-99600,Finland,358-(0)16-619811,alexander.kozlovsky@oulu.fi,8
+2930,qad,Qaanaaq Digisonde ST/MEDAC Radars,77.5,290.6,0.0,Bodo Reinisch,Center for Atmospheric Research,University of Massachusetts Lowell,600 Suffolk Street,Lowell,MA,01854,USA,978-934-4903,bodo_reinisch@uml.edu,8
+2950,trd,EISCAT Tromsø Dynasonde,69.6,19.2,0.085,Ingemar Häggström,EISCAT Scientific Association,Box 812,,Kiruna,,SE-98128,SWEDEN,+46-980 79155,ingemar@eiscat.se,8
+2951,lrd,EISCAT Svalbard Dynasonde,78.1,16.0,0.434,Ingemar Häggström,EISCAT Scientific Association,Box 812,,Kiruna,,SE-98128,SWEDEN,+46-980 79155,ingemar@eiscat.se,8
+2952,krd,IRF Dynasonde at EISCAT site Kiruna,67.9,20.4,0.42,Urban Brändström,Swedish Institute of Space Physics,Box 812,,Kiruna,,SE-98128,SWEDEN,+46-980 79126,urban@irf.se,8
+3000,utx,ARL UT TBB Receiver,30.38,-97.73,0.22,Trevor Garner,Applied Research Laboratories,The University of Texas at Austin,10000 Burnet Road,Austin,Texas,78713-8029,USA,(512) 835-3664,garner@arlut.utexas.edu,16
+3010,dvs,Davis Czerny-Turner Scanning Spectrophotometer,51.3,7.2,0.025,Gary Burns,,Australian Antarctic Division,Channel Highway,Kingston,Tasmania,7050,Australia,(+61) 3-62-323-381,gary.burns@aad.gov.au,18
+3320,wup,Wuppertal (DE) Czerny-Turner OH Grating Spectrometer,-68.48,77.97,0.0,Peter Knieling,Physics Department,University of Wuppertal,Gaussstrasse 20,Wuppertal,,D-42097,Germany,49-202-439-2749,knieling@uni-wuppertal.de,18
+4470,p4p,Poker Flat 4 Channel Filter Photometer,65.12,212.57,0,James Hecht,The Aerospace Corporation,Space & Environ. Tech. Cntr.,P. O Box 92957,Los Angeles,CA,90009-1055,USA,310-336-7017,james.hecht@aero.org,18
+4473,y4p,Fort Yukon 4 Channel Filter Photometer,66.6,214.7,0,James Hecht,The Aerospace Corporation,Space & Environ. Tech. Cntr.,P. O Box 92957,Los Angeles,CA,90009-1055,USA,310-336-7017,james.hecht@aero.org,18
+4480,arp,Arecibo red line photometer,18.345,293.25,0.0,Christiano Brum,National Astronomy and Ionosphere Center,Arecibo Observatory,P.O. Box 995,Arecibo,PR,00613-0995,USA,787-878-2612 x242,cbrum@naic.edu,18
+4481,agp,Arecibo green line photometer,18.345,293.25,0.0,Christiano Brum,National Astronomy and Ionosphere Center,Arecibo Observatory,P.O. Box 995,Arecibo,PR,00613-0995,USA,787-878-2612 x242,cbrum@naic.edu,18
+5000,spf,South Pole Fabry-Perot,-90.00,0.0,2.835,Gonzalo Hernandez,University of Washington,Department of Earth and Space Sciences,P. O. Box 351310,Seattle,WA,98195-1310,USA,(206) 543-9055,hernandez@u.washington.edu,10
+5005,pfi,Palmer Fabry Perot,-64.77,-64.05,0.008,Qian Wu,NCAR,High Altitude Observatory,P.O. Box 3000,Boulder,CO,80307-3000,USA,303-497-2176,qwu@ucar.edu,10
+5015,ahf,Arrival Heights Fabry-Perot,-77.8296,166.6627,0.276,Gonzalo Hernandez,University of Washington,Department of Earth and Space Sciences,P. O. Box 351310,Seattle,WA,98195-1310,USA,(206) 543-9055,hernandez@u.washington.edu,10
+5020,hfp,Halley Fabry-Perot,-76.,333.,0.0,Martin Jarvis,British Antarctic Survey,High Cross,Madingley road,,Cambridge,CB3 OET,England,44 (0)1223 22,mjja@bas.ac.uk,10
+5060,mjf,Mount John Fabry-Perot,-43.98,170.42,0.0,Gonzalo Hernandez,University of Washington,Department of Earth and Space Sciences,P. O. Box 351310,Seattle,WA,98195-1310,USA,(206) 543-9055,hernandez@u.washington.edu,10
+5140,aqf,Fabry-Perot Arequipa,-16.5,288.5,0.0,Manfred Biondi,Department of Physics and Astronomy,University of Pittsburgh,,Pittsburgh,PA,15260,USA,412-624-9287,biondi@vms.cis.pitt.edu,10
+5145,jfp,Fabry-Perot Jicamarca,-11.958,283.14,1.02,John Meriwether, Department of Physics and Astronomy, Clemson University,,Clemson, SC,,USA,,john.meriwether@ces.clemson.edu,10
+5150,mfp,Fabry-Perot Mobile,-14.973,285.11,1020.,John Meriwether, Department of Physics and Astronomy, Clemson University,,Clemson, SC,,USA,,john.meriwether@ces.clemson.edu,10
+5160,afp,Arecibo Fabry-Perot,18.35,293.25,0.0,Christiano Brum,National Astronomy and Ionosphere Center,Arecibo Observatory,HC 3 Box 53995,Arecibo,PR,00612-8346,USA,787-878-2612 x242,cbrum@naic.edu,10
+5190,kha,Kitt Peak H-alpha Fabry-Perot,31.98,248.4,2.12,Susan Nossal,Physics Department,University of Wisconsin-Madison,1150 University Ave.,Madison,WI,53706,USA,608-262-9107,nossal@physics.wisc.edu,10
+5240,fpf,Fritz Peak Fabry-Perot,39.86,254.48,3.0,Gonzalo Hernandez,University of Washington,Department of Earth and Space Sciences,P. O. Box 351310,Seattle,WA,98195-1310,USA,(206) 543-9055,hernandez@u.washington.edu,10
+5292,aaf,Ann Arbor Fabry-Perot,42.29,276.29,0.276,Gonzalo Hernandez,University of Washington,Department of Earth and Space Sciences,P. O. Box 351310,Seattle,WA,98195-1310,USA,(206) 543-9055,hernandez@u.washington.edu,10
+5300,pfp,Peach Mountain Fabry-Perot,42.18,276.3,0.0,Rick Niciejewski,Space Physics Research Laboratory,The University of Michigan,2455 Hayward,Ann Arbor,MI,48109-2143,USA,313-747-3445,niciejew@umich.edu,10
+5340,mfp,Millstone Hill Fabry-Perot,42.6,288.5,0.0,Dwight Sipler,MIT/Haystack Observatory,Off Route 40,,Westford,MA,01886,USA,781-981-5626,dps@haystack.mit.edu,10
+5360,kfp,Millstone Hill High-Res Fabry-Perot,42.6,288.5,0.0,Robert Kerr,Computational Physics Inc,55 Middlesex Street, Unit 210,North Chelmsford,MA,01863-1561,USA,978-251-4554,rkerr@cpi.com,10
+5362,bfp,Brazil Imaging Doppler Fabry-Perot,-22.703764,314.99071,0.52,Robert Kerr,Computational Physics Inc,55 Middlesex Street, Unit 210,North Chelmsford,MA,01863-1561,USA,978-251-4554,rkerr@cpi.com,10
+5370,aif,Arecibo Imaging Doppler Fabry-Perot,18.345,293.25,0.0,Robert Kerr,Computational Physics Inc,55 Middlesex Street, Unit 210,North Chelmsford,MA,01863-1561,USA,978-251-4554,rkerr@cpi.com,10
+5380,clf,Culebra Fabry-Perot,18.3298,294.6932,0.0,Robert Kerr,Computational Physics Inc,55 Middlesex Street, Unit 210,North Chelmsford,MA,01863-1561,USA,978-251-4554,rkerr@cpi.com,10
+5430,wfp,Watson Lake Fabry-Perot,,,,Rick Niciejewski,Space Physics Research Laboratory,The University of Michigan,2455 Hayward,Ann Arbor,MI,48109-2143,USA,313-747-3445,niciejew@umich.edu,10
+5460,cfp,College Fabry-Perot,65.,213.,0.0,Robert Sica,Department of Physics,University of Western Ontario,,London,Ontario,N6A 3K7,CANADA,519-679-2111-x6509,sica@uwo.ca,10
+5465,pkf,Poker Flat all-sky scanning Fabry-Perot,65.12,212.57,0.44,Mark Conde,Geophysical Institute,University of Alaska,903 Koyukuk Drive,Fairbanks,AK, 99775-7320,USA,(907)-474-7347,mark.conde@gi.alaska.edu,10
+5470,fyu,Fort Yukon Fabry-Perot,66.6,214.7,0,John Meriwether,Physics and Astronomy Department,Clemson University,118 Kinard Laboratory,Clemson,SC,29634-0978,USA,(864) 656-0915,john.meriwether@ces.clemson.edu,10
+5475,pkz,Poker Flat Fabry-Perot,65.12,212.57,0.44,John Meriwether,Physics and Astronomy Department,Clemson University,118 Kinard Laboratory,Clemson,SC,29634-0978,USA,(864) 656-0915,john.meriwether@ces.clemson.edu,10
+5480,sfp,Sondre Stromfjord Fabry-Perots,78.6,12.,0.0,Rick Niciejewski,Space Physics Research Laboratory,The University of Michigan,2455 Hayward,Ann Arbor,MI,48109-2143,USA,313-747-3445,niciejew@umich.edu,10
+5510,ikf,Inuvik NWT Fabry-Perot,68.33,226.5,0.103,Dirk Lummerzheim,Geophysical Institute,University of Alaska,903 Koyukuk Drive,Fairbanks,AK, 99775-7320,USA,(907)-474-7564,lumm@gi.alaska.edu,10
+5535,rfp,Resolute Bay Fabry-Perot,74.73,265.11,0.087,Qian Wu,High Altitude Observatory,National Center for Atmospheric Research,P. O. Box 3000,Boulder,CO,80307,USA,(303) 497-2176,qwu@ucar.edu,10
+5540,tfp,Thule Fabry-Perot,76.4,291.7,0.0,Rick Niciejewski,Space Physics Research Laboratory,The University of Michigan,2455 Hayward,Ann Arbor,MI,48109-2143,USA,313-747-3445,niciejew@umich.edu,10
+5545,car,Cariri Brazil FPI,-7.38,323.47,0.46,Jonathan Makela,Department of Electrical and Computer Engineering,University of Illinois at Urbana-Champaign,1308 W. Main St,Urbana,Illinois,61801,USA,(217) 265-9470,jmakela@illinois.edu,10
+5546,caj,Cajazeiras Brazil FPI,-6.876,321.44,0.32,Jonathan Makela,Department of Electrical and Computer Engineering,University of Illinois at Urbana-Champaign,1308 W. Main St,Urbana,Illinois,61801,USA,(217) 265-9470,jmakela@illinois.edu,10
+5547,par,Pisgah Astronomical Research FPI,35.2,277.15,0.9,Jonathan Makela,Department of Electrical and Computer Engineering,University of Illinois at Urbana-Champaign,1308 W. Main St,Urbana,Illinois,61801,USA,(217) 265-9470,jmakela@illinois.edu,10
+5548,uao,Urbana Atmospheric Observatory FPI,40.133,271.8,0.2,Jonathan Makela,Department of Electrical and Computer Engineering,University of Illinois at Urbana-Champaign,1308 W. Main St,Urbana,Illinois,61801,USA,(217) 265-9470,jmakela@illinois.edu,10
+5549,kaf,Kirtland Airforce Base FPI,35.05,253.42,1.641,Jonathan Makela,Department of Electrical and Computer Engineering,University of Illinois at Urbana-Champaign,1308 W. Main St,Urbana,Illinois,61801,USA,(217) 265-9470,jmakela@illinois.edu,10
+5550,vti,Virginia Tech FPI,37.206,279.58,0.65,Jonathan Makela,Department of Electrical and Computer Engineering,University of Illinois at Urbana-Champaign,1308 W. Main St,Urbana,Illinois,61801,USA,(217) 265-9470,jmakela@illinois.edu,10
+5551,ann,Peach Mountain (MiniME) FPI,42.27,276.25,0.3,Jonathan Makela,Department of Electrical and Computer Engineering,University of Illinois at Urbana-Champaign,1308 W. Main St,Urbana,Illinois,61801,USA,(217) 265-9470,jmakela@illinois.edu,10
+5552,mrh,Merihill Peru FPI,-11.958256,283.140988,1.09,Jonathan Makela,Department of Electrical and Computer Engineering,University of Illinois at Urbana-Champaign,1308 W. Main St,Urbana,Illinois,61801,USA,(217) 265-9470,jmakela@illinois.edu,10
+5553,nzk,Nazca Peru FPI,-14.972699,285.108607,0.59,Jonathan Makela,Department of Electrical and Computer Engineering,University of Illinois at Urbana-Champaign,1308 W. Main St,Urbana,Illinois,61801,USA,(217) 265-9470,jmakela@illinois.edu,10
+5554,eku,Eastern Kentucky FPI,37.75,275.71,0.3,Jonathan Makela,Department of Electrical and Computer Engineering,University of Illinois at Urbana-Champaign,1308 W. Main St,Urbana,Illinois,61801,USA,(217) 265-9470,jmakela@illinois.edu,10
+5555,low,Lowell FPI,34.752,248.577,0.3,Jonathan Makela,Department of Electrical and Computer Engineering,University of Illinois at Urbana-Champaign,1308 W. Main St,Urbana,Illinois,61801,USA,(217) 265-9470,jmakela@illinois.edu,10
+5556,blo,Bear Lake FPI,41.94,248.59,0.3,Jonathan Makela,Department of Electrical and Computer Engineering,University of Illinois at Urbana-Champaign,1308 W. Main St,Urbana,Illinois,61801,USA,(217) 265-9470,jmakela@illinois.edu,10
+5557,cvo,Christmas Valley FPI,43.27,239.64,0.3,Jonathan Makela,Department of Electrical and Computer Engineering,University of Illinois at Urbana-Champaign,1308 W. Main St,Urbana,Illinois,61801,USA,(217) 265-9470,jmakela@illinois.edu,10
+5600,jbs,Jang Bogo Station FPI,-74.61,-164.21,0.1,Geonhwa Jee,Division of Polar Climate Sciences,Korea Polar Research Institute,26 Songdomirae-ro,Yeonsu-gu,Incheon,21990,Korea,+82-(0)32-760-5395,ghjee@kopri.re.kr,10
+5700,spm,South Pole Michelson Interferometer,-90.0,0.0,2.835,G. G. Sivjee,Physical Sciences Department,Embry-Riddle Aeronautical University,600 S. Clyde Morris Bouldevard,Daytona Beach,FL,32119,USA,386-226-6711,Gulamabas.Sivjee@erau.edu,11
+5720,dbm,Daytona Beach Michelson Interferometer,29.19,278.95,0.0,G. G. Sivjee,Physical Sciences Department,Embry-Riddle Aeronautical University,600 S. Clyde Morris Bouldevard,Daytona Beach,FL,32119,USA,386-226-6711,Gulamabas.Sivjee@erau.edu,11
+5860,stm,Stockholm IR Michelson,59.5,18.2,0.0,Patrick J. Espy,Space Dynamics Laboratory,Utah State University,,Logan,UT,84322-4140,USA,801-797-3570,sdlpespy@cc.usu.edu,11
+5900,sfm,Sondrestrom Michelson Interferometer,66.99,339.05,0.18,G. G. Sivjee,Physical Sciences Department,Embry-Riddle Aeronautical University,600 S. Clyde Morris Bouldevard,Daytona Beach,FL,32119,USA,386-226-6711,Gulamabas.Sivjee@erau.edu,11
+5950,rbm,Resolute Bay Michelson Interferometer,74.68,265.1,0.001,G. G. Sivjee,Physical Sciences Department,Embry-Riddle Aeronautical University,600 S. Clyde Morris Bouldevard,Daytona Beach,FL,32119,USA,386-226-6711,Gulamabas.Sivjee@erau.edu,11
+5980,eum,Eureka Michelson Interferometer,80.22,273.82,0.139,G. G. Sivjee,Physical Sciences Department,Embry-Riddle Aeronautical University,600 S. Clyde Morris Bouldevard,Daytona Beach,FL,32119,USA,386-226-6711,Gulamabas.Sivjee@erau.edu,11
+6205,akl,Arecibo Potassium [K] lidar,18.35,293.25,0.3,Jens Lautenbach Jonathan Friedman,Space and Atmospheric Sciences,Arecibo Observatory,P.O. Box 995,Arecibo,PR,00613-0995,USA, (787) 878 - 2612 ext. 252,jlautenbach@naic.edu,12
+6206,asl,Arecibo Sodium [Na] lidar,18.35,293.25,0.3,Shikha Raizada,Space and Atmospheric Sciences,Arecibo Observatory,P.O. Box 995,Arecibo,PR,00613-0995,USA, (787) 878 - 2612 ext. 256,shikha@naic.edu,12
+6300,uil,CEDAR lidar,40.07,272.,0.0,Chester Gardner,Department of Electrical & Computer Engineering,University of Illinoi 315 CSRL,1308 West Main Street,Urbana,IL,61801-2307,USA,217-333-7870,cgardner@uiuc.edu,12
+6320,csl,Colorado State sodium lidar,40.59,105.14,1.57,David A. Krueger,Department of Physics,Colorado State University,,Fort Collins,CO,80523,USA,(970) 491-7381,krueger@lamar.colostate.edu,12
+6330,usl,Rayleigh lidar at the ALO - USU/CASS,41.74,111.81,1.466,Vincent Wickwar,Center for Atmospheric and Space Sciences,Utah State University,4405 Old Main Hill,Logan,UT,84322-4405,USA,(435) 797-3641,vincent.wickwar@usu.edu,12
+6340,alo,Andes Na T/W Lidar,-30.3,-70.0,2.530,Alan Z. Liu,Department of Physical Sciences,Embry-Riddle Aeronautical University,1 Aerospace Boulevard,Daytona Beach,FL,32119,USA,386.226.6538,LIUZ2@erau.edu,12
+6350,nlo,ALOMAR Sodium Lidar,69.28,16.01,0.38,Bifford P. Williams,GATS Inc., Boulder division,Suite C 3360 Mitchell Lane,Boulder,CO,80301,USA,+1-720-274-4744 x746,b.p.williams@gats-inc.com,12
+6360,cul,CU STAR Sodium Lidar,40.12783,-105.24367,1.702,Wentao Huang,,University of Colorado at Boulder,216 UCB,Boulder,CO,80309,USA,1-303-735-1466,wentao@colorado.edu,12
+6370,unl,USU Na lidar,41.8, -111.8,1.46,Tao Yuan/Mike Taylor,Center for Atmospheric and Space Sciences,Utah State University,4405 Old Main Hill,Logan,UT,84322-4405,USA,1-435-797-2959,titus.yuan@usu.edu,12
+6380,pfl,Poker Flat lidar,65.1,-147.5,0.215,Rich Collins,Geophysical Institute,University of Alaska,903 Koyukuk Drive,Fairbanks,AK, 99775-7320,USA,,rlcollins@alaska.edu,12
+7190,usi,USU CCD Imager,,,,Michael J. Taylor,Space Dynamics Laboratory,Utah State University,,Logan,UT,84322-4145,USA,801-797-3919,mtaylor@cc.usu.edu,13
+7191,mtm,USU Mesospheric Temperature Mapper,,,,Michael J. Taylor,Space Dynamics Laboratory,Utah State University,,Logan,UT,84322-4145,USA,801-797-3919,mtaylor@cc.usu.edu,18
+7192,amp,USU Advanced Mesospheric Temperature Mapper,,,,Michael J. Taylor,Space Dynamics Laboratory,Utah State University,,Logan,UT,84322-4145,USA,801-797-3919,mtaylor@cc.usu.edu,13
+7200,mhi,BU Millstone All-Sky Imager,42.2,289.,0.0,Michael Mendillo,Center for Space Physics,Boston University,725 Commonwealth Avenue,Boston,MA,02215,USA,617-353-2629,mendillo@bu.edu,13
+7201,aai,BU Arecibo All-Sky Imager,18.344,293.247,0.0,Michael Mendillo,Center for Space Physics,Boston University,725 Commonwealth Avenue,Boston,MA,02215,USA,617-353-2629,mendillo@bu.edu,13
+7202,abi,BU Asiago All-Sky Imager,45.866,11.526,0.0,Michael Mendillo,Center for Space Physics,Boston University,725 Commonwealth Avenue,Boston,MA,02215,USA,617-353-2629,mendillo@bu.edu,13
+7203,eai,BU El Leoncito All-Sky Imager,-31.799,290.697,0.0,Michael Mendillo,Center for Space Physics,Boston University,725 Commonwealth Avenue,Boston,MA,02215,USA,617-353-2629,mendillo@bu.edu,13
+7204,mai,BU McDonald All-Sky Imager,30.671,255.977,0.0,Michael Mendillo,Center for Space Physics,Boston University,725 Commonwealth Avenue,Boston,MA,02215,USA,617-353-2629,mendillo@bu.edu,13
+7205,rai,BU Rio Grande All-Sky Imager,-53.785,292.248,0.0,Michael Mendillo,Center for Space Physics,Boston University,725 Commonwealth Avenue,Boston,MA,02215,USA,617-353-2629,mendillo@bu.edu,13
+7206,jci,BU Jicamarca All-Sky Imager,-11.958,76.86,1.02,Michael Mendillo,Center for Space Physics,Boston University,725 Commonwealth Avenue,Boston,MA,02215,USA,617-353-2629,mendillo@bu.edu,13
+7240,mhi,MIO,42.6,288.5,0.0,Michael Mendillo,Center for Space Physics,Boston University,725 Commonwealth Avenue,Boston,MA,02215,USA,617-353-2629,mendillo@buasta.bu.edu,13
+7580,qac,All-sky cameras at Qaanaaq,77.5,290.8,0.0,Katsure Fukui,,,,,MA,01731,USA,617-377-4281,jukui@plh.af.mil,13
+7600,chs,Chelmsford HS Ozone Radiometer,42.6216,-71.3757,0.0,Alan Rogers,MIT/Haystack Observatory,Off Route 40,,Westford,MA,01886,USA,781-981-5414,arogers@haystack.mit.edu,16
+7602,lan,Lancaster UK Ozone Radiometer,54.052619,-2.7835,0.0,Alan Rogers,MIT/Haystack Observatory,Off Route 40,,Westford,MA,01886,USA,781-981-5414,arogers@haystack.mit.edu,16
+7603,bri,Bridgewater MA Ozone Radiometer,41.993,-71.01,0.0,Alan Rogers,MIT/Haystack Observatory,Off Route 40,,Westford,MA,01886,USA,781-981-5414,arogers@haystack.mit.edu,16
+7604,uni,Union College Ozone Radiometer,42.801,-73.926,0.0,Alan Rogers,MIT/Haystack Observatory,Off Route 40,,Westford,MA,01886,USA,781-981-5414,arogers@haystack.mit.edu,16
+7605,unc,UNC Greensboro Ozone Radiometer,36.069,-79.809,0.0,Alan Rogers,MIT/Haystack Observatory,Off Route 40,,Westford,MA,01886,USA,781-981-5414,arogers@haystack.mit.edu,16
+7606,lyn,Lynnfield HS Ozone Radiometer,42.538859,-71.032518,0.0,Alan Rogers,MIT/Haystack Observatory,Off Route 40,,Westford,MA,01886,USA,781-981-5414,arogers@haystack.mit.edu,16
+7607,apo,Alaska Pacific Ozone Radiometer,61.196184,-149.80615,0.0,Alan Rogers,MIT/Haystack Observatory,Off Route 40,,Westford,MA,01886,USA,781-981-5414,arogers@haystack.mit.edu,16
+7608,hsa,Hermanus SA Ozone Radiometer,-34.409,19.251,0.0,Alan Rogers,MIT/Haystack Observatory,Off Route 40,,Westford,MA,01886,USA,781-981-5414,arogers@haystack.mit.edu,16
+7609,sao,Sanae Antarctic Ozone Radiometer, -71.672733,-2.840574,0.0,Alan Rogers,MIT/Haystack Observatory,Off Route 40,,Westford,MA,01886,USA,781-981-5414,arogers@haystack.mit.edu,16
+7610,sor,Sodankylä Ozone Radiometer,67.42,26.59,0.0,Alan Rogers,MIT/Haystack Observatory,Off Route 40,,Westford,MA,01886,USA,781-981-5414,arogers@haystack.mit.edu,16
+7611,lao,Lancaster2 UK Ozone Radiometer,54.052619,-2.7835,0.0,Alan Rogers,MIT/Haystack Observatory,Off Route 40,,Westford,MA,01886,USA,781-981-5414,arogers@haystack.mit.edu,16
+7612,hro,Haystack Ridge Ozone Radiometer,42.608889,-71.49361,0.0,Alan Rogers,MIT/Haystack Observatory,Off Route 40,,Westford,MA,01886,USA,781-981-5414,arogers@haystack.mit.edu,16
+7613,hno,Haystack NUC3 8-channel Ozone Radiometer,42.608889,-71.49361,0.0,Alan Rogers,MIT/Haystack Observatory,Off Route 40,,Westford,MA,01886,USA,781-981-5414,arogers@haystack.mit.edu,16
+7614,for,Fairbanks Ozone Radiometer,65.124894,-147.493916,0.0,Alan Rogers,MIT/Haystack Observatory,Off Route 40,,Westford,MA,01886,USA,781-981-5414,arogers@haystack.mit.edu,16
+7800,gbt,Green Bank Telescope,38.433,-79.8399,0.0,Karen O'Neil,Green Bank Telescope,,155 Observatory Road,Green Bank,WV,24944,USA,(304) 456-2130,koneil@nrao.edu,19
+8000,gps,World-wide GNSS Receiver Network,0.0,0.0,0.0,Anthea Coster,MIT/Haystack Observatory,Off Route 40,,Westford,MA,01886,USA,781-981-5753,acoster@haystack.mit.edu,17
+8001,sps,South Pole Scintillation Receiver,-89.9986,93.7757,2.8,Allan T. Weatherwax,Department of Physics,Merrimack College,315 Turnpike St,North Andover,MA,01845,USA,(978)837-5000,weatherwaxa@merrimack.edu,16
+8002,mcs,McMurdo Scintillation Receiver,-77.8297,166.6625,0.24,Allan T. Weatherwax,Department of Physics,Merrimack College,315 Turnpike St,North Andover,MA,01845,USA,(978)837-5000,weatherwaxa@merrimack.edu,16
+8010,sci,GNSS Scintillation Network,0.0,0.0,0.0,Anthea Coster,MIT/Haystack Observatory,Off Route 40,,Westford,MA,01886,USA,781-981-5753,acoster@haystack.mit.edu,17
+8020,tec,UT Arlington TEC,0.0,0.0,0.0,Mingwu Jin,University of Texas Arlington,701 S. Nedderman Drive,,Arlington,TX,76019,USA,(817) 272-6262,mingwu@uta.edu,17
+8100,dms,Defense Meteorological Satellite Program,0.0,0.0,0.0,Keith Groves,Institute for Scientific Research,Boston College,403 St. Clement's Hall,Newton,MA,02459,USA,(617) 552-8767,keith.groves@bc.edu,9
+8105,vap,Van Allen Probes,0.0,0.0,0.0,Phil Erickson,MIT/Haystack Observatory,Off Route 40,,Westford,MA,01886,USA,781-981-5769,perickson@haystack.mit.edu,9
+8250,jmt,Jicamarca Magnetometer,-11.92,283.13,0.525,Marco Milla,Jicamarca Radio Observatory,,,Lima,Lima-13,,PERU,0511-317-2313,marco.milla@jro.igp.gob.pe,14
+8255,pmt,Piura Magnetometer,-5.18,0,0,Marco Milla,Jicamarca Radio Observatory,,,Lima,Lima-13,,PERU,0511-317-2313,marco.milla@jro.igp.gob.pe,14
+8260,vmt,DASI-VA Magnetometer,38.7,-77.8,0,Jenn Gannon,Computational Physics,,,Louisville,Colorado,,USA,,gannon@cpi.com,14
+8261,att,DASI-ATLAS Magnetometer,44.3,-73.6,0,Jenn Gannon,Computational Physics,,,Louisville,Colorado,,USA,,gannon@cpi.com,14
+8262,amt,DASI-AUGUSTA Magnetometer,44.3,-69.6,0,Jenn Gannon,Computational Physics,,,Louisville,Colorado,,USA,,gannon@cpi.com,14
+8263,bmt,DASI-BLUESKY Magnetometer,41.6,-84.2,0,Jenn Gannon,Computational Physics,,,Louisville,Colorado,,USA,,gannon@cpi.com,14
+8264,bot,DASI-BOULDER Magnetometer,40.0,-105.2,0,Jenn Gannon,Computational Physics,,,Louisville,Colorado,,USA,,gannon@cpi.com,14
+8265,hmt,DASI-HAYSTACK Magnetometer,42.6,-71.5,0,Jenn Gannon,Computational Physics,,,Louisville,Colorado,,USA,,gannon@cpi.com,14
+8266,het,DASI-HENNEPIN Magnetometer,44.9,-93.7,0,Jenn Gannon,Computational Physics,,,Louisville,Colorado,,USA,,gannon@cpi.com,14
+8267,mmt,DASI-MISSOURI Magnetometer,38.9,-92.2,0,Jenn Gannon,Computational Physics,,,Louisville,Colorado,,USA,,gannon@cpi.com,14
+8268,nmt,DASI-NEWBRITAIN Magnetometer,41.6,-72.7,0,Jenn Gannon,Computational Physics,,,Louisville,Colorado,,USA,,gannon@cpi.com,14
+8269,omt,DASI-ODESSA Magnetometer,31.8,-102.3,0,Jenn Gannon,Computational Physics,,,Louisville,Colorado,,USA,,gannon@cpi.com,14
+8270,pat,DASI-PAWNEE Magnetometer,40.2,-103.7,0,Jenn Gannon,Computational Physics,,,Louisville,Colorado,,USA,,gannon@cpi.com,14
+8271,sum,DASI-SUGARHILLS Magnetometer,47.1,-93.7,0,Jenn Gannon,Computational Physics,,,Louisville,Colorado,,USA,,gannon@cpi.com,14
+8300,smt,Sodankyla Magnetometer,67.367,26.633,0.178,Tero Raita,Sodankyla Geophysical Observatory,Tahtelantie 62,,Sodankyla,,FIN-99600,Finland,+358-294-480864,tero.raita@sgo.fi,14
+8400,jsn,Jason/Topex Ocean TEC,0.0,0.0,0.0,Anthea Coster,MIT/Haystack Observatory,Off Route 40,,Westford,MA,01886,USA,781-981-5753,acoster@haystack.mit.edu,9
+8308,rsd,Amateur Radio Signal Report,0.0,0.0,0.0,Nathaniel Frissell,University of Scranton,800 Linden St,,Scranton,PA,18510,USA,570-941-7400,nathaniel.frissell@scranton.edu,4

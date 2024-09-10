@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Base template for Madrigal site metadata page
+	
+	$Id: site_metadata.html 5328 2015-09-25 19:02:21Z brideout $
+{% endcomment %}
+
+{% block title %}Madrigal site metadata{% endblock %}
+
+{% block content %}
+	<center><h4>List of Madrigal sites</h4></center>
+	
+	<table class="table table-condensed">
+		<thead>
+		    <tr>
+		    	<th>Site Id </th>
+		        <th>Name</th>
+		        <th>Home URL</th>
+		        <th>Contact</th>
+		        <th>Contact email</th>
+		        <th>Present version</th>
+		    </tr>
+		</thead>
+		<tbody>
+		{% for site in siteList %}
+		    {% if forloop.counter|divisibleby:2 %}
+		    <tr class="active">
+		    {% else %}
+		    <tr class="success">
+		    {% endif %}
+		        <td>{{ site.0 }}</td>
+		        <td>{{ site.1 }}</td>
+		        <td>{{ site.2 }}</td>
+		        <td>{{ site.3 }}</td>
+		        <td>{{ site.4 }}</td>
+		        <td>{{ site.5 }}</td>
+		    </tr>
+		{% endfor %}
+		</tbody>
+	</table>
+{% endblock %}

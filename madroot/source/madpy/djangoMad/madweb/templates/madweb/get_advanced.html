@@ -1,0 +1,274 @@
+{% extends "base.html" %}
+
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Template for get advanced
+	
+	$Id: get_advanced.html 6135 2017-07-12 18:31:05Z brideout $
+{% endcomment %}
+
+{% block title %}Print with selected parms/filters{% endblock %}
+
+{% block extra_head %}
+    {% if type == 'download' %}
+    <script>
+       function changeFormat(radio)
+       {
+           choice = $("input[name=formats]:checked").val();
+           if (choice != 'ascii')
+               $('.ascii_format').hide();
+           else
+               $('.ascii_format').show();
+           if (choice != 'Hdf5')
+           {
+               $('.hdf5_prolog').hide();
+               $('.standard_prolog').show();
+           }
+           else
+           {
+               $('.hdf5_prolog').show();
+               $('.standard_prolog').hide();
+           }
+       }
+    </script>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+	{% if type == 'print' %}
+	<center><h4>Print Madrigal file with selected parameters/filters</h4></center>
+	{% else %}
+	<center><h4>Download Madrigal file with selected parameters/filters</h4></center>
+	{% endif %}
+	
+		{% if form.errors %}
+			<div id="form-error">
+				<p style="color: red;">Please correct the error{{ form.errors|pluralize }}:</p>
+				<ul>
+				{% for field in form %}
+				    {% if field.errors %}
+						<li style="color: red;">{{ field.errors|striptags }}</li>
+					{% endif %}
+				{% endfor %}
+				</ul>
+			</div>
+		{% endif %}
+		
+		<p><b>Experiment:</b> <i>{{ expName }}</i>&nbsp;&nbsp;&nbsp; <b>File:</b> <i>{{basename}}</i>&nbsp;&nbsp;&nbsp; <b>Type of data:</b> <i>{{kindatDesc}}</i></p>
+	
+	    <form name="get_advanced_form">
+	    {{ form.fullFilename }}
+	    {{ form.type }}
+	    {% if type == 'print' %}
+	    <input id="id_formats" name="formats" type="hidden" value="ascii">
+	    {% endif %}
+		<div class="panel-group" id="accordion">
+		
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h3 class="panel-title">
+						<a href="#format_panel" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion">Format output <span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></a>
+					</h3>
+				</div> <!-- end panel-heading -->
+				<div id="format_panel" class="panel-collapse collapse in">
+					<div class="panel-body">
+				    
+					    <p> {% if type == 'download' %}
+					          {{ form.formats }} 
+					        {% endif %}
+					    </p>
+					    <p><div class="ascii_format"> &nbsp;&nbsp;&nbsp;{{form.showHeaders.label}} {{ form.showHeaders }}&nbsp;&nbsp;&nbsp; {{ form.missing.label }} {{ form.missing }} </div> </p>
+					
+					</div> <!-- end panel-body -->
+				</div> <!-- end panel-collapse -->
+			</div> <!-- end panel-primary -->
+			
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h3 class="panel-title">
+						<a href="#parameters_panel" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion">Select Parameters to include <span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></a>
+					</h3>
+				</div> <!-- end panel-heading -->
+				<div id="parameters_panel" class="panel-collapse collapse">
+					<div class="panel-body">
+		
+						<div class="btn-toolbar" style="margin: 0;">
+					      <div class="btn-group">
+					        <button type="button" class="btn btn-primary" id="select_file_parms" data-toggle="tooltip" data-original-title="Click this button to select all the parameters in the original file." data-placement="bottom">Select all parms in original file</button>
+					      </div><!-- /btn-group -->
+					      <div class="btn-group">
+					        <button type="button" class="btn btn-primary" id="unselect_file_parms" data-toggle="tooltip" data-original-title="Click this button to unselect all the parameters in the original file." data-placement="bottom">Unselect all parms in original file</button>
+					      </div><!-- /btn-group -->
+					    </div><!-- /btn-toolbar -->
+				    
+					    <p></p>
+					    
+						<p>&nbsp;&nbsp;&nbsp;&nbsp;<span class="label label-primary">Blue parameters are from the original file</span>
+							<span class="label label-default">Grey parameters are derivable from those in the original file</span></p>
+							
+						{{ form.parameters }}
+					
+					</div> <!-- end panel-body -->
+				</div> <!-- end panel-collapse -->
+			</div> <!-- end panel-primary -->
+			
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h3 class="panel-title">
+						<a href="#filters_panel" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion">Select Filters to use (optional) <span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></a>
+					</h3>
+				</div> <!-- end panel-heading -->
+				<div id="filters_panel" class="panel-collapse collapse">
+					<div class="panel-body">
+				    
+					    <table class="table table-bordered table-condensed">
+					    	<tr>
+					    		<td><span data-toggle="tooltip" data-original-title="{{ form.start_date.help_text }}" data-placement="bottom"> {{ form.start_date.label }} </span></td>
+					    		<td> {{ form.start_date }} </td>
+					    		<td><span data-toggle="tooltip" data-original-title="{{ form.end_date.help_text }}" data-placement="bottom">{{ form.end_date.label }}</span> </td>
+					    		<td> {{ form.end_date }} </td>
+							</tr>
+						</table>
+						<table class="table table-bordered table-condensed">
+							{% if form.min_alt %}
+								<tr>
+						    		<td><span data-toggle="tooltip" data-original-title="{{ form.min_alt.help_text }}" data-placement="bottom"> {{ form.min_alt.label }} </span></td>
+						    		<td> {{ form.min_alt }} </td>
+						    		<td><span data-toggle="tooltip" data-original-title="{{ form.max_alt.help_text }}" data-placement="bottom"> {{ form.max_alt.label }} </span></td>
+						    		<td> {{ form.max_alt }} </td>
+								</tr>
+							{% endif %}
+							{% if form.min_az %}
+								<tr>
+						    		<td><span data-toggle="tooltip" data-original-title="{{ form.min_az.help_text }}" data-placement="bottom"> {{ form.min_az.label }} </span></td>
+						    		<td> {{ form.min_az }} </td>
+						    		<td><span data-toggle="tooltip" data-original-title="{{ form.max_az.help_text }}" data-placement="bottom"> {{ form.max_az.label }} </span></td>
+						    		<td> {{ form.max_az }} </td>
+								</tr>
+							{% endif %}
+							{% if form.min_el %}
+								<tr>
+						    		<td><span data-toggle="tooltip" data-original-title="{{ form.min_el.help_text }}" data-placement="bottom"> {{ form.min_el.label }} </span></td>
+						    		<td> {{ form.min_el }} </td>
+						    		<td><span data-toggle="tooltip" data-original-title="{{ form.max_el.help_text }}" data-placement="bottom"> {{ form.max_el.label }} </span></td>
+						    		<td> {{ form.max_el }} </td>
+								</tr>
+							{% endif %}
+							{% if form.min_pl %}
+								<tr>
+						    		<td><span data-toggle="tooltip" data-original-title="{{ form.min_pl.help_text }}" data-placement="bottom"> {{ form.min_pl.label }} </span></td>
+						    		<td> {{ form.min_pl }} </td>
+						    		<td><span data-toggle="tooltip" data-original-title="{{ form.max_pl.help_text }}" data-placement="bottom"> {{ form.max_pl.label }} </span></td>
+						    		<td> {{ form.max_pl }} </td>
+								</tr>
+							{% endif %}
+							{% if form.min_az2 %}
+							    <tr>
+							      <td colspan="4" style="color:green"><em>Additional az, el ranges (Data is included if in either range)</em></td>
+							    </tr>
+								<tr>
+						    		<td><span data-toggle="tooltip" data-original-title="{{ form.min_az2.help_text }}" data-placement="bottom"> {{ form.min_az2.label }} </span></td>
+						    		<td> {{ form.min_az2 }} </td>
+						    		<td><span data-toggle="tooltip" data-original-title="{{ form.max_az2.help_text }}" data-placement="bottom"> {{ form.max_az2.label }} </span></td>
+						    		<td> {{ form.max_az2 }} </td>
+								</tr>
+							{% endif %}
+							{% if form.min_el2 %}
+								<tr>
+						    		<td><span data-toggle="tooltip" data-original-title="{{ form.min_el2.help_text }}" data-placement="bottom"> {{ form.min_el2.label }} </span></td>
+						    		<td> {{ form.min_el2 }} </td>
+						    		<td><span data-toggle="tooltip" data-original-title="{{ form.max_el2.help_text }}" data-placement="bottom"> {{ form.max_el2.label }} </span></td>
+						    		<td> {{ form.max_el2 }} </td>
+								</tr>
+							{% endif %}
+						</table>
+						<table class="table table-bordered table-condensed">
+							<thead>
+						        <tr>
+						            <th>Optional filters using any parameter mnemonic on this page</th>
+						            <th>Lower limit (leave blank if no lower limit)</th>
+						            <th>Upper limit (leave blank if no upper limit)</th>
+						        </tr>
+						    </thead>
+							<tr>
+					    		<td>{{ form.parm_1 }}</td>
+					    		<td>{{ form.parm_1_lower }}</td>
+					    		<td>{{ form.parm_1_upper }}</td>
+					    		<td></td>
+							</tr>
+							<tr>
+					    		<td>{{ form.parm_2 }}</td>
+					    		<td>{{ form.parm_2_lower }}</td>
+					    		<td>{{ form.parm_2_upper }}</td>
+					    		<td></td>
+							</tr>
+							<tr>
+					    		<td>{{ form.parm_3 }}</td>
+					    		<td>{{ form.parm_3_lower }}</td>
+					    		<td>{{ form.parm_3_upper }}</td>
+					    		<td></td>
+							</tr>
+						</table>
+					
+					</div> <!-- end panel-body -->
+				</div> <!-- end panel-collapse -->
+			</div> <!-- end panel-primary -->
+		</div> <!-- end panel-group -->
+		
+		<div> <!-- button div -->
+		    <center>
+		    {% if type == 'download' %}
+		        <button class="btn btn-primary" id="download_button" data-toggle="tooltip" data-original-title="Click this button to download this file with selected parmeters and optional filters in your choosen format to your local computer." data-placement="bottom">Download file</button>
+		    {% else %}
+		        <button class="btn btn-primary" id="print_button" data-toggle="tooltip" data-original-title="Click this button to print this file with selected parmeters and optional filters to your local computer." data-placement="bottom">Print file</button>
+		    {% endif %}
+		    </center>
+		</div>
+		</form>
+	
+	</div> <!-- container-fluid -->
+	
+	<script>
+		$('[data-toggle="tooltip"]').tooltip();
+		$('.my-dropdown').dropdown();
+		$('.my-dropdown').tooltip();
+		$('#select_file_parms').on('click', function (e) {
+		    {% for measParm in measParmList %}
+		    $("#id_parameters_{{ measParm }}").prop("checked", true);
+		    {% endfor %}
+		})
+		$('#unselect_file_parms').on('click', function (e) {
+		    {% for measParm in measParmList %}
+		    $("#id_parameters_{{ measParm }}").prop("checked", false);
+		    {% endfor %}
+		})
+		{% include "madweb/get_advanced_scripts.html" %}
+		{% if type == 'download' %} 
+		$( document ).ready(function() {
+		  $('.ascii_format').hide();
+		  $('.standard_prolog').hide();
+		});
+		$('#download_button').on('click', function (e) {
+		    if (!validateForm(this.form))
+		        return(false);
+		    fullFilename = String($('#id_fullFilename').val());
+		    alert("About to download file based on your selections from input file " + fullFilename);
+			this.form.action = "{% url 'advanced_download' %}";
+			this.form.submit();
+		})
+		{% else %}
+		$('#print_button').on('click', function (e) {
+			if (!validateForm(this.form))
+		        return(false);
+		    fullFilename = String($('#id_fullFilename').val());
+		    alert("About to print file based on your selections from input file " + fullFilename);
+			this.form.action = "{% url 'advanced_print' %}";
+			this.form.submit();
+		})
+		{% endif %}
+	</script>
+	
+	{% include "parm_popup.html" %}
+	
+{% endblock %}

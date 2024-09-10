@@ -1,0 +1,16 @@
+# this is a list of modules that must be installed before Madrigal can be installed
+# $Id: required_modules.txt 7729 2024-09-10 15:54:17Z brideout $
+#
+numpy
+h5py
+matplotlib
+netCDF4
+scipy
+setuptools
+django
+bootstrap3
+aacgmv2
+sqlparse
+filelock
+packaging
+madrigalWeb

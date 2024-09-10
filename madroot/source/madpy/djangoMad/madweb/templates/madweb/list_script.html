@@ -1,0 +1,306 @@
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Base template for Madrigal list interface javascript
+	
+	$Id: list_script.html 6411 2018-01-16 16:46:17Z brideout $
+{% endcomment %}
+
+
+<script language="JavaScript">
+
+	//Category object to hold data for each individual instrument category
+	function Category(name,catId,globalOnly)
+	{
+		this.name=name;
+		this.catId=catId;
+		this.globalOnly=globalOnly;
+	}
+
+	//Instrument object to hold data for each individual instrument
+	function Instrument(name,catId,instId,local_sy,local_ey,global_sy,global_ey)
+	{
+		this.name=name;
+		this.catId=catId;
+		this.instId=instId;
+		this.local_sy=local_sy;
+		this.local_ey=local_ey;
+		this.global_sy=global_sy;
+		this.global_ey=global_ey;
+	}
+
+	//categoryArr holds an array of category objects
+	var categoryArr = new Array();
+		categoryArr[0]=new Category("All Instrument Types", 0);
+		{% for category in categoryList %}
+		categoryArr[{{forloop.counter}}] = new Category("{{category.0}}", {{category.1}}, {{category.2}});
+		{% endfor %}
+
+	//instArr holds an array of instrument objects
+	var instArr = new Array();
+		instArr[0]=new Instrument("All Instruments", 0, 0, 0, 0, 0, 0);
+		{% for instrument in instrumentList %}
+		instArr[{{forloop.counter}}] = new Instrument("{{instrument.0}}", {{instrument.1}}, {{instrument.2}}, {{instrument.3}}, {{instrument.4}}, {{instrument.5}}, {{instrument.6}});
+		{% endfor %}
+		
+		
+	function leapYear(year)
+	{
+	  return ((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0);
+	}
+		
+		
+	function checkYearMonthDay(year, month, day)
+	{
+	  // very simple data checker - returns false if not valid
+	  var thirtyDays = [4,6,9,11];
+	  for(i = 0; i < thirtyDays.length; i++)
+	  {
+	      if (month == thirtyDays[i])
+	      {
+	          if (day > 30) return(false);
+	      }
+	  }
+	  if (month == 2)
+	  {
+	      if (day > 29) return(false);
+	      if (!leapYear(year))
+	      {
+	          if (day > 28) return(false);
+	      }
+	  }
+	  return(true);
+	}
+		
+
+	function validateFilter(madForm)
+	{
+	    // declarations
+	    var js_start_date, js_end_date;
+	    
+	    // read some form info
+	    var start_date_0 = $.trim($('#id_start_date_0').val());
+	    var start_date_1 = $.trim($('#id_start_date_1').val());
+	    var end_date_0 = $.trim($('#id_end_date_0').val());
+	    var end_date_1 = $.trim($('#id_end_date_1').val());
+	    
+	    // verify three parts to each
+	    var items = start_date_0.split("-");
+	    if (items.length != 3)
+	    {
+		    alert('Illegal start date ' +  start_date_0);
+		    return(false);
+		}
+		
+		// simple date check
+		var year = parseInt(items[0]);
+		var month = parseInt(items[1]);
+		var day = parseInt(items[2]);
+		if (!checkYearMonthDay(year, month, day))
+		{
+		    alert('Illegal start date ' +  start_date_0);
+		    return(false);
+		}
+		
+		items = start_date_1.split(":");
+	    if (items.length != 3)
+	    {
+		    alert('Illegal start time ' +  start_date_1);
+		    return(false);
+		}
+		items = end_date_0.split("-");
+	    if (items.length != 3)
+	    {
+		    alert('Illegal end date ' +  end_date_0);
+		    return(false);
+		}
+		
+		// simple date check
+		year = parseInt(items[0]);
+		month = parseInt(items[1]);
+		day = parseInt(items[2]);
+		if (!checkYearMonthDay(year, month, day))
+		{
+		    alert('Illegal end date ' +  end_date_0);
+		    return(false);
+		}
+		
+		items = end_date_1.split(":");
+	    if (items.length != 3)
+	    {
+		    alert('Illegal end time ' +  end_date_1);
+		    return(false);
+		}
+	    
+	    
+	    // verify at least one instrument selected
+        var instSelectArr = new Array();
+		for(var count = 0; count < madForm.instruments.options.length; count++)
+		{
+			if (madForm.instruments[count].selected)
+				instSelectArr[instSelectArr.length] = Number(madForm.instruments.options[count].value);
+		}
+		if (instSelectArr.length == 0)
+		{
+		    alert('Please select at least one instrument');
+		    return(false);
+		}
+		    
+		//start_date and end_date
+		js_start_date = new Date(start_date_0 + 'T' + start_date_1 + 'Z');
+		if (isNaN(js_start_date))
+		{
+		    alert('Illegal start date: ' + start_date_0 + ' ' + start_date_1);
+		    return(false);
+		}
+		if (js_start_date.getFullYear() < 1949)
+		{
+		    alert('Start year must be 1950 or later, not ' + js_start_date);
+		    return(false);
+		}
+		js_end_date = new Date(end_date_0 + 'T' + end_date_1 + 'Z');
+		if (isNaN(js_end_date))
+		{
+		    alert('Illegal end date: ' + end_date_0 + ' ' + end_date_1);
+		    return(false);
+		}
+		if (js_end_date.getFullYear() < 1949)
+		{
+		    alert('End year must be 1950 or later, not ' + js_end_date);
+		    return(false);
+		}
+		if (js_start_date > js_end_date)
+		{
+		    alert('Start date ' + start_date_0 + ' ' + start_date_1 + ' is later than end date ' + end_date_0 + ' ' + end_date_1);
+		    return(false);
+		}
+
+		return true;
+	}
+
+
+	
+	
+	function changeGlobal(madForm)
+	{
+	    // this method called when change to isGlobal
+	    var isGlobal = madForm.isGlobal.checked;
+	    if (isGlobal)
+	    {
+	        // simply reload
+	        var url = '{% url 'view_list' %}';
+	        // refresh page
+	        window.location.href = url;
+	        return;
+	    }
+	    // reset all selections
+	    madForm.categories.options.length = 0;
+	    madForm.instruments.options.length = 0;
+		for(var count = 0; count < categoryArr.length; count++)
+		{
+		    if (categoryArr[count].globalOnly)
+		        continue;
+		    if (count == 0)
+				newOpt = new Option(categoryArr[count].name, categoryArr[count].catId, false, true);
+			else
+				newOpt = new Option(categoryArr[count].name, categoryArr[count].catId, false, false);
+			madForm.categories.options[madForm.categories.options.length] = newOpt;
+		}
+		
+	    updateInstruments(madForm);
+	}
+	
+	
+	
+	function updateInstruments(madForm)
+	{
+	    // this method reloads the instrument list
+		var isGlobal = madForm.isGlobal.checked;
+		var catSelectArr = new Array(); // will hold list of categories selected
+		for(var count = 0; count < madForm.categories.options.length; count++)
+		{
+			if (madForm.categories[count].selected)
+				catSelectArr[catSelectArr.length] = Number(madForm.categories.options[count].value);
+		}
+		
+        // next collect the list of already selected kinsts (note - they will disappear if not in a selected category)
+        var instSelectArr = new Array();
+		for(var count = 0; count < madForm.instruments.options.length; count++)
+		{
+			if (madForm.instruments[count].selected)
+				instSelectArr[instSelectArr.length] = Number(madForm.instruments.options[count].value);
+		}
+		
+		// rebuild instruments list
+		madForm.instruments.options.length = 0;
+		for(var count = 0; count < instArr.length; count++)
+		{
+		    // if local, verify there is data
+		    if (!isGlobal)
+		    {
+		        if (instArr[count].local_sy == 0)
+		            continue;
+		    }
+		    //check if this instrument has right category
+			var isOkay = false;
+			for (var catCount=0; catCount<catSelectArr.length; catCount++)
+			{
+				if (instArr[count].catId == catSelectArr[catCount] || catSelectArr[catCount] == 0)
+					isOkay = true;
+			}
+			if (!isOkay)
+				continue;
+				
+			//check if this instrument was selected
+			var isSelected = false;
+			for (var instCount=0; instCount<instSelectArr.length; instCount++)
+			{
+				if (instArr[count].instId == instSelectArr[instCount])
+					isSelected = true;
+			}
+			
+			// get years
+			if (!isGlobal)
+			{
+				var startYear = instArr[count].local_sy;
+				var endYear = instArr[count].local_ey;
+			}
+			else
+			{
+				var startYear = instArr[count].global_sy;
+				var endYear = instArr[count].global_ey;
+			}
+			
+			// add to instruments
+			if(instArr[count].instId != 0)
+				var name = instArr[count].name + " [" + startYear.toString() + "-" + endYear.toString() + "]";
+			else
+				var name = instArr[count].name;
+			if (isSelected)
+				newOpt = new Option(name, instArr[count].instId, false, true);
+			else
+				newOpt = new Option(name, instArr[count].instId, false, false);
+			madForm.instruments.options[madForm.instruments.options.length] = newOpt;
+				
+			// scroll to the top of instruments
+			$('#id_instruments').scrollTop(0)
+		}
+		
+        
+	}
+
+	
+
+	function listExperiments(madForm)
+	{
+		if (!validateFilter(madForm))
+		{
+		    madForm.action = '';
+			return false;
+		}
+		madForm.action = "{% url 'list_experiments' %}";
+		madForm.submit();
+	}
+
+
+</script>

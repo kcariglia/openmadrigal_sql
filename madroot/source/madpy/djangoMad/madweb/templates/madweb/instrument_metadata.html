@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Base template for Madrigal instrument metadata page
+	
+	$Id: instrument_metadata.html 5328 2015-09-25 19:02:21Z brideout $
+{% endcomment %}
+
+{% block title %}Madrigal instrument metadata{% endblock %}
+
+{% block content %}
+	<center><h4>List of Madrigal instruments</h4></center>
+	
+	<table class="table table-condensed">
+		<thead>
+		    <tr>
+		    	<th>Instrument id (kinst)</th>
+		        <th>Name</th>
+		        <th>Category</th>
+		        <th>Latitude</th>
+		        <th>Longitude (-180-180)</th>
+		        <th>Altitude (km)</th>
+		        <th>Principal Investigator</th>
+		        <th>PI Email</th>
+		        <th>3-letter mnemonic</th>
+		    </tr>
+		</thead>
+		<tbody>
+		{% for inst in instList %}
+		    {% if forloop.counter|divisibleby:2 %}
+		    <tr class="active">
+		    {% else %}
+		    <tr class="success">
+		    {% endif %}
+		        <td>{{ inst.0 }}</td>
+		        <td>{{ inst.1 }}</td>
+		        <td>{{ inst.2 }}</td>
+		        <td>{{ inst.3 }}</td>
+		        <td>{{ inst.4 }}</td>
+		        <td>{{ inst.5 }}</td>
+		        <td>{{ inst.6 }}</td>
+		        <td>{{ inst.7 }}</td>
+		        <td>{{ inst.8 }}</td>
+		    </tr>
+		{% endfor %}
+		</tbody>
+	</table>
+{% endblock %}

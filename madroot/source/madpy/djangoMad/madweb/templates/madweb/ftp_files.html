@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Base template for Madrigal ftp file interface
+	
+	$Id: ftp_files.html 7305 2021-02-09 15:33:31Z brideout $
+{% endcomment %}
+
+{% block title %}Madrigal FTP interface{% endblock %}
+	
+{% block content %}
+	<form id="id_ftp_files" action="{% url 'ftp_multiple_download' %}">
+	<input type="hidden" name="user_fullname" value={{fullname}}>
+	<input type="hidden" name="user_email" value={{email}}>
+	<input type="hidden" name="user_affiliation" value={{affiliation}}>
+	<input type="hidden" name="format" value={{format}}>
+	
+	<ul class="breadcrumb">
+	    <li><a href="{% url 'ftp' %}">Instrument</a></li>
+	    <li><span class="glyphicon glyphicon-arrow-right"></span><a href="{% url 'ftp_instrument' fullname email affiliation kinst %}">Year</a></li>
+	    <li><span class="glyphicon glyphicon-arrow-right"></span><a href="{% url 'ftp_year' fullname email affiliation kinst year %}">Kind of data</a></li>
+	    <li><span class="glyphicon glyphicon-arrow-right"></span><a href="{% url 'ftp_kindat' fullname email affiliation kinst year kindat %}">Format</a></li>
+	    <li class="active"><span class="glyphicon glyphicon-arrow-right"></span>Files</li>
+    </ul>
+
+	<p>Choose up to 10 files for <i>{{inst_name}}</i>, year <i>{{year}}</i>, format: <i>{{format_desc}}</i>, kind of data: <i>{{kindat_desc}}</i>:</p>
+	<p>Click on the individual filename link to download an individual file. Select up to 10 checkboxes to download more than one file at once as a tar archive.</p>
+	<p>To download more than 10 files, use the <a href="{% url 'download_as_is_script' %}"> Download files script generator</a> page to easily generate a script
+	you run on your own computer to download as many files as you want.  Please run only one script at a time.</p>
+	<p>PI: <a HREF="MAILTO:{{ pi_email }}">{{ pi_name }}</a> - <strong>please contact before using this data!</strong></p>
+
+	{% if fullFilenames %}
+		{% for fullFilename, basename, dateStr in fullFilenames %}
+			<p><input type="checkbox" id="id_{{forloop.counter0}}" name="fullFilename" value="{{fullFilename}}"><a href="{% url 'ftp_download' fullname email affiliation kinst year kindat format fullFilename %}"> {{basename}}</a> - {{dateStr}}</p>
+		{% endfor %}
+	{% else %}
+		<p><strong>No files listed because the main file is too large to dynamically create this format, and no cached files in this format currently available.  
+		Please try a different format.</strong></p>
+	{% endif %}
+	
+
+    <p><button class="btn btn-primary" id="download_button" data-toggle="tooltip" data-original-title="Click this button to download all selected files as a tar file." data-placement="bottom">Download all checked files as tar</button></p>
+
+	
+	</form>
+	
+	<script>
+	    
+		
+		$('#download_button').on('click', function (e) {
+		    var count = $('input[type="checkbox"]:checked').length;
+		    if (count == 0)
+		    {
+		        alert("You must select at least one file to include in the tar archive.");
+		        return(false);
+		    }
+		    if (count > 10)
+		    {
+		        alert("You are limited to 10 files to include in the tar archive, you selected: " + count);
+		        return(false);
+		    }
+		    $.submit();
+		})
+	</script>
+{% endblock %}

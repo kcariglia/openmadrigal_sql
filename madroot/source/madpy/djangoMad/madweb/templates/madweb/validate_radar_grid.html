@@ -1,0 +1,144 @@
+
+		    // azimuth tests
+		    var start_az_str = $.trim($('#id_start_az').val());
+			var start_az = Number(start_az_str);
+			if (isNaN(start_az) || start_az_str.length == 0)
+			{
+				alert('Start azimuth is invalid number: ' + start_az_str);
+				return(false);
+			}
+			if (start_az < -180.0 || start_az > 180.0)
+			{
+				alert('Start azimuth must be between -180 and 180, not: ' + start_az_str);
+				return(false);
+			}
+			var stop_az_str = $.trim($('#id_stop_az').val());
+			var stop_az = Number(stop_az_str);
+			if (isNaN(stop_az) || stop_az_str.length == 0)
+			{
+				alert('Stop azimuth is invalid number: ' + stop_az_str);
+				return(false);
+			}
+			if (stop_az < -180.0 || stop_az > 180.0)
+			{
+				alert('Stop azimuth must be between -180 and 180, not: ' + stop_az_str);
+				return(false);
+			}
+			var step_az_str = $.trim($('#id_step_az').val());
+			var step_az = Number(step_az_str);
+			if (isNaN(step_az) || step_az_str.length == 0)
+			{
+				alert('Step azimuth is invalid number: ' + step_az_str);
+				return(false);
+			}
+			if (step_az < 0.000001)
+			{
+				alert('Step azimuth must be above 0.000001, not: ' + step_az_str);
+				return(false);
+			}
+			if (start_az > stop_az)
+			{
+				alert('Start azimuth must be less than stop azimuth');
+				return(false);
+			}
+			if ((stop_az-start_az)/step_az > 10000)
+			{
+				alert('Too many azimuth steps - please limit it to 10000 or less');
+				return(false);
+			}
+			
+			// elevation tests
+		    var start_el_str = $.trim($('#id_start_el').val());
+			var start_el = Number(start_el_str);
+			if (isNaN(start_el) || start_el_str.length == 0)
+			{
+				alert('Start elevation is invalid number: ' + start_el_str);
+				return(false);
+			}
+			if (start_el < 0.0 || start_el > 90.0)
+			{
+				alert('Start elevation must be between 0 and 90, not: ' + start_el_str);
+				return(false);
+			}
+			var stop_el_str = $.trim($('#id_stop_el').val());
+			var stop_el = Number(stop_el_str);
+			if (isNaN(stop_el) || stop_el_str.length == 0)
+			{
+				alert('Stop elevation is invalid number: ' + stop_el_str);
+				return(false);
+			}
+			if (stop_el < 0.0 || stop_el > 90.0)
+			{
+				alert('Stop elevation must be between 0 and 90, not: ' + stop_el_str);
+				return(false);
+			}
+			var step_el_str = $.trim($('#id_step_el').val());
+			var step_el = Number(step_el_str);
+			if (isNaN(step_el) || step_el_str.length == 0)
+			{
+				alert('Step elevation is invalid number: ' + step_el_str);
+				return(false);
+			}
+			if (step_el < 0.000001)
+			{
+				alert('Step elevation must be above 0.000001, not: ' + step_el_str);
+				return(false);
+			}
+			if (start_el > stop_el)
+			{
+				alert('Start elevation must be less than stop elevation');
+				return(false);
+			}
+			if ((stop_el-start_el)/step_el > 10000)
+			{
+				alert('Too many elevation steps - please limit it to 10000 or less');
+				return(false);
+			}
+			
+			// range tests
+		    var start_range_str = $.trim($('#id_start_range').val());
+			var start_range = Number(start_range_str);
+			if (isNaN(start_range) || start_range_str.length == 0)
+			{
+				alert('Start range is invalid number: ' + start_range_str);
+				return(false);
+			}
+			if (start_range < 0.0)
+			{
+				alert('Start range must be greater than 0, not: ' + start_range_str);
+				return(false);
+			}
+			var stop_range_str = $.trim($('#id_stop_range').val());
+			var stop_range = Number(stop_range_str);
+			if (isNaN(stop_range) || stop_range_str.length == 0)
+			{
+				alert('Stop range is invalid number: ' + stop_range_str);
+				return(false);
+			}
+			if (stop_range < 0.0)
+			{
+				alert('Stop range must be greater than 0, not: ' + stop_range_str);
+				return(false);
+			}
+			var step_range_str = $.trim($('#id_step_range').val());
+			var step_range = Number(step_range_str);
+			if (isNaN(step_range) || step_range_str.length == 0)
+			{
+				alert('Step range is invalid number: ' + step_range_str);
+				return(false);
+			}
+			if (step_range < 0.000001)
+			{
+				alert('Step range must be above 0.000001, not: ' + step_range_str);
+				return(false);
+			}
+			if (start_range > stop_range)
+			{
+				alert('Start range must be less than stop range');
+				return(false);
+			}
+			if ((stop_range-start_range)/step_range  > 10000)
+			{
+				alert('Too many range steps - please limit it to 10000 or less');
+				return(false);
+			}

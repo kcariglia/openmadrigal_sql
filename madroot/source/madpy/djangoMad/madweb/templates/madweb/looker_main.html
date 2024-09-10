@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Base template for Madrigal kindat metadata page
+	
+	$Id: looker_main.html 5332 2015-09-25 19:45:35Z brideout $
+{% endcomment %}
+
+{% block title %}Madrigal looker{% endblock %}
+
+{% block content %}
+	<center><h4>Run Looker</h4></center>
+	
+	<form action={% url "looker_form" %} method=get>
+	<p><i>Compute azimuth, elevation and range to a specified
+		        array of points. Select one of the following options for
+		        specifying the points.</i></p>
+	<table class="table table-condensed">
+	<tr><td>{{ form.looker_options.0 }}</td></tr>
+	<tr><td>{{ form.looker_options.1 }}</td></tr>
+	</table>
+	<p><i>Compute geographic and geomagnetic coordinates of a specified
+		        array of points. Select one of the following options for 
+		        specifying the points:</i></p>
+	<table class="table table-condensed">
+	<tr><td>{{ form.looker_options.2 }}</td></tr>
+	<tr><td>{{ form.looker_options.3 }}</td></tr>
+	</table>
+	<p><i>Compute azimuth, elevation and range to points
+		        along a geomagnetic field line. Select one of the following
+		        three options for specifying the field line.</i></p>
+	<table class="table table-condensed">
+	<tr><td>{{ form.looker_options.5 }}</td></tr>
+	<tr><td>{{ form.looker_options.4 }}</td></tr>
+	<tr><td>{{ form.looker_options.6 }}</td></tr>
+	</table>
+	<p><i>Compute point/magnetic conjugate parameters of a specified
+		        array of points.</i></p>
+	<table class="table table-condensed">
+	<tr><td>{{ form.looker_options.7 }}</td></tr>
+	</table>
+	<div align=center>
+	<input class="btn btn-primary" type=submit value="Specify input parameters">
+	</div>
+	</form>
+{% endblock %}

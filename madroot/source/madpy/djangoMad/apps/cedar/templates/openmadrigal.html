@@ -1,0 +1,79 @@
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Base template for OpenMadrigal page
+	
+	$Id: openmadrigal.html 7150 2020-08-07 18:13:54Z brideout $
+{% endcomment %}
+
+<HTML>
+
+<HEAD>
+<TITLE>OpenMadrigal</TITLE>
+<style type="text/css">
+    ul {
+        text-align: center;
+        list-style-position: inside;
+    }
+</style>
+</HEAD>
+
+<BODY BGCOLOR=#FFFFFF LINK=#008000 VLINK=#003366>
+
+<TABLE CELLPADDING=10>
+<TR>
+
+<TD width="201" VALIGN=TOP>
+
+<FONT SIZE=3 COLOR=BLACK>
+<BR>
+<BR>
+
+<ul>
+<li><A HREF="{% url 'madrigal_download' %}">Download/update Madrigal</A> - includes Madrigal server and client APIs</li>
+
+<li><A HREF="http://atlas.haystack.mit.edu/cgi-bin/millstone_viewvc.cgi/openmadrigal/">Subversion Source Control</A></li>
+<li><A HREF="https://www.haystack.mit.edu/mailman/listinfo/openmadrigal-admin">OpenMadrigal Admin Mailing List</A></li>
+<li><A HREF="https://www.haystack.mit.edu/mailman/listinfo/openmadrigal-announce">OpenMadrigal Annocements Mailing List</A></li>
+<li><a href="{% url 'madrigal_admin' %}">Administering OpenMadrigal</a></li>
+</ul>
+</TD>
+
+<TD width="915" VALIGN=TOP>
+
+<FONT SIZE=3 COLOR=BLACK>
+
+<CENTER><H1 align="center">
+The Open Madrigal Initiative
+</H1>
+<p align="left">The OpenMadrigal project develops and supports the Madrigal database, which is a community resource for geospace data. 
+The project has been led by <A HREF="http://www.haystack.mit.edu/">MIT Haystack Observatory</A> since 1980, and is now supported by the NSF 
+and other community members. Madrigal is a robust, World Wide Web based system capable of managing and serving archival and real-time data, 
+in a variety of formats, from a wide range of ground-based and some space-based instruments. Madrigal is installed at a number of sites around the world, and has 
+a central archive site at the <a href="http://cedar.openmadrigal.org">CEDAR Madrigal</a> database. Data at each Madrigal site is locally controlled 
+and can be updated at any time, but shared metadata between Madrigal sites allow searching of all Madrigal sites at once from any Madrigal site.</p>
+</TD>
+</TR>
+</TABLE>
+
+<center>
+<h3>Madrigal sites:</h3>
+<ul>
+    {% for url, name in site_list %}
+    <li><a href="{{url}}">{{name}}</a></li>
+    {% endfor %}
+</ul>
+</center>
+
+<BR>
+
+Suggestions and comments should be directed to 
+<ADDRESS>
+<A HREF="MAILTO:brideout@haystack.mit.edu">Bill Rideout</A><BR>
+</ADDRESS>
+
+<HR SIZE=2>
+
+</BODY>
+
+</HTML>

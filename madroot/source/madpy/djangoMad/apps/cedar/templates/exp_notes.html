@@ -1,0 +1,38 @@
+
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Base template for Madrigal Experiment Notes page
+	
+	$Id: exp_notes.html 6173 2017-09-05 17:09:41Z brideout $
+{% endcomment %}
+
+<html>
+<head>
+	<title>Millstone Experiment Details</title>
+	<style type="text/css">.lb {background: #eeeeff}</style>
+</head>
+<body>
+
+
+<center><h1>{{ control_file }}, revision {{ rev }}</h1></center>
+
+<p><i>Experiment description:</i> 
+
+{{ exp_desc }}
+
+</p>
+<p><i>Cycle description:</i>
+
+{{ cyc_desc }}  </p>
+<hr/>
+<h4>Complete text of control file {{ control_file }}, revision {{ rev }}</h4>
+<p>The Millstone Hill ISR is presently controlled by a control file, as listed below.
+                 Lines that begin with a # are comments. Lines that begin 'at [number]' are commands
+                 designed to execute at a certain number of seconds.  This control file determines which
+                 of the two Millstone Hill ISR antennas is active (zenith or the steerable misa), which
+                 waveform is used, where the misa antenna is pointing, and how long to integrate for.</p>
+<pre>
+{{ control_file_text }}
+</pre>
+</body></html>

@@ -1,0 +1,546 @@
+{% load static %}
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="../../../../../../../mad3_0/madroot/source/madpy/djangoMad/madweb/templates/madweb/Templates/doc_template.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>Remote access using Fortran95</title>
+<!-- InstanceEndEditable --><!-- InstanceBeginEditable name="head" --><!-- InstanceEndEditable -->
+<link href="/static/madrigal.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+	html body {
+		background-color: {{bg_color}};
+	}
+</style>
+<!-- InstanceParam name="href_up_top" type="text" value="rt_contents.html" --><!-- InstanceParam name="href_next_top" type="text" value="rr_contents.html" --><!-- InstanceParam name="href_back_top" type="text" value="rt_idl.html" --><!-- InstanceParam name="href_back_bottom" type="text" value="rt_idl.html" --><!-- InstanceParam name="href_up_bottom" type="text" value="rt_contents.html" --><!-- InstanceParam name="href_next_bottom" type="text" value="rr_contents.html" --><!-- InstanceParam name="href_prev_top" type="text" value="rt_idl.html" --><!-- InstanceParam name="href_uptitle_top" type="text" value="rt_contents.html" --><!-- InstanceParam name="href_nexttitle_top" type="text" value="rr_contents.html" --><!-- InstanceParam name="href_prevtitle_bottom" type="text" value="rt_idl.html" --><!-- InstanceParam name="href_uptitle_bottom" type="text" value="rt_contents.html" --><!-- InstanceParam name="href_nexttitle_bottom" type="text" value="rr_contents.html" -->
+</head>
+
+<body>
+<table width="100%" border="1" cellpadding="0" cellspacing="2" class="navigation">
+  <tr>
+    <td width="5%"><a href="{% url 'docs' 'rt_idl.html' %}"><img src="/static/previous.png" alt="previous" width="32" height="32" /></a></td>
+    <td width="5%"><a href="{% url 'docs' 'rt_contents.html' %}"><img src="/static/up.png" alt="up" width="32" height="32" /></a></td>
+    <td width="5%"><a href="{% url 'docs' 'rr_contents.html' %}"><img src="/static/next.png" alt="next" width="32" height="32" /></a></td>
+    <td width="54%"><!-- InstanceBeginEditable name="EditTitleTop" -->Remote access using Fortran95<!-- InstanceEndEditable --></td>
+    <td width="13%"><a href="{% url 'docs' 'madContents.html' %}">Doc home </a></td>
+    <td width="18%"><a href="/">Madrigal home</a></td>
+  </tr>
+</table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" href="{% url 'docs' 'rt_idl.html' %}"><!-- InstanceBeginEditable name="PreviousTitle" -->Remote access using IDL<!-- InstanceEndEditable --></A>
+<b class="navlabel">&nbsp;&nbsp;Up:</b>
+<a class="sectref" href="{% url 'docs' 'rt_contents.html' %}"><!-- InstanceBeginEditable name="UpTitle" -->Remote access programming tutorial toc<!-- InstanceEndEditable --></A>
+<b class="navlabel">&nbsp;&nbsp;Next:</b>
+<a class="sectref" href="{% url 'docs' 'rr_contents.html' %}"><!-- InstanceBeginEditable name="NextTitle" -->Remote access reference toc<!-- InstanceEndEditable --></A></div>
+<hr/>
+<!-- InstanceBeginEditable name="EditDoc" -->
+<h1 align="center">Remote access using Fortran 95</h1>
+<blockquote>
+  <p>Unlike the Matlab, IDL, or python API, the Fortran 95 Madrigal APIis built on a low level language, and so there are only lower-level commands available. This API could be used to build similar functionality to global isprint or global download methods of the higher-level languages if third party Fortran libraries for such things as date manipulation were added to it.  </p>
+  <p>Use of this API requires that wget be installed on your machine (freely available on the web).</p>
+  <p>The following are the methods for accessing Madrigal data remotely via Fortran 95:</p>
+</blockquote>
+<ul>
+  <li><a href="#get_conection">get_connection</a> - get_connection returns the connection type needed by all other methods</li>
+  <li><a href="#get_instruments">get_instruments</a> - get_instruments allocates an array of instrument structures describing all available Madrigal instruments</li>
+  <li><a href="#get_sites">get_sites</a> - get_sites allocates an array of site structures describing all available Madrigal sites</li>
+  <li><a href="#get_experiments">get_experiments</a> - get_experiments allocates an array of exteriment structures describing all available Madrigal experiments with the given kinst and time range</li>
+  <li><a href="#get_experiment_files">get_experiment_files</a> - get_experiment_files allocates an array of experiment_file structures describing all available Madrigal files for the given experiment id</li>
+  <li><a href="#get_cedar_parameters">get_cedar_parameters</a> - get_cedar_parameters allocates an array of cedar_parameter structures describing all available Madrigal parameters for the given fullname of file as returned by get_experiment_files</li>
+  <li><a href="#download_file">download_file</a> - download_file downloads fullname as returned by get_experiment_files to destination is specified    file_format</li>
+  <li><a href="#isprint">isprint</a> - isprint downloads fullname to destination with requested parms and filters applied.  parms    may include both measured and derived parameters.  Format of output file is hdf5, netCDF4, or  ascii as determined by destination extension</li>
+  <li><a href="#mad_calculator">mad_calculator</a> - mad_calculator runs the Madrigal derivation engine to derive the requested parameters for the specified time     and range of geodetic locations. Writes ascii output to destination.  Optional arguments     are one_d_parms and one_d_values, where if given these set additional one d values for the given one d parms.</li>
+</ul>
+<p>These methods return the following Fortran types:</p>
+<ul>
+  <li><a href="#connection">connection</a></li>
+  <li><a href="#instrument">instrument</a></li>
+  <li><a href="#site">site</a></li>
+  <li><a href="#experiment">experiment</a></li>
+  <li><a href="#experiment_file">experiment_file</a></li>
+  <li><a href="#cedar_parameter">cedar_parameter</a></li>
+</ul>
+<p> A good way to learn how to use this Fortran 95API is to run  the <a href="#example"> example</a>. </p>
+<p><a name="get_connection" id="get_connection"></a></p>
+<h2>Madrigal Fortran95 API methods</h2>
+<h3>get_connection</h3>
+<pre>
+          function get_connection(madrigal_url, user_fullname, &
+          user_email, user_affiliation)
+          ! get_connection returns the connection type needed by all other methods
+          ! always the first method called for each session
+          ! arguments:
+          !  madrigal_url - url of particular Madrigal site's home page
+          !  user_fullname - your full name
+          !  user_email - your email
+          !  user_affiliation - your affiliation. Use 'None' if none
+          ! returns a connection structure which is the first argument of all other calls
+</pre>
+
+<p><a name="get_instruments" id="get_instruments"></a></p>
+<h3>get_instruments</h3>
+<pre>
+          subroutine get_instruments(conn, inst_arr, inst_count)
+          ! get_instruments allocates an array of instrument structures
+          ! describing all available Madrigal instruments
+          !
+          ! arguments:
+          !  conn - the connection structure created by get_connection call
+          !  inst_arr - a pointer to an instrument array to be allocated and populated.
+          !     user is responsible for calling deallocate and nullify when done
+          !  inst_count - set to the number of instruments in inst_arr
+</pre>
+
+<p><a name="get_sites" id="get_sites"></a></p>
+<h3>get_sites</h3>
+<pre>
+          subroutine get_sites(conn, site_arr, site_count)
+          ! get_sites allocates an array of site structures
+          ! describing all available Madrigal sites
+          !
+          ! arguments:
+          !  conn - the connection structure created by get_connection call
+          !  site_arr - a pointer to a site array to be allocated and populated.
+          !     user is responsible for calling deallocate and nullify when done
+          !  site_count - set to the number of sites in site_arr
+</pre>
+
+<p><a name="get_experiments" id="get_experiments"></a></p>
+<h3>get_experiments</h3>
+<pre>
+          subroutine get_experiments(conn, kinst, syear, smonth, sday, shour, sminute, ssecond,  &
+               eyear, emonth, eday, ehour, eminute, esecond, local_only, exp_arr, exp_count)
+          ! get_experiments allocates an array of exteriment structures
+          ! describing all available Madrigal experiments with the given kinst and time range
+          !
+          ! arguments:
+          !  conn - the connection structure created by get_connection call
+          !  syear, smonth, sday, shour, sminute, ssecond - exclude exps before this time
+          !  eyear, emonth, eday, ehour, eminute, esecond - exclude exps after this time
+          !  local_only - if True, only return experiments local to this server.
+          !               if False, return local and remote experiments
+          !  exp_arr - a pointer to an experiment array to be allocated and populated.
+          !     user is responsible for calling deallocate and nullify when done
+          !  exp_count - set to the number of experiments in exp_arr
+</pre>
+
+<p><a name="get_experiment_files" id="get_experiment_files"></a></p>
+<h3>get_experiment_files</h3>
+<pre>
+          subroutine get_experiment_files(conn, exp_id, file_arr, file_count)
+          ! get_experiment_files allocates an array of experiment_file structures
+          ! describing all available Madrigal files for the given experiment id
+          !
+          ! arguments:
+          !  conn - the connection structure created by get_connection call
+          !  exp_id - experiment id as returned by get_experiments
+          !  file_arr - a pointer to ae experiment_file array to be allocated and populated.
+          !     user is responsible for calling deallocate and nullify when done
+          !  file_count - set to the number of file in file_arr
+</pre>
+
+<p><a name="get_cedar_parameters" id="get_cedar_parameters"></a></p>
+<h3>get_cedar_parameters</h3>
+<pre>
+          subroutine get_cedar_parameters(conn, fullname, parm_arr, parm_count)
+          ! get_cedar_parameters allocates an array of cedar_parameter structures
+          ! describing all available Madrigal parameters for the given fullname of file
+          ! as returned by get_experiment_files
+          !
+          ! arguments:
+          !  conn - the connection structure created by get_connection call
+          !  fullname - fullname of madrigal file as returned by get_experiment_files
+          !  parm_arr - a pointer to an cedar_parameter array to be allocated and populated.
+          !     user is responsible for calling deallocate and nullify when done
+          !  parm_count - set to the number of cedar_parameters in parm_arr
+          !
+          ! delimiter is \, not ,
+          !
+</pre>
+
+<p><a name="download_file" id="download_file"></a></p>
+<h3>download_file</h3>
+<pre>
+          function download_file(conn, fullname, destination, user_fullname, user_email, user_affiliation, file_format)
+          ! download_file downloads fullname as returned by get_experiment_files to destination is specified
+          !    file_format
+          !
+          ! arguments:
+          !  conn - the connection structure created by get_connection call
+          !  fullname - fullname of madrigal file as returned by get_experiment_files
+          !  destination - full path to save file as locally
+          !  user_fullname, user_email, user_affiliation - three string describing requester
+          !  file_format - must be 'ascii', 'hdf5', or 'netCDF4'.  'netCDF4' requires
+          !    a madrigal 3.0 site of higher
+          !
+          ! Returns 0 is success, -1 if not
+          !
+</pre>
+
+<p><a name="isprint" id="isprint"></a></p>
+<h3>isprint</h3>
+<pre>
+          function isprint(conn, fullname, parms, filters, destination, user_fullname, user_email, user_affiliation)
+          ! isprint downloads fullname to destination with requested parms and filters applied.  parms
+          !     may include both measured and derived parameters.  Format of output file is hdf5, netCDF4, or
+          !     ascii as determined by destination extension
+          !
+          ! arguments:
+          !  conn - the connection structure created by get_connection call
+          !  fullname - fullname of madrigal file as returned by get_experiment_files
+          !  parms - Comma delimited string listing requested parameters (no spaces allowed).
+          !  filters - Space delimited string listing filters desired, as in isprint command All filters
+          !      begin with ==filter=. Details: --filter=&lt;[mnemonic] or [mnemonic1,[+-*/]mnemonic2]&gt;,&lt;lower limit1&gt;,
+          !      &lt;upper limit1>[or&lt;lower limit2&gt;,&lt;upper limit2&gt;...] a filter using any measured or derived Madrigal
+          !      parameter, or two Madrigal parameters either added, subtracted, multiplied or divided. Each filter
+          !      has one or more allowed ranges. The filter accepts data that is in any allowed range. If the Madrigal
+          !      parameter value is missing, the filter will always reject that data. Multiple filter arguments are
+          !      allowed. To skip either a lower limit or an upper limit, leave it blank. Examples: (--filter=ti,500,1000
+          !      (Accept when 500 &lt;= Ti &lt;= 1000) or --filter=gdalt,-,sdwht,0, (Accept when gdalt &gt; shadowheight - that is,
+          !      point in direct sunlight) or --filter=gdalt,200,300or1000,1200
+          !      (Accept when 200 &lt;= gdalt &lt;= 300 OR 1000 &lt;= gdalt &lt;= 1200))
+          !  destination - full path to save file as locally. If extention is .h5, .hdf, or .hdf5,
+          !     will download in Madrigal Hdf5 format. If it has a .nc extension, will
+          !     download as netCDF4. Otherwise, it will download as column delimited ascii.
+          !     Trying to save as Hdf5 or netCDF4 with a Madrigal 2 site will raise an exception
+          !  user_fullname, user_email, user_affiliation - three string describing requester
+          !
+          ! Returns 0 is success, -1 if not
+          !
+</pre>
+
+<p><a name="mad_calculator" id="mad_calculator"></a></p>
+<h3>mad_calculator</h3>
+<pre>
+          function mad_calculator(conn, parms, destination, year, month, day, hour, minute, second,   &
+              start_lat, stop_lat, step_lat, start_lon, stop_lon, step_lon, start_alt, stop_alt, step_alt, &
+              one_d_parms, one_d_values)
+          ! mad_calculator runs the Madrigal derivation engine to derive the requested parameters for the specified time
+          !     and range of geodetic locations. Writes ascii output to destination.  Optional arguments
+          !     are one_d_parms and one_d_values, where if given these set additional one d values for the given one d parms.
+          !
+          ! arguments:
+          !  conn - the connection structure created by get_connection call
+          !  parms - Comma delimited string listing requested parameters (no spaces allowed).
+          !  destination - full path to save ascii file as locally.
+          !  year, month, day, hour. minute. second - six integers that set input time
+          !  start_lat, stop_lat, step_lat - three real dp that set latitude range and step in degrees (-90 to 90)
+          !  start_lon, stop_lon, step_lon - three real dp that set longitude range and step in degrees (-180 to 180)
+          !  start_alt, stop_alt, step_alt - three real dp that set altitude range and step in km
+          !  one_d_parms - a string with comma separated mnemonics representing the one D parameters to specify (no spaces)
+          !     (optional argument). Example: 'azm,elm'
+          !  one_d_values - a string with comma separated float strings representing the one D values to specify (no spaces)
+          !     (optional argument) Number of values must match number of parms in one_d_parms. Example: '27.5,-165'
+          !
+          ! Returns 0 is success, -1 if not
+          !
+</pre>
+<h2>Types created by the above methods </h2>
+
+<p><a name="connection" id="connection"></a></p>
+<h3>connection</h3>
+<pre>
+          ! connection - created by get_connection
+          ! passed into all other methods
+          type :: connection
+              character (len=1024) :: main_url
+              character (len=1024) :: cgi_url
+              character (len=512)  :: user_fullname
+              character (len=512)  :: user_email
+              character (len=512)  :: user_affiliation
+              integer              :: site_id ! site id of site connected to
+              character (len=1024) :: version ! version of local Madrigal site in form I.I[.I]
+          end type connection
+</pre>
+
+<p><a name="instrument" id="instrument"></a></p>
+<h3>instrument</h3>
+<pre>
+          ! instrument - created by get_instruments
+          type :: instrument
+              character (len=1024)  :: name ! instrument name
+              integer               :: code ! instrument id code (kinst)
+              character (len=12)    :: mnemonic ! 3 letter code
+              double precision      :: latitude
+              double precision      :: longitude
+              double precision      :: altitude ! in km
+              character (len=1024)  :: category ! Example: 'Incoherent Scatter Radars'
+              character (len=1024)  :: pi ! Instrument PI.  Will be 'Unknown' for Madrigal 2.X sites
+              character (len=1024)  :: pi_email ! Instrument PI email.  Will be 'Unknown' for Madrigal 2.X sites
+          end type instrument
+</pre>
+
+<p><a name="site" id="site"></a></p>
+<h3>site</h3>
+<pre>
+          ! site - created by get_sites
+          type :: site
+              integer               :: site_id
+              character (len=1024)  :: site_name ! site name
+              character (len=1024)  :: site_url ! url to site home page
+              character (len=1024)  :: contact_name ! site contact name
+              character (len=1024)  :: contact_email ! site contact email
+          end type site
+</pre>
+
+<p><a name="experiment" id="experiment"></a></p>
+<h3>experiment</h3>
+<pre>
+          ! experiment - created by get_experiments
+          type :: experiment
+              integer               :: id ! unique id that identifies experiment
+              character (len=1024)  :: url ! Example: 'http://madrigal.haystack.mit.edu/cgi-bin/madtoc/1997/mlh/03dec97'
+              character (len=1024)  :: name ! experiment name. Example: 'Wide Latitude Substorm Study'
+              integer               :: site_id ! site id of Madrigal site where data located
+              character (len=1024)  :: site_name ! site name of site where data is. eg: 'Millstone Hill'
+              integer               :: kinst ! id code of instrument
+              character (len=1024)  :: inst_name ! Example: 'Millstone Hill Zenith Radar'
+              integer               :: syear, smonth, sday, shour, sminute, ssecond ! start time
+              integer               :: eyear, emonth, eday, ehour, eminute, esecond ! end time
+              logical               :: is_local ! True if local data to this Madrigal site, False if remote data
+              character (len=1024)  :: madrigal_url ! url to Madrigal site where data is. If local, same as init
+              character (len=1024)  :: pi ! Instrument PI.  Will be 'Unknown' for Madrigal 2.X sites
+              character (len=1024)  :: pi_email ! Instrument PI email.  Will be 'Unknown' for Madrigal 2.X sites
+              character (len=1024)  :: real_url ! real url to Madrigal experiment. url string is only historical format
+              integer               :: uttimestamp ! st_mtime of expDir. -999 if not supported by the Madrigal site
+              integer               :: access ! access code of the experiment (0 if public, 2 if public, -999 if n/a).
+              character (len=1024)  :: version ! version of Madrigal site where data is in form I.I[.I]
+          end type experiment
+</pre>
+
+<p><a name="experiment_file" id="experiment_file"></a></p>
+<h3>experiment_file</h3>
+<pre>
+          ! experiment_file - created by get_experiment_files
+          type :: experiment_file
+              character (len=1024)  :: fullname ! file fullname
+              integer               :: kindat ! kind of data code of this file
+              character (len=2048)  :: kindat_desc ! string describing kind of data
+              integer               :: category ! (1=default, 2=variant, 3=history, 4=real-time)
+              character (len=1024)  :: status ! status description
+              integer               :: permission ! 0 for public, 1 for private
+              integer               :: exp_id ! experiment id this file belongs to
+          end type experiment_file
+</pre>
+
+<p><a name="cedar_parameter" id="cedar_parameter"></a></p>
+<h3>cedar_parameter</h3>
+<pre>
+          ! cedar_parameter - created by get_cedar_parameters
+          type :: cedar_parameter
+              character (len=128)   :: mnemonic ! parameter mnemonic
+              character (len=2048)  :: description ! parameter description
+              integer               :: is_error ! 1 if error parameter, 0 if not
+              character (len=128)   :: units ! units description
+              integer               :: is_measured ! 1 if parm in file, 0 if derived
+              character (len=1028)  :: category ! parameter category description
+          end type cedar_parameter
+</pre>
+
+<p><a name="example" id="example"></a></p>
+<h2>Example code </h2>
+<pre>
+      program testMadrigalWeb
+          use madrigal_web
+
+          ! testMadrigalWeb is menat as an example of how to use madrigal_web fortran api
+          ! Written by Bill Rideout
+          ! $Id: testMadrigalWeb.f95 5690 2016-06-01 16:17:33Z brideout $
+
+          ! mad_connection is the main object to be used by all calls after get_connection
+          type(connection) mad_connection
+
+          ! arguments needed by get_instruments call
+          type(instrument), dimension(:), pointer :: inst_arr ! returns an allocated array of instrument structures
+          integer :: inst_count ! returns the number of instruments returned
+
+          ! arguments needed by get_sites call
+          type(site), dimension(:), pointer :: site_arr ! returns an allocated array of site structures
+          integer :: site_count ! returns the number of site returned
+
+          ! arguments needed by get_experiments call
+          type(experiment), dimension(:), pointer :: exp_arr ! returns an allocated array of experiment structures
+          integer :: exp_count ! returns the number of experiments returned
+
+          ! arguments needed by get_experiment_files call
+          type(experiment_file), dimension(:), pointer :: file_arr ! returns an allocated array of experiment file structures
+          integer :: file_count ! returns the number of experiment files returned
+
+          ! arguments needed by get_cedar_parameters call
+          type(cedar_parameter), dimension(:), pointer :: parm_arr ! returns an allocated array of cedar parameter structures
+          integer :: parm_count ! returns the number of parameters returned
+
+          ! other variables
+          integer :: exp_id, result
+          character (len=1024)  :: fullname
+
+          ! to be done - declare arugments for all other api calls
+
+          ! first call is always get_connection
+          mad_connection = get_connection('http://madrigal3.haystack.mit.edu', "Bill Rideout", &
+          "brideout@haystack.mit.edu", "MIT")
+          !mad_connection = get_connection('http://isr.sri.com/madrigal/', "Bill Rideout", &
+          !"brideout@haystack.mit.edu", "MIT")
+          !mad_connection = get_connection('http://madrigal.haystack.mit.edu/', "Bill Rideout", &
+          !"brideout@haystack.mit.edu", "MIT")
+
+          ! prove that first call succeeded
+          print *, trim(mad_connection%user_fullname)
+          print *, mad_connection%site_id
+          print *, mad_connection%version
+
+
+          ! get information on all available Madrigal instruments
+          call get_instruments(mad_connection, inst_arr, inst_count)
+
+
+          ! prove success by simply printing instrument data
+          print *, 'inst_count is ', inst_count
+          do i=1,3 ! shorten - could be inst_count
+              print *, 'line ', i
+              print *, trim(inst_arr(i)%name)
+              print *, inst_arr(i)%code
+              print *, trim(inst_arr(i)%mnemonic)
+              print *, inst_arr(i)%latitude
+              print *, inst_arr(i)%longitude
+              print *, inst_arr(i)%altitude
+              print *, trim(inst_arr(i)%category)
+              print *, trim(inst_arr(i)%pi)
+              print *, trim(inst_arr(i)%pi_email)
+          end do
+
+          deallocate(inst_arr) ! should be done only after you are done with it
+          nullify(inst_arr)
+
+          call get_sites(mad_connection, site_arr, site_count)
+          ! prove success by simply printing site data
+          print *, 'site_count is ', site_count
+          do i=1,3 ! shorten - could be site_count
+              print *, 'line ', i
+              print *, site_arr(i)%site_id
+              print *, trim(site_arr(i)%site_name)
+              print *, trim(site_arr(i)%site_url)
+              print *, trim(site_arr(i)%contact_name)
+              print *, trim(site_arr(i)%contact_email)
+          end do
+          deallocate(site_arr) ! should be done only after you are done with it
+          nullify(site_arr)
+
+          call get_experiments(mad_connection, 30, 1998,1,1,0,0,0, 1998,2,1,0,0,0, .true., exp_arr, exp_count)
+          ! do something with exp_arr
+          print *, 'exp_count is ', exp_count
+          do i=1,exp_count
+              print *, exp_arr(i)%id, trim(exp_arr(i)%url), ' ', trim(exp_arr(i)%name)
+              print *, exp_arr(i)%site_id, trim(exp_arr(i)%site_name), exp_arr(i)%kinst
+              print *, trim(exp_arr(i)%inst_name)
+              print *, exp_arr(i)%syear, exp_arr(i)%smonth, exp_arr(i)%sday
+              print *, exp_arr(i)%shour, exp_arr(i)%sminute, exp_arr(i)%ssecond
+              print *, exp_arr(i)%eyear, exp_arr(i)%emonth, exp_arr(i)%eday
+              print *, exp_arr(i)%ehour, exp_arr(i)%eminute, exp_arr(i)%esecond
+              print *, exp_arr(i)%is_local, trim(exp_arr(i)%madrigal_url)
+              print *, trim(exp_arr(i)%pi), ' ', trim(exp_arr(i)%pi_email)
+              print *, trim(exp_arr(i)%real_url), exp_arr(i)%uttimestamp, exp_arr(i)%access
+              print *, trim(exp_arr(i)%version)
+          end do
+          exp_id =  exp_arr(1)%id
+          deallocate(exp_arr) ! should be done only after you are done with it
+          nullify(exp_arr)
+
+          call get_experiment_files(mad_connection, exp_id, file_arr, file_count)
+          ! do something with file_arr
+          print *, 'file_count is ', file_count
+          do i=1,file_count
+              print *, trim(file_arr(i)%fullname), file_arr(i)%kindat
+              print *, trim(file_arr(i)%kindat_desc)
+              print *, file_arr(i)%category, trim(file_arr(i)%status)
+              print *, file_arr(i)%permission, file_arr(i)%exp_id
+          end do
+          fullname = file_arr(1)%fullname
+          deallocate(file_arr) ! should be done only after you are done with it
+          nullify(file_arr)
+
+
+          call get_cedar_parameters(mad_connection, fullname, parm_arr, parm_count)
+          ! do something with parm_arr
+          print *, 'parm_count is ', parm_count
+          do i=1,3 ! parm_count (to shorten output)
+              print *, trim(parm_arr(i)%mnemonic), ' ', trim(parm_arr(i)%description)
+              print *, parm_arr(i)%is_error, trim(parm_arr(i)%units)
+              print *, parm_arr(i)%is_measured, trim(parm_arr(i)%category)
+          end do
+          deallocate(parm_arr) ! should be done only after you are done with it
+          nullify(parm_arr)
+
+          ! download_file
+          print*, 'about to call download file'
+          result = download_file(mad_connection, fullname, '/tmp/junk.h5', 'Bill Rideout', &
+            'brideout@haystack.mit.edu', 'MIT Haystack', 'hdf5')
+          print*, 'download_file complete'
+
+          ! isprint
+          print*, 'about to call isprint'
+          result = isprint(mad_connection, fullname, 'gdalt,elm,azm,nel', 'filter=recno,,5', '/tmp/junk.h5', &
+            'Bill Rideout', 'brideout@haystack.mit.edu', 'MIT Haystack')
+          print*, 'isprint complete'
+
+          ! mad_calculator
+          print*, 'about to call mad_calculator'
+          result = mad_calculator(mad_connection, 'kp,ap3', '/tmp/junk.txt', 2001, 1, 1, 13, 0, 0,   &
+              20D+0, 60D+0, 5D+0, -90D+0, -60D+0, 5D+0, 100D+0, 1000D+0, 100D+0, 'ph+,elm', '0.03,-160')
+
+
+
+          ! test of private methods - users should not need to call these methods
+
+          ! test of compare_versions
+          print*, 'comparing 3.0 and 2.6'
+          print*, compare_versions('3.0', '2.6')
+          print*, 'comparing 2.6 and 3.0'
+          print*, compare_versions('2.6', '3.0')
+          print*, 'comparing 3.1 and 3.0'
+          print*, compare_versions('3.1', '3.0')
+          print*, 'comparing 3.0 and 3.1'
+          print*, compare_versions('3.0', '3.1')
+          print*, 'comparing 3 and 3.1'
+          print*, compare_versions('3', '3.1')
+          print*, 'comparing 3 and 2.6'
+          print*, compare_versions('3', '2.6')
+          print*, 'comparing 3.0 and 3.0'
+          print*, compare_versions('3.0', '3.0')
+          print*, 'comparing 3.0.1 and 3.0'
+          print*, compare_versions('3.0.1', '3.0')
+          print*, 'comparing 3.0 and 3.0.1'
+          print*, compare_versions('3.0', '3.0.1')
+          print*, 'comparing 3.0.1 and 3.0.1'
+          print*, compare_versions('3.0.1', '3.0.1')
+
+
+
+      end program testMadrigalWeb
+
+</pre>
+
+<!-- InstanceEndEditable -->
+<table width="100%" border="1" cellpadding="0" cellspacing="2" class="navigation">
+  <tr>
+    <td width="5%"><a href="{% url 'docs' 'rt_idl.html' %}"><img src="/static/previous.png" alt="previous" width="32" height="32" /></a></td>
+    <td width="5%"><a href="{% url 'docs' 'rt_contents.html' %}"><img src="/static/up.png" alt="up" width="32" height="32" /></a></td>
+    <td width="5%"><a href="{% url 'docs' 'rr_contents.html' %}"><img src="/static/next.png" alt="next" width="32" height="32" /></a></td>
+    <td width="54%"><!-- InstanceBeginEditable name="EditTitleBottom" -->Remote access using Fortran 95<!-- InstanceEndEditable --></td>
+    <td width="13%"><a href="{% url 'docs' 'madContents.html' %}">Doc home </a></td>
+    <td width="18%"><a href="/">Madrigal home</a></td>
+  </tr>
+</table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" href="{% url 'docs' 'rt_idl.html' %}"><!-- InstanceBeginEditable name="PreviousTitle2" -->Remote access using IDL<!-- InstanceEndEditable --></A>
+<b class="navlabel">&nbsp;&nbsp;Up:</b>
+<a class="sectref" href="{% url 'docs' 'rt_contents.html' %}"><!-- InstanceBeginEditable name="UpTitle2" -->Remote access programming tutorial toc<!-- InstanceEndEditable --></A>
+<b class="navlabel">&nbsp;&nbsp;Next:</b>
+<a class="sectref" href="{% url 'docs' 'rr_contents.html' %}"><!-- InstanceBeginEditable name="NextTitle2" -->Remote access reference toc<!-- InstanceEndEditable --></A></div>
+<hr/>
+<p>&nbsp;</p>
+</body>
+<!-- InstanceEnd --></html>

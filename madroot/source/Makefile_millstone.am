@@ -1,0 +1,7 @@
+# $Id: Makefile_millstone.am 7116 2020-05-29 15:17:15Z brideout $
+#
+# Main Makefile.am for Madrigal
+
+ACLOCAL_AMFLAGS = -I m4
+LDADD = -L$MADROOT
+SUBDIRS =  madc/madrec madf/geolib madf/applications madc/madtcl

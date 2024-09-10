@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Base template for Madrigal ftp instruments interface
+	
+	$Id: ftp_instruments.html 5326 2015-09-25 18:46:21Z brideout $
+{% endcomment %}
+
+{% block title %}Madrigal FTP interface{% endblock %}
+	
+{% block content %}
+	<p>Choose instrument with data on this Madrigal server:</p>
+
+	{% for inst_name, kinst in madInstList %}
+		<p><a href="{% url 'ftp_instrument' fullname email affiliation kinst %}">{{inst_name}}</a></p>
+	{% endfor %}
+{% endblock %}

@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Base template for Madrigal Madrigal Calculator page
+	
+	$Id: madrigal_calculator.html 5900 2016-11-30 21:30:42Z brideout $
+{% endcomment %}
+
+{% block title %}Run Madrigal calculator{% endblock %}
+
+{% block content %}
+	<center><h4>Madrigal calculator</h4></center>
+	
+	<p>This page will calculate any Madrigal parameter(s) you select for a single given 
+	time and grid of latitude, longitude, and altitude.<p>
+	
+	<form name="madrigal_calculator_form">
+	
+	<center>
+	<div>
+	<table class="table table-condensed">
+		<caption>
+		Output Table Grid
+		</caption>
+			<tr valign=center>
+				<td align=center></td>
+				<td align=center>start</td>
+				<td align=center>end</td>
+				<td align=center>delta</td>
+			</tr>
+			<tr valign=center>
+				<td align=right>latitude</td>
+				<td align=left>
+					{{ form.min_latitude }}
+				</td>
+				<td align=left>
+				    {{ form.max_latitude }}
+				</td>
+				<td align=left>
+				    {{ form.delta_latitude }}
+				</td>
+			</tr>
+		<tr valign=center>
+			<td align=right>longitude</td>
+			<td align=left>
+			    {{ form.min_longitude }}
+			</td>
+			<td align=left>
+			    {{ form.max_longitude }}
+			</td>
+			<td align=left>
+			    {{ form.delta_longitude }}
+			</td>
+		</tr>
+		<tr valign=center>
+			<td align=right>altitude (km)</td>
+			<td align=left>
+			    {{ form.min_altitude }}
+			</td>
+			<td align=left>
+			    {{ form.max_altitude }}
+			</td>
+			<td align=left>
+			    {{ form.delta_altitude }}
+			</td>
+		</tr>
+	</table>
+	</div>
+	</center>
+	
+	<center>
+	<div>
+	<table class="table table-condensed">
+		<caption>
+		Choose UT Time
+		</caption>
+			<tr valign=center>
+				<td align=center>{{ form.datetime }}</td>
+			</tr>
+	</table>
+	</div>
+	</center>
+	<br>
+	
+	
+	<p><i>Select one or more of the following Madrigal parameters to calculate:</i><br>
+	
+	{{ form.parameters }}
+	
+	<div> <!-- button div -->
+	    <center>
+	        <button class="btn btn-primary" id="madrigal_calculator_button" data-toggle="tooltip" data-original-title="Click this button to run the Madrigal calculator at the given time and lat, lon, and alt array for the selected derivable parameters." data-placement="top">Calculate</button>
+	    </center>
+	</div>
+	</form>
+	
+	
+	<script>
+		$('#madrigal_calculator_button').on('click', function (e) {
+		    if (!validateForm(this.form))
+		        return(false);
+			this.form.action = "{% url 'madrigal_calculator_output' %}";
+			this.form.submit();
+		})
+		
+		function validateForm(madForm)
+		{
+		    // declarations
+		    var js_date;
+		    
+		    // read some form info
+		    var selectedParms = $("input[name=parameters]:checked");
+		    var datetime_0 = $.trim($('#id_datetime_0').val());
+		    var datetime_1 = $.trim($('#id_datetime_1').val());
+		    
+		    // latitude tests
+		    var min_latitude_str = $.trim($('#id_min_latitude').val());
+			var min_latitude = Number(min_latitude_str);
+			if (isNaN(min_latitude) || min_latitude_str.length == 0)
+			{
+				alert('Minimum latitude is invalid number: ' + min_latitude_str);
+				return(false);
+			}
+			if (min_latitude < -90.0 || min_latitude > 90.0)
+			{
+				alert('Minimum latitude must be between -90 and 90, not: ' + min_latitude_str);
+				return(false);
+			}
+			var max_latitude_str = $.trim($('#id_max_latitude').val());
+			var max_latitude = Number(max_latitude_str);
+			if (isNaN(max_latitude) || max_latitude_str.length == 0)
+			{
+				alert('Maximum latitude is invalid number: ' + max_latitude_str);
+				return(false);
+			}
+			if (max_latitude < -90.0 || max_latitude > 90.0)
+			{
+				alert('Maximum latitude must be between -90 and 90, not: ' + max_latitude_str);
+				return(false);
+			}
+			if (min_latitude > max_latitude)
+			{
+				alert('Maximum latitude ' + max_latitude_str + ' must be greater than minimum latitude ' + min_latitude_str);
+				return(false);
+			}
+			var delta_latitude_str = $.trim($('#id_delta_latitude').val());
+			var delta_latitude = Number(delta_latitude_str);
+			if (isNaN(delta_latitude) || delta_latitude_str.length == 0)
+			{
+				alert('Delta latitude is invalid number: ' + delta_latitude_str);
+				return(false);
+			}
+			if (delta_latitude < 1.0E-6)
+			{
+				alert('Delta latitude must be above 1.0E-6, not: ' + delta_latitude_str);
+				return(false);
+			}
+			
+			// longitude tests
+		    var min_longitude_str = $.trim($('#id_min_longitude').val());
+			var min_longitude = Number(min_longitude_str);
+			if (isNaN(min_longitude) || min_longitude_str.length == 0)
+			{
+				alert('Minimum longitude is invalid number: ' + min_longitude_str);
+				return(false);
+			}
+			if (min_longitude < -180.0 || min_longitude > 180.0)
+			{
+				alert('Minimum longitude must be between -180 and 180, not: ' + min_longitude_str);
+				return(false);
+			}
+			var max_longitude_str = $.trim($('#id_max_longitude').val());
+			var max_longitude = Number(max_longitude_str);
+			if (isNaN(max_longitude) || max_longitude_str.length == 0)
+			{
+				alert('Maximum longitude is invalid number: ' + max_longitude_str);
+				return(false);
+			}
+			if (max_longitude < -180.0 || max_longitude > 180.0)
+			{
+				alert('Maximum longitude must be between -180 and 180, not: ' + max_longitude_str);
+				return(false);
+			}
+			if (min_longitude > max_longitude)
+			{
+				alert('Maximum longitude ' + max_longitude_str + ' must be greater than minimum longitude ' + min_longitude_str);
+				return(false);
+			}
+			var delta_longitude_str = $.trim($('#id_delta_longitude').val());
+			var delta_longitude = Number(delta_longitude_str);
+			if (isNaN(delta_longitude) || delta_longitude_str.length == 0)
+			{
+				alert('Delta longitude is invalid number: ' + delta_longitude_str);
+				return(false);
+			}
+			if (delta_longitude < 1.0E-6)
+			{
+				alert('Delta longitude must be above 1.0E-6, not: ' + delta_longitude_str);
+				return(false);
+			}
+			
+			// altitude tests
+		    var min_altitude_str = $.trim($('#id_min_altitude').val());
+			var min_altitude = Number(min_altitude_str);
+			if (isNaN(min_altitude) || min_altitude_str.length == 0)
+			{
+				alert('Minimum altitude is invalid number: ' + min_altitude_str);
+				return(false);
+			}
+			if (min_altitude < 0.0)
+			{
+				alert('Minimum altitude must not be negative, not: ' + min_altitude_str);
+				return(false);
+			}
+			var max_altitude_str = $.trim($('#id_max_altitude').val());
+			var max_altitude = Number(max_altitude_str);
+			if (isNaN(max_altitude) || max_altitude_str.length == 0)
+			{
+				alert('Maximum altitude is invalid number: ' + max_altitude_str);
+				return(false);
+			}
+			if (max_altitude < 0.0)
+			{
+				alert('Maximum altitude must not be negative, not: ' + max_altitude_str);
+				return(false);
+			}
+			if (min_altitude > max_altitude)
+			{
+				alert('Maximum altitude ' + max_altitude_str + ' must be greater than minimum altitude ' + min_altitude_str);
+				return(false);
+			}
+			var delta_altitude_str = $.trim($('#id_delta_altitude').val());
+			var delta_altitude = Number(delta_altitude_str);
+			if (isNaN(delta_altitude) || delta_altitude_str.length == 0)
+			{
+				alert('Delta altitude is invalid number: ' + delta_altitude_str);
+				return(false);
+			}
+			if (delta_altitude < 1.0E-6)
+			{
+				alert('Delta altitude must be above 1.0E-6, not: ' + delta_altitude_str);
+				return(false);
+			}
+		    
+		    // parameter check
+		    if (selectedParms.length == 0)
+		    {
+			    alert('You must select at least one parameter to derive');
+			    return(false);
+			}
+			
+			//start_date and end_date
+			js_date = new Date(datetime_0 + 'T' + datetime_1);
+			if (isNaN(js_date))
+			{
+			    alert('Illegal datetime: ' + datetime_0 + 'T' + datetime_1);
+			    return(false);
+			}
+			
+			
+			
+			// passed all tests
+			return(true);
+		}
+	</script>
+	
+	{% include "parm_popup.html" %}
+{% endblock %}

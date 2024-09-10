@@ -1,0 +1,48 @@
+			
+			// altitude tests
+		    var start_alt_str = $.trim($('#id_start_alt').val());
+			var start_alt = Number(start_alt_str);
+			if (isNaN(start_alt) || start_alt_str.length == 0)
+			{
+				alert('Start altitude is invalid number: ' + start_alt_str);
+				return(false);
+			}
+			if (start_alt < 0.0)
+			{
+				alert('Start altitude must not be less than 0, not: ' + start_alt_str);
+				return(false);
+			}
+			var stop_alt_str = $.trim($('#id_stop_alt').val());
+			var stop_alt = Number(stop_alt_str);
+			if (isNaN(stop_alt) || stop_alt_str.length == 0)
+			{
+				alert('Stop altitude is invalid number: ' + stop_alt_str);
+				return(false);
+			}
+			if (stop_alt < 0.0)
+			{
+				alert('Stop altitude must not be less than 0, not: ' + stop_alt_str);
+				return(false);
+			}
+			var step_alt_str = $.trim($('#id_step_alt').val());
+			var step_alt = Number(step_alt_str);
+			if (isNaN(step_alt) || step_alt_str.length == 0)
+			{
+				alert('Step altitude is invalid number: ' + step_alt_str);
+				return(false);
+			}
+			if (step_alt < 0.000001)
+			{
+				alert('Step altitude must be above 0.000001, not: ' + step_alt_str);
+				return(false);
+			}
+			if (start_alt > stop_alt)
+			{
+				alert('Start altitude must be less than stop altitude');
+				return(false);
+			}
+			if ((stop_alt-start_alt)/step_alt > 10000)
+			{
+				alert('Too many altitude steps - please limit it to 10000 or less');
+				return(false);
+			}

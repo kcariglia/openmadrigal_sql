@@ -1,0 +1,29 @@
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Template for print as is in single experiment web interface
+	
+	$Id: print_as_is.html 4867 2015-03-06 14:48:13Z brideout $
+{% endcomment %}
+                    <!-- show is its own row in main column -->
+					<div class="row">
+						<div class="panel panel-default">
+							<div class="panel-body box">
+							{{ text|safe }}
+							</div>
+						</div>
+					</div> <!-- end row -->
+					
+					<style>
+					div.box{
+					  font-family: monospace;
+					  overflow-x: scroll;
+					  max-height: 80%;
+					  overflow-y: scroll;
+					  white-space: nowrap;
+					}
+					</style>
+					
+					{% include "parm_popup.html" %}
+					
+					

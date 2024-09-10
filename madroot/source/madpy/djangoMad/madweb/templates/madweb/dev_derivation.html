@@ -1,0 +1,95 @@
+{% load static %}
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/doc_template.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>Madrigal Derivation Engine</title>
+<!-- InstanceEndEditable --><!-- InstanceBeginEditable name="head" --><!-- InstanceEndEditable -->
+<link href="/static/madrigal.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+	html body {
+		background-color: {{bg_color}};
+	}
+</style>
+<!-- InstanceParam name="href_up_top" type="text" value="dev_contents.html" --><!-- InstanceParam name="href_next_top" type="text" value="/static/CEDARMadrigalHdf5Format.pdf" --><!-- InstanceParam name="href_back_top" type="text" value="madrigal/ui/web.m.html" --><!-- InstanceParam name="href_back_bottom" type="text" value="madrigal/ui/web.m.html" --><!-- InstanceParam name="href_up_bottom" type="text" value="dev_contents.html" --><!-- InstanceParam name="href_next_bottom" type="text" value="/static/CEDARMadrigalHdf5Format.pdf" --><!-- InstanceParam name="href_prev_top" type="text" value="madrigal/ui/web.m.html" --><!-- InstanceParam name="href_uptitle_top" type="text" value="dev_contents.html" --><!-- InstanceParam name="href_nexttitle_top" type="text" value="/static/CEDARMadrigalHdf5Format.pdf" --><!-- InstanceParam name="href_prevtitle_bottom" type="text" value="madrigal/ui/web.m.html" --><!-- InstanceParam name="href_uptitle_bottom" type="text" value="dev_contents.html" --><!-- InstanceParam name="href_nexttitle_bottom" type="text" value="/static/CEDARMadrigalHdf5Format.pdf" -->
+</head>
+
+<body>
+<table width="100%" border="1" cellpadding="0" cellspacing="2" class="navigation">
+  <tr>
+    <td width="5%"><a href="{% url 'docs' 'madrigal/ui/web.m.html' %}"><img src="/static/previous.png" alt="previous" width="32" height="32" /></a></td>
+    <td width="5%"><a href="{% url 'docs' 'dev_contents.html' %}"><img src="/static/up.png" alt="up" width="32" height="32" /></a></td>
+    <td width="5%"><a href="/static/CEDARMadrigalHdf5Format.pdf"><img src="/static/next.png" alt="next" width="32" height="32" /></a></td>
+    <td width="54%"><!-- InstanceBeginEditable name="EditTitleTop" -->Madrigal Derivation Engine<!-- InstanceEndEditable --></td>
+    <td width="13%"><a href="{% url 'docs' 'madContents.html' %}">Doc home </a></td>
+    <td width="18%"><a href="/">Madrigal home</a></td>
+  </tr>
+</table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" href="{% url 'docs' 'madrigal/ui/web.m.html' %}"><!-- InstanceBeginEditable name="PreviousTitle" -->madrigal.ui.web <!-- InstanceEndEditable --></A>
+<b class="navlabel">&nbsp;&nbsp;Up:</b>
+<a class="sectref" href="{% url 'docs' 'dev_contents.html' %}"><!-- InstanceBeginEditable name="UpTitle" -->Developer's toc <!-- InstanceEndEditable --></A>
+<b class="navlabel">&nbsp;&nbsp;Next:</b>
+<a class="sectref" href="/static/CEDARMadrigalHdf5Format.pdf"><!-- InstanceBeginEditable name="NextTitle" -->CEDAR Madrigal Hdf5 File Format<!-- InstanceEndEditable --></A></div>
+<hr/>
+<!-- InstanceBeginEditable name="EditDoc" -->
+<h1 align="center">Madrigal Derivation Engine</h1>
+<p>The Madrigal derivation is defined in the python module madrigal.derivation. In particular, that module begins with a collections.OrderedDict dictionary called MadrigalDerivedMethods. To add a new derivation method, simply define the new method in MadrigalDerivedMethods, and then implement it in C or python. If you add a new C method, you will also need to update the file source/madpy/madrigal/_derive.c, which is done simply by running <em>$MADROOT/bin/python $MADROOT/source/madpy/scripts/bin/updateMadDerivations.py</em>. This page goes into the derivation engine in detail.</p>
+<h4>MadrigalDerivedMethods</h4>
+<p>MadrigalDerivedMethods is a collections.OrderDict in madrigal.derivation. The name of each derivation method is the key, and so must be unique.  The value is a list with between two and four items.</p>
+<ol>
+  <li>The first item is the input mnemonic(s).</li>
+  <li>The second item is the output mnemonic(s).</li>
+  <li>The optional third parameter is either 'python' or 'C'.  If only two parameters, 'C' is assumed. This determines whether the method is implementated on C (or Fortran wrapped in C), or python.</li>
+  <li>The optional fourth parameter is a list of kinst values for which the derivation is valid (used in statistical models, etc).  This feature requires 'python' to be the implementation method.</li>
+</ol>
+ <p>The order of these derivation methods matter - they will be called in a single pass from first to last.  The MadrigalDerivationPlan 
+    determines which need to be called, and what parameters are derivable given the initial measured parameters. 
+    Any parameter will be derived by the first available method that has that parameter as an output and 
+    for which all input parameters are measured or themselves derivable.</p>
+
+<p>For the C derivation methods, the methods are implemented in source/madc/madrec/madDeriveMethods.c.  All methods must have a signature of the form:</p>
+<pre>int methodName(int inCount,
+   double * inputArr,
+   int outCount,
+   double * outputArr,
+   FILE * errFile)</pre>
+<p>where inCount is the number of input arguments, and inputArr is a double array of length inCount, with
+   values for each input variable.  Likewise, outCount is the number of output arguments, and outputArr 
+   is already allocated double array of length outCount, where the C method sets the values for each 
+  output variable when it returns.  If values cannot be calulated, that output value is set to nan.</p>
+<p>When a new C derivation method is added, this method needs to be exposed to python. This is done through the file madpy/madrigal/_derive.c. However, you do not need to manually edit this file. Instead, cd $MADROOT/source/madpy/scripts/bin and then run:</p>
+<pre>$MADROOT/bin/python $MADROOT/source/madpy/scripts/bin/updateMadDerivations.py</pre>
+<p>This will create the file madpy/madrigal/_derive_new.c. Compare this new file with the existing file madpy/madrigal/_derive.c, and if the change looks reasonable, add it to source control.</p>
+<p>For the python derivation methods, all methods are defined in madrigal.derivation.MadrigalDerivationMethods
+  in this module.  Each method has two arguments - a double array of input values of length the number of input
+  variables, and the output array the length of the number of output variable.  As in the C, the output
+  array is passed in to the derivation method preallocated.</p>
+
+
+<P>
+<!-- InstanceEndEditable -->
+<table width="100%" border="1" cellpadding="0" cellspacing="2" class="navigation">
+  <tr>
+    <td width="5%"><a href="{% url 'docs' 'madrigal/ui/web.m.html' %}"><img src="/static/previous.png" alt="previous" width="32" height="32" /></a></td>
+    <td width="5%"><a href="{% url 'docs' 'dev_contents.html' %}"><img src="/static/up.png" alt="up" width="32" height="32" /></a></td>
+    <td width="5%"><a href="/static/CEDARMadrigalHdf5Format.pdf"><img src="/static/next.png" alt="next" width="32" height="32" /></a></td>
+    <td width="54%"><!-- InstanceBeginEditable name="EditTitleBottom" -->Madrigal C API<!-- InstanceEndEditable --></td>
+    <td width="13%"><a href="{% url 'docs' 'madContents.html' %}">Doc home </a></td>
+    <td width="18%"><a href="/">Madrigal home</a></td>
+  </tr>
+</table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" href="{% url 'docs' 'madrigal/ui/web.m.html' %}"><!-- InstanceBeginEditable name="PreviousTitle2" -->madrigal.ui.web<!-- InstanceEndEditable --></A>
+<b class="navlabel">&nbsp;&nbsp;Up:</b>
+<a class="sectref" href="{% url 'docs' 'dev_contents.html' %}"><!-- InstanceBeginEditable name="UpTitle2" -->Developer's toc<!-- InstanceEndEditable --></A>
+<b class="navlabel">&nbsp;&nbsp;Next:</b>
+<a class="sectref" href="/static/CEDARMadrigalHdf5Format.pdf"><!-- InstanceBeginEditable name="NextTitle2" -->CEDAR Madrigal Hdf5 File Format <!-- InstanceEndEditable --></A></div>
+<hr/>
+<p>&nbsp;</p>
+</body> 
+<!-- InstanceEnd --></html>

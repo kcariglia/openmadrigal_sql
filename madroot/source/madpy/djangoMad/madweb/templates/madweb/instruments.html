@@ -1,0 +1,16 @@
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Template for instrument select in single experiment web interface
+	
+	$Id: instruments.html 4790 2015-02-12 15:08:01Z brideout $
+{% endcomment %}
+					<div class="row">
+						{{ form.instruments.label }}
+					</div>
+					<!-- Instrument select is its own row in selections column -->
+					<div class="row">
+						<div class="col-md-12">
+							{{ form.instruments }}
+						</div> <!-- end span -->
+					</div> <!-- end row -->

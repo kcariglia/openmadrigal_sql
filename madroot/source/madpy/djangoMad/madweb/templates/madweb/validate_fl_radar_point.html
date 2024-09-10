@@ -1,0 +1,44 @@
+
+		    // azimuth tests
+		    var fl_az_str = $.trim($('#id_fl_az').val());
+			var fl_az = Number(fl_az_str);
+			if (isNaN(fl_az) || fl_az_str.length == 0)
+			{
+				alert('Field line azimuth is invalid number: ' + fl_az_str);
+				return(false);
+			}
+			if (fl_az < -180.0 || fl_az > 180.0)
+			{
+				alert('Field line azimuth must be between -180 and 180, not: ' + fl_az_str);
+				return(false);
+			}
+			
+			
+			// elevation tests
+		    var fl_el_str = $.trim($('#id_fl_el').val());
+			var fl_el = Number(fl_el_str);
+			if (isNaN(fl_el) || fl_el_str.length == 0)
+			{
+				alert('Field line elevation is invalid number: ' + fl_el_str);
+				return(false);
+			}
+			if (fl_el < 0.0 || fl_el > 90.0)
+			{
+				alert('Field line elevation must be between 0 and 90, not: ' + fl_el_str);
+				return(false);
+			}
+			
+			// range tests
+		    var fl_range_str = $.trim($('#id_fl_range').val());
+			var fl_range = Number(fl_range_str);
+			if (isNaN(fl_range) || fl_range_str.length == 0)
+			{
+				alert('Field line range is invalid number: ' + fl_range_str);
+				return(false);
+			}
+			if (fl_range < 0.0)
+			{
+				alert('Field line range must not be less than 0, not: ' + fl_range_str);
+				return(false);
+			}
+			

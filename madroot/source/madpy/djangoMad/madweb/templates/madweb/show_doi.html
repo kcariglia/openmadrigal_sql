@@ -1,0 +1,30 @@
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Template for show doi 
+	
+	$Id: show_doi.html 6140 2017-07-12 18:50:54Z brideout $
+{% endcomment %}
+                    <!-- show is its own row in main column -->
+					<div class="row">
+						<div class="panel panel-default">
+							<div class="panel-body box">
+							<p> Use the citation below to reference this data file. The url is meant to be a permanent url.  This data file may later be updated, but this link will still point to the original
+							version of the data file. </p>
+							<pre>{{ PI }}, {{ institution }}. ({{ year }}) Data from the CEDAR Madrigal database. Available from {{ url }}</pre>
+							</div>
+						</div>
+					</div> <!-- end row -->
+					
+					<style>
+					div.box{
+					  font-family: monospace;
+					  overflow-x: scroll;
+					  max-height: 80%;
+					  overflow-y: scroll;
+					}
+					</style>
+					
+					
+					
+					

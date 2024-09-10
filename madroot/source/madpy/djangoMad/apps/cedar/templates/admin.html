@@ -1,0 +1,132 @@
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Base template for OpenMadrigal Admin page
+	
+	$Id: admin.html 7540 2023-06-01 18:02:41Z brideout $
+{% endcomment %}
+
+<html>
+<head>
+<title>Administering OpenMadrigal</title>
+</head>
+<BODY BGCOLOR=#EEEEFF LINK=#008000 VLINK=#003366>
+
+<center>
+<h1>Administering OpenMadrigal</h1>
+</center>
+
+<p>This document is meant as a manual for administering the OpenMadrigal web site.  It contains information on both the developer's site http://cedar.openmadrigal.org/openmadrigal and the archive site cedar.openmadrigal.org. It also contains information on releasing Madrigal and its associated client API's.</p>
+<h2>The archive site cedar.openmadrigal.org</h2>
+<p>The cedar.openmadrigal.org site serves as a central archive of all Madrigal sites. It also serves as a home for instrument data not maintained by local Madrigal sites.</p>
+<p>All data is downloaded from remote sites using either the script import_madrigal.py for Madrigal 3 sites, or import_mad2_mad3.py to import from old Madrigal 2 sites. These script may be found in Subversion under MillstoneSVN/instruments/millstone_uhf_radar/millstone_madrigal/trunk/OpenMadrigal/scripts. They should be set up as cron jobs to download remote Madrigal data on a regular basis, according to agreements with remote Madrigal site administrators. All data downloaded is logged in /opt/madrigal3/metadata/userdata/&lt;site&gt;_import_&lt;year&gt;.txt. See Madrigal crontab section below for a description of all cron jobs running on Madrigal.</p>
+<p>Administrators can access the log files particular to their instruments using the script http://cedar.openmadrigal.org/getLogAdmin.py. As the CEDAR Madrigal database administrator, there are two tasks to support this. The first is the creation of passwords. Passwords can be created using the script /opt/madrigal3/bin/setAdminPassword.py with usage <em>setAdminPassword.py &lt;username&gt; &lt;password&gt;</em>. This script can also be used to modify existing passwords. This script is located in Subversion under MillstoneSVN/instruments/millstone_uhf_radar/millstone_madrigal/trunk/OpenMadrigal/scripts. The username is either the site name as set in $MADROOT/metadata/siteTab.txt, or set in $MADROOT/metadata/hostSite.txt. The second task is to maintain the file hostSite.txt. This is a metadata file unique to CEDAR Madrigal, and defines virtual sites for PI's who host their data directly on CEDAR Madrigal. It is kept in Subversion under MillstoneSVN/instruments/millstone_uhf_radar/millstone_madrigal/trunk/OpenMadrigal/CEDAR_site. The columns of this file are:</p>
+<p>&lt;fake site id&gt;, &lt;fake site name&gt;, &lt;kinst 1&gt; [,&lt;kinst 2&gt; ...]<br>
+  <br>
+  Example:<br>
+  <br>
+10001,MillstoneHighResFP,5360</p>
+<p>Whenever a new PI adds a new instrument to be hosted at CEDAR Madrigal, this file must be updated, and a new username/password pair created using setAdminPassword.py. PI's with multiple instruments can have more than one kinst code (comma separated) on the line. The user name is the &lt;fake site name&gt;, so either create it without spaces, or use quotes when running setAdminPassword.py. Send the PI the site name and password after you have tested it.</p>
+<p>Local Madrigal administrators are free to modify the kind of data (kindat) descriptions of their data at any time by modifying the local file $MADROOT/metadata/typeTab.txt. The Cedar archive site needs a central repository of these kindat descriptions. To avoid problems when multiple Madrigal sites use the same kindat codes, Madrigal now allows kindat descriptions to be indexed by a combination of instrument code and kindat code. With Madrigal 3.0, the typeTab.txt file will be able to have entries of the form <em>&lt;kinst&gt;_&lt;kindat&gt;,&lt;description&gt;</em>, in addition to the present format of <em>&lt;kindat&gt;,&lt;description&gt;</em>. This feature is already installed on the Cedar archive Madrigal server. There is also a cron job <em>checkCedarTypeTab.py</em> that checks all remote Madrigal sites for any updates to their typeTab.txt file, and imports then into the Cedar archive site's typeTab.txt file. This script can be found in Subversion under MillstoneSVN/instruments/millstone_uhf_radar/millstone_madrigal/trunk/OpenMadrigal/scripts.</p>
+<p>The script changeInstAccess.py can be useful in administering this site. It allows you to change the status of all experiments with a given instrument kinst with one command.  This script may be found in Subversion under MillstoneSVN/instruments/millstone_uhf_radar/millstone_madrigal/trunk/OpenMadrigal/scripts.</p>
+<h2>The developer's site http://cedar.openmadrigal.org/openmadrigal</h2>
+<p>The OpenMadrigal developer's web site serves a number of purposes: </p>
+<ol>
+  <li>It distributes the latest version of Madrigal metadata and geophysical data to all the individual sites when they run updateMaster.    </li>
+  <li>It serves as a central web site to inform about the OpenMadrigal project, and to distribute
+    the latest version of the code. </li>
+</ol>
+<p>This manual also covers the building and testing of a new Madrigal release.
+  </p>
+<h3>Distributing Madrigal metadata and geophysical data</h3>
+<p> Two cron jobs are required to collect these data, <em>createExpUpdate.py</em> and <em>createGeoUpdate.py</em>.  </p>
+<blockquote>
+  <p><strong>createExpUpdate.py</strong> - located in Subversion under MillstoneSVN/instruments/millstone_uhf_radar/millstone_madrigal/trunk/OpenMadrigal/scripts.  Usage: <em>createExpUpdate.py  [-e emailAddress] [-e emailAddress2]</em> ... where any number of email addresses can be notified of the results. This script collects the metadata files expTab.txt and fileTab.txt from each of the Madrigal sites listed in siteTab.txt, and stores them in the directory metadata/[site_name]_[site_id].  The site_name and site_id are also set by siteTab.txt. This cron job should be set to run at least once a day, and the results should be emailed to the OpenMadrigal administrator.  The results are accessed via the web from the url http://cedar.openmadrigal.org/static/distributionFiles/metadata.  </p>
+  <p><strong>createGeoUpdate.py</strong> - located in Subversion under MillstoneSVN/instruments/millstone_uhf_radar/millstone_madrigal/trunk/OpenMadrigal/scripts.  Usage: <em>createGeoUpdate.py  [-e emailAddress] [-e emailAddress2]</em> ... where any number of email addresses can be notified of the results..  This script will update the geofil.tar.Z and ig_rz.dat file on OpenMadrigal.  Also updates the file status.dat which indicates the last update date of each type of geophysical data.  All the files updated are accessed via the url  http://cedar.openmadrigal.org/static/distributionFiles/.  Due to relatively infrequent updates to the base files, this cron job is now run only once a week.  </p>
+</blockquote>
+<p>Three core metadata files are also distributed via updateMaster:  </p>
+<ul>
+  <li>siteTab.txt - lists all registered Madrigal sites    </li>
+  <li>instTab.txt - lists all Madrigal instruments </li>
+  <li>instType.txt - lists all Madrigal instrument types (used in user interface). </li>
+</ul>
+<p>The OpenMadrigal administrator is responsible for updating these three files in Subversion at https://apollo.haystack.mit.edu/svn/OpenMadrigal/trunk/madroot/metadata (or metadata3 for siteTab.txt) whenever they are changed.</p>
+<p>The script checkMetadata.py can be set up as a cron job to monitor whether all Madrigal sites have these three up-to-date metadata files.  This
+script is located in Subversion under OpenMadrigalSVN/trunk/madroot/source/madpy/scripts/bin.</p>
+<p>Finally, this capability requires that the cedar app compareToArchive.py be installed on the Cedar server at url http://cedar.openmadrigal.org/compareToArchive.py. This django app can be found in Subversion under OpenMadrigalSVN/trunk/madroot/source/madpy/djangoMad/apps/cedar.</p>
+<h3>Cron jobs running on Madrigal</h3>
+<p>The latest version of the crontab.txt file used by midasop on the Madrigal machine at Haystack (which includes both the CEDAR and the Millstone Madrigal installations) can be found in Subversion under MillstoneSVN/instruments/millstone_uhf_radar/millstone_madrigal/trunk/OpenMadrigal/crontab.txt. 
+All scripts in this crontab are in Subversion in the OpenMadrigal repository. This script includes both administrative jobs (such as updateMaster, import_madrigal.py, etc) and jobs that automatically load data into the CEDAR Madrigal site from instrument PI's who do not run their own local Madrigal sites.</p>
+
+<h3>Building and releasing new versions of the Madrigal API's </h3>
+<p>Madrigal has client API's written in python, Matlab, and IDL. All three have testMadrigal* scripts to run that test all functionality.  
+They are rebuilt whenever you run <i>make -f Makefile.gnu</i> in the main development directory. Version with *.tar.gz and *.zip are built for each of the three. 
+To release new version, edit the file in Subversion OpenMadrigalSVN/trunk/madroot/source/madpy/djangoMad/apps/cedar/templates/madDownload.html with the new release number.
+This madDownload.html needs to be installed in /opt/madrigal3/source/madpy/djangoMad/apps/cedar/templates.  The new source files should be installed on madrigal in /opt/madrigal3/source/madpy/djangoMad/madweb/static/distributionFiles/.
+In addition, the version of madrigalWeb on pip needs to be updated, using: python -m twine upload dist/*</p>
+
+<h3>Building a new release of Madrigal  </h3>
+<h4>Updating Madrigal derivation models</h4>
+<p>The Madrigal derivation engine contains a number of models that are under active development, and so should be updated
+if possible with each new Madrigal release.  These models are listed below.</p>
+<ul>
+<li>IGRF - Last updated with Dec 2019 model using http://www.ngdc.noaa.gov/IAGA/vmod/igrf13.f.  New version
+of the igrf code is inserted into three files in source/madf/geolib: milmag.f, Geopack_2008.f, and geo-cgm.f
+under method IGRF.  To update, these three files must be updated and the new igrf*.f added.</li>
+<li>MSIS - Latest model imported was NRLMSISE-00</li>
+<li>IRI - imported in 2007 from ftp://nssdcftp.gsfc.nasa.gov/models/ionospheric/iri/iri2007/</li>
+<li>Empirical local ISR models - This model is supported by Shunrong Zhang (shunrong@haystack.mit.edu),
+and consists of empirical models that work near ISR radars.  It is built using source/madf/geolib/isrim.f
+and coefficient files in geolib/3D4DCoef.  Last updated in 2006.</li>
+</ul>
+<p>All Fortran code that uses reals is converted to use all doubles using nag_apt tools.<p>
+<h4>Building a release </h4>
+<p>From Subversion at Millstone, checkout  OpenMadrigalSVN/trunk/madroot. The file source/configure.ac has the line AC_INIT([Madrigal] that should be updated with the Madrigal version. Since autotools is used in building a distribution, you want to be sure that your machine has up-to-date autotools. For Madrigal 2.5, I used autoconf 2.6.3, automake 1.10.2, libtool 2.2.4, and m4 1.4.12. To create the needed autotool files, cd to source and run:</p>
+<ol>
+  <li>aclocal</li>
+  <li>autoconf</li>
+  <li>libtoolize</li>
+  <li>autoheader</li>
+  <li>automake --add-missing </li>
+</ol>
+<p>To make the distribution file, cd to madroot, and run &quot;make -f Makefile.gnu&quot;. The file MANIFEST in the madroot directory controls which files are included in the tar file.  The general test procedure is to build the distribution, and then test install on any available unix machines, both as updates and as new installs.  There are also regression tests to be run on the core C and Fortran libraries, and on the Python library.</p>
+<h4>Setting a release number</h4>
+<p>The release number is set in source/configure.ac and in source/madpy/setup.py. Also the files madContents.html and whatsNew.html need to be updated to describe the new release.</p>
+<h4>Regression tests </h4>
+<p>The python regression tests are in Subversion in OpenMadrigalSVN/trunk/madroot/source/madpy/scripts/regressionTests. Each of the following three regression tests are run as $MADROOT/bin/python <i>script</i>.  Some of the scripts require you are running your test installation to succeed.  It is recommended to run your test server using <i>$MADROOT/bin/python manage_cedar.py runserver</i>.  Using manage_cedar.py means the test server is running the 
+additional django apps that the CEDAR Madrigal database does. </p>
+<ul>
+   <li>madrigalUnitTests.py</li>
+   <li>testAdminScripts.py</li>
+   <li>testCedarReadWrite.py</li>
+   <li>testDerivation.py</li>
+   <li>testDerivationEngine.py</li>
+   <li>testUserScripts.py</li>
+   <li>testWebServices.py</li>
+   <li>testCitationWebServices.py</li>
+</ul>
+<h4>Rebuilding Madrigal documentation</h4>
+<h5>Rebuilding the Python Madrigal/MadrigalWeb server documentation</h5>
+<p>Make sure pdoc is installed in $MADROOT/bin/python.</p>
+<ul>
+<li>pdoc --html madrigal</li>
+<li>pdoc --html madrigalWeb.madrigalWeb</li>
+</ul>
+<h5>Rebuilding the Python Web services documentation</h5>
+<ul>
+<li>cp service functions from views.py into separate python file services.py and remove &lt;@csrf_exempt&gt; lines.</li>
+<li>pdoc --html services.py</li>
+</ul>
+<h5>Rebuilding the IDL remote API documentation</h5>
+In OpenMadrigal/madroot/source/madidl, run "python create_madidl_doc.py". Then use that file to update  in doc the files rt_idl.html and rr_idl.html.
+<h5>Rebuilding the Matlab remote API documentation</h5>
+In OpenMadrigal/madroot/source/madmatlab, run "python create_madmatlab_doc.py".  Then use that
+file to update README and in doc the files rt_matlab.html and rr_matlab.html.
+<h5>Rebuilding python source code examples in documentation.</h5>
+<p>Run pygmentize.  You will need to copy in the style code in the head, and the body code.</p>
+
+Revised: Aug 15, 2019<br>
+ 
+<hr size="2">
+</body>
+</html>

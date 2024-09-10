@@ -1,0 +1,98 @@
+
+		    // latitude tests
+		    var start_lat_str = $.trim($('#id_start_lat').val());
+			var start_lat = Number(start_lat_str);
+			if (isNaN(start_lat) || start_lat_str.length == 0)
+			{
+				alert('Start latitude is invalid number: ' + start_lat_str);
+				return(false);
+			}
+			if (start_lat < -90.0 || start_lat > 90.0)
+			{
+				alert('Start latitude must be between -90 and 90, not: ' + start_lat_str);
+				return(false);
+			}
+			var stop_lat_str = $.trim($('#id_stop_lat').val());
+			var stop_lat = Number(stop_lat_str);
+			if (isNaN(stop_lat) || stop_lat_str.length == 0)
+			{
+				alert('Stop latitude is invalid number: ' + stop_lat_str);
+				return(false);
+			}
+			if (stop_lat < -90.0 || stop_lat > 90.0)
+			{
+				alert('Stop latitude must be between -90 and 90, not: ' + stop_lat_str);
+				return(false);
+			}
+			var step_lat_str = $.trim($('#id_step_lat').val());
+			var step_lat = Number(step_lat_str);
+			if (isNaN(step_lat) || step_lat_str.length == 0)
+			{
+				alert('Step latitude is invalid number: ' + step_lat_str);
+				return(false);
+			}
+			if (step_lat < 0.000001)
+			{
+				alert('Step latitude must be above 0.000001, not: ' + step_lat_str);
+				return(false);
+			}
+			if (start_lat > stop_lat)
+			{
+				alert('Start latitude must be less than stop latitude');
+				return(false);
+			}
+			if ((stop_lat-start_lat)/step_lat > 10000)
+			{
+				alert('Too many latitude steps - please limit it to 10000 or less');
+				return(false);
+			}
+			
+			// longitude tests
+		    var start_lon_str = $.trim($('#id_start_lon').val());
+			var start_lon = Number(start_lon_str);
+			if (isNaN(start_lon) || start_lon_str.length == 0)
+			{
+				alert('Start longitude is invalid number: ' + start_lon_str);
+				return(false);
+			}
+			if (start_lon < -180.0 || start_lon > 180.0)
+			{
+				alert('Start longitude must be between -180 and 180, not: ' + start_lon_str);
+				return(false);
+			}
+			var stop_lon_str = $.trim($('#id_stop_lon').val());
+			var stop_lon = Number(stop_lon_str);
+			if (isNaN(stop_lon) || stop_lon_str.length == 0)
+			{
+				alert('Stop longitude is invalid number: ' + stop_lon_str);
+				return(false);
+			}
+			if (stop_lon < -180.0 || stop_lon > 180.0)
+			{
+				alert('Stop longitude must be between -180 and 180, not: ' + stop_lon_str);
+				return(false);
+			}
+			var step_lon_str = $.trim($('#id_step_lon').val());
+			var step_lon = Number(step_lon_str);
+			if (isNaN(step_lon) || step_lon_str.length == 0)
+			{
+				alert('Step longitude is invalid number: ' + step_lon_str);
+				return(false);
+			}
+			if (step_lon < 0.000001)
+			{
+				alert('Step longitude must be above 0.000001, not: ' + step_lon_str);
+				return(false);
+			}
+			if (start_lon > stop_lon)
+			{
+				alert('Start longitude must be less than stop longitude');
+				return(false);
+			}
+			if ((stop_lon-start_lon)/step_lon > 10000)
+			{
+				alert('Too many longitude steps - please limit it to 10000 or less');
+				return(false);
+			}
+			
+{% include "madweb/validate_alt_grid.html" %}

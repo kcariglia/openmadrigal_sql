@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Base template for Madrigal show experiment with no files web interface
+	
+	$Id: show_exp_no_files.html 6353 2017-12-05 18:50:08Z brideout $
+{% endcomment %}
+
+{% block title %}Show Madrigal experiment{% endblock %}
+    
+{% block extra_head %}
+    <script>
+    
+    </script>
+{% endblock %}
+    
+{% block content %}
+	<center><h4> {{ exp_desc }} </h4></center>
+	
+	<center><p>This experiment has no Madrigal CEDAR format Hdf5 files.  Showing only plots and auxillary files instead.</p></center>
+
+	<!-- file select div -->
+	<div class="col-md-12 single_form" id="file_data">
+		{% include "madweb/show_plots.html" %}
+	</div> <!-- end subdivide -->
+{% endblock %}

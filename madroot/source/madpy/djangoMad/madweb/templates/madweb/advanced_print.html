@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Template for advanced print
+	
+	$Id: advanced_print.html 5336 2015-09-27 15:14:33Z brideout $
+{% endcomment %}
+
+{% block title %}Print with selected parms/filters{% endblock %}
+	
+{% block content %}
+		{% if form.errors %}
+			<div id="form-error">
+				<p style="color: red;">Please correct the error{{ form.errors|pluralize }}:</p>
+				<ul>
+				{% for field in form %}
+				    {% if field.errors %}
+						<li style="color: red;">{{ field.errors|striptags }}</li>
+					{% endif %}
+				{% endfor %}
+				</ul>
+			</div>
+		{% endif %}
+		
+		<p><b>Experiment:</b> <i>{{ expName }}</i>&nbsp;&nbsp;&nbsp; <b>File:</b> <i>{{basename}}</i>&nbsp;&nbsp;&nbsp; <b>Type of data:</b> <i>{{kindatDesc}}</i></p>
+	
+	<div><pre>{{ file_text }}
+	</pre>
+	</div>
+{% endblock %}

@@ -1,0 +1,1647 @@
+# This file defines all CEDAR parameters.  The columns are:
+#    1. code (a unique positive integer)
+#    2. description (parameter description.  Must not contain a comma)
+#    3. units (units description)
+#    4. mnemonic (a unique char string without spaces, all caps)
+#    5. format (how to format the data in a report, for example (%9.0f)
+#    6. width (number of spaces for data - must be greater than format)
+#    7. categoryId (category id of this parameter as defined in madCatTab.txt)
+#    8. hasDesc (1 if there is a link to this parameter in doc/parmDesc.html,0 if not)
+#    9. hasErrDesc (1 if there is a link to the error version of this parameter in doc/parmDesc.html,0 if not)
+#    10. isDuplicateOfCode (This field should not be used for new parms - optional field for old version of
+#         CEDAR database format with 16 bit integers when there were occasionally multiple parms for
+#         dynamic ranges reasons - now irrelevant with Hdf5 format.)
+#
+#  If you edit this file to add a new parameter, please run $MADROOT/source/madpy/scripts/bin/checkParmsCodes.py <new_version>
+#  to check for problems.  Please also email new version to brideout@haystack.mit.edu .
+#
+9,Beginning year (universal time),y,BYEAR,%i,11,0,0,0
+10,Year (universal time),y,YEAR,%i,10,-1,0,0
+1,Month (universal time),m,MONTH,%i,10,-1,0,0
+2,Day (universal time),d,DAY,%i,10,-1,0,0
+3,Beg Month (universal time),m,BMONTH,%i,10,0,0,0
+4,Beg Day (universal time),d,BDAY,%i,10,0,0,0
+5,Hour (universal time),h,HOUR,%i,10,-1,0,0
+6,Minute (universal time),m,MIN,%i,10,-1,0,0
+7,Second (universal time),s,SEC,%i,10,-1,0,0
+8,Centisecond (universal time),cs,CSEC,%i,10,0,0,0
+15,Year (UT) of analysis date,y,YRANAL,%i,11,0,0,0
+19,Beginning month/day (universal time),mmdd,BMD,%04i,11,0,0,0
+20,Month/day (universal time),mmdd,MD,%04i,11,0,0,0
+21,Day number of year (universal time),d,DAYNO,%03i,11,0,0,0
+22,Model Day number of year (UT; 1=Jan 1),d,MDANO,%03i,10,0,0,0
+25,Month/day (UT) of analysis date,mmdd,MDANAL,%04i,11,0,0,0
+28,Beginning hour/min (universal time),hhmm,BHM,%04i,11,0,0,0
+29,Beginning second,s,BHMI,%9.2f,11,0,0,0
+11,Unix seconds (1/1/1970) at start,s,UT1_UNIX,%13.3f,16,-1,0,0
+12,Unix seconds (1/1/1970) at end,s,UT2_UNIX,%13.3f,16,-1,0,0
+0,Beginning hour/min/sec (UT),hhmmss,BHHMMSS,%06i,11,0,0,0
+0,Ending hour/min/sec (UT),hhmmss,EHHMMSS,%06i,11,0,0,0
+0,Time as float years,y,FYEAR,%11.7f,14,0,0,0
+30,Hour/min (universal time),hhmm,HM,%04i,11,0,0,0
+31,Second,s,HMI,%9.1f,11,0,0,0
+34,Time past 0000 UT,h,UTH,%12.5f,14,0,0,0
+36,Time past 0000 UT,s,UTS,%9.0f,11,0,0,0
+42,Local solar time diff (=SLT-UT) +E lon,hhmm,SLTMUT,%12.5f,14,0,0,0
+44,Local solar time,h,SLT,%12.5f,14,0,0,0
+47,Local solar time at conjugate point,h,SLTC,%12.5f,14,0,0,0
+54,Magnetic local time,h,MLT,%12.5f,14,0,1,0
+0,Beginning time past 0000 UT,h,B_UTH,%12.5f,14,0,0,0
+0,Ionospheric sunrise,s,SUNRISE,%9.2f,11,0,0,0
+0,Ionospheric sunset,s,SUNSET,%9.2f,11,0,0,0
+0,Ionospheric sunrise (h),h,SUNRISE_HOUR,%12.5f,14,0,1,0
+0,Ionospheric sunset  (h),h,SUNSET_HOUR,%12.5f,14,0,1,0
+0,Conj Ionospheric sunrise,s,CONJ_SUNRISE,%9.2f,14,0,0,0
+0,Conj Ionospheric sunset,s,CONJ_SUNSET,%9.2f,14,0,0,0
+0,Conj Ionospheric sunrise (h),h,CONJ_SUNRISE_H,%12.5f,16,0,1,0
+0,Conj Ionospheric sunset  (h),h,CONJ_SUNSET_H,%12.5f,16,0,1,0
+60,Integration time for these data,s,INTTMS,%9.1f,11,0,0,0
+61,Integration time for these data,m,INTTMM,%9.1f,11,0,0,0
+62,Integration time for these data,d,DATNTD,%9.1f,11,0,0,0
+66,Time increment between rows,s,DTROW,%9.1f,11,0,0,0
+68,Lag,s,LAG,%12.5f,14,0,1,0
+70,Sampling interval (time between sampls),s,SMPINT,%9.1f,11,0,0,0
+72,UT of Moonset (from US Naval Obs),h,TMSET,%12.5f,14,0,1,0
+73,UT of Moonrise (from US Naval Obs),h,TMRIS,%12.5f,14,0,1,0
+74,UT of Civil sunset (szen=96 deg),h,TSSC,%12.5f,14,0,1,0
+75,UT of Civil sunrise (szen=96 deg),h,TSRC,%12.5f,14,0,1,0
+76,UT of Nautical sunset (szen=102 deg),h,TSSN,%12.5f,14,0,1,0
+77,UT of Nautical sunrise (szen=102 deg),h,TSRN,%12.5f,14,0,1,0
+78,UT of Astronomical sunset (szen=108 deg,h,TSSA,%12.5f,14,0,1,0
+79,UT of Astronomical sunrise (szen=108deg,h,TSRA,%12.5f,14,0,1,0
+80,Time delay,min,TD,%9.2f,11,0,1,0
+84,Daily mean time delay,min,TDA,%9.2f,11,0,1,0
+94,Scan type (0=any;1=fixed;2=az;3=el),N/A,SCNTYP,%i,10,0,0,0
+95,Cycle sequence number (e.g.; 5th cycle),N/A,CYCN,%i,11,0,0,0
+96,Position number within cycle,N/A,POSN,%i,11,0,0,0
+97,End of event flag (0=off; 1=on),N/A,POSF,%i,11,0,0,0
+3326,Universal Time (Hours MOD 24),h,UT,%12.5f,14,0,0,0
+0,Beginning UT (Hours MOD 24),h,BEG_UT,%12.5f,14,0,0,0
+3327,Local Time (Hours MOD 24),h,LT,%12.5f,14,0,0,0
+3330,Apex Local Time (Hours MOD 24),h,APLT,%12.5f,14,0,0,0
+3334,Cycle Time of Experiment,h,TCYCLE,%12.5f,14,0,0,0
+3335,Julian Day Number (uses UT midnight),d,JDAYNO,%9.0f,11,0,1,0
+0,FDays since Jan 1; 4713 BC UT noon,d,JULIAN_DATE,%13.9f,14,0,1,0
+0,Days since Jan 1; 4713 BC UT noon,d,JULIAN_DAY,%9.0f,14,0,1,0
+3336,Start UT (0 = 0000 1JAN50),s,UT1,%12.0f,14,0,0,0
+3337,End UT (0 = 0000 1JAN50),s,UT2,%12.0f,14,0,0,0
+3338,Variation in UT (UT2 - UT1),s,DUT21,%9.0f,11,0,0,0
+3340,Logical Record Number,N/A,RECNO,%i,11,-1,0,0
+106,Minimum altitude,km,ALTB,%12.5e,14,1,0,0
+108,Maximum altitude,km,ALTE,%12.5e,14,1,0,0
+110,Geodetic altitude (height),km,GDALT,%9.2f,11,1,0,0
+112,Normalizing altitude,km,RHALTN,%12.5e,14,1,0,0
+114,Number of samples in range ave,N/A,NSMPRU,%i,11,1,0,0
+115,Altitude averaging interval,km,ALTAV,%12.5e,14,1,0,0
+117,Virtual height,km,ALTV,%9.2f,11,1,0,0
+118,Pierce Point Altitude,km,PIERCE_ALT,%12.5e,14,1,0,0
+120,Range,km,RANGE,%9.2f,11,1,0,0
+122,Range resolution,km,RESL,%12.5e,14,1,1,0
+124,Range to intersection point,km,INTERSEC_RANGE,%12.5e,16,1,1,0
+125,Width of range gate,km,RGATE,%12.5e,14,1,0,0
+127,Range gate number,N/A,RGATN,%9.1f,11,1,0,0
+130,Mean azimuth angle (0=geog N;90=east),deg,AZM,%9.2f,11,1,0,0
+132,Beginning azimuth (0=geog N;90=east),deg,AZ1,%9.2f,11,1,0,0
+133,Ending azimuth (0=geog N;90=east),deg,AZ2,%9.2f,11,1,0,0
+135,Variation in azimuth (end Az - beg Az),deg,DAZ,%9.2f,11,1,0,0
+140,Elevation angle (0=horizontal;90=vert),deg,ELM,%9.2f,11,1,0,0
+142,Beginning elevation angle,deg,EL1,%9.2f,11,1,0,0
+143,Ending elevation angle,deg,EL2,%9.2f,11,1,0,0
+145,Variation in elevation (end El-beg El),deg,DEL,%9.2f,11,1,0,0
+147,Beam identifier,N/A,BEAMID,%i,11,1,0,0
+150,Horiz great crcl dist from ref lat/lon,km,GCDIST,%12.5e,14,1,0,0
+153,Reference geod latitude (N hemi=pos),deg,GDLATR,%12.5e,14,1,0,0
+156,Reference geographic longitude,deg,GDLONR,%12.5e,14,1,0,0
+157,Reference geodetic altitude,km,GALTR,%9.2f,11,1,0,0
+160,Geodetic latitude of measurement,deg,GDLAT,%9.2f,11,1,0,0
+162,Geodetic latitude of second inst,deg,GDLAT2,%9.2f,11,1,1,0
+170,Geographic longitude of measurement,deg,GLON,%9.2f,11,1,0,0
+172,Geographic longitude of second inst,deg,GLON2,%9.2f,11,1,1,0
+173,Effective radius of measurement field,km,EFF_RADIUS,%9.2f,14,1,0,0
+175,Four letter GPS receiver code,N/A,GPS_SITE,%4s,11,1,1,0
+176,GNSS sat type (8 char padded str GPS or GLONASS),N/A,GNSS_TYPE,%8s,11,1,1,0
+177,Receiving station call sign,N/A,CALL_SIGN_RX,%12s,15,1,0,0
+178,Transmitting station call sign,N/A,CALL_SIGN_TX,%12s,15,1,0,0
+180,Solar zenith angle in measurement vol,deg,SZEN,%9.2f,11,1,1,0
+181,Solar azimuth angle,deg,SUNAZ,%9.2f,11,1,0,0
+183,Conjugate solar zenith angle,deg,SZENC,%9.2f,11,1,1,0
+186,Shadow height,km,SDWHT,%9.2f,11,1,1,0
+188,Shadow distance (l-o-s terminator dist),km,SDWD,%9.2f,11,1,0,0
+190,Half scattering angle (bistatic system),deg,HSA,%12.2e,14,1,0,0
+191,Hour angle HA=LSidT-RA (equatorial),h,EQHHA,%9.2f,11,1,0,0
+192,Right ascension angle (GEI coordinates),deg,RASC,%12.5e,14,1,0,0
+193,Galactic longitude b (galactic coords),deg,GALLON,%12.5e,14,1,0,0
+194,Declination angle (GEI coordinates),deg,DEC,%12.5e,14,1,0,0
+195,Galactic latitude l (galactic coords),deg,GALLAT,%12.5e,14,1,0,0
+196,Solar Offset - the heliocentric radial distance to the radio path point of closest solar approach,Solar Radii,SOLAR_OFFSET,%9.2f,14,1,0,0
+0,Magnetic conjugate geodetic latitude,deg,MAGCONJLAT,%9.2f,14,2,0,0
+0,Magnetic conjugate longitude,deg,MAGCONJLON,%9.2f,14,2,0,0
+0,Magnetic conjugate shadow height,deg,MAGCONJSDWHT,%9.2f,14,2,1,0
+0,Tsyganenko field GSM XY plane X point,ea_rad,TSYG_EQ_XGSM,%12.2f,14,2,1,0
+0,Tsyganenko field GSM XY plane Y point,ea_rad,TSYG_EQ_YGSM,%12.2f,14,2,1,0
+0,Tsyganenko field GSE XY plane X point,ea_rad,TSYG_EQ_XGSE,%12.2f,14,2,1,0
+0,Tsyganenko field GSE XY plane Y point,ea_rad,TSYG_EQ_YGSE,%12.2f,14,2,1,0
+0,E Reg intercept south field line -lat,deg,E_REG_S_LAT,%9.2f,14,2,1,0
+0,E Reg intercept south field line -lon,deg,E_REG_S_LON,%9.2f,14,2,1,0
+0,E Reg intercept south field line -sdwht,km,E_REG_S_SDWHT,%12.5e,16,2,1,0
+0,E Reg intercept north field line - lat,deg,E_REG_N_LAT,%9.2f,14,2,1,0
+0,E Reg intercept north field line - lon,deg,E_REG_N_LON,%9.2f,14,2,1,0
+0,E Reg intercept north field line -sdwht,km,E_REG_N_SDWHT,%12.5e,16,2,1,0
+204,Geodetic Northward component of geomagnetic field ,T,BN,%12.5e,14,2,1,0
+205,Geodetic Northward component of geomagnetic field in nT,nT,BN_NT,%12.5e,14,2,1,0
+206,Geodetic Eastward component of geomagnetic field,T,BE,%12.5e,14,2,1,0
+207,Geodetic Eastward component of geomagnetic field in nT,nT,BE_NT,%12.5e,14,2,1,0
+208,Geodetic Downward component of geomagnetic field,T,BD,%12.5e,14,2,1,0
+209,Geodetic Upward component of geomagnetic field,T,B_UP,%12.5e,14,2,1,0
+210,Geomagnetic field strength,T,BMAG,%12.5e,14,2,1,0
+211,Geodetic Downward component of geomagnetic field in nT,nT,BD_NT,%12.5e,14,2,1,0
+213,Geomagnetic field east declination,deg,BDEC,%12.5e,14,2,1,0
+216,Geomagnetic field downward inclination,deg,BINC,%12.5e,14,2,1,0
+218,L value in measurement volume,N/A,LSHELL,%12.5e,14,2,0,0
+220,Dip latitude in measurement volume,deg,DIPLAT,%12.5e,14,2,0,0
+222,Invariant latitude in measurement vol,deg,INVLAT,%9.2f,11,2,0,0
+224,Geomagnetic (centered dipole) latitude,deg,GDILAT,%12.5e,14,2,0,0
+225,AACGM magnetic latitude of meas volume,deg,AACGM_LAT,%9.2f,11,2,0,0
+226,Apex latitude in measurement volume,deg,APLAT,%12.5e,14,2,0,0
+227,Corrected Geomagnetic latitude,deg,CGM_LAT,%9.2f,11,2,0,0
+228,Magnetic latitude,deg,MLAT,%9.2f,11,2,0,0
+230,PACE magnetic azimuth,deg,PACEAZ,%9.2f,11,2,0,0
+234,Horizontal component of geomagnetic field,T,BH,%12.5e,14,2,0,0
+236,Delta H-comp of geomag field (local-remot,T,BDH,%12.5e,14,2,1,0
+238,Avg of geomag H comp - 22-02LT (local),T,HAV0LT_L,%12.5e,14,2,1,0
+240,Avg of geomag H comp - 22-02LT (remote),T,HAV0LT_R,%12.5e,14,2,1,0
+244,Geomagnetic (cntrd dipol) east longitud,deg,GDILON,%12.5e,14,2,0,0
+245,AACGM magnetic longitude of meas volume,deg,AACGM_LONG,%9.2f,14,2,0,0
+246,Apex longitude in measurement volume,deg,APLON,%12.5e,14,2,0,0
+247,Corrected Geomagnetic Longitude,deg,CGM_LONG,%9.2f,11,2,0,0
+248,Magnetic Longitude,deg,MLONG,%9.2f,11,2,0,0
+254,North geomagnetic field in CGM coord,T,MAGH,%12.5e,14,2,0,0
+256,East geomagnetic field in CGM coord,T,MAGD,%12.5e,14,2,0,0
+258,Down geomagnetic field in CGM coord,T,MAGZD,%12.5e,14,2,0,0
+260,Up geomagnetic field in CGM coord,T,MAGZU,%12.5e,14,2,0,0
+264,Meas Mag field in horz spacecraft dir,T,B_FORWARD,%12.5e,14,2,1,0
+266,Meas Mag field anti-sun perp horiz dir,T,B_PERP,%12.5e,14,2,1,0
+267,B-field component cross-track (positive : left of velocity vector),T,B_PERP_LEFT,%12.5e,14,2,1,0
+268,Mag field downward - model,T,DIFF_BD,%12.5e,14,2,1,0
+269,Mag field upward - model,T,DIFF_B_UP,%12.5e,14,2,1,0
+270,Mag field in horz spacecraft dir - mode,T,DIFF_B_FOR,%12.5e,14,2,1,0
+272,Mag fd anti-sun perp horiz dir - model,T,DIFF_B_PERP,%12.5e,14,2,1,0
+273,Magnetic Perturbation (B-field component cross-track pos left of velocity vector - IGRF),T,DIFF_B_PERP_LEFT,%12.5e,14,2,1,0
+277,Begin X Geocentric Solar Magnetospheric,Re,XGSMB,%12.5e,14,2,0,0
+278,End X   Geocentric Solar Magnetospheric,Re,XGSME,%12.5e,14,2,0,0
+279,Begin Y Geocentric Solar Magnetospheric,Re,YGSMB,%12.5e,14,2,0,0
+280,End Y   Geocentric Solar Magnetospheric,Re,YGSME,%12.5e,14,2,0,0
+281,Begin Z Geocentric Solar Magnetospheric,Re,ZGSMB,%12.5e,14,2,0,0
+282,End Z   Geocentric Solar Magnetospheric,Re,ZGSME,%12.5e,14,2,0,0
+283,Begin X Geocentric Solar Ecliptic,Re,XGSEB,%12.5e,14,2,0,0
+284,End X   Geocentric Solar Ecliptic,Re,XGSEE,%12.5e,14,2,0,0
+285,Begin Y Geocentric Solar Ecliptic,Re,YGSEB,%12.5e,14,2,0,0
+286,End Y   Geocentric Solar Ecliptic,Re,YGSEE,%12.5e,14,2,0,0
+287,Begin Z Geocentric Solar Ecliptic,Re,ZGSEB,%12.5e,14,2,0,0
+288,End Z   Geocentric Solar Ecliptic,Re,ZGSEE,%12.5e,14,2,0,0
+292,X Coord Geocentric Solar Magnetospheric,Re,XGSM,%12.5e,14,2,0,0
+293,Y Coord Geocentric Solar Magnetospheric,Re,YGSM,%12.5e,14,2,0,0
+294,Z Coord Geocentric Solar Magnetospheric,Re,ZGSM,%12.5e,14,2,0,0
+295,X Coordinate Geocentric Solar Ecliptic,Re,XGSE,%12.5e,14,2,0,0
+296,Y Coordinate Geocentric Solar Ecliptic,Re,YGSE,%12.5e,14,2,0,0
+297,Z Coordinate Geocentric Solar Ecliptic,Re,ZGSE,%12.5e,14,2,0,0
+0,Magnetic aspect angle,deg,ASPECT,%9.2f,11,2,1,0
+310,Kp Index,N/A,KP,%9.2f,11,3,0,0
+319,Polar Cap Index,N/A,PCI,%9.2f,11,3,0,0
+320,Ae Index (1 or 2.5 min sample),nT,AE,%12.5e,14,3,0,0
+321,Al Index (1 or 2.5 min sample),nT,AL,%12.5e,14,3,0,0
+322,Au Index (1 or 2.5 min sample),nT,AU,%12.5e,14,3,0,0
+323,Ao Index (1 or 2.5 min sample),nT,AO,%12.5e,14,3,0,0
+324,Ae Index (hourly mean),nT,AEM,%12.5e,14,3,0,0
+325,Al Index (hourly mean),nT,ALM,%12.5e,14,3,0,0
+326,Au Index (hourly mean),nT,AUM,%12.5e,14,3,0,0
+327,Ao Index (hourly mean),nT,AOM,%12.5e,14,3,0,0
+330,Dst index,nT,DST,%9.2f,11,3,1,0
+335,ap index (3-hourly),N/A,AP3,%9.0f,11,3,0,0
+340,AP index (daily),N/A,AP,%9.0f,11,3,0,0
+341,aa index,N/A,AA,%12.5e,14,3,0,0
+350,F10.7 solar flux (Sa),W/m2/Hz,F107AU,%12.5e,14,3,0,0
+351,F10.7 solar flux qualifier,N/A,F107QA,%9.0f,11,3,0,0
+352,F10.7 Multiday average,W/m2/Hz,FBARAU,%12.5e,14,3,0,0
+353,352's avg code ;e.g. 1=>81 day centrd,N/A,FBARTA,%9.0f,11,3,0,0
+354,F10.7 solar flux observed (Ottawa),W/m2/Hz,F10.7,%12.5e,14,3,0,0
+355,F10.7 solar flux qualifier observed,N/A,F10.7Q,%9.0f,11,3,0,0
+356,F10.7 Multiday average observed (Ott),W/m2/Hz,FBAR,%12.5e,14,3,1,0
+357,356's avg code ;e.g. 1=>81 day centrd,N/A,FBART,%9.0f,11,3,0,0
+360,Sunspot number,N/A,SSPOTN,%9.0f,11,3,0,0
+363,Estim. Total Hemispheric Power Input,W,TEPOW,%12.5e,14,3,0,0
+364,Estim. Ion Hemispheric Power Input,W,IEPOW,%12.5e,14,3,0,0
+365,Hemispheric Power Input,W,HPOW,%12.5e,14,3,1,0
+366,Hemispheric Power Index,N/A,HPOW_I,%i,11,3,1,0
+367,Estim. Hemispheric Power Qualifier,N/A,EPOWQ,%12.0f,14,3,0,0
+368,Estimated Hemispheric Pwr Corr. Factor,N/A,EPOWF,%12.5e,14,3,0,0
+370,Est mag lat 0MLT equatorwd aurora bndry,deg,EQB0,%12.5e,14,3,0,0
+371,Hemisphere measured (N or S),N/A,HEMISP,%1s,11,3,0,0
+401,Lag to the first range gate,s,LAG1,%12.5e,14,5,0,0
+402,Pulse length,s,PL,%12.5e,14,5,0,0
+404,Density sampling time,s,DENST,%12.5e,14,5,0,0
+406,Spectral sampling time,s,SPCST,%12.5e,14,5,0,0
+407,Interpulse Period,s,IPP,%12.5e,14,5,0,0
+410,Signal to noise ratio,N/A,SN,%12.5e,14,5,0,0
+412,Log10 (signal to noise ratio),N/A,SNL,%9.2f,11,5,0,0
+413,No samples available in time average,N/A,NSMPTA,%9.2f,11,5,0,0
+414,# samples used in time average,N/A,NSAMP,%12.5e,14,5,0,0
+417,# Samples used in fourier transform,N/A,NSMFFT,%12.5e,14,5,0,0
+418,# ACF lags calculated,N/A,NLAGS,%12.5e,14,5,0,0
+419,No samples used,N/A,NSMPU,%9.2f,11,5,0,0
+420,Reduced-chi square of fit,N/A,CHISQ,%12.3e,14,5,1,0
+422,No. samples in dir. 1 avg. (eastward),N/A,NSMPD1,%9.2f,11,5,0,0
+423,No. samples in dir. 2 avg. (northward),N/A,NSMPD2,%9.2f,11,5,0,0
+424,No. samples in dir. 3 avg. (upward),N/A,NSMPD3,%9.2f,11,5,0,0
+425,Wide Reduced-chi sq of fit,N/A,WCHSQ,%12.5e,14,5,0,0
+428,GPS receiver bias,TECU,REC_BIAS,%9.1f,11,5,0,0
+430,Goodness of fit,N/A,GFIT,%9.1f,11,5,0,0
+431,Code baud count per pulse,N/A,CBADL,%12.5e,14,5,0,0
+432,No. bauds in code,N/A,CBADN,%9.2f,11,5,0,0
+433,Code type (0=non;1=cmplmntry),N/A,CODT,%i,11,5,0,0
+434,No incoherent integrations,N/A,IIN,%9.2f,11,5,0,0
+440,Cloud cover (0-9: 0=clear ; 9=overcast),N/A,CLOUDC,%i,14,5,0,0
+441,Aurora sighted Flag (0=no; 1=yes),N/A,AURF,%i,11,5,0,0
+442,Cloud cover in tenths (0=clr;10=ovcst),N/A,CLOUDC10,%i,11,5,0,0
+443,Cloud cover (0-9: 0=clear ; 9=overcast),N/A,CLOUDCOV,%i,14,5,0,0
+444,AmbTemp - SkyTemp. < -25 implies clear,K,CLOUDIND,%9.2f,11,5,1,0
+445,Aurora sighted Flag (0=no; 1=yes),N/A,AURFG,%i,11,5,0,0
+451,Jicamarca data quality code 1,N/A,JIDQC1,%12.5e,14,5,0,0
+452,Jicamarca data quality code 2,N/A,JIDQC2,%12.5e,14,5,0,0
+453,Jicamarca data quality code 3,N/A,JIDQC3,%12.5e,14,5,0,0
+454,Jicamarca data quality code 4,N/A,JIDQC4,%12.5e,14,5,0,0
+455,Jicamarca data quality code 5,N/A,JIDQC5,%12.5e,14,5,0,0
+456,Arecibo data quality code 1 (IFIT),N/A,AODQC1,%12.5e,14,5,0,0
+457,Arecibo data quality code 2,N/A,AODQC2,%12.5e,14,5,0,0
+458,Arecibo data quality code 3,N/A,AODQC3,%12.5e,14,5,0,0
+459,Arecibo data quality code 4,N/A,AODQC4,%12.5e,14,5,0,0
+460,Arecibo data quality code 5,N/A,AODQC5,%12.5e,14,5,0,0
+461,FPI data quality code,N/A,FPI_DATAQUAL,%4.0f,14,5,1,0
+462,Millstone Hill data quality code 2,N/A,MHDQC2,%12.5e,14,5,0,0
+463,Millstone Hill data quality code 3,N/A,MHDQC3,%12.5e,14,5,0,0
+464,Millstone Hill data quality code 4,N/A,MHDQC4,%12.5e,14,5,0,0
+465,Millstone Hill data quality code 5,N/A,MHDQC5,%12.5e,14,5,0,0
+466,St. Santin data quality code 1,N/A,SSDQC1,%12.5e,14,5,0,0
+467,St. Santin data quality code 2,N/A,STSQC2,%12.5e,14,5,0,0
+468,St. Santin data quality code 3,N/A,STSQC3,%12.5e,14,5,0,0
+469,St. Santin data quality code 4,N/A,STSQC4,%12.5e,14,5,0,0
+470,St. Santin data quality code 5,N/A,STSQC5,%12.5e,14,5,0,0
+471,Chatanika/Sondrestrom data qual code 1,N/A,CTSNQ1,%12.5e,14,5,0,0
+472,Chatanika/Sondrestrom data qual code 2,N/A,CTSNQ2,%12.5e,14,5,0,0
+473,MUSCOX Fit Code,N/A,CTSNQ3,%12.5e,14,5,0,0
+474,Res. Vel. Pairing Code,N/A,CTSNQ4,%12.5e,14,5,0,0
+475,Chatinika/Sondrestrom data qual code 5,N/A,CTSNQ5,%12.5e,14,5,0,0
+476,EISCAT data quality code 1,N/A,EISQC1,%12.5e,14,5,0,0
+477,EISCAT data quality code 2,N/A,EISQC2,%12.5e,14,5,0,0
+478,EISCAT data quality code 3,N/A,EISQC3,%12.5e,14,5,0,0
+479,EISCAT data quality code 4,N/A,EISQC4,%12.5e,14,5,0,0
+480,EISCAT data quality code 5,N/A,EISQC5,%12.5e,14,5,0,0
+482,System temperature,K,SYSTMP,%9.1f,11,5,0,0
+484,Calibration temperature,K,CALTMP,%12.5e,14,5,0,0
+486,Peak power,kW,POWER,%9.2f,11,5,0,0
+490,Transmitted frequency,Hz,TFREQ,%12.5e,14,5,0,0
+491,Received frequency,Hz,RFREQ,%12.5e,14,5,0,0
+492,Received Doppler frequency offset,Hz,RCDFO,%12.5e,14,5,0,0
+493,Transmitted frequency for power profile,Hz,TFREQPP,%12.5e,14,5,0,0
+494,Receiver bandwidth,kHz,RCBW,%12.5e,14,5,0,0
+496,Receiver delay time,s,RCDT,%12.5e,14,5,0,0
+498,Number of frequencies used,N/A,NFREQU,%i,11,5,0,0
+499,Number of laser shots per second,s-1,NLSHTS,%9.1f,11,5,0,0
+500,Uncorrected electron density (Te/Ti=1),m-3,POP,%12.5e,14,6,0,0
+505,Log10(uncorrected electron density),lg(m-3),POPL,%9.4f,11,6,0,1
+506,Amplitude estimate from Lorentzian fit,sm-3,AMPL,%12.5e,14,6,0,0
+507,Base level of Lorentzian fit,m-3,BLEV,%12.5e,14,6,0,0
+510,Electron density (Ne),m-3,NE,%12.5e,14,6,0,0
+511,Electron density estimate from lag0+,m-3,NE_LAG0+,%12.5e,14,6,0,0
+513,Electron density estimate from true power,m-3,NE_TP,%12.5e,14,6,0,0
+514,Line-of-sight integrated electron density,los_tec,LOS_TEC,%12.5e,14,6,0,0
+516,Differential vertical TEC,TECU,DVTEC,%12.5e,14,6,0,0
+517,Ion density (Ni) from Ion Density Meter,m-3,NI_IDM,%12.5e,14,6,0,0
+518,Ion density (Ni) from Retarding Potential Analyzer,m-3,NI,%12.5e,14,6,0,0
+519,Ion density from RPA flag (1 = good; 2 = caution; 3 = poor; don't use; 4 = undetermined),N/A,NI_RPA_FLAG,%i,14,6,1,0
+520,Log10(Ne in m-3),lg(m-3),NEL,%9.3f,11,6,0,0
+521,Ion density (Ni) from Scin Meter,m-3,NI_SM,%12.5e,14,6,0,0
+522,Line integrated electron density,m-2,NELI,%12.5e,14,6,0,0
+523,log10 (integrated electron density),lg(m-2),NEHIL,%12.5e,14,6,0,0
+524,Vertically integrated electron density,TECU,TEC,%12.5e,14,6,0,0
+525,log10 (Vert. integrated electron den.),lg(m-2),TECL,%12.5e,14,6,0,0
+526,Plasma freq up-shifted line,MHz,PL_FQ_UP,%12.5e,14,6,0,0
+528,Plasma freq down-shifted line,MHz,PL_FQ_DOWN,%12.5e,14,6,0,0
+530,Maximum electron density,m-3,NEMAX,%12.5e,14,6,0,0
+531,Down-up plasma freq,kHz,DN_UP_PL_FQ,%12.5e,14,6,0,0
+533,Rel power plasma freq up-shift,N/A,REL_PW_PL_UP,%12.5e,14,6,0,0
+534,Rel power plasma freq dn-shift,N/A,REL_PW_PL_DN,%12.5e,14,6,0,0
+535,Log10 (max Ne in m-3),lg(m-3),NEMAXL,%12.5e,14,6,0,0
+536,Spectral half width from Lorentzian fit,s-1,HW_LOR,%12.5e,14,6,0,0
+537,Spectral half width from exponential fit,s-1,HW_EXPFIT,%12.5e,14,6,0,0
+538,Wideband noise,K,WN,%12.5e,14,6,0,0
+539,DC spike,K,DC,%12.5e,14,6,0,0
+540,Height of maximum electron density,km,HMAX,%12.5e,14,6,0,0
+541,Scale ht of Chapman model electron den,km,HSCHAP,%12.5e,14,6,0,0
+550,Ion temperature (Ti),K,TI,%9.1f,11,6,0,0
+551,Ion temperature from RPA flag (1 = good; 2 = caution; 3 = poor; don't use; 4 = undetermined),N/A,TI_RPA_FLAG,%i,14,6,1,0
+552,Hydrogen ion temperature,K,TIH,%9.1f,11,6,0,0
+554,Oxygen ion temperature,K,TIO,%9.1f,11,6,0,0
+560,Electron temperature (Te),K,TE,%9.1f,11,6,0,0
+570,Temperature ratio (Te/Ti),N/A,TR,%9.4f,11,6,0,0
+580,Line of sight ion velocity (pos = away),ms-1,VO,%9.1f,11,6,0,0
+582,LOS H+ ion velocity (pos = away),ms-1,VOH,%9.1f,11,6,0,0
+585,Ion Velocity spread (spectral width),ms-1,VOS,%9.1f,11,6,0,0
+586,LOS O+ ion velocity (pos = away),ms-1,VOO,%9.1f,11,6,0,0
+590,Bisector ion vel (bistatic sys;pos=up),ms-1,VOBI,%9.1f,11,6,0,0
+600,Velocity direction - local azimuth,deg,VOAZ,%12.5e,14,6,0,0
+610,Velocity direction - local elevation,deg,VOEL,%12.5e,14,6,0,0
+620,Composition - [O+]/Ne,N/A,PO+,%12.3e,14,6,0,0
+621,Fraction O+ FLAG (1 = good; 2 = caution; 3 = poor; don't use; 4 = undetermined),N/A,PO+_FLAG,%i,10,6,1,0
+630,Composition - [NO+]/Ne,N/A,PNO+,%12.5e,14,6,0,0
+640,Composition - [O2+]/Ne,N/A,PO2+,%12.5e,14,6,0,0
+650,Composition - [HE+]/Ne,N/A,PHE+,%12.5e,14,6,0,0
+651,Fraction HE+ FLAG (1 = good; 2 = caution; 3 = poor; don't use; 4 = undetermined),N/A,PHE+_FLAG,%i,11,6,1,0
+660,Composition - [H+]/Ne,N/A,PH+,%9.4f,11,6,0,0
+661,Fraction H+ FLAG (1 = good; 2 = caution; 3 = poor; don't use; 4 = undetermined),N/A,PH+_FLAG,%i,10,6,1,0
+690,Comp - (ions with mol wt 28 to 32)/Ne,N/A,PM,%12.5e,14,6,0,0
+691,Mean mol wt - ions with mol wt 28 to 32,AMU,MMWT30,%12.5e,14,6,0,0
+709,Ion-neutral collision frequency,s-1,CO,%12.5e,14,6,0,0
+720,Log10 (ion-neutral collision frequency),lg(s-1),COL,%12.5e,14,6,0,0
+730,Minimum freq of traces on ionogram,MHz,F_MIN,%9.3f,11,6,1,0
+731,F_MIN qualifying letter (ascii code),N/A,F_MIN_QUAL,%1s,14,6,1,0
+732,F_MIN descriptive letter (ascii code),N/A,F_MIN_DESC,%1s,14,6,1,0
+733,Min height of the trace used for foEs,km,H_ES,%9.3f,11,6,1,0
+734,H_ES qualifying letter (ascii code),N/A,H_ES_QUAL,%1s,11,6,1,0
+735,H_ES descriptive letter (ascii code),N/A,H_ES_DESC,%1s,11,6,1,0
+736,Max freq with continous Es trace,MHz,FOES,%9.3f,11,6,1,0
+737,FOES qualifying letter (ascii code),N/A,FOES_QUAL,%1s,11,6,1,0
+738,FOES descriptive letter (ascii code),N/A,FOES_DESC,%1s,11,6,1,0
+739,Blanketing freq of the Es layer,MHz,FBES,%9.3f,11,6,1,0
+740,FBES qualifying letter (ascii code),N/A,FBES_QUAL,%1s,11,6,1,0
+741,FBES descriptive letter (ascii code),N/A,FBES_DESC,%1s,11,6,1,0
+742,Min virtual height of E layer,km,H_E,%9.3f,11,6,1,0
+743,H_E qualifying letter (ascii code),N/A,H_E_QUAL,%1s,11,6,1,0
+744,H_E descriptive letter (ascii code),N/A,H_E_DESC,%1s,11,6,1,0
+745,E region critical freq,MHz,FOE,%9.3f,11,6,1,0
+746,FOE qualifying letter (ascii code),N/A,FOE_QUAL,%1s,11,6,1,0
+747,FOE descriptive letter (ascii code),N/A,FOE_DESC,%1s,11,6,1,0
+748,Min virtual height of F trace,km,H_F,%9.3f,11,6,1,0
+749,H_F qualifying letter (ascii code),N/A,H_F_QUAL,%1s,11,6,1,0
+750,H_F descriptive letter (ascii code),N/A,H_F_DESC,%1s,11,6,1,0
+751,F1 critical freq,MHz,FOF1,%9.3f,11,6,1,0
+752,FOF1 qualifying letter (ascii code),N/A,FOF1_QUAL,%1s,11,6,1,0
+753,FOF1 descriptive letter (ascii code),N/A,FOF1_DESC,%1s,11,6,1,0
+754,F2 critical freq,MHz,FOF2,%9.3f,11,6,1,0
+755,FOF2 qualifying letter (ascii code),N/A,FOF2_QUAL,%1s,11,6,1,0
+756,FOF2 descriptive letter (ascii code),N/A,FOF2_DESC,%1s,11,6,1,0
+757,Maximum returned freq,MHz,FXI,%9.3f,11,6,1,0
+758,FXI qualifying letter (ascii code),N/A,FXI_QUAL,%1s,11,6,1,0
+759,FXI descriptive letter (ascii code),N/A,FXI_DESC,%1s,11,6,1,0
+760,Max usable freq 3000km hop,MHz,M3KF2,%9.3f,11,6,1,0
+761,M3KF2 qualifying letter (ascii code),N/A,M3KF2_QUAL,%1s,14,6,1,0
+762,M3KF2 descriptive letter (ascii code),N/A,M3KF2_DESC,%1s,14,6,1,0
+763,E region X mode critical freq DSND,MHz,FXE,%6.3f,11,6,0,0
+764,E region Z mode critical freq DSND,MHz,FZE,%6.3f,11,6,0,0
+765,F2 region mode critical freq  DSND,MHz,FXF2,%6.3f,11,6,0,0
+766,F2 region Z mode critical freq DSND,MHz,FZF2,%6.3f,11,6,0,0
+767,F layer horizontal velocity (pos = E),ms-1,VXF,%6.3f,11,6,0,0
+769,F layer horizontal velocity (pos = N),ms-1,VYF,%6.3f,11,6,0,0
+771,F layer vertical velocity (pos = up),ms-1,VZF,%6.3f,11,6,0,0
+773,E layer horizontal velocity (pos = E),ms-1,VXE,%6.3f,11,6,0,0
+775,E layer horizontal velocity (pos = N),ms-1,VYE,%6.3f,11,6,0,0
+777,E layer vertical velocity (pos = up),ms-1,VZE,%6.3f,11,6,0,0
+779,Mean virtual range of F layer,km,KMRTRF,%6.3f,11,6,0,0
+781,Mean real height of F layer,km,KMZTRF,%6.3f,11,6,0,0
+783,Mean virtual range of E layer,km,KMRTRE,%6.3f,11,6,0,0
+785,Mean real height of E layer,km,KMZTRE,%6.3f,11,6,0,0
+786,Vertical ion velocity (pos = Up),ms-1,VERT_ION_V_UP,%9.1f,14,6,0,0
+787,Plasma frequency NeXtYZ profile,MHz,PF,%6.3f,11,6,0,0
+788,Total electron content,TECU,ATEC_DSND,%6.3f,11,6,0,0
+789,Ion vel forward (+ is direction of the spacecraft's vel),ms-1,ION_V_SAT_FOR,%9.1f,16,6,0,0
+790,Vertical ion velocity (pos = Down),ms-1,VERT_ION_V,%9.1f,14,6,0,0
+791,Ion vel left (+ is horizontal to the left in the direction of the spacecraft's vel),ms-1,ION_V_SAT_LEFT,%9.1f,16,6,0,0
+792,Horizontal ion vel (pos=sunward),ms-1,HOR_ION_V,%9.1f,11,6,0,0
+793,RPA qual flag (1 = good; 2 = fair; 3 = caution; 3 = poor; 4 = don't use; 5 = undetermined; 9 = sun glint flag (don't use)),N/A,RPA_FLAG_UT,%i,14,6,1,0
+794,IDM qual flag (1 = good; 2 = fair; 3 = caution; 3 = poor; 4 = don't use; 5 = undetermined; 6 = good; but use caution; 7 = fair; but use caution; 8 = use extra caution; 9 = sun glint flag (don't use)),N/A,IDM_FLAG_UT,%i,14,6,1,0
+795,Std Dev of the 24 (nominally) measurements of ION_V_SAT_LEFT for this four-second period,ms-1,SD_ION_V_LEFT,%9.1f,16,6,0,0
+796,Ion vel forward flag (1 = good; 2 = caution; 3 = poor; don't use; 4 = undetermined),N/A,ION_V_FOR_FLAG,%i,16,6,1,0
+797,Ion vel left flag (1 = good; 2 = caution; 3 = poor; don't use; 4 = undetermined),N/A,ION_V_LEFT_FLAG,%i,18,6,1,0
+798,Ion vel up flag (1 = good; 2 = caution; 3 = poor; don't use; 4 = undetermined),N/A,ION_V_UP_FLAG,%i,16,6,1,0
+0,ISR-based empirical model of elec den,m-3,NE_MODEL,%12.5e,14,6,1,0
+0,ISR-based empirical model of elec den,lg(m-3),NEL_MODEL,%9.3f,11,6,1,0
+0,ISR-based empirical model of elec temp,K,TE_MODEL,%9.1f,11,6,1,0
+0,ISR-based empirical model of ion temp,K,TI_MODEL,%9.1f,11,6,1,0
+0,ISR-based empirical model of ion vel,ms-1,VO_MODEL,%9.1f,11,6,1,0
+0,ISR-based empirical model of HMAX,km,HMAX_MODEL,%9.1f,14,6,1,0
+0,ISR-based empirical model of NMAX,m-3,NMAX_MODEL,%12.5e,14,6,1,0
+0,Diff measured-model elec den,m-3,NE_MODELDIFF,%12.5e,14,6,1,0
+0,Diff measured-model log elec den,lg(m-3),NEL_MODELDIFF,%9.3f,16,6,1,0
+0,Diff measured-model elec temp,K,TE_MODELDIFF,%9.1f,14,6,1,0
+0,Diff measured-model ion temp,K,TI_MODELDIFF,%9.1f,14,6,1,0
+0,Diff measured-model ion vel,ms-1,VO_MODELDIFF,%9.1f,14,6,1,0
+0,IRI Electron density (Ne),m-3,NE_IRI,%12.5e,14,7,1,0
+0,IRI Log Electron density (Ne),lg(m-3),NEL_IRI,%9.3f,14,7,1,0
+0,IRI Neutral temperature,K,TN_IRI,%9.1f,14,7,1,0
+0,IRI Ion temperature,K,TI_IRI,%9.1f,14,7,1,0
+0,IRI Electron temperature,K,TE_IRI,%9.1f,14,7,1,0
+0,IRI Composition - [O+]/Ne,N/A,PO+_IRI,%12.5e,14,7,1,0
+0,IRI Composition - [NO+]/Ne,N/A,PNO+_IRI,%12.5e,14,7,1,0
+0,IRI Composition - [O2+]/Ne,N/A,PO2+_IRI,%12.5e,14,7,1,0
+0,IRI Composition - [HE+]/Ne,N/A,PHE+_IRI,%12.5e,14,7,1,0
+0,IRI Composition - [H+]/Ne,N/A,PH+_IRI,%12.5e,14,7,1,0
+0,IRI Composition - [N+]/Ne,N/A,PN+_IRI,%12.5e,14,7,1,0
+800,Line of sight neutral vel (pos = away),ms-1,VNU,%12.5e,14,8,0,0
+805,Neutral velocity spread,ms-1,VNUS,%12.5e,14,8,0,0
+807,Line of sight neut horiz vel (pos=away),ms-1,VNHLU,%12.5e,14,8,1,0
+809,Daily ave Neut temperature,K,AVE_TN,%9.1f,11,8,0,0
+810,Neutral atmosphere temperature (Tn),K,TN,%9.1f,11,8,0,0
+811,Model Neutral temperature (Tn),K,TNM,%9.1f,11,8,1,0
+812,Neutral atmosphere temperature,K,TN1,%9.1f,11,8,0,0
+813,Relative Neutral atemperature,K,TNREL,%9.1f,11,8,0,0
+814,Bates shape parameter,N/A,SHAPB,%9.1f,11,8,1,0
+815,Bates shape param (use only Tinf; To),N/A,SHAPBO,%9.1f,11,8,1,0
+816,Meteor count,N/A,MET_COUNT,%9.1f,11,8,1,0
+817,Neut temp standard deviation,K,STDDEV_TN,%9.1f,11,8,0,0
+818,Sodium density,m-3,NA_DENS,%12.5e,14,8,0,0
+820,Exospheric temperature (Tinf),K,TINF,%9.1f,11,8,0,0
+821,Model Exospheric temperature (Tinf),K,TINFM,%9.1f,11,8,1,0
+822,Bates Exospheric temperature,K,TINFB,%9.1f,11,8,1,0
+823,Bates Exosph temp (use only Tinf; To),K,TINFBO,%9.1f,11,8,1,0
+824,Bates temperature at 120 km,K,T120B,%9.1f,11,8,1,0
+825,Bates temp 120 km (use only Tinf; To),K,T120BO,%9.1f,11,8,1,0
+826,Log10(O den at 120 km),lg(m-3),NOLB,%9.1f,11,8,1,0
+827,Log10(O den at 120 km; use Tinf; To),lg(m-3),NOLBO,%9.1f,11,8,1,0
+829,Neutral gas mean molecular weight,AMU,GMWN,%12.5e,14,8,0,0
+830,Log10 (nutrl atm mass density in kg/m3),lg(m-3),MOL,%12.5e,14,8,1,0
+840,Log10 (nutrl atm number density in m-3),lg(m-3),NTOTL,%12.5e,14,8,1,0
+842,Log10 (relative neutral atm # density),N/A,NRTOTL,%12.5e,14,8,0,0
+850,Nutrl atm compositn-log10([N2] in m-3),lg(m-3),NN2L,%12.5e,14,8,1,0
+860,Nutrl atm compositn-log10([O2] in m-3),lg(m-3),NO2L,%12.5e,14,8,1,0
+870,Nutrl atm composition-log10([O] in m-3),lg(m-3),NOL,%12.5e,14,8,1,0
+871,scale factor to model [O] profile,N/A,FO,%12.5e,14,8,0,0
+880,Nutrl atm compositn-log10([AR] in m-3),lg(m-3),NARL,%12.5e,14,8,1,0
+890,Nutrl atm compositn-log10([HE] in M-3),lg(m-3),NHEL,%12.5e,14,8,1,0
+900,Nutrl atm composition-log10([H] in m-3),lg(m-3),NHL,%12.5e,14,8,1,0
+901,Nutrl Atm Compstn-log10([NO] in m-3),lg(m-3),NNOL,%12.5e,14,8,0,0
+902,Nutrl atm compstn-log10([N(4S)] in m-3),lg(m-3),NN4SL,%12.5e,14,8,1,0
+903,Nutrl atm compstn-log10([N(2D)] in M-3),lg(m-3),NN2DL,%12.5e,14,8,0,0
+904,Nutrl atm compstn-log10([Na]),lg(m-3),NNAL,%12.5e,14,8,0,0
+905,Nutrl atm compstn-log10([Fe]),lg(m-3),NFEL,%12.5e,14,8,0,0
+906,Nutrl atm compstn-([K]),m-3,NK,%12.5e,14,8,0,0
+910,Neutral atmosphere log10(pressure in Pa),lg(Pa),NPRESL,%12.5e,14,8,0,0
+912,Faraday Filter 1=used; 0=not used,N/A,FARADAY_FILT,%2.0f,14,8,0,0
+920,Pressure scale height,m,PSH,%12.5e,14,8,0,0
+921,Number of coefficients in analysis,N/A,NC,%i,11,9,0,0
+922,Number of directions in analysis,N/A,ND,%i,11,9,0,0
+923,Groves coefficient number,N/A,GCN,%9.1f,11,9,0,0
+924,Groves coefficient,ms-1,GC,%12.5e,14,9,0,0
+925,Number of hours filled in harm anal,h,NHF,%12.5e,14,9,0,0
+926,Eastwd Residual Sqrt[1/N*sum(ui-uf)**2],ms-1,VNERES,%12.5e,14,9,0,0
+927,Northwd Residual Sqrt[1/N*sum(vi-vf)**2,ms-1,VNNRES,%12.5e,14,9,0,0
+928,Upwd Residual Sqrt[1/N*sum(wi-wf)**2],ms-1,VNURES,%12.5e,14,9,0,0
+929,Mean change in neut. zonal wind per km eastward,m/(s km),D_ZON_EAST,%12.5e,14,9,0,0
+930,Mean change in neut. zonal wind per km northward,m/(s km),D_ZON_NORTH,%12.5e,14,9,0,0
+931,Mean change in neut. zonal wind per km upwards,m/(s km),D_ZON_UP,%12.5e,14,9,0,0
+932,Mean change in neut. merid. wind per km eastward,m/(s km),D_MERID_EAST,%12.5e,14,9,0,0
+933,Mean change in neut. merid. wind per km northward,m/(s km),D_MERID_NORTH,%12.5e,14,9,0,0
+934,Mean upward neutral wind,ms-1,VNUA,%12.5e,14,9,0,0
+935,Mean eastward neutral wind,ms-1,VNEA,%12.5e,14,9,0,0
+936,Mean northward neutral wind,ms-1,VNNA,%12.5e,14,9,0,0
+937,Mean neutral temperature,K,TNA,%12.5e,14,9,0,0
+939,Mean ion temperature,K,TIA,%12.5e,14,9,0,0
+940,24-h amp of eastward neutral wind,ms-1,VNEA24,%12.5e,14,9,0,0
+941,24-h amp of northward neutral wind,ms-1,VNNA24,%12.5e,14,9,0,0
+942,24-h amp of neutral temperature,K,TNAM24,%12.5e,14,9,0,0
+943,24-h eastward neutral wind amplitude,ms-1,VNE2A1,%12.5e,14,9,0,0
+945,24-h phase; hour max eastwd neut wind,SLT h,VNEP24,%12.5e,14,9,0,0
+946,24-h phase; hour max northwd neut wind,SLT h,VNNP24,%12.5e,14,9,0,0
+947,24-h phase; hour max neut temperature,SLT h,TNPH24,%12.5e,14,9,0,0
+948,24-h northward neutral wind amplitude,ms-1,VNN2P1,%12.5e,14,9,0,0
+949,Mean change in neut. merid. wind per km upwards,m/(s km),D_MERID_UP,%12.5e,14,9,0,0
+950,12-h amplitude of eastward neutral wind,ms-1,VNEAMP,%12.5e,14,9,0,0
+951,12-h amplitude of northward neutrl wind,ms-1,VNNAMP,%12.5e,14,9,0,0
+952,12-h amplitude of neutral temperature,K,TNAMP,%12.5e,14,9,0,0
+953,12-h amplitude of log10(geopotential),lg(-m2s-2),PTAMPL,%12.5e,14,9,0,0
+955,12-h phase of max eastward neutral wind,SLT h,VNEPHS,%12.5e,14,9,0,0
+956,12-h phase of max northward neutrl wind,SLT h,VNNPHS,%12.5e,14,9,0,0
+957,12-h phase of max neutral temperature,SLT h,TNPHS,%12.5e,14,9,0,0
+958,12-h phase of max geopotential,SLT h,PTPHS,%12.5e,14,9,0,0
+960,8-h eastward neutral wind amplitude,ms-1,VNE08A,%12.5e,14,9,0,0
+961,8-h northward neutral wind amplitude,ms-1,VNN08A,%12.5e,14,9,0,0
+962,8-h neutral temperature amp,K,TN08A,%12.5e,14,9,0,0
+965,8-h max eastward neutral wind phase,h,VNE08P,%12.5e,14,9,0,0
+966,8-h max northward neutral wind phase,h,VNN08P,%12.5e,14,9,0,0
+967,8-h max neutral temperature phase,h,TN08P,%12.5e,14,9,0,0
+970,2-dy eastward neutral wind amplitude,ms-1,VNE2DA,%12.5e,14,9,0,0
+971,2-dy northward neutrl wind amplitude,ms-1,VNN2DA,%12.5e,14,9,0,0
+975,2-dy max eastward neutral wind phase,h,VNE2DP,%12.5e,14,9,0,0
+976,2-dy max northward neutrl wind phase,h,VNN2DP,%12.5e,14,9,0,0
+980,2-day component period,h,P2D,%12.5e,14,9,0,0
+981,UT day no rel to 2-dy comp phase,d,DN2DP,%12.5e,14,9,0,0
+982,UT at start of 2-day comp calc,hhmm,UT2DP,%12.5e,14,9,0,0
+984,24-h upward neutral wind amplitude,ms-1,WN24A,%12.5e,14,9,0,0
+985,12-h upward neutral wind amplitude,ms-1,WN12A,%12.5e,14,9,0,0
+986,24-h amp of vertical neutral wind,ms-1,VNVA24,%12.5e,14,9,0,0
+987,24-h phase; hour max vert neut wind,SLT h,VNVP24,%12.5e,14,9,0,0
+988,12-h amp of vertical neutral wind,ms-1,VNVAMP,%12.5e,14,9,0,0
+989,12-h phase; hour max vert neut wind,SLT h,VNVPHS,%12.5e,14,9,0,0
+990,Mean westward neutral wind,ms-1,VNWA,%12.5e,14,9,0,0
+991,Mean southward neutral wind,ms-1,VNSA,%12.5e,14,9,0,0
+992,Eastward wind count,N/A,E_COUNT,%9.0f,11,9,0,0
+993,Northward wind count,N/A,N_COUNT,%9.0f,11,9,0,0
+994,Westward wind count,N/A,W_COUNT,%9.0f,11,9,0,0
+995,Southward wind count,N/A,S_COUNT,%9.0f,11,9,0,0
+996,Eastward neutral wind std dev,ms-1,VNEA_SD,%12.5e,14,9,0,0
+997,Northward neutral wind std dev,ms-1,VNNA_SD,%12.5e,14,9,0,0
+998,Westward neutral wind std dev,ms-1,VNWA_SD,%12.5e,14,9,0,0
+999,Southward neutral wind std dev,ms-1,VNSA_SD,%12.5e,14,9,0,0
+1010,Skew angle definin geog unit vectrs:1-3,deg,ROANGG,%12.5e,14,10,0,0
+1020,Skew angle definin magn unit vectrs:4-6,deg,ROANGM,%12.5e,14,10,0,0
+1030,Azimuth angle defining unit vector 7,deg,AZDIR7,%12.5e,14,10,0,0
+1040,Elevation angle defining unit vector 7,deg,ELDIR7,%12.5e,14,10,0,0
+1050,Azimuth angle defining unit vector 8,deg,AZDIR8,%12.5e,14,10,0,0
+1060,Elevation angle defining unit vector 8,deg,ELDIR8,%12.5e,14,10,0,0
+1070,Azimuth angle defining unit vector 9,deg,AZDIR9,%12.5e,14,10,0,0
+1080,Elevation angle defining unit vector 9,deg,ELDIR9,%12.5e,14,10,0,0
+3331,Bperp. Direction Cosine (South [Apex]),N/A,CXR,%9.4f,11,10,1,0
+3332,Bperp. Direction Cosine (East [Apex]),N/A,CYR,%9.4f,11,10,1,0
+3333,Direction Cosine (Up field line [Apex]),N/A,CZR,%9.4f,11,10,1,0
+1210,Ion velocity in direction 1 (eastward),ms-1,VI1,%12.5e,14,11,0,0
+1211,F-region ion velocity in dir 1 (east),ms-1,VI1F,%12.5e,14,11,0,0
+1220,Ion velocity in direction 2 (northward),ms-1,VI2,%12.5e,14,11,0,0
+1221,F-region ion velocity in dir 2 (north),ms-1,VI2F,%12.5e,14,11,0,0
+1230,Ion velocity in direction 3 (up),ms-1,VI3,%12.5e,14,11,0,0
+1240,Ion velocity in direction 4 (perp east),ms-1,VIPE,%9.1f,11,11,0,0
+1250,Ion velocity in direction 5 (perp north,ms-1,VIPN,%9.1f,11,11,0,0
+1260,Ion velocity in dir 6 (antiparallel),ms-1,VI6,%12.5e,14,11,0,0
+1265,Parallel ion velocity (+ upward),ms-1,VIPU,%12.5e,14,11,0,0
+1270,Ion velocity in direction 7,ms-1,VI7,%12.5e,14,11,0,0
+1280,Ion velocity in direction 8,ms-1,VI8,%12.5e,14,11,0,0
+1290,Ion velocity in direction 9,ms-1,VI9,%12.5e,14,11,0,0
+1410,Neutral wind in direction 1 (eastward),ms-1,VN1,%12.5e,14,11,0,0
+1412,Neutral wind in direction 1 (eastward),ms-1,VN1P2,%12.5e,14,11,0,0
+1415,Grad in East Neutral wind (pos W->E),s^1,GVN1,%12.5e,14,11,0,0
+1420,Neutral wind in direction 2 (northward),ms-1,VN2,%12.5e,14,11,0,0
+1422,Neutral wind in direction 2 (northward),ms-1,VN2P2,%12.5e,14,11,0,0
+1425,Grad in North Neutral wind (pos S->N),s^1,GVN2,%12.5e,14,11,0,0
+1430,Neutral wind in direction 3 (up),ms-1,VN3,%12.5e,14,11,0,0
+1432,Direction 3 Corrupt Neutral wind (up),ms-1,VN3C,%12.5e,14,11,0,0
+1440,Neutral wind in direction 4 (perp east),ms-1,VN4,%12.5e,14,11,0,0
+1450,Neutral wind in direction 5 (perp north,ms-1,VN5,%12.5e,14,11,0,0
+1455,Neut. horiz. magnetic merid. wind,ms-1,UMER,%12.5e,14,11,0,0
+1460,Neutral wind in dir 6 (antiparallel),ms-1,VN6,%12.5e,14,11,0,0
+1470,Neutral wind in direction 7,ms-1,VN7,%12.5e,14,11,0,0
+1475,Neutral wind horizontl comp,ms-1,VN71,%12.5e,14,11,0,0
+1480,Neutral wind in direction 8,ms-1,VN8,%12.5e,14,11,0,0
+1490,Neutral wind in direction 9,ms-1,VN9,%12.5e,14,11,0,0
+1495,Turbulent (residual RMS) Neutral wind velocity,ms-1,TURBULENCE,%9.1f,14,11,0,0
+1610,Electric field in direction 1 (eastward,V/m,EE,%12.5e,14,11,0,0
+1620,Electric field in direction 2 (nrthward,V/m,EN,%12.5e,14,11,0,0
+1630,Electric field in direction 3 (up),V/m,EU,%12.5e,14,11,0,0
+1631,Electric field eastward at 300 km,V/m,EE300,%12.5e,14,11,0,0
+1632,Electric field northward at 300 km,V/m,EN300,%12.5e,14,11,0,0
+1633,Electric field up at 300 km,V/m,EU300,%12.5e,14,11,0,0
+1640,Electric field in direction 4 (perp est,V/m,EPE,%12.5e,14,11,0,0
+1650,Electric field in direction 5 (perp nth,V/m,EPN,%12.5e,14,11,0,0
+1660,Electric field in direction 6 (antipara,V/m,EAP,%12.5e,14,11,0,0
+1670,Electric field in direction 7,V/m,E7,%12.5e,14,11,0,0
+1680,Electric field in direction 8,V/m,E8,%12.5e,14,11,0,0
+1690,Electric field in direction 9,V/m,E9,%12.5e,14,11,0,0
+1691,Electric field along-track (ram) component,V/m,E_FIELD_RAM,%12.5e,14,11,0,0
+1692,Electric field component cross-track (positive : left of velocity vector),V/m,E_FIELD_HORIZ,%12.5e,14,11,0,0
+1700,Component of Poynting Vector in vertical (geodetic zenith - pos=up) direction,W/m^2,POYNTING_FLUX_VERT,%12.5e,14,11,0,0
+1710,Doppler Shift of Type 1 Equatorial Electrojet (EEJ),m/s,DOPP_T1_EEJ,%12.5e,14,11,0,0
+1720,Doppler Shift of Type 2 Equatorial Electrojet (EEJ),m/s,DOPP_T2_EEJ,%12.5e,14,11,0,0
+1730,Spectral Width of Type 1 Equatorial Electrojet (EEJ),m/s,SPEC_W_T1_EEJ,%12.5e,14,11,0,0
+1740,Spectral Width of Type 2 Equatorial Electrojet (EEJ),m/s,SPEC_W_T2_EEJ,%12.5e,14,11,0,0
+1810,Electric current density eastward,A/m2,J1,%12.5e,14,11,0,0
+1820,Electric current density northward,A/m2,J2,%12.5e,14,11,0,0
+1830,Electric current density up,A/m2,J3,%12.5e,14,11,0,0
+1840,Electric current density perp east,A/m2,J4,%12.5e,14,11,0,0
+1850,Electric current density perp north,A/m2,J5,%12.5e,14,11,0,0
+1860,Electric current density antiparallel,A/m2,J6,%12.5e,14,11,0,0
+1870,Electric current density in direction 7,A/m2,J7,%12.5e,14,11,0,0
+1880,Electric current density in direction 8,A/m2,J8,%12.5e,14,11,0,0
+1890,Electric current density in direction 9,A/m2,J9,%12.5e,14,11,0,0
+1910,Height integral: current density dir 1,A/m,HTINT1,%12.5e,14,11,0,0
+1920,Height integral: current density dir 2,A/m,HTINT2,%12.5e,14,11,0,0
+1940,Fld ln int (1 hemi): current den dir 4,A/m,LNINT4,%12.5e,14,11,0,0
+1950,Fld ln int (1 hemi): current den dir 5,A/m,LNINT5,%12.5e,14,11,0,0
+2010,Pedersen conductivity; sigma P,mho/m,PDCON,%12.5e,14,12,1,0
+2011,Log10(Pedersen Conductivity in mho/m3),lg(mho/m),PDCONL,%9.3f,11,12,1,0
+2020,Hall conductivity; sigma H,mho/m,HLCON,%12.5e,14,12,1,0
+2021,Log10(Hall Conductivity in mho/m3),lg(mho/m),HLCONL,%9.3f,11,12,1,0
+0,Model Pedersen cond; sigma P,mho/m,PDCON_MODEL,%12.5e,14,12,0,0
+0,Log10(Model Pedersen Cond in mho/m3),lg(mho/m),PDCONL_MODEL,%9.3f,16,12,0,0
+0,Model Hall cond; sigma H,mho/m,HLCON_MODEL,%12.5e,14,12,0,0
+0,Log10(Model Hall Cond in mho/m3),lg(mho/m),HLCONL_MODEL,%9.3f,14,12,0,0
+2040,Height integral: sigma P,mho,HPDCON,%12.5e,14,12,0,0
+2050,Height integral: sigma H,mho,HHLCON,%12.5e,14,12,0,0
+2070,Field line integral(1 hemi): sigma P,mho,LNINTP,%12.5e,14,12,0,0
+2080,Field line integral(1 hemi): sigma H,mho,LNINTH,%12.5e,14,12,0,0
+2110,Particle energy deposition rate,W/m3,PRTCLH,%12.5e,14,13,0,0
+2120,Joule energy deposition rate,W/m3,JEDEP,%12.5e,14,13,0,0
+2121,Log10(Joule energy dep rate in W/M3),lg(W/m3),JEDEPL,%12.5e,14,13,0,0
+2130,Electron energy flux,W/m3,FEE,%12.5e,14,13,0,0
+2133,Positive ion (proton) energy flux,W/m3,FEP,%12.5e,14,13,0,0
+2136,Particle (el. and pos. ion) energy flux,W/m3,FEPART,%12.5e,14,13,0,0
+2139,Particle energy heat rate height int.,W/m2,QPARTH,%12.5e,14,13,0,0
+2140,Height integral: part energy dep rate,W/m2,HINPD,%12.5e,14,13,0,0
+2141,Log10(Ht int: part energy dep rate),lg(W/m2),HINPDL,%12.5e,14,13,0,0
+2142,Hemispheric ht integ: part energy dep,W,HEMIPD,%12.5e,14,13,0,0
+2150,Height integral: Joule energy dep rate,W/m2,HINJD,%12.5e,14,13,0,0
+2151,Log10(ht int: Joule energy dep rate),lg(W/m2),HINJDL,%12.5e,14,13,0,0
+2152,Hemispheric ht integ: Joule energy dep,W,HEMJD,%12.5e,14,13,0,0
+2155,Average electron energy,eV,AVGELE,%12.5e,14,13,0,0
+2156,Auroral flux type: maxwellian=1;gauss=2,N/A,AFTY,%9.1f,11,13,0,0
+2157,Characteristic electron energy,eV,ECE,%9.1f,11,13,0,0
+2159,Characteristic pos. ion (proton) energy,eV,ECP,%9.1f,11,13,0,0
+2160,Diff electron num flux (1/cm2eVs*ster),numFlux,EL_D_FLUX,%12.5e,14,13,0,0
+2162,Diff electron energy flux (1/cm2s*ster),enFlux,EL_D_ENER,%12.5e,14,13,0,0
+2164,Diff ion num flux (1/cm2eVs*ster),numFlux,ION_D_FLUX,%12.5e,14,13,0,0
+2166,Diff ion energy flux (1/cm2s*ster),enFlux,ION_D_ENER,%12.5e,14,13,0,0
+2168,Channel central energy,eV,CH_ENERGY,%9.1f,11,13,0,0
+2170,Fld-ln int(1 hemi): prt energy dep rate,W/m2,LINTPD,%12.5e,14,13,0,0
+2171,Channel spacing energy,eV,CH_CTRL_ENER,%9.1f,14,13,0,0
+2172,Integrated elect num flux (1/cm2s*ster),numFlux,EL_I_FLUX,%12.5e,14,13,0,0
+2174,Integrated ion num flux (1/cm2s*ster),numFlux,ION_I_FLUX,%12.5e,14,13,0,0
+2176,Integr elect energy flux (eV/cm2s*ster),enFlux,EL_I_ENER,%12.5e,14,13,0,0
+2178,Integr ion energy flux (eV/cm2s*ster),enFlux,ION_I_ENER,%12.5e,14,13,0,0
+2180,Fld-ln int(1 hemi): Jul energy dep rate,W/m2,LINTJD,%12.5e,14,13,0,0
+2182,Mean electron energy,eV,EL_M_ENER,%12.5e,14,13,0,0
+2184,Mean ion energy,eV,ION_M_ENER,%12.5e,14,13,0,0
+2185,Peak electron flux in the outer radiation belt (beyond L=2.8),cm-2s-1sr-1eV-1,LPEAK_ORB_EL_FLUX,%12.5e,19,13,0,0
+2186,L value of mid point of steep gradient of electron flux at Earthward extent,N/A,MID_GRAD_EL_FLUX,%12.5e,19,13,0,0
+2187,L value of the plasmapause (Ne = 100 cm^-3),N/A,PLASMAPAUSE,%9.1f,14,13,0,0
+2204,Interplanetary Mag Field (Bx GSM coord),T,BXGSM,%12.5e,14,4,1,0
+2206,Interplanetary Mag Field (By GSM coord),T,BYGSM,%12.5e,14,4,1,0
+2208,Interplanetary Mag Field (Bz GSM coord),T,BZGSM,%12.5e,14,4,1,0
+2210,Interplanetary Mag Field strength,T,BIMF,%12.5e,14,4,1,0
+2214,Interplanetary Mag Field (Bx GSE coord),T,BXGSE,%12.5e,14,4,1,0
+2216,Interplanetary Mag Field (By GSE coord),T,BYGSE,%12.5e,14,4,1,0
+2218,Interplanetary Mag Field (Bz GSE coord),T,BZGSE,%12.5e,14,4,1,0
+2232,Solar Wind Plasma Density,m-3,SWDEN,%9.1f,11,4,1,0
+2234,Solar Wind Plasma Speed,ms-1,SWSPD,%9.1f,11,4,1,0
+2236,IMF/Solar Wind Qualifier,N/A,SWQ,%4.0f,10,4,1,0
+2301,Polar cap potential difference,V,POCAPD,%12.5e,14,14,0,0
+2302,Potential minimum,V,POTMIN,%12.5e,14,14,0,0
+2303,Potential maximum,V,POTMAX,%12.5e,14,14,0,0
+2310,Electric Potential,V,ELEPOT,%12.5e,14,14,0,0
+2320,S4 amplitude scintillation index,N/A,S4_SCIN,%12.5e,14,16,1,0
+2322,Line of sight S4 amplitude scintillation index,N/A,S4_SCIN_LOS,%12.5e,14,16,1,0
+2324,Sigma Phi phase scintillation,N/A,SIGMA_PHI,%12.5e,14,16,1,0
+2325,Line of sight Sigma Phi phase scintillation,N/A,SIGMA_PHI_LOS,%12.5e,16,16,1,0
+2326,Root mean square error of the RPA curve fit,N/A,RMS_X,%12.5e,14,16,0,0
+2328,Standard deviation of the 24 (nominally) measurements of Vy averaged together for this four-second period,N/A,SIGMA_VY,%12.5e,14,16,0,0
+2330,Standard deviation of the 24 (nominally) measurements of Vz averaged together for this four-second period,N/A,SIGMA_VZ,%12.5e,14,16,0,0
+2340,Mode of signal (0=UNKNOWN; 1=CW; 2=PSK31; 3=PSK63; 4=PSK125; 5=RTTY; 6=BPSK; 10=SSB),N/A,MODE_SIG,%i,11,16,0,0
+2350,Variance of electron density (Ne),m-6,VAR_NE,%12.5e,14,5,0,0
+2351,Variance of electron density estimate from lag0+,m-6,VAR_NE_LAG0+,%12.5e,14,5,0,0
+2352,Variance of electron density estimate from true power,m-6,VAR_NE_TP,%12.5e,14,5,0,0
+2353,Log10(Variance of Ne),lg(m-6),VAR_NEL,%9.3f,11,5,0,0
+2354,Variance of ion density (Ni),m-6,VAR_NI,%12.5e,14,5,0,0
+2355,Variance of ion temperature (Ti),K2,VAR_TI,%9.1f,11,5,0,0
+2356,Variance of hydrogen ion temperature,K2,VAR_TIH,%9.1f,11,5,0,0
+2357,Variance of oxygen ion temperature,K2,VAR_TIO,%9.1f,11,5,0,0
+2358,Variance of electron temperature (Te),K2,VAR_TE,%9.1f,11,5,0,0
+2359,Variance of temperature ratio (Te/Ti),N/A,VAR_TR,%9.4f,11,5,0,0
+2360,Variance of ion-neutral collision frequency,s-2,VAR_CO,%12.5e,14,5,0,0
+2361,Log10(Variance of ion-neutral collision frequency),lg(s-2),VAR_COL,%9.3e,11,5,0,0
+2362,Variance of received Doppler frequency offset,s-2,VAR_RCDFO,%12.5e,14,5,0,0
+2363,Variance of amplitude estimate from Lorentzian fit,s2m-6,VAR_AMPL,%12.5e,14,5,0,0
+2364,Variance of spectral half width from Lorentzian fit,s-2,VAR_HW_LOR,%12.5e,14,5,0,0
+2365,Variance of spectral half width from exponential fit,s-2,VAR_HW_EXPFIT,%12.5e,16,5,0,0
+2366,Variance of base level of Lorentzian fit,m-6,VAR_BLEV,%12.5e,14,5,0,0
+2367,Variance of wideband noise,K2,VAR_WN,%12.5e,14,5,0,0
+2368,Variance of DC spike,K2,VAR_DC,%12.5e,14,5,0,0
+2370,Variance of line of sight ion velocity (pos = away),m2s-2,VAR_VO,%9.1f,11,5,0,0
+2371,Variance of O+ ion velocity (pos = away),m2s-2,VAR_VOO,%9.1f,11,5,0,0
+2372,Variance of bisector ion vel (bistatic sys pos=up),m2s-2,VAR_VOBI,%9.1f,11,5,0,0
+2373,Variance of ion velocity in direction 1 (eastward),m2s-2,VAR_VI1,%9.1f,11,5,0,0
+2374,Variance of ion velocity in direction 2 (northward),m2s-2,VAR_VI2,%9.1f,11,5,0,0
+2375,Variance of ion velocity in direction 3 (up),m2s-2,VAR_VI3,%9.1f,11,5,0,0
+2376,Variance of ion velocity in direction 4 (perp east),m2s-2,VAR_VIPE,%9.1f,11,5,0,0
+2377,Variance of ion velocity in direction 5 (perp north,m2s-2,VAR_VIPN,%9.1f,11,5,0,0
+2378,Variance of ion velocity in dir 6 (antiparallel),m2s-2,VAR_VI6,%9.1f,11,5,0,0
+2379,Variance of parallel ion velocity (+ upward),m2s-2,VAR_VIPU,%9.1f,11,5,0,0
+2380,Variance of ion velocity in direction 7,m2s-2,VAR_VI7,%9.1f,11,5,0,0
+2381,Variance of ion velocity in direction 8,m2s-2,VAR_VI8,%9.1f,11,5,0,0
+2382,Variance of ion velocity in direction 9,m2s-2,VAR_VI9,%9.1f,11,5,0,0
+2390,Variance of composition - [O+]/Ne,N/A,VAR_PO+,%12.5e,14,5,0,0
+2391,Variance of composition - [NO+]/Ne,N/A,VAR_PNO+,%12.5e,14,5,0,0
+2392,Variance of composition - [O2+]/Ne,N/A,VAR_PO2+,%12.5e,14,5,0,0
+2393,Variance of composition - [HE+]/Ne,N/A,VAR_PHE+,%12.5e,14,5,0,0
+2394,Variance of composition - [H+]/Ne,N/A,VAR_PH+,%12.5e,14,5,0,0
+2395,Variance of comp (ions with mol wt 28 to 32)/Ne,N/A,VAR_PM,%12.5e,14,5,0,0
+2400,Wavelength,nm,WAVLEN,%12.5e,14,15,0,0
+2401,Beginning Wavelength,nm,BWAVLEN,%12.5e,14,15,0,0
+2402,Ending Wavelength,nm,EWAVLEN,%12.5e,14,15,0,0
+2405,Offset from the centroid frequency,Hz,WAVELEN_OFF,%12.5e,14,15,0,0
+2407,Filter Wavelength,Ang,FILT_WAVELEN,%9.1f,14,15,0,0
+2408,Spectral power,N/A,SPECTRAL_POWER,%9.1f,16,15,0,0
+2409,Faraday Rotation,R,FARADAY_ROT,%9.1f,14,15,0,0
+2411,Beginning Wavenumber,cm-1,BWAVNUM,%12.5e,14,15,0,0
+2412,Ending Wavenumber,cm-1,EWAVNUM,%12.5e,14,15,0,0
+2415,Local standard of rest velocity (VLSR),kms-1,VLSR,%12.5e,14,15,0,0
+2416,Spectral displ. in vel units w arb 0,kms-1,SPDVEL,%12.5e,14,15,0,0
+2418,Coherence is dimensionless (ranges from 0-1),N/A,COHERENCE,%12.5e,14,15,0,0
+2421,Channel 1 Wavelength,nm,WAVL1,%12.5e,14,15,0,0
+2422,Channel 2 Wavelength,nm,WAVL2,%12.5e,14,15,0,0
+2423,Channel 3 Wavelength,nm,WAVL3,%12.5e,14,15,0,0
+2424,Channel 4 Wavelength,nm,WAVL4,%12.5e,14,15,0,0
+2455,Refernce rel 1/2-width (arb press unit),N/A,WID2,%12.5e,14,15,0,0
+2456,Relative 1/2-width deviation from 2455,N/A,WID2R,%12.5e,14,15,0,0
+2490,Photon counts (per range; alt bin),N/A,COUNT,%12.5e,14,15,0,0
+2491,Log10(Photon Counts),N/A,COUNTL,%12.5e,14,15,0,0
+2495,Log10(Rayleigh Counts),N/A,RCONTL,%12.5e,14,15,0,0
+2501,Log10(line/band brightness),lg(R),LGBR1,%12.5e,14,15,0,0
+2502,line/band brightness,R,BR1,%12.5e,14,15,0,0
+2505,Relative (uncalibrated) emission,N/A,RLE,%12.5e,14,15,0,0
+2506,Log10 relative (uncalibrated) emission,N/A,RLEL,%12.5e,14,15,0,0
+2507,Relative line emission rate,N/A,LNEMRT,%12.5e,14,15,0,0
+2509,Relative emission rate,N/A,RLEP3,%12.5e,14,15,0,0
+2510,Log10(std dev emission),N/A,STDDEV_RLEL,%12.5e,14,15,0,0
+2511,Channel 1 line/band brightness,R,BANDBR1,%12.5e,14,15,0,0
+2512,Channel 2 line/band brightness,R,BANDBR2,%12.5e,14,15,0,0
+2513,Channel 3 line/band brightness,R,BANDBR3,%12.5e,14,15,0,0
+2514,Channel 4 line/band brightness,R,BANDBR4,%12.5e,14,15,0,0
+2521,Channel 1 Calibration (cnt/s over R),cnts-1R-1,CAL1,%12.5e,14,15,0,0
+2522,Channel 2 Calibration (cnt/s over R),cnts-1R-1,CAL2,%12.5e,14,15,0,0
+2523,Channel 3 Calibration (cnt/s over R),cnts-1R-1,CAL3,%12.5e,14,15,0,0
+2524,Channel 4 Calibration (cnt/s over R),cnts-1R-1,CAL4,%12.5e,14,15,0,0
+2571,Channel 1 Background correction,R,BKGC1,%12.5e,14,15,0,0
+2572,Channel 2 Background correction,R,BKGC2,%12.5e,14,15,0,0
+2573,Channel 3 Background correction,R,BKGC3,%12.5e,14,15,0,0
+2574,Channel 4 Background correction,R,BKGC4,%12.5e,14,15,0,0
+2555,Relative background radiance,N/A,BKGRAD,%12.5e,14,15,0,0
+2560,Log10(background noise; residual),N/A,BNL,%12.5e,14,15,0,0
+2561,Log10( background counts),N/A,BCNTSL,%12.5e,14,15,0,0
+2600,Diffuse aurora ratio (Ch1/Ch4),N/A,DAURR,%12.5e,14,15,0,0
+2601,Normalized Brightness ratio (Ch1/Ch4),N/A,BRRN,%12.5e,14,15,0,0
+3100,JRO normalizing factor (JRO661111A),N/A,JRONF1,%12.5e,14,16,0,0
+3101,JRO W beam log10(1+RxA) incoh. pwr/noise,lg(1+SNR),PAIWL,%12.5e,14,16,0,0
+3102,JRO W beam log10(1+RxA) coher. pwr/noise,lg(1+SNR),PACWL,%12.5e,14,16,0,0
+3103,JRO W beam log10(1+RxB) incoh. pwr/noise,lg(1+SNR),PBIWL,%12.5e,14,16,0,0
+3104,JRO W beam log10(1+RxB) coher. pwr/noise,lg(1+SNR),PBCWL,%12.5e,14,16,0,0
+3105,JRO E beam log10(1+RxC) incoh. pwr/noise,lg(1+SNR),PCIEL,%12.5e,14,16,0,0
+3106,JRO E beam log10(1+RxC) coher. pwr/noise,lg(1+SNR),PCCEL,%12.5e,14,16,0,0
+3107,JRO E beam log10(1+RxD) incoh. pwr/noise,lg(1+SNR),PDIEL,%12.5e,14,16,0,0
+3108,JRO E beam log10(1+RxD) coher. pwr/noise,lg(1+SNR),PDCEL,%12.5e,14,16,0,0
+3109,Jicamarca radar operation parameter 10,N/A,JRO10,%12.5e,14,16,0,0
+3110,Jicamarca radar operation parameter 11,N/A,JRO11,%12.5e,14,16,0,0
+3111,Jicamarca radar operation parameter 12,N/A,JRO12,%12.5e,14,16,0,0
+3112,Jicamarca radar operation parameter 13,N/A,JRO13,%12.5e,14,16,0,0
+3113,Jicamarca radar operation parameter 14,N/A,JRO14,%12.5e,14,16,0,0
+3114,Jicamarca radar operation parameter 15,N/A,JRO15,%12.5e,14,16,0,0
+3115,Jicamarca radar operation parameter 16,N/A,JRO16,%12.5e,14,16,0,0
+3116,Neutral wind (Line of Sight),ms-1,NWLOS,%12.5e,14,16,0,0
+3118,Temperature of neutrals(Line of Sight),K,TNLOS,%12.5e,14,16,0,0
+3120,Intensity of neutrals (Line of Sight),cnt,INTLOS,%12.5e,14,16,0,0
+3122,Averaged Vertical wind per cycle,ms-1,AVGVW,%12.5e,14,16,0,0
+3124,Averaged Zonal wind per cycle,ms-1,AVGZW,%12.5e,14,16,0,0
+3126,Averaged Meridional wind per cycle,ms-1,AVGMW,%12.5e,14,16,0,0
+3128,Averaged Temperature of neutrals/cycle,K,AVGT,%12.5e,14,16,0,0
+3130,Averaged Intensity of neutrals,cnt,AVGI,%12.5e,14,16,0,0
+3132,Jicamarca radar operation parameter 33,N/A,JRO33,%12.5e,14,16,0,0
+3133,Jicamarca radar operation parameter 34,N/A,JRO34,%12.5e,14,16,0,0
+3134,Jicamarca radar operation parameter 35,N/A,JRO35,%12.5e,14,16,0,0
+3135,Jicamarca radar operation parameter 36,N/A,JRO36,%12.5e,14,16,0,0
+3136,Jicamarca radar operation parameter 37,N/A,JRO37,%12.5e,14,16,0,0
+3137,Jicamarca radar operation parameter 38,N/A,JRO38,%12.5e,14,16,0,0
+3138,Jicamarca radar operation parameter 39,N/A,JRO39,%12.5e,14,16,0,0
+3139,Jicamarca radar operation parameter 40,N/A,JRO40,%12.5e,14,16,0,0
+3140,Jicamarca radar operation parameter 41,N/A,JRO41,%12.5e,14,16,0,0
+3141,Jicamarca radar operation parameter 42,N/A,JRO42,%12.5e,14,16,0,0
+3142,Jicamarca radar operation parameter 43,N/A,JRO43,%12.5e,14,16,0,0
+3143,Jicamarca radar operation parameter 44,N/A,JRO44,%12.5e,14,16,0,0
+3144,Jicamarca radar operation parameter 45,N/A,JRO45,%12.5e,14,16,0,0
+3145,Jicamarca radar operation parameter 46,N/A,JRO46,%12.5e,14,16,0,0
+3146,Jicamarca radar operation parameter 47,N/A,JRO47,%12.5e,14,16,0,0
+3147,Jicamarca radar operation parameter 48,N/A,JRO48,%12.5e,14,16,0,0
+3148,Jicamarca radar operation parameter 49,N/A,JRO49,%12.5e,14,16,0,0
+3149,Jicamarca radar operation parameter 50,N/A,JRO50,%12.5e,14,16,0,0
+3150,Jicamarca radar operation parameter 51,N/A,JRO51,%12.5e,14,16,0,0
+3151,Jicamarca radar operation parameter 52,N/A,JRO52,%12.5e,14,16,0,0
+3152,Jicamarca radar operation parameter 53,N/A,JRO53,%12.5e,14,16,0,0
+3153,Jicamarca radar operation parameter 54,N/A,JRO54,%12.5e,14,16,0,0
+3154,Jicamarca radar operation parameter 55,N/A,JRO55,%12.5e,14,16,0,0
+3155,Jicamarca radar operation parameter 56,N/A,JRO56,%12.5e,14,16,0,0
+3156,Jicamarca radar operation parameter 57,N/A,JRO57,%12.5e,14,16,0,0
+3157,Jicamarca radar operation parameter 58,N/A,JRO58,%12.5e,14,16,0,0
+3158,Jicamarca radar operation parameter 59,N/A,JRO59,%12.5e,14,16,0,0
+3159,Jicamarca radar operation parameter 60,N/A,JRO60,%12.5e,14,16,0,0
+3160,Jicamarca radar operation parameter 61,N/A,JRO61,%12.5e,14,16,0,0
+3161,Jicamarca radar operation parameter 62,N/A,JRO62,%12.5e,14,16,0,0
+3162,Jicamarca radar operation parameter 63,N/A,JRO63,%12.5e,14,16,0,0
+3163,Jicamarca radar operation parameter 64,N/A,JRO64,%12.5e,14,16,0,0
+3164,Jicamarca radar operation parameter 65,N/A,JRO65,%12.5e,14,16,0,0
+3165,Jicamarca radar operation parameter 66,N/A,JRO66,%12.5e,14,16,0,0
+3166,Jicamarca radar operation parameter 67,N/A,JRO67,%12.5e,14,16,0,0
+3167,Jicamarca radar operation parameter 68,N/A,JRO68,%12.5e,14,16,0,0
+3168,Jicamarca radar operation parameter 69,N/A,JRO69,%12.5e,14,16,0,0
+3169,Jicamarca radar operation parameter 70,N/A,JRO70,%12.5e,14,16,0,0
+3170,Jicamarca radar operation parameter 71,N/A,JRO71,%12.5e,14,16,0,0
+3171,Jicamarca radar operation parameter 72,N/A,JRO72,%12.5e,14,16,0,0
+3172,Jicamarca radar operation parameter 73,N/A,JRO73,%12.5e,14,16,0,0
+3173,Jicamarca radar operation parameter 74,N/A,JRO74,%12.5e,14,16,0,0
+3174,Jicamarca radar operation parameter 75,N/A,JRO75,%12.5e,14,16,0,0
+3175,Jicamarca radar operation parameter 76,N/A,JRO76,%12.5e,14,16,0,0
+3176,Jicamarca radar operation parameter 77,N/A,JRO77,%12.5e,14,16,0,0
+3177,Jicamarca radar operation parameter 78,N/A,JRO78,%12.5e,14,16,0,0
+3178,Jicamarca radar operation parameter 79,N/A,JRO79,%12.5e,14,16,0,0
+3179,Jicamarca radar operation parameter 80,N/A,JRO80,%12.5e,14,16,0,0
+3180,Jicamarca radar operation parameter 81,N/A,JRO81,%12.5e,14,16,0,0
+3181,Jicamarca radar operation parameter 82,N/A,JRO82,%12.5e,14,16,0,0
+3182,Jicamarca radar operation parameter 83,N/A,JRO83,%12.5e,14,16,0,0
+3183,Jicamarca radar operation parameter 84,N/A,JRO84,%12.5e,14,16,0,0
+3184,Jicamarca radar operation parameter 85,N/A,JRO85,%12.5e,14,16,0,0
+3185,Jicamarca radar operation parameter 86,N/A,JRO86,%12.5e,14,16,0,0
+3186,Jicamarca radar operation parameter 87,N/A,JRO87,%12.5e,14,16,0,0
+3187,Jicamarca radar operation parameter 88,N/A,JRO88,%12.5e,14,16,0,0
+3188,Jicamarca radar operation parameter 89,N/A,JRO89,%12.5e,14,16,0,0
+3189,Jicamarca radar operation parameter 90,N/A,JRO90,%12.5e,14,16,0,0
+3190,Jicamarca radar operation parameter 91,N/A,JRO91,%12.5e,14,16,0,0
+3191,Jicamarca radar operation parameter 92,N/A,JRO92,%12.5e,14,16,0,0
+3192,Jicamarca radar operation parameter 93,N/A,JRO93,%12.5e,14,16,0,0
+3193,Jicamarca radar operation parameter 94,N/A,JRO94,%12.5e,14,16,0,0
+3194,Jicamarca radar operation parameter 95,N/A,JRO95,%12.5e,14,16,0,0
+3195,Jicamarca radar operation parameter 96,N/A,JRO96,%12.5e,14,16,0,0
+3196,Jicamarca radar operation parameter 97,N/A,JRO97,%12.5e,14,16,0,0
+3197,Jicamarca radar operation parameter 98,N/A,JRO98,%12.5e,14,16,0,0
+3198,Jicamarca radar operation parameter 99,N/A,JRO99,%12.5e,14,16,0,0
+3199,Jicamarca radar operation parameter 100,N/A,JRO100,%12.5e,14,16,0,0
+3200,Arecibo radar operation parameter 1,N/A,ARO1,%12.5e,14,16,0,0
+3201,Arecibo radar operation parameter 2,N/A,ARO2,%12.5e,14,16,0,0
+3202,Arecibo radar operation parameter 3,N/A,ARO3,%12.5e,14,16,0,0
+3203,Arecibo radar operation parameter 4,N/A,ARO4,%12.5e,14,16,0,0
+3204,Arecibo radar operation parameter 5,N/A,ARO5,%12.5e,14,16,0,0
+3205,Arecibo radar operation parameter 6,N/A,ARO6,%12.5e,14,16,0,0
+3206,Arecibo radar operation parameter 7,N/A,ARO7,%12.5e,14,16,0,0
+3207,Arecibo radar operation parameter 8,N/A,ARO8,%12.5e,14,16,0,0
+3208,Arecibo radar operation parameter 9,N/A,ARO9,%12.5e,14,16,0,0
+3209,Arecibo radar operation parameter 10,N/A,ARO10,%12.5e,14,16,0,0
+3210,Arecibo radar operation parameter 11,N/A,ARO11,%12.5e,14,16,0,0
+3211,Arecibo radar operation parameter 12,N/A,ARO12,%12.5e,14,16,0,0
+3212,Arecibo radar operation parameter 13,N/A,ARO13,%12.5e,14,16,0,0
+3213,Arecibo radar operation parameter 14,N/A,ARO14,%12.5e,14,16,0,0
+3214,Arecibo radar operation parameter 15,N/A,ARO15,%12.5e,14,16,0,0
+3215,Arecibo radar operation parameter 16,N/A,ARO16,%12.5e,14,16,0,0
+3216,Arecibo radar operation parameter 17,N/A,ARO17,%12.5e,14,16,0,0
+3217,Arecibo radar operation parameter 18,N/A,ARO18,%12.5e,14,16,0,0
+3218,Arecibo radar operation parameter 19,N/A,ARO19,%12.5e,14,16,0,0
+3219,Arecibo radar operation parameter 20,N/A,ARO20,%12.5e,14,16,0,0
+3220,Arecibo radar operation parameter 21,N/A,ARO21,%12.5e,14,16,0,0
+3221,Arecibo radar operation parameter 22,N/A,ARO22,%12.5e,14,16,0,0
+3222,Arecibo radar operation parameter 23,N/A,ARO23,%12.5e,14,16,0,0
+3223,Arecibo radar operation parameter 24,N/A,ARO24,%12.5e,14,16,0,0
+3224,Arecibo radar operation parameter 25,N/A,ARO25,%12.5e,14,16,0,0
+3225,Arecibo radar operation parameter 26,N/A,ARO26,%12.5e,14,16,0,0
+3226,Arecibo radar operation parameter 27,N/A,ARO27,%12.5e,14,16,0,0
+3227,Arecibo radar operation parameter 28,N/A,ARO28,%12.5e,14,16,0,0
+3228,Arecibo radar operation parameter 29,N/A,ARO29,%12.5e,14,16,0,0
+3229,Arecibo radar operation parameter 30,N/A,ARO30,%12.5e,14,16,0,0
+3230,Arecibo radar operation parameter 31,N/A,ARO31,%12.5e,14,16,0,0
+3231,Arecibo radar operation parameter 32,N/A,ARO32,%12.5e,14,16,0,0
+3232,Arecibo radar operation parameter 33,N/A,ARO33,%12.5e,14,16,0,0
+3233,Arecibo radar operation parameter 34,N/A,ARO34,%12.5e,14,16,0,0
+3234,Arecibo radar operation parameter 35,N/A,ARO35,%12.5e,14,16,0,0
+3235,Arecibo radar operation parameter 36,N/A,ARO36,%12.5e,14,16,0,0
+3236,Arecibo radar operation parameter 37,N/A,ARO37,%12.5e,14,16,0,0
+3237,Arecibo radar operation parameter 38,N/A,ARO38,%12.5e,14,16,0,0
+3238,Arecibo radar operation parameter 39,N/A,ARO39,%12.5e,14,16,0,0
+3239,Arecibo radar operation parameter 40,N/A,ARO40,%12.5e,14,16,0,0
+3240,Arecibo radar operation parameter 41,N/A,ARO41,%12.5e,14,16,0,0
+3241,Arecibo radar operation parameter 42,N/A,ARO42,%12.5e,14,16,0,0
+3242,Arecibo radar operation parameter 43,N/A,ARO43,%12.5e,14,16,0,0
+3243,Arecibo radar operation parameter 44,N/A,ARO44,%12.5e,14,16,0,0
+3244,Arecibo radar operation parameter 45,N/A,ARO45,%12.5e,14,16,0,0
+3245,Arecibo radar operation parameter 46,N/A,ARO46,%12.5e,14,16,0,0
+3246,Arecibo radar operation parameter 47,N/A,ARO47,%12.5e,14,16,0,0
+3247,Arecibo radar operation parameter 48,N/A,ARO48,%12.5e,14,16,0,0
+3248,Arecibo radar operation parameter 49,N/A,ARO49,%12.5e,14,16,0,0
+3249,Arecibo radar operation parameter 50,N/A,ARO50,%12.5e,14,16,0,0
+3250,Arecibo radar operation parameter 51,N/A,ARO51,%12.5e,14,16,0,0
+3251,Arecibo radar operation parameter 52,N/A,ARO52,%12.5e,14,16,0,0
+3252,Arecibo radar operation parameter 53,N/A,ARO53,%12.5e,14,16,0,0
+3253,Arecibo radar operation parameter 54,N/A,ARO54,%12.5e,14,16,0,0
+3254,Arecibo radar operation parameter 55,N/A,ARO55,%12.5e,14,16,0,0
+3255,Arecibo radar operation parameter 56,N/A,ARO56,%12.5e,14,16,0,0
+3256,Arecibo radar operation parameter 57,N/A,ARO57,%12.5e,14,16,0,0
+3257,Arecibo radar operation parameter 58,N/A,ARO58,%12.5e,14,16,0,0
+3258,Arecibo radar operation parameter 59,N/A,ARO59,%12.5e,14,16,0,0
+3259,Arecibo radar operation parameter 60,N/A,ARO60,%12.5e,14,16,0,0
+3260,Arecibo radar operation parameter 61,N/A,ARO61,%12.5e,14,16,0,0
+3261,Arecibo radar operation parameter 62,N/A,ARO62,%12.5e,14,16,0,0
+3262,Arecibo radar operation parameter 63,N/A,ARO63,%12.5e,14,16,0,0
+3263,Arecibo radar operation parameter 64,N/A,ARO64,%12.5e,14,16,0,0
+3264,Arecibo radar operation parameter 65,N/A,ARO65,%12.5e,14,16,0,0
+3265,Arecibo radar operation parameter 66,N/A,ARO66,%12.5e,14,16,0,0
+3266,Arecibo radar operation parameter 67,N/A,ARO67,%12.5e,14,16,0,0
+3267,Arecibo radar operation parameter 68,N/A,ARO68,%12.5e,14,16,0,0
+3268,Arecibo radar operation parameter 69,N/A,ARO69,%12.5e,14,16,0,0
+3269,Arecibo radar operation parameter 70,N/A,ARO70,%12.5e,14,16,0,0
+3270,Arecibo radar operation parameter 71,N/A,ARO71,%12.5e,14,16,0,0
+3271,Arecibo radar operation parameter 72,N/A,ARO72,%12.5e,14,16,0,0
+3272,Arecibo radar operation parameter 73,N/A,ARO73,%12.5e,14,16,0,0
+3273,Arecibo radar operation parameter 74,N/A,ARO74,%12.5e,14,16,0,0
+3274,Arecibo radar operation parameter 75,N/A,ARO75,%12.5e,14,16,0,0
+3275,Arecibo radar operation parameter 76,N/A,ARO76,%12.5e,14,16,0,0
+3276,Arecibo radar operation parameter 77,N/A,ARO77,%12.5e,14,16,0,0
+3277,Arecibo radar operation parameter 78,N/A,ARO78,%12.5e,14,16,0,0
+3278,Arecibo radar operation parameter 79,N/A,ARO79,%12.5e,14,16,0,0
+3279,Arecibo radar operation parameter 80,N/A,ARO80,%12.5e,14,16,0,0
+3280,Arecibo radar operation parameter 81,N/A,ARO81,%12.5e,14,16,0,0
+3281,Arecibo radar operation parameter 82,N/A,ARO82,%12.5e,14,16,0,0
+3282,Arecibo radar operation parameter 83,N/A,ARO83,%12.5e,14,16,0,0
+3283,Arecibo radar operation parameter 84,N/A,ARO84,%12.5e,14,16,0,0
+3284,Arecibo radar operation parameter 85,N/A,ARO85,%12.5e,14,16,0,0
+3285,Arecibo radar operation parameter 86,N/A,ARO86,%12.5e,14,16,0,0
+3286,Arecibo radar operation parameter 87,N/A,ARO87,%12.5e,14,16,0,0
+3287,Arecibo radar operation parameter 88,N/A,ARO88,%12.5e,14,16,0,0
+3288,Arecibo radar operation parameter 89,N/A,ARO89,%12.5e,14,16,0,0
+3289,Arecibo radar operation parameter 90,N/A,ARO90,%12.5e,14,16,0,0
+3290,Arecibo radar operation parameter 91,N/A,ARO91,%12.5e,14,16,0,0
+3291,Arecibo radar operation parameter 92,N/A,ARO92,%12.5e,14,16,0,0
+3292,Arecibo radar operation parameter 93,N/A,ARO93,%12.5e,14,16,0,0
+3293,Arecibo radar operation parameter 94,N/A,ARO94,%12.5e,14,16,0,0
+3294,Arecibo radar operation parameter 95,N/A,ARO95,%12.5e,14,16,0,0
+3295,Arecibo radar operation parameter 96,N/A,ARO96,%12.5e,14,16,0,0
+3296,Arecibo radar operation parameter 97,N/A,ARO97,%12.5e,14,16,0,0
+3297,Arecibo radar operation parameter 98,N/A,ARO98,%12.5e,14,16,0,0
+3298,Arecibo radar operation parameter 99,N/A,ARO99,%12.5e,14,16,0,0
+3299,Arecibo radar operation parameter 100,N/A,ARO100,%12.5e,14,16,0,0
+3300,Mode Letter (65.0-80.0 = A-P),N/A,MODE,%9.0f,11,16,0,0
+3301,Power Normalization constant,N/A,PNORM,%12.5e,14,16,0,0
+3302,Number of signal samples in profile,N/A,NRP,%12.5e,14,16,0,0
+3303,Number of noise samples in profile,N/A,NNSAMP,%12.5e,14,16,0,0
+3304,Number of calibration samples in prof,N/A,NCSAMP,%12.5e,14,16,0,0
+3305,Millstone Hill radar operatn par  6,N/A,MLH6,%12.5e,14,16,0,0
+3306,Number of profile Noise level samples,N/A,NPNSWP,%12.5e,14,16,0,0
+3307,Millstone Hill radar operatn par  8,N/A,MLH8,%12.5e,14,16,0,0
+3308,Number of Radar Sweeps for Record,N/A,NRSWP,%12.5e,14,16,0,0
+3309,Number of noise gates in radar sweep,N/A,NNRSWP,%12.5e,14,16,0,0
+3310,Mean power prof Normalizatn Constant,N/A,PNRMMP,%12.5e,14,16,0,0
+3311,H+ Line of site velocity,ms-1,VH,%9.1f,11,16,0,0
+3312,H Number Density,N/A,NH,%12.5e,14,16,0,0
+3313,ACF Normalization Factor,N/A,FA,%9.2f,11,16,0,0
+3314,Transmitter channel signal to noise,N/A,XMT_CHAN_SNR,%12.5e,14,16,0,0
+3315,Signal Temperature,K,STP,%12.5e,14,16,0,0
+3316,Profile Power Normalized to 1.0,N/A,POPN,%9.4f,11,16,0,0
+3317,Reflected Power,N/A,PO,%9.4f,11,16,0,0
+3318,D.P. Power Normalization constant,N/A,PNRMD,%12.5e,14,16,0,0
+3320,Transmitter phase velocity,ms-1,VTX,%12.5e,14,16,0,0
+3321,Ti; Tr correlation coefficient,N/A,CCTITR,%12.5e,14,16,0,0
+3322,Ti; Ph correlation coefficient,N/A,CCTIPH,%12.5e,14,16,0,0
+3323,Ti; Co correlation coefficient,N/A,CCTICO,%12.5e,14,16,0,0
+3324,Tr; Ph correlation coefficient,N/A,CCTRPH,%12.5e,14,16,0,0
+3325,Mode type,N/A,MDTYP,%9.0f,11,16,0,0
+3328,Fundamental Pulse Length,s,PULF,%12.5e,14,16,0,0
+3329,Millstone Range resolution,km,MRESL,%12.5e,14,16,1,0
+3341,Start Range,km,RANGE1,%9.2f,11,16,0,0
+3342,End Range,km,RANGE2,%9.2f,11,16,0,0
+3343,Variation in Range (RANGE2 - RANGE1),km,DRNG21,%9.2f,11,16,0,0
+3345,Inter pulse period,s,IPP_MLH,%12.5e,14,16,0,0
+3346,Lag spacing,s,DTAU,%12.5e,14,16,0,0
+3347,Num Samples SNR sum rule,N/A,NSAMPLES_SNR_SUMRUL,%9.1f,21,16,1,0
+3348,Num steps SNR sum rule,N/A,NSTEP_SNR_SUMRULEO,%9.1f,21,16,1,0
+3349,Millstone Hill radar operatn par  50,N/A,MLH50,%12.5e,14,16,0,0
+3350,Line of sight Doppler Vlos (pos = away),ms-1,VDOPP,%9.1f,11,16,1,0
+3351,TI searching TI;TR;FN only,K,TIBF,%9.1f,11,6,0,0
+3352,TR searching TI;TR;FN only,N/A,TRBF,%9.4f,11,6,0,0
+3353,Fit type code,N/A,FIT_TYPE,%12.5e,14,16,0,0
+3354,Millstone Hill radar operatn par  55,N/A,MLH55,%12.5e,14,16,0,0
+3355,Millstone Hill radar operatn par  56,N/A,MLH56,%12.5e,14,16,0,0
+3356,Millstone Hill radar operatn par  57,N/A,MLH57,%12.5e,14,16,0,0
+3357,Millstone Hill radar operatn par  58,N/A,MLH58,%12.5e,14,16,0,0
+3358,Millstone Hill radar operatn par  59,N/A,MLH59,%12.5e,14,16,0,0
+3359,Millstone Hill radar operatn par  60,N/A,MLH60,%12.5e,14,16,0,0
+3360,Millstone Hill radar operatn par  61,N/A,MLH61,%12.5e,14,16,0,0
+3361,Millstone Hill radar operatn par  62,N/A,MLH62,%12.5e,14,16,0,0
+3362,Millstone Hill radar operatn par  63,N/A,MLH63,%12.5e,14,16,0,0
+3363,Ephemeris Time,h,EPHEM,%9.1f,11,16,0,0
+3364,Millstone Hill radar operatn par  64,N/A,MLH64,%12.5e,14,16,0,0
+3365,Millstone Hill radar operatn par  66,N/A,MLH66,%12.5e,14,16,0,0
+3366,Millstone Hill radar operatn par  67,N/A,MLH67,%12.5e,14,16,0,0
+3367,Millstone Hill radar operatn par  68,N/A,MLH68,%12.5e,14,16,0,0
+3368,Millstone Hill radar operatn par  69,N/A,MLH69,%12.5e,14,16,0,0
+3369,FoF2 level at Millstone Hill,MHz,FOF2_MLH,%9.2f,11,16,0,0
+3370,Millstone Hill radar operatn par  71,N/A,MLH71,%12.5e,14,16,0,0
+3371,Millstone Hill radar operatn par  72,N/A,MLH72,%12.5e,14,16,0,0
+3372,Latitude Angle of Average Field Vec.,deg,FLAT,%9.2f,11,16,0,0
+3373,Longitude Ang. of Average Field Vec.,deg,FLON,%9.0f,11,16,0,0
+3374,Plasma Temperature,K,PTEMP,%9.1f,11,16,0,0
+3375,Millstone Hill radar operatn par  76,N/A,MLH76,%12.5e,14,16,0,0
+3376,Millstone Hill radar operatn par  77,N/A,MLH77,%12.5e,14,16,0,0
+3377,Epsilon,N/A,EPS,%9.1f,11,16,0,0
+3378,Millstone Hill radar operatn par  79,N/A,MLH79,%12.5e,14,16,0,0
+3379,Millstone Hill radar operatn par  80,N/A,MLH80,%12.5e,14,16,0,0
+3380,Millstone Hill radar operatn par  81,N/A,MLH81,%12.5e,14,16,0,0
+3381,Millstone Hill radar operatn par  82,N/A,MLH82,%12.5e,14,16,0,0
+3382,Millstone Hill radar operatn par  83,N/A,MLH83,%12.5e,14,16,0,0
+3383,Millstone Hill radar operatn par  84,N/A,MLH84,%12.5e,14,16,0,0
+3384,Millstone Hill radar operatn par  85,N/A,MLH85,%12.5e,14,16,0,0
+3385,Model Ion velocity in direction 4,ms-1,MODVS,%9.1f,11,16,0,0
+3386,Model Ion velocity in direction 5,ms-1,MODVE,%9.1f,11,16,0,0
+3387,Millstone Hill radar operatn par  88,N/A,MLH88,%12.5e,14,16,0,0
+3388,Millstone Hill radar operatn par  89,N/A,MLH89,%12.5e,14,16,0,0
+3389,Millstone Hill radar operatn par  90,N/A,MLH90,%12.5e,14,16,0,0
+3390,Millstone Hill radar operatn par  91,N/A,MLH91,%12.5e,14,16,0,0
+3391,Millstone Hill radar operatn par  92,N/A,MLH92,%12.5e,14,16,0,0
+3392,Millstone Hill radar operatn par  93,N/A,MLH93,%12.5e,14,16,0,0
+3393,Millstone Hill radar operatn par  94,N/A,MLH94,%12.5e,14,16,0,0
+3394,Millstone Hill radar operatn par  95,N/A,MLH95,%12.5e,14,16,0,0
+3395,Millstone Hill radar operatn par  96,N/A,MLH96,%12.5e,14,16,0,0
+3396,Millstone Hill radar operatn par  97,N/A,MLH97,%12.5e,14,16,0,0
+3397,Millstone Hill radar operatn par  98,N/A,MLH98,%12.5e,14,16,0,0
+3398,Millstone Hill radar operatn par  99,N/A,MLH99,%12.5e,14,16,0,0
+3399,Millstone Hill radar operatn par 100,N/A,MLH100,%12.5e,14,16,0,0
+3400,St. Santin radar operation parameter 1,N/A,STS1,%12.5e,14,16,0,0
+3401,St. Santin radar operation parameter 2,N/A,STS2,%12.5e,14,16,0,0
+3402,St. Santin radar operation parameter 3,N/A,STS3,%12.5e,14,16,0,0
+3403,St. Santin radar operation parameter 4,N/A,STS4,%12.5e,14,16,0,0
+3404,St. Santin radar operation parameter 5,N/A,STS5,%12.5e,14,16,0,0
+3405,St. Santin radar operation parameter 6,N/A,STS6,%12.5e,14,16,0,0
+3406,St. Santin radar operation parameter 7,N/A,STS7,%12.5e,14,16,0,0
+3407,St. Santin radar operation parameter 8,N/A,STS8,%12.5e,14,16,0,0
+3408,St. Santin radar operation parameter 9,N/A,STS9,%12.5e,14,16,0,0
+3409,St. Santin radar operation parameter 10,N/A,STS10,%12.5e,14,16,0,0
+3410,St. Santin radar operation parameter 11,N/A,STS11,%12.5e,14,16,0,0
+3411,St. Santin radar operation parameter 12,N/A,STS12,%12.5e,14,16,0,0
+3412,St. Santin radar operation parameter 13,N/A,STS13,%12.5e,14,16,0,0
+3413,St. Santin radar operation parameter 14,N/A,STS14,%12.5e,14,16,0,0
+3414,St. Santin radar operation parameter 15,N/A,STS15,%12.5e,14,16,0,0
+3415,St. Santin radar operation parameter 16,N/A,STS16,%12.5e,14,16,0,0
+3416,St. Santin radar operation parameter 17,N/A,STS17,%12.5e,14,16,0,0
+3417,St. Santin radar operation parameter 18,N/A,STS18,%12.5e,14,16,0,0
+3418,St. Santin radar operation parameter 19,N/A,STS19,%12.5e,14,16,0,0
+3419,St. Santin radar operation parameter 20,N/A,STS20,%12.5e,14,16,0,0
+3420,St. Santin radar operation parameter 21,N/A,STS21,%12.5e,14,16,0,0
+3421,St. Santin radar operation parameter 22,N/A,STS22,%12.5e,14,16,0,0
+3422,St. Santin radar operation parameter 23,N/A,STS23,%12.5e,14,16,0,0
+3423,St. Santin radar operation parameter 24,N/A,STS24,%12.5e,14,16,0,0
+3424,St. Santin radar operation parameter 25,N/A,STS25,%12.5e,14,16,0,0
+3425,St. Santin radar operation parameter 26,N/A,STS26,%12.5e,14,16,0,0
+3426,St. Santin radar operation parameter 27,N/A,STS27,%12.5e,14,16,0,0
+3427,St. Santin radar operation parameter 28,N/A,STS28,%12.5e,14,16,0,0
+3428,St. Santin radar operation parameter 29,N/A,STS29,%12.5e,14,16,0,0
+3429,St. Santin radar operation parameter 30,N/A,STS30,%12.5e,14,16,0,0
+3430,St. Santin radar operation parameter 31,N/A,STS31,%12.5e,14,16,0,0
+3431,St. Santin radar operation parameter 32,N/A,STS32,%12.5e,14,16,0,0
+3432,St. Santin radar operation parameter 33,N/A,STS33,%12.5e,14,16,0,0
+3433,St. Santin radar operation parameter 34,N/A,STS34,%12.5e,14,16,0,0
+3434,St. Santin radar operation parameter 35,N/A,STS35,%12.5e,14,16,0,0
+3435,St. Santin radar operation parameter 36,N/A,STS36,%12.5e,14,16,0,0
+3436,St. Santin radar operation parameter 37,N/A,STS37,%12.5e,14,16,0,0
+3437,St. Santin radar operation parameter 38,N/A,STS38,%12.5e,14,16,0,0
+3438,St. Santin radar operation parameter 39,N/A,STS39,%12.5e,14,16,0,0
+3439,St. Santin radar operation parameter 40,N/A,STS40,%12.5e,14,16,0,0
+3440,St. Santin radar operation parameter 41,N/A,STS41,%12.5e,14,16,0,0
+3441,St. Santin radar operation parameter 42,N/A,STS42,%12.5e,14,16,0,0
+3442,St. Santin radar operation parameter 43,N/A,STS43,%12.5e,14,16,0,0
+3443,St. Santin radar operation parameter 44,N/A,STS44,%12.5e,14,16,0,0
+3444,St. Santin radar operation parameter 45,N/A,STS45,%12.5e,14,16,0,0
+3445,St. Santin radar operation parameter 46,N/A,STS46,%12.5e,14,16,0,0
+3446,St. Santin radar operation parameter 47,N/A,STS47,%12.5e,14,16,0,0
+3447,St. Santin radar operation parameter 48,N/A,STS48,%12.5e,14,16,0,0
+3448,St. Santin radar operation parameter 49,N/A,STS49,%12.5e,14,16,0,0
+3449,St. Santin radar operation parameter 50,N/A,STS50,%12.5e,14,16,0,0
+3450,St. Santin radar operation parameter 51,N/A,STS51,%12.5e,14,16,0,0
+3451,St. Santin radar operation parameter 52,N/A,STS52,%12.5e,14,16,0,0
+3452,St. Santin radar operation parameter 53,N/A,STS53,%12.5e,14,16,0,0
+3453,St. Santin radar operation parameter 54,N/A,STS54,%12.5e,14,16,0,0
+3454,St. Santin radar operation parameter 55,N/A,STS55,%12.5e,14,16,0,0
+3455,St. Santin radar operation parameter 56,N/A,STS56,%12.5e,14,16,0,0
+3456,St. Santin radar operation parameter 57,N/A,STS57,%12.5e,14,16,0,0
+3457,St. Santin radar operation parameter 58,N/A,STS58,%12.5e,14,16,0,0
+3458,St. Santin radar operation parameter 59,N/A,STS59,%12.5e,14,16,0,0
+3459,St. Santin radar operation parameter 60,N/A,STS60,%12.5e,14,16,0,0
+3460,St. Santin radar operation parameter 61,N/A,STS61,%12.5e,14,16,0,0
+3461,St. Santin radar operation parameter 62,N/A,STS62,%12.5e,14,16,0,0
+3462,St. Santin radar operation parameter 63,N/A,STS63,%12.5e,14,16,0,0
+3463,St. Santin radar operation parameter 64,N/A,STS64,%12.5e,14,16,0,0
+3464,St. Santin radar operation parameter 65,N/A,STS65,%12.5e,14,16,0,0
+3465,St. Santin radar operation parameter 66,N/A,STS66,%12.5e,14,16,0,0
+3466,St. Santin radar operation parameter 67,N/A,STS67,%12.5e,14,16,0,0
+3467,St. Santin radar operation parameter 68,N/A,STS68,%12.5e,14,16,0,0
+3468,St. Santin radar operation parameter 69,N/A,STS69,%12.5e,14,16,0,0
+3469,St. Santin radar operation parameter 70,N/A,STS70,%12.5e,14,16,0,0
+3470,St. Santin radar operation parameter 71,N/A,STS71,%12.5e,14,16,0,0
+3471,St. Santin radar operation parameter 72,N/A,STS72,%12.5e,14,16,0,0
+3472,St. Santin radar operation parameter 73,N/A,STS73,%12.5e,14,16,0,0
+3473,St. Santin radar operation parameter 74,N/A,STS74,%12.5e,14,16,0,0
+3474,St. Santin radar operation parameter 75,N/A,STS75,%12.5e,14,16,0,0
+3475,St. Santin radar operation parameter 76,N/A,STS76,%12.5e,14,16,0,0
+3476,St. Santin radar operation parameter 77,N/A,STS77,%12.5e,14,16,0,0
+3477,St. Santin radar operation parameter 78,N/A,STS78,%12.5e,14,16,0,0
+3478,St. Santin radar operation parameter 79,N/A,STS79,%12.5e,14,16,0,0
+3479,St. Santin radar operation parameter 80,N/A,STS80,%12.5e,14,16,0,0
+3480,St. Santin radar operation parameter 81,N/A,STS81,%12.5e,14,16,0,0
+3481,St. Santin radar operation parameter 82,N/A,STS82,%12.5e,14,16,0,0
+3482,St. Santin radar operation parameter 83,N/A,STS83,%12.5e,14,16,0,0
+3483,St. Santin radar operation parameter 84,N/A,STS84,%12.5e,14,16,0,0
+3484,St. Santin radar operation parameter 85,N/A,STS85,%12.5e,14,16,0,0
+3485,St. Santin radar operation parameter 86,N/A,STS86,%12.5e,14,16,0,0
+3486,St. Santin radar operation parameter 87,N/A,STS87,%12.5e,14,16,0,0
+3487,St. Santin radar operation parameter 88,N/A,STS88,%12.5e,14,16,0,0
+3488,St. Santin radar operation parameter 89,N/A,STS89,%12.5e,14,16,0,0
+3489,St. Santin radar operation parameter 90,N/A,STS90,%12.5e,14,16,0,0
+3490,St. Santin radar operation parameter 91,N/A,STS91,%12.5e,14,16,0,0
+3491,St. Santin radar operation parameter 92,N/A,STS92,%12.5e,14,16,0,0
+3492,St. Santin radar operation parameter 93,N/A,STS93,%12.5e,14,16,0,0
+3493,St. Santin radar operation parameter 94,N/A,STS94,%12.5e,14,16,0,0
+3494,St. Santin radar operation parameter 95,N/A,STS95,%12.5e,14,16,0,0
+3495,St. Santin radar operation parameter 96,N/A,STS96,%12.5e,14,16,0,0
+3496,St. Santin radar operation parameter 97,N/A,STS97,%12.5e,14,16,0,0
+3497,St. Santin radar operation parameter 98,N/A,STS98,%12.5e,14,16,0,0
+3498,St. Santin radar operation parameter 99,N/A,STS99,%12.5e,14,16,0,0
+3499,St. Santin radar operation parameter100,N/A,STS100,%12.5e,14,16,0,0
+3500,SON FIT Code,N/A,FIT,%12.5e,14,16,0,0
+3501,SON EPEC E-Region source code,N/A,SRCE,%12.5e,14,16,0,0
+3502,SON EPEC F-Region source code,N/A,SRCF,%12.5e,14,16,0,0
+3503,SON Source of temperature,N/A,SRCT,%12.5e,14,16,0,0
+3504,SON Source of velocity,N/A,SRCV,%12.5e,14,16,0,0
+3505,SON Source of density profile,N/A,SRCDEN,%12.5e,14,16,0,0
+3506,SON parameter 7,N/A,SONP07,%12.5e,14,16,0,0
+3507,SON parameter 8,N/A,SONP08,%12.5e,14,16,0,0
+3508,SON parameter 9,N/A,SONP09,%12.5e,14,16,0,0
+3509,SON parameter 10,N/A,SONP10,%12.5e,14,16,0,0
+3510,SON Derivative of Ti with altitude,K/km,DTIDH,%12.5e,14,16,0,0
+3511,SON Derivative of Te with altitude,K/km,DTEDH,%12.5e,14,16,0,0
+3512,SON Portion of Umerid due to Vpar,ms-1,UPAR,%12.5e,14,16,0,0
+3513,SON Umerid from ambipolar diffusn,ms-1,UAMBI,%12.5e,14,16,0,0
+3514,SON Uambi from DNe/DH fit to ne,ms-1,UDEN1,%12.5e,14,16,0,0
+3515,SON Uambi from DNe/DH fit to ln(ne),ms-1,UDEN2,%12.5e,14,16,0,0
+3516,SON portion of Uambi from dTp/dH,ms-1,UTEMP,%12.5e,14,16,0,0
+3517,SON portion of Uambi from gravity,ms-1,UGRAV,%12.5e,14,16,0,0
+3518,SON Mean azimuth position 1,deg,AZM1,%12.5e,14,16,0,0
+3519,SON Mean elevation position 1,deg,ELM1,%12.5e,14,16,0,0
+3520,SON Mean azimuth position 2,deg,AZM2,%12.5e,14,16,0,0
+3521,SON Mean elevation position 2,deg,ELM2,%12.5e,14,16,0,0
+3522,SON Mean azimuth position 3,deg,AZM3,%12.5e,14,16,0,0
+3523,SON Mean elevation position 3,deg,ELM3,%12.5e,14,16,0,0
+3524,SON Mean azimuth position 4,deg,AZM4,%12.5e,14,16,0,0
+3525,SON Mean elevation position 4,deg,ELM4,%12.5e,14,16,0,0
+3526,SON Mean azimuth position 5,deg,AZM5,%12.5e,14,16,0,0
+3527,SON Mean elevation position 5,deg,ELM5,%12.5e,14,16,0,0
+3528,SON Mean azimuth position 6,deg,AZM6,%12.5e,14,16,0,0
+3529,SON Mean elevation position 6,deg,ELM6,%12.5e,14,16,0,0
+3530,SON Mean azimuth position 7,deg,AZM7,%12.5e,14,16,0,0
+3531,SON Mean elevation position 7,deg,ELM7,%12.5e,14,16,0,0
+3532,SON Mean azimuth position 8,deg,AZM8,%12.5e,14,16,0,0
+3533,SON Mean elevation position 8,deg,ELM8,%12.5e,14,16,0,0
+3534,SON Begin year of composite (UT),UT,YRCB,%12.5e,14,16,0,0
+3535,SON Begin month/day of composite (UT),UT,MDB,%12.5e,14,16,0,0
+3536,SON Begin hour/minute of composite (UT),UT,HMB,%12.5e,14,16,0,0
+3537,SON Begin centisecond of composite (UT),s,CSB,%12.5e,14,16,0,0
+3538,SON End year of composite (UT),UT,YRCE,%12.5e,14,16,0,0
+3539,SON End month/day of composite (UT),UT,MDE,%12.5e,14,16,0,0
+3540,SON End hour/minute of composite (UT),UT,HME,%12.5e,14,16,0,0
+3541,SON End centisecond of composite (UT),s,CSE,%12.5e,14,16,0,0
+3542,SON Type of density correction,N/A,DCOR,%12.5e,14,16,0,0
+3543,SON log10 (ionization rate el/m**3-s),lg(e/m3s),INZRL,%12.5e,14,16,0,0
+3544,SON log10 (alpha effective in m**3/s),lg(m3/s),ALPHRL,%12.5e,14,16,0,0
+3545,SON log10 (part flux el/cm**2-s-kev),lg(e/m2s),PFLUXL,%12.5e,14,16,0,0
+3546,SON log10 (energy in kev),lg(kev),ENERGYL,%12.5e,14,16,0,0
+3547,SON Parallel current density,A/m2,J_PAR,%12.5e,14,16,0,0
+3548,SON Energy flux,W/m2,EFLX,%12.5e,14,16,0,0
+3549,SON Mean energy,keV,EM,%12.5e,14,16,0,0
+3550,SON I(4278),R,I4278,%12.5e,14,16,0,0
+3551,SON log10 (molecular ion density),lg(m-3),MIDL,%12.5e,14,16,0,0
+3552,SON Covariance xx,N/A,COVXX,%12.5e,14,16,0,0
+3553,SON Covariance xy,N/A,COVXY,%12.5e,14,16,0,0
+3554,SON Covariance xz,N/A,COVXZ,%12.5e,14,16,0,0
+3555,SON Covariance yx,N/A,COVYX,%12.5e,14,16,0,0
+3556,SON Covariance yy,N/A,COVYY,%12.5e,14,16,0,0
+3557,SON Covariance yz,N/A,COVYZ,%12.5e,14,16,0,0
+3558,SON Covariance zx,N/A,COVZX,%12.5e,14,16,0,0
+3559,SON Covariance zy,N/A,COVZY,%12.5e,14,16,0,0
+3560,SON Covariance zz,N/A,COVZZ,%12.5e,14,16,0,0
+3561,SON Observed uncertainty on Ti,N/A,ODTI,%12.5e,14,16,0,0
+3562,SON Reduced chi square of Ti,N/A,CHITI,%12.5e,14,16,0,0
+3563,SON Observed uncertainty on Te,N/A,ODTE,%12.5e,14,16,0,0
+3564,SON Reduced chi square of Te,N/A,CHITE,%12.5e,14,16,0,0
+3565,SON log10 (obs uncertainty Ne),lg(m-3),ODNEL,%12.5e,14,16,0,0
+3566,SON Reduced chi square of Ne,N/A,CHINE,%12.5e,14,16,0,0
+3567,SON Amount subtracted from Vlos,ms-1,VBIAS,%12.5e,14,16,0,0
+3568,SON log10 (ne-parabolic fit to ln(ne)),lg(m-3),FITNEL,%12.5e,14,16,0,0
+3569,SON Velocity in xy plane perp to b,ms-1,VPERPH,%12.5e,14,16,0,0
+3570,SON Azimuth angle of vel in x-y plane,deg,AZVPBH,%12.5e,14,16,0,0
+3571,SON Correlation coefficient vxy,N/A,CCFVXY,%12.5e,14,16,0,0
+3572,SON Correlation coefficient vxz,N/A,CCFVXZ,%12.5e,14,16,0,0
+3573,SON Correlation coefficient vyz,N/A,CCFVYZ,%12.5e,14,16,0,0
+3574,SON Neutral atmosphere model code,N/A,NATMC,%12.5e,14,16,0,0
+3575,SON Correlation coefficient Exy,N/A,CCFEXY,%12.5e,14,16,0,0
+3576,SON Cross correlation coefficient Uxy,N/A,XCFUXY,%12.5e,14,16,0,0
+3577,SON Cross correlation coefficient Une,N/A,XCFUEN,%12.5e,14,16,0,0
+3578,SON Cross correlatn on Uxy from signeut,N/A,XCFXYN,%12.5e,14,16,0,0
+3579,SON Total cross correlation for Uxy,N/A,XCFXYT,%12.5e,14,16,0,0
+3580,SON Cross correlatn on Une from signeut,N/A,XCFENN,%12.5e,14,16,0,0
+3581,SON Total cross correlatn for Ue and Un,N/A,XCFENT,%12.5e,14,16,0,0
+3582,SON Horizontal magn neutral wind,N/A,UMERID,%12.5e,14,16,0,0
+3583,SON Alternate error on Uzum (code 1460),N/A,DUZNEU,%12.5e,14,16,0,0
+3584,SON Total error on Uzum (code 1460),N/A,DUZTOT,%12.5e,14,16,0,0
+3585,SON Correction term = Ux-Vx,N/A,UXCOR,%12.5e,14,16,0,0
+3586,SON Correction term = Uy-Vy,N/A,UYCOR,%12.5e,14,16,0,0
+3587,SON Error on Ux from signeut,N/A,DUXNEU,%12.5e,14,16,0,0
+3588,SON Error on Uy from signeut,N/A,DUYNEU,%12.5e,14,16,0,0
+3589,SON Total error on Ux,N/A,DUXT,%12.5e,14,16,0,0
+3590,SON Total error on Uy,N/A,DUYT,%12.5e,14,16,0,0
+3591,SON Error on Ue from signeut,N/A,DUENEU,%12.5e,14,16,0,0
+3592,SON Error on Un from signeut,N/A,DUNNEU,%12.5e,14,16,0,0
+3593,SON Total error on Ue,N/A,DUET,%12.5e,14,16,0,0
+3594,SON Total error on Un,N/A,DUNT,%12.5e,14,16,0,0
+3595,SON Relative error in neutral atmos,N/A,RDNA,%12.5e,14,16,0,0
+3596,SON Ion gyro frequency,Hz,FIG,%12.5e,14,16,0,0
+3597,SON Azimuth of axis of symmetry,deg,AXSYM,%12.5e,14,16,0,0
+3598,SON Ion-neutral collision freq. coeff.,cm-3/s,NIUC,%12.5e,14,16,0,0
+3599,SON Direction 4 F Region ion velocity,ms-1,VIPEF,%12.5e,14,16,0,0
+3600,SON Direction 5 F Region ion velocity,ms-1,VIPNF,%12.5e,14,16,0,0
+3601,SON O+O ion-neut coll freq. factor,N/A,FOPOCO,%12.5e,14,16,0,0
+3602,SON log10 (measured ion-neut col freq),lg(s-1),FMCOL,%12.5e,14,16,0,0
+3603,SON Fit 2 log10 (ne in m-3),lg(m-3),NEF2L,%12.5e,14,16,0,0
+3604,SON Fit 2 electron temperature; te,k,TEF2,%12.5e,14,16,0,0
+3605,SON Fit 2 ion temperature; ti,k,TIF2,%12.5e,14,16,0,0
+3606,SON Fit 2 temperature ratio; te/ti,N/A,TRF2,%12.5e,14,16,0,0
+3607,SON Fit 2 ion velocity (pos = away),ms-1,VOF2,%12.5e,14,16,0,0
+3608,SON Fit 2 composition - [o+]/ne,N/A,POPF2,%12.5e,14,16,0,0
+3609,SON Fit 2 log10(ion-neutral coll. freq),lg(s-1),COLF2L,%12.5e,14,16,0,0
+3610,SON Reduced-chi square of fit 2,N/A,CHISQ2,%12.5e,14,16,0,0
+3611,SON Goodness of fit 2,N/A,GFIT2,%12.5e,14,16,0,0
+3612,SON Usability code fit 2,N/A,UCF2,%12.5e,14,16,0,0
+3613,SON Fit 3 log10 (ne in m-3),lg(m-3),NEF3L,%12.5e,14,16,0,0
+3614,SON Fit 3 electron temperature; te,k,TEF3,%12.5e,14,16,0,0
+3615,SON Fit 3 ion temperature; ti,k,TIF3,%12.5e,14,16,0,0
+3616,SON Fit 3 temperature ratio; te/ti,N/A,TRF3,%12.5e,14,16,0,0
+3617,SON Fit 3 ion velocity (pos = away),ms-1,VOF3,%12.5e,14,16,0,0
+3618,SON Fit 3 composition - [o+]/ne,N/A,POPF3,%12.5e,14,16,0,0
+3619,SON Fit 3 log10(ion-neutral coll. freq),lg(s-1),COLF3L,%12.5e,14,16,0,0
+3620,SON Reduced-chi square of fit 3,N/A,CHISQ3,%12.5e,14,16,0,0
+3621,SON Goodness of fit 3,N/A,GFIT3,%12.5e,14,16,0,0
+3622,SON Usability code fit 3,N/A,UCF3,%12.5e,14,16,0,0
+3623,SON Zone number for fitted data,N/A,ZONN,%12.5e,14,16,0,0
+3624,SON Fit code of fit 2,N/A,FITCF2,%12.5e,14,16,0,0
+3625,SON Fit code of fit 3,N/A,FITCF3,%12.5e,14,16,0,0
+3626,SON Vector Velocity Magnitude (XY plane,ms-1,MAGVEL,%12.5e,14,16,0,0
+3627,SON CW angle from GM North for 3626-XY,deg,NANGLE,%12.5e,14,16,0,0
+3628,SON E Field Magnitude (XY plane),V/m,MAGEF,%12.5e,14,16,0,0
+3629,SON CW angle from GM North for 3628-XY,deg,EANGLE,%12.5e,14,16,0,0
+3630,SON CW angle from GEO North for 3626-XY,deg,GNANGLE,%12.5e,14,16,0,0
+3631,SON CW angle from GEO North for 3628-XY,deg,GEANGLE,%12.5e,14,16,0,0
+3632,SON parameter 133,N/A,SON133,%12.5e,14,16,0,0
+3633,SON parameter 134,N/A,SON134,%12.5e,14,16,0,0
+3634,SON parameter 135,N/A,SON135,%12.5e,14,16,0,0
+3635,SON parameter 136,N/A,SON136,%12.5e,14,16,0,0
+3636,SON parameter 137,N/A,SON137,%12.5e,14,16,0,0
+3637,SON parameter 138,N/A,SON138,%12.5e,14,16,0,0
+3638,SON parameter 139,N/A,SON139,%12.5e,14,16,0,0
+3639,Average number of transmit AEUs used,N/A,NUMTXAEU,%9.1f,11,16,0,0
+3640,Average number of receive AEUs used,N/A,NUMRXAEU,%9.1f,11,16,0,0
+3641,SON parameter 142,N/A,SON142,%12.5e,14,16,0,0
+3642,SON parameter 143,N/A,SON143,%12.5e,14,16,0,0
+3643,SON parameter 144,N/A,SON144,%12.5e,14,16,0,0
+3644,SON parameter 145,N/A,SON145,%12.5e,14,16,0,0
+3645,SON parameter 146,N/A,SON146,%12.5e,14,16,0,0
+3646,SON parameter 147,N/A,SON147,%12.5e,14,16,0,0
+3647,SON parameter 148,N/A,SON148,%12.5e,14,16,0,0
+3648,SON parameter 149,N/A,SON149,%12.5e,14,16,0,0
+3649,SON parameter 150,N/A,SON150,%12.5e,14,16,0,0
+3650,SON Thermal red line emission,ph/cm3-s,E630T,%12.5e,14,16,0,0
+3651,SON Dissoc-Recomb red line emission,ph/cm3-s,E630,%12.5e,14,16,0,0
+3652,SON Volume emission of 5200 Angstrom,ph/cm3-s,E520,%12.5e,14,16,0,0
+3653,SON parameter 154,N/A,SON154,%12.5e,14,16,0,0
+3654,SON parameter 155,N/A,SON155,%12.5e,14,16,0,0
+3655,SON Electron to ion energy loss rate,eVcm-3s-1,LEI,%12.5e,14,16,0,0
+3656,SON Elec. to neutral energy loss rate,eVcm-3s-1,LEN,%12.5e,14,16,0,0
+3657,SON Energy loss rate (Le = Lei + Len),eVcm-3s-1,LEIN,%12.5e,14,16,0,0
+3658,SON Heat conduction,eVcm-3s-1,HC,%12.5e,14,16,0,0
+3659,SON Energy input (=Le-Hc),eVcm-3s-1,QE,%12.5e,14,16,0,0
+3660,SON Ion to neut energy loss rate (Lin),eVcm-3s-1,LIN,%12.5e,14,16,0,0
+3661,SON Joule heating (=Lin-Lei),eVcm-3s-1,QJ,%12.5e,14,16,0,0
+3662,SON Heat flux,eVcm-2s-1,HFLX,%12.5e,14,16,0,0
+3663,SON parameter 164,N/A,SON164,%12.5e,14,16,0,0
+3664,SON parameter 165,N/A,SON165,%12.5e,14,16,0,0
+3665,SON parameter 166,N/A,SON166,%12.5e,14,16,0,0
+3666,SON parameter 167,N/A,SON167,%12.5e,14,16,0,0
+3667,SON parameter 168,N/A,SON168,%12.5e,14,16,0,0
+3668,SON parameter 169,N/A,SON169,%12.5e,14,16,0,0
+3669,SON parameter 170,N/A,SON170,%12.5e,14,16,0,0
+3670,SON 6300 A thermal intensity,R,ITH630,%12.5e,14,16,0,0
+3671,SON 6300 A dissoc-recomb. intensity,R,IDR630,%12.5e,14,16,0,0
+3672,SON 6300 A thermal+diss intensity,R,ITD630,%12.5e,14,16,0,0
+3673,SON 5200 A dissoc-recomb intensity,R,IDR520,%12.5e,14,16,0,0
+3674,SON parameter 175,N/A,SON175,%12.5e,14,16,0,0
+3675,SON parameter 176,N/A,SON176,%12.5e,14,16,0,0
+3676,SON parameter 177,N/A,SON177,%12.5e,14,16,0,0
+3677,SON parameter 178,N/A,SON178,%12.5e,14,16,0,0
+3678,SON parameter 179,N/A,SON179,%12.5e,14,16,0,0
+3679,SON parameter 180,N/A,SON180,%12.5e,14,16,0,0
+3680,SON parameter 181,N/A,SON181,%12.5e,14,16,0,0
+3681,SON parameter 182,N/A,SON182,%12.5e,14,16,0,0
+3682,SON parameter 183,N/A,SON183,%12.5e,14,16,0,0
+3683,SON parameter 184,N/A,SON184,%12.5e,14,16,0,0
+3684,SON parameter 185,N/A,SON185,%12.5e,14,16,0,0
+3685,SON parameter 186,N/A,SON186,%12.5e,14,16,0,0
+3686,SON parameter 187,N/A,SON187,%12.5e,14,16,0,0
+3687,SON parameter 188,N/A,SON188,%12.5e,14,16,0,0
+3688,SON parameter 189,N/A,SON189,%12.5e,14,16,0,0
+3689,SON parameter 190,N/A,SON190,%12.5e,14,16,0,0
+3690,SON parameter 191,N/A,SON191,%12.5e,14,16,0,0
+3691,SON parameter 192,N/A,SON192,%12.5e,14,16,0,0
+3692,SON parameter 193,N/A,SON193,%12.5e,14,16,0,0
+3693,SON parameter 194,N/A,SON194,%12.5e,14,16,0,0
+3694,SON parameter 195,N/A,SON195,%12.5e,14,16,0,0
+3695,SON parameter 196,N/A,SON196,%12.5e,14,16,0,0
+3696,SON parameter 197,N/A,SON197,%12.5e,14,16,0,0
+3697,SON parameter 198,N/A,SON198,%12.5e,14,16,0,0
+3698,SON parameter 199,N/A,SON199,%12.5e,14,16,0,0
+3699,SON parameter 200,N/A,SON200,%12.5e,14,16,0,0
+3700,EISCAT radar operation parameter 1,N/A,EIS1,%12.5e,14,16,0,0
+3701,EISCAT radar operation parameter 2,N/A,EIS2,%12.5e,14,16,0,0
+3702,EISCAT radar operation parameter 3,N/A,EIS3,%12.5e,14,16,0,0
+3703,EISCAT radar operation parameter 4,N/A,EIS4,%12.5e,14,16,0,0
+3704,EISCAT radar operation parameter 5,N/A,EIS5,%12.5e,14,16,0,0
+3705,EISCAT radar operation parameter 6,N/A,EIS6,%12.5e,14,16,0,0
+3706,EISCAT radar operation parameter 7,N/A,EIS7,%12.5e,14,16,0,0
+3707,EISCAT radar operation parameter 8,N/A,EIS8,%12.5e,14,16,0,0
+3708,EISCAT radar operation parameter 9,N/A,EIS9,%12.5e,14,16,0,0
+3709,EISCAT radar operation parameter 10,N/A,EIS10,%12.5e,14,16,0,0
+3710,EISCAT radar operation parameter 11,N/A,EIS11,%12.5e,14,16,0,0
+3711,EISCAT radar operation parameter 12,N/A,EIS12,%12.5e,14,16,0,0
+3712,EISCAT radar operation parameter 13,N/A,EIS13,%12.5e,14,16,0,0
+3713,EISCAT radar operation parameter 14,N/A,EIS14,%12.5e,14,16,0,0
+3714,EISCAT radar operation parameter 15,N/A,EIS15,%12.5e,14,16,0,0
+3715,EISCAT radar operation parameter 16,N/A,EIS16,%12.5e,14,16,0,0
+3716,EISCAT radar operation parameter 17,N/A,EIS17,%12.5e,14,16,0,0
+3717,EISCAT radar operation parameter 18,N/A,EIS18,%12.5e,14,16,0,0
+3718,EISCAT radar operation parameter 19,N/A,EIS19,%12.5e,14,16,0,0
+3719,EISCAT radar operation parameter 20,N/A,EIS20,%12.5e,14,16,0,0
+3720,EISCAT radar operation parameter 21,N/A,EIS21,%12.5e,14,16,0,0
+3721,EISCAT radar operation parameter 22,N/A,EIS22,%12.5e,14,16,0,0
+3722,EISCAT radar operation parameter 23,N/A,EIS23,%12.5e,14,16,0,0
+3723,EISCAT radar operation parameter 24,N/A,EIS24,%12.5e,14,16,0,0
+3724,EISCAT radar operation parameter 25,N/A,EIS25,%12.5e,14,16,0,0
+3725,EISCAT radar operation parameter 26,N/A,EIS26,%12.5e,14,16,0,0
+3726,EISCAT radar operation parameter 27,N/A,EIS27,%12.5e,14,16,0,0
+3727,EISCAT radar operation parameter 28,N/A,EIS28,%12.5e,14,16,0,0
+3728,EISCAT radar operation parameter 29,N/A,EIS29,%12.5e,14,16,0,0
+3729,EISCAT radar operation parameter 30,N/A,EIS30,%12.5e,14,16,0,0
+3730,EISCAT radar operation parameter 31,N/A,EIS31,%12.5e,14,16,0,0
+3731,EISCAT radar operation parameter 32,N/A,EIS32,%12.5e,14,16,0,0
+3732,EISCAT radar operation parameter 33,N/A,EIS33,%12.5e,14,16,0,0
+3733,EISCAT radar operation parameter 34,N/A,EIS34,%12.5e,14,16,0,0
+3734,EISCAT radar operation parameter 35,N/A,EIS35,%12.5e,14,16,0,0
+3735,EISCAT radar operation parameter 36,N/A,EIS36,%12.5e,14,16,0,0
+3736,EISCAT radar operation parameter 37,N/A,EIS37,%12.5e,14,16,0,0
+3737,EISCAT radar operation parameter 38,N/A,EIS38,%12.5e,14,16,0,0
+3738,EISCAT radar operation parameter 39,N/A,EIS39,%12.5e,14,16,0,0
+3739,EISCAT radar operation parameter 40,N/A,EIS40,%12.5e,14,16,0,0
+3740,EISCAT radar operation parameter 41,N/A,EIS41,%12.5e,14,16,0,0
+3741,EISCAT radar operation parameter 42,N/A,EIS42,%12.5e,14,16,0,0
+3742,EISCAT radar operation parameter 43,N/A,EIS43,%12.5e,14,16,0,0
+3743,EISCAT radar operation parameter 44,N/A,EIS44,%12.5e,14,16,0,0
+3744,EISCAT radar operation parameter 45,N/A,EIS45,%12.5e,14,16,0,0
+3745,EISCAT radar operation parameter 46,N/A,EIS46,%12.5e,14,16,0,0
+3746,EISCAT radar operation parameter 47,N/A,EIS47,%12.5e,14,16,0,0
+3747,EISCAT radar operation parameter 48,N/A,EIS48,%12.5e,14,16,0,0
+3748,EISCAT radar operation parameter 49,N/A,EIS49,%12.5e,14,16,0,0
+3749,EISCAT radar operation parameter 50,N/A,EIS50,%12.5e,14,16,0,0
+3750,EISCAT radar operation parameter 51,N/A,EIS51,%12.5e,14,16,0,0
+3751,EISCAT radar operation parameter 52,N/A,EIS52,%12.5e,14,16,0,0
+3752,EISCAT radar operation parameter 53,N/A,EIS53,%12.5e,14,16,0,0
+3753,EISCAT radar operation parameter 54,N/A,EIS54,%12.5e,14,16,0,0
+3754,EISCAT radar operation parameter 55,N/A,EIS55,%12.5e,14,16,0,0
+3755,EISCAT radar operation parameter 56,N/A,EIS56,%12.5e,14,16,0,0
+3756,EISCAT radar operation parameter 57,N/A,EIS57,%12.5e,14,16,0,0
+3757,EISCAT radar operation parameter 58,N/A,EIS58,%12.5e,14,16,0,0
+3758,EISCAT radar operation parameter 59,N/A,EIS59,%12.5e,14,16,0,0
+3759,EISCAT radar operation parameter 60,N/A,EIS60,%12.5e,14,16,0,0
+3760,EISCAT radar operation parameter 61,N/A,EIS61,%12.5e,14,16,0,0
+3761,EISCAT radar operation parameter 62,N/A,EIS62,%12.5e,14,16,0,0
+3762,EISCAT radar operation parameter 63,N/A,EIS63,%12.5e,14,16,0,0
+3763,EISCAT radar operation parameter 64,N/A,EIS64,%12.5e,14,16,0,0
+3764,EISCAT radar operation parameter 65,N/A,EIS65,%12.5e,14,16,0,0
+3765,EISCAT radar operation parameter 66,N/A,EIS66,%12.5e,14,16,0,0
+3766,EISCAT radar operation parameter 67,N/A,EIS67,%12.5e,14,16,0,0
+3767,EISCAT radar operation parameter 68,N/A,EIS68,%12.5e,14,16,0,0
+3768,EISCAT radar operation parameter 69,N/A,EIS69,%12.5e,14,16,0,0
+3769,EISCAT radar operation parameter 70,N/A,EIS70,%12.5e,14,16,0,0
+3770,EISCAT radar operation parameter 71,N/A,EIS71,%12.5e,14,16,0,0
+3771,EISCAT radar operation parameter 72,N/A,EIS72,%12.5e,14,16,0,0
+3772,EISCAT radar operation parameter 73,N/A,EIS73,%12.5e,14,16,0,0
+3773,EISCAT radar operation parameter 74,N/A,EIS74,%12.5e,14,16,0,0
+3774,EISCAT radar operation parameter 75,N/A,EIS75,%12.5e,14,16,0,0
+3775,EISCAT radar operation parameter 76,N/A,EIS76,%12.5e,14,16,0,0
+3776,EISCAT radar operation parameter 77,N/A,EIS77,%12.5e,14,16,0,0
+3777,EISCAT radar operation parameter 78,N/A,EIS78,%12.5e,14,16,0,0
+3778,EISCAT radar operation parameter 79,N/A,EIS79,%12.5e,14,16,0,0
+3779,EISCAT radar operation parameter 80,N/A,EIS80,%12.5e,14,16,0,0
+3780,EISCAT radar operation parameter 81,N/A,EIS81,%12.5e,14,16,0,0
+3781,EISCAT radar operation parameter 82,N/A,EIS82,%12.5e,14,16,0,0
+3782,EISCAT radar operation parameter 83,N/A,EIS83,%12.5e,14,16,0,0
+3783,EISCAT radar operation parameter 84,N/A,EIS84,%12.5e,14,16,0,0
+3784,EISCAT radar operation parameter 85,N/A,EIS85,%12.5e,14,16,0,0
+3785,EISCAT radar operation parameter 86,N/A,EIS86,%12.5e,14,16,0,0
+3786,EISCAT radar operation parameter 87,N/A,EIS87,%12.5e,14,16,0,0
+3787,EISCAT radar operation parameter 88,N/A,EIS88,%12.5e,14,16,0,0
+3788,EISCAT radar operation parameter 89,N/A,EIS89,%12.5e,14,16,0,0
+3789,EISCAT radar operation parameter 90,N/A,EIS90,%12.5e,14,16,0,0
+3790,EISCAT radar operation parameter 91,N/A,EIS91,%12.5e,14,16,0,0
+3791,EISCAT radar operation parameter 92,N/A,EIS92,%12.5e,14,16,0,0
+3792,EISCAT radar operation parameter 93,N/A,EIS93,%12.5e,14,16,0,0
+3793,EISCAT radar operation parameter 94,N/A,EIS94,%12.5e,14,16,0,0
+3794,EISCAT radar operation parameter 95,N/A,EIS95,%12.5e,14,16,0,0
+3795,EISCAT radar operation parameter 96,N/A,EIS96,%12.5e,14,16,0,0
+3796,EISCAT radar operation parameter 97,N/A,EIS97,%12.5e,14,16,0,0
+3797,EISCAT radar operation parameter 98,N/A,EIS98,%12.5e,14,16,0,0
+3798,EISCAT radar operation parameter 99,N/A,EIS99,%12.5e,14,16,0,0
+3799,EISCAT radar operation parameter100,N/A,EIS100,%12.5e,14,16,0,0
+3800,Scaled real ACF at zero lag,N/A,SRACF0,%12.5e,14,17,0,0
+3801,Normalized real ACF at lag 1,N/A,RACF1,%12.5e,14,17,0,0
+3802,Normalized real ACF at lag 2,N/A,RACF2,%12.5e,14,17,0,0
+3803,Normalized real ACF at lag 3,N/A,RACF3,%12.5e,14,17,0,0
+3804,Normalized real ACF at lag 4,N/A,RACF4,%12.5e,14,17,0,0
+3805,Normalized real ACF at lag 5,N/A,RACF5,%12.5e,14,17,0,0
+3806,Normalized real ACF at lag 6,N/A,RACF6,%12.5e,14,17,0,0
+3807,Normalized real ACF at lag 7,N/A,RACF7,%12.5e,14,17,0,0
+3808,Normalized real ACF at lag 8,N/A,RACF8,%12.5e,14,17,0,0
+3809,Normalized real ACF at lag 9,N/A,RACF9,%12.5e,14,17,0,0
+3810,Normalized real ACF at lag 10,N/A,RACF10,%12.5e,14,17,0,0
+3811,Normalized real ACF at lag 11,N/A,RACF11,%12.5e,14,17,0,0
+3812,Normalized real ACF at lag 12,N/A,RACF12,%12.5e,14,17,0,0
+3813,Normalized real ACF at lag 13,N/A,RACF13,%12.5e,14,17,0,0
+3814,Normalized real ACF at lag 14,N/A,RACF14,%12.5e,14,17,0,0
+3815,Normalized real ACF at lag 15,N/A,RACF15,%12.5e,14,17,0,0
+3816,Normalized real ACF at lag 16,N/A,RACF16,%12.5e,14,17,0,0
+3817,Normalized real ACF at lag 17,N/A,RACF17,%12.5e,14,17,0,0
+3818,Normalized real ACF at lag 18,N/A,RACF18,%12.5e,14,17,0,0
+3819,Normalized real ACF at lag 19,N/A,RACF19,%12.5e,14,17,0,0
+3820,Normalized real ACF at lag 20,N/A,RACF20,%12.5e,14,17,0,0
+3821,Normalized real ACF at lag 21,N/A,RACF21,%12.5e,14,17,0,0
+3822,Normalized real ACF at lag 22,N/A,RACF22,%12.5e,14,17,0,0
+3823,Normalized real ACF at lag 23,N/A,RACF23,%12.5e,14,17,0,0
+3824,Normalized real ACF at lag 24,N/A,RACF24,%12.5e,14,17,0,0
+3825,Normalized real ACF at lag 25,N/A,RACF25,%12.5e,14,17,0,0
+3826,Normalized real ACF at lag 26,N/A,RACF26,%12.5e,14,17,0,0
+3827,Normalized real ACF at lag 27,N/A,RACF27,%12.5e,14,17,0,0
+3828,Normalized real ACF at lag 28,N/A,RACF28,%12.5e,14,17,0,0
+3829,Normalized real ACF at lag 29,N/A,RACF29,%12.5e,14,17,0,0
+3830,Normalized real ACF at lag 30,N/A,RACF30,%12.5e,14,17,0,0
+3831,Normalized real ACF at lag 31,N/A,RACF31,%12.5e,14,17,0,0
+3832,Normalized real ACF at lag 32,N/A,RACF32,%12.5e,14,17,0,0
+3833,Normalized real ACF at lag 33,N/A,RACF33,%12.5e,14,17,0,0
+3834,Normalized real ACF at lag 34,N/A,RACF34,%12.5e,14,17,0,0
+3900,Scale factor for ACF at zero lag,N/A,SFACF0,%12.5e,14,17,0,0
+3901,Normalized imaginary ACF at lag 1,N/A,IACF1,%12.5e,14,17,0,0
+3902,Normalized imaginary ACF at lag 2,N/A,IACF2,%12.5e,14,17,0,0
+3903,Normalized imaginary ACF at lag 3,N/A,IACF3,%12.5e,14,17,0,0
+3904,Normalized imaginary ACF at lag 4,N/A,IACF4,%12.5e,14,17,0,0
+3905,Normalized imaginary ACF at lag 5,N/A,IACF5,%12.5e,14,17,0,0
+3906,Normalized imaginary ACF at lag 6,N/A,IACF6,%12.5e,14,17,0,0
+3907,Normalized imaginary ACF at lag 7,N/A,IACF7,%12.5e,14,17,0,0
+3908,Normalized imaginary ACF at lag 8,N/A,IACF8,%12.5e,14,17,0,0
+3909,Normalized imaginary ACF at lag 9,N/A,IACF9,%12.5e,14,17,0,0
+3910,Normalized imaginary ACF at lag 10,N/A,IACF10,%12.5e,14,17,0,0
+3911,Normalized imaginary ACF at lag 11,N/A,IACF11,%12.5e,14,17,0,0
+3912,Normalized imaginary ACF at lag 12,N/A,IACF12,%12.5e,14,17,0,0
+3913,Normalized imaginary ACF at lag 13,N/A,IACF13,%12.5e,14,17,0,0
+3914,Normalized imaginary ACF at lag 14,N/A,IACF14,%12.5e,14,17,0,0
+3915,Normalized imaginary ACF at lag 15,N/A,IACF15,%12.5e,14,17,0,0
+3916,Normalized imaginary ACF at lag 16,N/A,IACF16,%12.5e,14,17,0,0
+3917,Normalized imaginary ACF at lag 17,N/A,IACF17,%12.5e,14,17,0,0
+3918,Normalized imaginary ACF at lag 18,N/A,IACF18,%12.5e,14,17,0,0
+3919,Normalized imaginary ACF at lag 19,N/A,IACF19,%12.5e,14,17,0,0
+3920,Normalized imaginary ACF at lag 20,N/A,IACF20,%12.5e,14,17,0,0
+3921,Normalized imaginary ACF at lag 21,N/A,IACF21,%12.5e,14,17,0,0
+3922,Normalized imaginary ACF at lag 22,N/A,IACF22,%12.5e,14,17,0,0
+3923,Normalized imaginary ACF at lag 23,N/A,IACF23,%12.5e,14,17,0,0
+3924,Normalized imaginary ACF at lag 24,N/A,IACF24,%12.5e,14,17,0,0
+3925,Normalized imaginary ACF at lag 25,N/A,IACF25,%12.5e,14,17,0,0
+3926,Normalized imaginary ACF at lag 26,N/A,IACF26,%12.5e,14,17,0,0
+3927,Normalized imaginary ACF at lag 27,N/A,IACF27,%12.5e,14,17,0,0
+3928,Normalized imaginary ACF at lag 28,N/A,IACF28,%12.5e,14,17,0,0
+3929,Normalized imaginary ACF at lag 29,N/A,IACF29,%12.5e,14,17,0,0
+3930,Normalized imaginary ACF at lag 30,N/A,IACF30,%12.5e,14,17,0,0
+3931,Normalized imaginary ACF at lag 31,N/A,IACF31,%12.5e,14,17,0,0
+3932,Normalized imaginary ACF at lag 32,N/A,IACF32,%12.5e,14,17,0,0
+3933,Normalized imaginary ACF at lag 33,N/A,IACF33,%12.5e,14,17,0,0
+3934,Normalized imaginary ACF at lag 34,N/A,IACF34,%12.5e,14,17,0,0
+3940,Real ACF,N/A,RACF,%12.5e,14,17,0,0
+3950,Imaginary ACF,N/A,IACF,%12.5e,14,17,0,0
+4001,Poker Flat MST data quality code 1,N/A,PKRQC1,%12.5e,14,18,0,0
+4002,Poker Flat MST data quality code 2,N/A,PKRQC2,%12.5e,14,18,0,0
+4003,Poker Flat MST data quality code 3,N/A,PKRQC3,%12.5e,14,18,0,0
+4004,Poker Flat MST data quality code 4,N/A,PKRQC4,%12.5e,14,18,0,0
+4005,Poker Flat MST data quality code 5,N/A,PKRQC5,%12.5e,14,18,0,0
+4011,Sond. Fabrey Perot data quality code 1,N/A,SNFPQ1,%12.5e,14,18,0,0
+4015,UIL QC: Log10(sodium counts),N/A,NACNTL,%12.5e,14,18,0,0
+4016,UIL QC: Log10(F factor),N/A,FFACL,%12.5e,14,18,0,0
+4017,UIL QC: Log10(Na returns/bkgnd noise),N/A,NABKL,%12.5e,14,18,0,0
+4018,UIL QC: Log10(av Rayleigh) = NrmlzFctr,N/A,RHNRML,%12.5e,14,18,0,0
+4020,CSL QC Neut temp from 1-h avg,K,CSLTNA,%12.5e,14,18,0,0
+4021,CSL QC Full width half max vert avg,m,FWHMZ,%12.5e,14,18,0,0
+4022,CSL QC Neut temp looking east,K,CSLTNE,%12.5e,14,18,0,0
+4023,CSL QC Neut temp looking north,K,CSLTNN,%12.5e,14,18,0,0
+4025,CFP QC: # coefficients,N/A,NCOEFS,%12.5e,14,18,0,0
+4050,AFP QC: Zenith ref flag (1=use ; 0=no),N/A,ZENREF,%12.5e,14,18,0,0
+4051,AFP QC: Free spectral range(arb p unit),N/A,FSPCTR,%12.5e,14,18,0,0
+4052,AFP QC: Etalon Thickness,m,ETTHIK,%12.5e,14,18,0,0
+4053,AFP QC: Intensity Calibration Factor,cnts-1R-1,ITNCAL,%12.5e,14,18,0,0
+4055,AFP QC: Num Harmonics in Fourier Anal,N/A,NHARMF,%12.5e,14,18,0,0
+4056,AFP QC: D(Vne)/Dx per km (x +Ewrd),ms-1km-1,DVNEDX,%12.5e,14,18,0,0
+4057,AFP QC: D(Vnn)/Dy per km (y +Nwrd),ms-1km-1,DVNNDY,%12.5e,14,18,0,0
+4058,AFP QC: Error in 4056+4057 per km,ms-1km-1,E56O57,%12.5e,14,18,0,0
+4060,AQF QC Standard deviation in 1411,ms-1,SD1411,%12.5e,14,18,0,0
+4061,AQF QC # Samples in time avg of 1411,N/A,NV1411,%9.1f,14,18,0,0
+4062,AQF QC Standard deviation in 1421,ms-1,SD1421,%12.5e,14,18,0,0
+4063,AQF QC # Samples in time avg of 1421,N/A,NV1421,%9.1f,14,18,0,0
+4064,AQF QC # Quality flag for a night (1-3),N/A,AQFFLG,%9.1f,14,18,0,0
+4070,COF QC Mean sampling density for winds,mn-1,COFTSW,%9.1f,14,18,0,0
+4071,COF QC Mean sampling density for hts,mn-1,COFTSH,%9.1f,14,18,0,0
+4080,STM QC Solar scaling factor,N/A,SOLSF,%9.1f,14,18,0,0
+4101,MUI: Nel for beam 1 (north),lg(m-3),MUNEL1,%9.3f,11,18,0,0
+4102,MUI: Nel for beam 2 (east),lg(m-3),MUNEL2,%9.3f,11,18,0,0
+4103,MUI: Nel for beam 3 (south),lg(m-3),MUNEL3,%9.3f,11,18,0,0
+4104,MUI: Nel for beam 4 (west),lg(m-3),MUNEL4,%9.3f,11,18,0,0
+4105,MUI: Nel 4-beam avg; night foF2 calib.,lg(m-3),MUNEL,%9.3f,11,18,0,0
+4106,MUI: line of sight velocity; beam 1,ms-1,MUVO1,%9.1f,11,18,0,0
+4107,MUI: line of sight velocity; beam 2,ms-1,MUVO2,%9.1f,11,18,0,0
+4108,MUI: line of sight velocity; beam 3,ms-1,MUVO3,%9.1f,11,18,0,0
+4109,MUI: line of sight velocity; beam 4,ms-1,MUVO4,%9.1f,11,18,0,0
+4110,MUI: ion velocity (up from NS dirs),ms-1,MUVIUNS,%9.1f,11,18,0,0
+4111,MUI: ion velocity (up from EW dirs),ms-1,MUVIUEW,%9.1f,11,18,0,0
+4112,MUI: ion diffusion velo. (vertical up),ms-1,MUVIDIF,%9.1f,11,18,0,0
+4113,MUI: most weighted alt; layer wind tech,km,MUHMSS,%12.5e,14,18,0,0
+4114,MUI: uncertainty of derived winds 1455,ms-1,MUDVNAP,%9.1f,11,18,0,0
+4131,DVS QC Counting error,K,DVSCE,%9.1f,11,18,0,0
+4132,DVS Cloud cover (0-3=clr-ovcst;4=snow),N/A,DVSCL,%9.1f,11,18,0,0
+4141,KHA observation loc (astronomical name),N/A,ASTLOC,%9.1f,11,18,0,0
+4142,KHA beginning hour/min (UT) from log,mmdd,KHABHM,%9.1f,11,18,0,0
+4143,KHA beginning centisec (UT) from log,s,KHABCS,%9.1f,11,18,0,0
+4144,KHA quality code (1=A; 2=A-; 3=B; ...),N/A,KHAQC,%9.1f,11,18,0,0
+4145,KHA rel annr emis rate w/o flatfld norm,N/A,KHARE1,%9.1f,11,18,0,0
+4146,KHA rel annr emis rate w/o flatfld norm,N/A,KHARE3,%9.1f,11,18,0,0
+4151,NICT QC 1-h std dev rejection criteria,N/A,NICTST,%9.1f,11,18,0,0
+4152,NICT QC % threshold acceptance criteria,percent,NICTTH,%9.1f,11,18,0,0
+4171,RFP median nightly zero los wind,ms-1,RFPMD0,%9.1f,11,18,0,0
+4172,RFP ave hourly zero los wind,ms-1,RFPAVH,%9.1f,11,18,0,0
+4173,RFP los wind before zero rm (+away),ms-1,RFPLOS,%9.1f,11,18,0,0
+4174,RFP flag (0 original; 1 winds revised),N/A,RFPFLAG,%9.1f,11,18,0,0
+4175,Temp flag: 0 ok; 1 caution; 2 likely ba,N/A,TEMP_ERR,%9.0f,11,18,1,0
+4176,Wind flag: 0 ok; 1 caution; 2 likely ba,N/A,WIND_ERR,%9.0f,11,18,1,0
+4177,Doppler cal: 1=laser; 0=no vert winds,N/A,DOPPL_REF,%9.0f,11,18,1,0
+4181,EQB QC flag: 1=best; 2=good; 3=not good,N/A,EQB_QC_FL,%12.0f,14,18,0,0
+4182,EQB provisional Kp from obs eqb at MLT,N/A,EQB_PRV_KP,%12.2f,14,18,0,0
+4183,EQB probability pKp in 1.5 sigma of Kp,N/A,EQB_PRB_KP,%12.3f,14,18,0,0
+4185,Wind uncertainty - LSF to sky fringes,ms-1,FIT_SIGMA,%12.5e,14,18,1,0
+4187,Wind uncertainty - fluct in cal source,ms-1,CAL_SIGMA,%12.5e,14,18,1,0
+4200,Satellite id,N/A,SAT_ID,%i,14,18,0,0
+4307,Decimal latitude of sending station,deg,TXLAT,%9.2f,12,1,0,0
+4308,Decimal longitude of sending station,deg,TXLON,%9.2f,12,1,0,0
+4309,Decimal latitude of receiving station,deg,RXLAT,%9.2f,12,1,0,0
+4310,Decimal longitude of receiving station,deg,RXLON,%9.2f,12,1,0,0
+4311,Sender mode of operation,N/A,SMODE,%8s,9,14,1,0
+4312,Sender source type,N/A,SSRC,%5s,6,14,1,0
+4313,Signal path length (assuming shortest path),km,PTHLEN,%7.10f,18,1,0,0
+4314,Latitude of signal center point,deg,LATCEN,%9.2f,12,1,0,0
+4315,Longitude of signal center point,deg,LONCEN,%9.2f,12,1,0,0
+0,Length of this record,N/A,LTOT,%9.0f,11,-2,0,0
+0,Kind of this record,N/A,KREC,%9.0f,11,-2,0,0
+3339,Instrument Code,N/A,KINST,%i,11,-1,0,0
+3344,Kind of data,N/A,KINDAT,%i,11,-1,0,0
+0,Beginning year,N/A,IBYR,%9.0f,11,-2,0,0
+0,Beginning date,N/A,IBDT,%9.0f,11,-2,0,0
+0,Beginning hour & min,N/A,IBHM,%9.0f,11,-2,0,0
+0,Beginning centisecond,N/A,IBCS,%9.0f,11,-2,0,0
+0,Ending year,N/A,IEYR,%9.0f,11,-2,0,0
+0,Ending date,N/A,IEDT,%9.0f,11,-2,0,0
+0,Ending hour & min,N/A,IEHM,%9.0f,11,-2,0,0
+0,Ending centisecond,N/A,IECS,%9.0f,11,-2,0,0
+0,Length of this prolog,N/A,LPROL,%9.0f,11,-2,0,0
+0,Number of single-valued parameters,N/A,JPAR,%9.0f,11,-2,0,0
+0,Number of multiple-valued parameters,N/A,MPAR,%9.0f,11,-2,0,0
+0,Num entries for each multi-valued parm,N/A,NROW,%9.0f,11,-2,0,0
+0,Row number of 2D record,N/A,ROW,%9.0f,11,-2,0,0
+0,Beginning year of first record,N/A,FIRST_IBYR,%9.0f,14,-2,0,0
+0,Beginning date of first record,N/A,FIRST_IBDT,%9.0f,14,-2,0,0
+0,Beginning hour & min of first record,N/A,FIRST_IBHM,%9.0f,14,-2,0,0
+0,Beginning centisecond of first record,N/A,FIRST_IBCS,%9.0f,14,-2,0,0
+0,Ridiculous parameter for test only,N/A,LOW_GDALT,%9.0f,11,-2,0,0
+0,Ridiculous parameter for test only,N/A,AVE_GDALT,%9.0f,11,-2,0,0
+#
+# The following parameters are deprecated because they are duplicates of the main parameter,
+# whose code is listed at the end of the line.  They exist only because the original Cedar
+# database format used 16 bit integers to store data. Please do not use them.
+#
+411,Signal to noise ratio,N/A,SNP3,%9.3f,11,5,0,0,410
+415,# samples used in time average,N/A,NSAMPI,%12.5e,14,5,0,0,414
+421,Reduced-chi square of fit,N/A,CHIP3,%12.5e,14,5,0,0,420
+802,Line of sight neutral vel (pos = away),ms-1,VNU2,%12.5e,14,8,0,0,800
+803,Line of sight neutral vel (pos = away),ms-1,VNU3,%12.5e,14,8,0,0,800
+806,Neutral velocity spread,ms-1,VNUS3,%12.5e,14,8,0,0,805
+1241,Ion velocity in direction 4 (perp east),ms-1,VIPE1,%12.5e,14,11,0,0,1240
+1242,Ion velocity in direction 4 (perp east),ms-1,VIPE2,%12.5e,14,11,0,0,1240
+1251,Ion velocity in direction 5 (perp north,ms-1,VIPN1,%12.5f,14,11,0,0,1250
+1252,Ion velocity in direction 5 (perp north,ms-1,VIPN2,%12.5e,14,11,0,0,1250
+1272,Ion velocity in direction 7,ms-1,VI72,%12.5e,14,11,0,0,1270
+1282,Ion velocity in direction 8,ms-1,VI82,%12.5e,14,11,0,0,1280
+1431,Neutral wind in direction 3 (up),ms-1,VN31,%12.5e,14,11,0,0,1430
+1456,Neut. horiz. magnetic merid. wind,ms-1,UMER1,%12.5e,14,11,0,0,1455
+512,Electron density (Ne),m-3,NE8,%12.5e,14,6,0,0,510
+5000,AACGM magnetic latitude of meas volume,deg,PACLAT,%9.2f,11,2,0,0,225
+5001,AACGM magnetic longitude of meas volume,deg,PACLON,%9.2f,11,2,0,0,245

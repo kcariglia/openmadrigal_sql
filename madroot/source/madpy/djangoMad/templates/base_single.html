@@ -1,0 +1,121 @@
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Base template for Madrigal single experiment web interface
+	
+	$Id: base_single.html 7652 2024-06-25 20:18:56Z brideout $
+{% endcomment %}
+
+{# Load CSS and JavaScript #}
+{% load static %}
+
+<script type="text/javascript" src="{% static "jquery.min.js" %}"></script>
+
+<link rel="stylesheet" href="{% static "lib/css/bootstrap.min.css" %}" type="text/css" />
+<script type="text/javascript" src="{% static "lib/js/bootstrap.min.js" %}"></script>
+
+{% load bootstrap3 %}
+
+<link rel="stylesheet" href="{% static "bootstrap_calendar/css/bootstrap_calendar.css" %}" type="text/css" />
+<script type="text/javascript" src="{% static "bootstrap_calendar/js/bootstrap_calendar.js" %}"></script>
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="shortcut icon" type="image/png" href="/static/favicon.ico"/>
+	<title>{% block title %}Madrigal Database{% endblock %}</title>
+    <style type="text/css">
+		html body {
+	    	background-color: {{bg_color}};
+		}
+		.breadcrumb > li + li:before {
+		    content: none;
+		}
+	</style>
+    {% block extra_head %}{% endblock %}
+    {% block ajax_js %}{% endblock %}
+</head>
+<body>
+	<div class="loader" style="display:none"></div>
+	<div class="container-fluid">
+	{% include "navbar.html" %}
+	
+	   <center><h4>Select single Madrigal experiment</h4></center>
+
+		<div class="row">
+			<div class="col-sm-12">
+		    {% bootstrap_messages %}
+		    </div>
+	    </div>
+	    
+	    {% if form.errors %}
+	    <div class="row">
+			<div class="col-sm-12">
+		    <p style="color: red;">
+		        Please correct the error{{ form.errors|pluralize }} below.
+		        {{ form.errors }}
+		    </p>
+		    </div>
+	    </div>
+	    {% endif %}
+	    
+	    <div class="row">
+			
+			<div class="col-sm-3">
+			{% block isGlobal %}{% endblock %}
+			{% block categories %}{% endblock %}
+			{% block instruments %}{% endblock %}
+	    	{% block years %}{% endblock %}
+	    	{% block months %}{% endblock %}
+	    	{% block calendar %}{% endblock %}
+			</div>
+			
+			<div class="col-sm-9">
+			{% block experiment_select %}{% endblock %}
+			{% block file_select %}{% endblock %}
+			{% block file_buttons %}{% endblock %}
+			{% block file_data %}{% endblock %}
+			</div>
+			
+		</div>
+	    <p></p>
+	    
+	    {% comment %}
+	    
+	    <div class="row">
+	    	<div class="col-sm-12">{% block download %}{% endblock %}</div>
+	    </div>
+	    <p></p>
+	    
+	    <div class="row">
+		    <div class="col-sm-12">{% block information %}{% endblock %}</div>
+	    </div>{% endcomment %}
+	    
+	    <p><hr></p>
+	
+	    <footer class="row">
+	        <div class="col-sm-6">
+	            <p>Madrigal database</p>
+	        </div>
+	        <div class="col-sm-6" style="text-align:right">
+	            <p>
+	            </p>
+	        </div>
+	    </footer>
+	
+	</div> <!-- container-fluid -->
+	
+	<script>
+	    $('[data-toggle="tooltip"]').tooltip();
+	    $('[data-toggle="tooltip"]').on('show.bs.tooltip', function() {
+		    // Only one tooltip should ever be open at a time
+		    $('.tooltip').not(this).hide();
+		});
+	    $('.my-dropdown').dropdown();
+		$('.my-dropdown').tooltip();
+	</script>
+	
+</body>
+</html>

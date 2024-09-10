@@ -1,0 +1,136 @@
+#!/bin/sh
+#
+#   This script installs the python madrigal library, along with the required Fortran
+#   and C libraries that support it.
+#
+#   Installation instructions:
+#      1. Get the latest version of Madrigal from www.openmadrigal.org.
+#      2. Create a MADROOT directory.  This directory will need to be permanent.
+#      3. Uncompress and untar the Madrigal distribution into MADROOT.
+#      4. Copy madrigal.cfg.template to madrigal.cfg, and edit only one field,
+#         MADROOT.  Set it to be the path of the MADROOT directory.
+#      5. Copy this file (installMadPy) into MADROOT.
+#      6. You will be installing libraries into /usr/local, and the madrigal
+#         module into python.  Make sure you are a user with permission to do both
+#         (typically that is root).
+#      7. run "bash installMadPy" from MADROOT
+#
+#
+#    Note:  The Madrigal library is meant to support a full Madrigal installation, so 
+#           some methods will fail if parts of the Madrigal installation they require
+#           are missing.  However, many of the modules (such as madrigal.cedar) should work
+#           normally.
+#        
+# $Id: installMadPy 7692 2024-09-05 20:46:38Z kcariglia $
+
+# verify we are indeed in the right pwd
+if [ ! -f installMadrigal ]
+then
+   echo "You must run this script from the MADROOT directory"
+   exit -1
+fi
+
+# if MADROOT is set, be sure it matches PWD
+if [ "$MADROOT" != "" ]
+then
+   if [ $MADROOT != $PWD ]
+   then
+      echo "Environmental variable MADROOT = $MADROOT does not match PWD = $PWD"
+      exit -1
+   fi
+else
+   export MADROOT=$PWD
+fi
+
+# use the tclsh to run simple installation scripts
+TCLSH=$(which tclsh)
+if [ "$TCLSH" = "" ]
+then
+   echo
+   echo "tclsh needs to be installed and in PATH"
+   exit -1
+fi
+
+echo "********** configureSource **********"
+$TCLSH configureSource
+if [ $? -ne 0 ]
+then
+    exit -1
+fi
+
+# Compile the Libraries and Programs
+# ----------------------------------
+cd source
+
+echo "********** ./configure **********"
+./configure
+if [ $? -ne 0 ]
+then
+    exit -1
+fi
+
+echo "********** make Fortran (geolib) library **********"
+cd madf/geolib
+make clean
+if [ $? -ne 0 ]
+then
+    exit -1
+fi
+
+make
+if [ $? -ne 0 ]
+then
+    exit -1
+fi
+
+make install
+if [ $? -ne 0 ]
+then
+    exit -1
+fi
+
+cd ../..
+
+echo "********** make C (madrec) library **********"
+cd madc/madrec
+make clean
+if [ $? -ne 0 ]
+then
+    exit -1
+fi
+
+make
+if [ $? -ne 0 ]
+then
+    exit -1
+fi
+
+make install
+if [ $? -ne 0 ]
+then
+    exit -1
+fi
+
+cd ../..
+
+
+
+echo "********** Installing madrigal python library **********"
+cd madpy
+rm -f -r build
+pip install .
+if [ $? -ne 0 ]
+then
+    exit -1
+fi
+rm -f -r build
+cd ../..
+
+
+
+
+# Install complete
+# ---------------------
+echo ""
+echo "Madrigal installation complete"
+

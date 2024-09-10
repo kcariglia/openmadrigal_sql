@@ -1,0 +1,525 @@
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Base template for Madrigal download as is script html javascript
+	
+	$Id: generate_download_advanced_javascript.html 6529 2018-07-03 12:55:13Z brideout $
+{% endcomment %}
+
+
+<script language="JavaScript">
+
+	//Category object to hold data for each individual instrument category
+	function Category(name,catId)
+	{
+		this.name=name;
+		this.catId=catId;
+	}
+
+	//Instrument object to hold data for each individual instrument
+	function Instrument(name,catId,instId,local_sy,local_ey)
+	{
+		this.name=name;
+		this.catId=catId;
+		this.instId=instId;
+		this.local_sy=local_sy;
+		this.local_ey=local_ey;
+	}
+	
+	//kindat object to hold kindat information if needed
+	function Kindat(kindat, kindatDesc, kinst)
+	{
+		this.kindat=kindat;
+		this.kindatDesc=kindatDesc;
+		this.kinst=kinst;
+	}
+
+	//categoryArr holds an array of category objects
+	var categoryArr = new Array();
+	categoryArr[0]=new Category("All Instrument Types", 0);
+	{% for category in categoryList %}
+		categoryArr[{{forloop.counter}}] = new Category("{{category.0}}", {{category.1}});
+	{% endfor %}
+
+	//instArr holds an array of instrument objects
+	var instArr = new Array();
+	{% for instrument in instrumentList %}
+		instArr[{{forloop.counter0}}] = new Instrument("{{instrument.0}}", {{instrument.1}}, {{instrument.2}}, {{instrument.3}}, {{instrument.4}});
+	{% endfor %}
+		
+	//kindatArr holds an array of kindat objects
+	var kindatArr = new Array();
+	kindatArr[0]=new Kindat("All Kinds of data", "", 0);
+	{% for kindat in kindatList %}
+		kindatArr[{{forloop.counter}}] = new Kindat({{kindat.0}}, "{{kindat.1}}", {{kindat.2}});
+	{% endfor %}
+	
+		
+	function leapYear(year)
+	{
+	  return ((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0);
+	}
+		
+		
+	function checkYearMonthDay(year, month, day)
+	{
+	  // very simple data checker - returns false if not valid
+	  var thirtyDays = [4,6,9,11];
+	  for(i = 0; i < thirtyDays.length; i++)
+	  {
+	      if (month == thirtyDays[i])
+	      {
+	          if (day > 30) return(false);
+	      }
+	  }
+	  if (month == 2)
+	  {
+	      if (day > 29) return(false);
+	      if (!leapYear(year))
+	      {
+	          if (day > 28) return(false);
+	      }
+	  }
+	  return(true);
+	}
+		
+
+		
+
+	function validateFilter(madForm)
+	{
+	    // returns false if not valid; query_string if valid
+	    // declarations
+	    var js_start_date, js_end_date;
+	    var url = 'categories=0';
+	    
+	    // read some form info
+	    var start_date = $.trim($('#id_start_date').val());
+	    url += '&start_date=' + start_date;
+	    var end_date = $.trim($('#id_end_date').val());
+	    url += '&end_date=' + end_date;
+	    
+	    // verify at least one instrument selected
+        var instSelectArr = new Array();
+		for(var count = 0; count < madForm.instruments.options.length; count++)
+		{
+			if (madForm.instruments[count].selected)
+				instSelectArr[instSelectArr.length] = Number(madForm.instruments.options[count].value);
+		}
+		if (instSelectArr.length != 1)
+		{
+		    alert('Please select one instrument');
+		    return(false);
+		}
+		if (instSelectArr[0] == 0)
+		{
+			alert('Please select one particular instrument');
+		    return(false);
+		}
+		
+		url += '&instruments=' + instSelectArr[0];
+		    
+		//start_date and end_date checks
+		
+		// verify three parts to each
+	    var items = start_date.split("-");
+	    if (items.length != 3)
+	    {
+		    alert('Illegal start date ' +  start_date + ', format: YYYY-MM-DD');
+		    return(false);
+		}
+		
+		// verify not too long
+		if (start_date.length > 10)
+		{
+		    alert('Illegal start date ' +  start_date + ', format: YYYY-MM-DD');
+		    return(false);
+		}
+		
+		// simple date check
+		var year = parseInt(items[0]);
+		var month = parseInt(items[1]);
+		var day = parseInt(items[2]);
+		if (!checkYearMonthDay(year, month, day))
+		{
+		    alert('Illegal start date ' +  start_date);
+		    return(false);
+		}
+		
+		items = end_date.split("-");
+	    if (items.length != 3)
+	    {
+		    alert('Illegal end date ' +  end_date + ', format: YYYY-MM-DD');
+		    return(false);
+		}
+		
+		// verify not too long
+		if (end_date.length > 10)
+		{
+		    alert('Illegal end date ' +  end_date + ', format: YYYY-MM-DD');
+		    return(false);
+		}
+		
+		// simple date check
+		year = parseInt(items[0]);
+		month = parseInt(items[1]);
+		day = parseInt(items[2]);
+		if (!checkYearMonthDay(year, month, day))
+		{
+		    alert('Illegal end date ' +  end_date);
+		    return(false);
+		}
+		
+		js_start_date = new Date(start_date);
+		if (isNaN(js_start_date))
+		{
+		    alert('Illegal start date: ' + start_date);
+		    return(false);
+		}
+		js_end_date = new Date(end_date);
+		if (isNaN(js_end_date))
+		{
+		    alert('Illegal end date: ' + end_date);
+		    return(false);
+		}
+		if (js_start_date > js_end_date)
+		{
+		    alert('Start date ' + start_date + ' is later than end date ' + end_date);
+		    return(false);
+		}
+		
+		// format
+		var formatSelect = $('input[name=format_select]:checked', '#id_form').val();
+		url += '&format_select=' + formatSelect;
+		
+		// directory
+		var directorySelect = $('input[name=directory_select]:checked', '#id_form').val();
+		url += '&directory_select=' + directorySelect;
+		
+		// language
+		var languageSelect = $('input[name=language_select]:checked', '#id_form').val();
+		url += '&language_select=' + languageSelect;
+		
+		// parms
+		parmsSelected = $('input[name="parameters"]:checked');
+		if (parmsSelected.length == 0)
+		{
+		    alert('Must select at least one parameter');
+		    return(false);
+		}
+		var parmStr = '';
+		parmsSelected.each(function( index ) {
+		  parmStr = $( this ).val();
+		  parmStr = parmStr.replace('+', '%2B');
+		  url += '&parameters=' + parmStr;
+		});
+		
+		// kindat
+		for(var count = 0; count < madForm.kindat_select.options.length; count++)
+		{
+			if (madForm.kindat_select[count].selected)
+			    if (Number(madForm.kindat_select.options[count].value) != 0)
+			    	url += '&kindat_select=' + madForm.kindat_select.options[count].value;
+		}
+		
+		// expName
+		var expName = $.trim($('#id_expName').val());
+		url += '&expName=' + encodeURIComponent(expName);
+		
+		// fileDesc
+		var fileDesc = $.trim($('#id_fileDesc').val());
+		url += '&fileDesc=' + encodeURIComponent(fileDesc);
+		
+		// seasonal filters
+		seasStartDay = parseInt($('#id_seasonalStartDay').val())
+		if (seasStartDay < 1 || seasStartDay > 31 || isNaN(seasStartDay))
+		{
+			alert('Seasonal start day must be integer between 1 and 31, not: ' + seasStartDay);
+		    return(false);
+		}
+		url += '&seasonalStartDay=' + seasStartDay
+		
+		seasStartMonth = parseInt($('#id_seasonalStartMonth').val())
+		if (seasStartMonth < 1 || seasStartMonth > 12 || isNaN(seasStartMonth))
+		{
+			alert('Seasonal start month must be integer between 1 and 12, not: ' + seasStartMonth);
+		    return(false);
+		}
+		url += '&seasonalStartMonth=' + seasStartMonth
+		
+		seasEndDay = parseInt($('#id_seasonalEndDay').val())
+		if (seasEndDay < 1 || seasEndDay > 31 || isNaN(seasEndDay))
+		{
+			alert('Seasonal end day must be integer between 1 and 31, not: ' + seasEndDay);
+		    return(false);
+		}
+		url += '&seasonalEndDay=' + seasEndDay
+		
+		seasEndMonth = parseInt($('#id_seasonalEndMonth').val())
+		if (seasEndMonth < 1 || seasEndMonth > 12 || isNaN(seasEndMonth))
+		{
+			alert('Seasonal end month must be integer between 1 and 12, not: ' + seasEndMonth);
+		    return(false);
+		}
+		url += '&seasonalEndMonth=' + seasEndMonth
+		// finally, make sure end not before start
+		if ((seasStartDay + (31*seasStartMonth)) > (seasEndDay + (31*seasEndMonth)))
+		{
+			alert('Seasonal start must not be after seasonal end');
+		    return(false);
+		}
+		
+		// parameter filter logic
+		var parm_1 = $("#id_parm_1").val();
+		parm_1 = parm_1.replace('+', '%2B');
+	    var parm_1_lower_str = $.trim($("#id_parm_1_lower").val());
+	    var parm_1_upper_str = $.trim($("#id_parm_1_upper").val());
+	    var parm_2 = $("#id_parm_2").val();
+	    parm_2 = parm_2.replace('+', '%2B');
+	    var parm_2_lower_str = $.trim($("#id_parm_2_lower").val());
+	    var parm_2_upper_str = $.trim($("#id_parm_2_upper").val());
+	    var parm_3 = $("#id_parm_3").val();
+	    parm_3 = parm_3.replace('+', '%2B');
+	    var parm_3_lower_str = $.trim($("#id_parm_3_lower").val());
+	    var parm_3_upper_str = $.trim($("#id_parm_3_upper").val());
+	    if (parm_1 != 'None')
+	    {
+		    if (parm_1_lower_str.length > 0)
+		    {
+		        var parm_1_lower = Number(parm_1_lower_str);
+		        if (isNaN(parm_1_lower))
+				{
+					alert('Minimum value for parm 1 (' + parm_1 + ') is invalid number: ' + parm_1_lower_str);
+					return(false);
+				}
+		    }
+		    if (parm_1_upper_str.length > 0)
+		    {
+		        var parm_1_upper = Number(parm_1_upper_str);
+		        if (isNaN(parm_1_upper))
+				{
+					alert('Maximum value for parm 1 (' + parm_1 + ') is invalid number: ' + parm_1_upper_str);
+					return(false);
+				}
+		    }
+		    if (parm_1_lower_str.length > 0 && parm_1_upper_str.length > 0)
+		    {
+		        if (parm_1_lower > parm_1_upper)
+		        {
+		            alert('Minimum parm 1 (' + parm_1 + ') <' + parm_1_lower_str + '> cannot be greater than maximum parm 1 <' + parm_1_upper_str + '>');
+					return(false);
+		        }
+		    }
+		    url += '&parm_1=' + parm_1 + '&parm_1_lower=' + parm_1_lower_str + '&parm_1_upper=' + parm_1_upper_str;
+	    }
+	    
+	    if (parm_2 != 'None')
+	    {
+		    if (parm_2_lower_str.length > 0)
+		    {
+		        var parm_2_lower = Number(parm_2_lower_str);
+		        if (isNaN(parm_2_lower))
+				{
+					alert('Minimum value for parm 2 (' + parm_2 + ') is invalid number: ' + parm_2_lower_str);
+					return(false);
+				}
+		    }
+		    if (parm_2_upper_str.length > 0)
+		    {
+		        var parm_2_upper = Number(parm_2_upper_str);
+		        if (isNaN(parm_2_upper))
+				{
+					alert('Maximum value for parm 2 (' + parm_2 + ') is invalid number: ' + parm_2_upper_str);
+					return(false);
+				}
+		    }
+		    if (parm_2_lower_str.length > 0 && parm_2_upper_str.length > 0)
+		    {
+		        if (parm_2_lower > parm_2_upper)
+		        {
+		            alert('Minimum parm 2 (' + parm_2 + ') <' + parm_2_lower_str + '> cannot be greater than maximum parm 2 <' + parm_2_upper_str + '>');
+					return(false);
+		        }
+		    }
+		    url += '&parm_2=' + parm_2 + '&parm_2_lower=' + parm_2_lower_str + '&parm_2_upper=' + parm_2_upper_str;
+	    }
+	    
+	    if (parm_3 != 'None')
+	    {
+		    if (parm_3_lower_str.length > 0)
+		    {
+		        var parm_3_lower = Number(parm_3_lower_str);
+		        if (isNaN(parm_3_lower))
+				{
+					alert('Minimum value for parm 3 (' + parm_3 + ') is invalid number: ' + parm_3_lower_str);
+					return(false);
+				}
+		    }
+		    if (parm_3_upper_str.length > 0)
+		    {
+		        var parm_3_upper = Number(parm_3_upper_str);
+		        if (isNaN(parm_3_upper))
+				{
+					alert('Maximum value for parm 3 (' + parm_3 + ') is invalid number: ' + parm_3_upper_str);
+					return(false);
+				}
+		    }
+		    if (parm_3_lower_str.length > 0 && parm_3_upper_str.length > 0)
+		    {
+		        if (parm_3_lower > parm_3_upper)
+		        {
+		            alert('Minimum parm 3 (' + parm_3 + ') <' + parm_3_lower_str + '> cannot be greater than maximum parm 3  <' + parm_3_upper_str + '>');
+					return(false);
+		        }
+		    }
+		    url += '&parm_3=' + parm_3 + '&parm_3_lower=' + parm_3_lower_str + '&parm_3_upper=' + parm_3_upper_str;
+	    }
+
+		return url;
+	}
+
+
+	
+	function updateInstruments(madForm)
+	{
+	    // this method reloads the instrument list
+		var catSelectArr = new Array(); // will hold list of categories selected
+		for(var count = 0; count < madForm.categories.options.length; count++)
+		{
+			if (madForm.categories[count].selected)
+				catSelectArr[catSelectArr.length] = Number(madForm.categories.options[count].value);
+		}
+		
+        // next collect the list of already selected kinsts (note - they will disappear if not in a selected category)
+        var instSelectArr = new Array();
+		for(var count = 0; count < madForm.instruments.options.length; count++)
+		{
+			if (madForm.instruments[count].selected)
+				instSelectArr[instSelectArr.length] = Number(madForm.instruments.options[count].value);
+		}
+		
+		// rebuild instruments list
+		madForm.instruments.options.length = 0;
+		for(var count = 0; count < instArr.length; count++)
+		{
+
+		    //check if this instrument has right category
+			var isOkay = false;
+			for (var catCount=0; catCount<catSelectArr.length; catCount++)
+			{
+				if (instArr[count].catId == catSelectArr[catCount] || catSelectArr[catCount] == 0)
+					isOkay = true;
+			}
+			if (!isOkay)
+				continue;
+				
+			//check if this instrument was selected
+			var isSelected = false;
+			for (var instCount=0; instCount<instSelectArr.length; instCount++)
+			{
+				if (instArr[count].instId == instSelectArr[instCount])
+					isSelected = true;
+			}
+			
+			// get years
+			var startYear = instArr[count].local_sy;
+			var endYear = instArr[count].local_ey;
+			
+			// add to instruments
+			if(instArr[count].instId != 0)
+				var name = instArr[count].name + " [" + startYear.toString() + "-" + endYear.toString() + "]";
+			else
+				var name = instArr[count].name;
+			if (isSelected)
+				newOpt = new Option(name, instArr[count].instId, false, true);
+			else
+				newOpt = new Option(name, instArr[count].instId, false, false);
+			madForm.instruments.options[madForm.instruments.options.length] = newOpt;
+				
+		}
+		
+		updateParmsKindats(madForm); 
+	}
+	
+	
+	function updateParmsKindats(madForm)
+	{
+	    // this method reloads the parameter, parm filters, and kindat lists
+	    kinst = parseInt($("#id_instruments").val());
+	    
+	    $("#id_parms_div").empty();
+	    if (kinst != 0)
+	    {
+	    	var url = '{% url 'generate_parms_script' %}' + '?instruments=' + kinst;
+			$("#id_parms_div").load(url);
+	    }
+	    else
+	    	$("#id_parms_div").html('<p><strong>Please select an instrument above first to see possible parameters available with that instrument</strong></p>');
+	    	
+	    $("#id_parms_filters_div").empty();
+	    if (kinst != 0)
+	    {
+	    	var url = '{% url 'generate_parms_filters_script' %}' + '?instruments=' + kinst;
+			$("#id_parms_filters_div").load(url);
+	    }
+	    else
+	    	$("#id_parms_div").html('<p><strong>Please select an instrument above first to see parameter filters<strong></p>');
+	    
+	    // rebuild kindat list
+		madForm.kindat_select.options.length = 0;
+		
+		if (kinst == 0)
+		{
+		    newOpt = new Option('Select an instrument first to see list', '0', false, true);
+		    madForm.kindat_select.options[0] = newOpt;
+		}
+		else
+		{
+			index = 0;
+			newOpt = new Option('All kinds of data', '0', false, true);
+		    madForm.kindat_select.options[0] = newOpt;
+		    index++;
+			for (var kindatCount=0; kindatCount<kindatArr.length; kindatCount++)
+			{
+				if (kindatArr[kindatCount].kinst != kinst)
+					continue;
+				newOpt = new Option(kindatArr[kindatCount].kindatDesc, kindatArr[kindatCount].kindat, false, false);
+		    	madForm.kindat_select.options[index] = newOpt;
+		    	index++;
+			} 
+		}
+	   
+	}
+	
+
+   function changeFormat(radio)
+   {
+       choice = $("input[name=formats]:checked").val();
+       if (choice != 'hdf5')
+       {
+           $('.hdf5_prolog').hide();
+           $('.standard_prolog').show();
+       }
+       else
+       {
+           $('.hdf5_prolog').show();
+           $('.standard_prolog').hide();
+       }
+   }
+
+	
+
+	function generateCommand(madForm)
+	{
+		query_str = validateFilter(madForm)
+		if (query_str == false)
+		{
+			return false;
+		}
+		$("#script_output").empty();
+		var url = '{% url 'generate_download_advanced_script' %}' + '?' + query_str;
+		$("#script_output").load(url);
+	}
+
+
+</script>

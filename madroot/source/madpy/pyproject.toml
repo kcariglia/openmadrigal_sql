@@ -1,0 +1,33 @@
+[project]
+name = "madrigal"
+version = "3.2.8"
+description = "Madrigal Python API - now uses python 3"
+keywords = ["Madrigal"]
+authors = [
+    {name = "Bill Rideout", email = "brideout@mit.edu"}
+]
+license = {text = "MIT"}
+classifiers = ["License :: OSI Approved :: MIT License"]
+dependencies = [
+    "svn",
+    "h5py",
+    "scipy",
+    "django",
+    "netCDF4",
+    "matplotlib",
+    "setupext",
+    "aacgmv2",
+    "filelock",
+    ]
+
+[project.urls]
+"Homepage" = "http://cedar.openmadrigal.org"
+
+[build-system]
+requires = ["setuptools", "wheel", "cython", "numpy"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+py-modules = ["madrigal.admin", "madrigal.cedar", "madrigal.data", "madrigal.derivation",
+                    "madrigal.isprint", "madrigal.metadata", "madrigal.openmadrigal",
+                    "madrigal.ui.madrigalPlot", "madrigal.ui.userData", "madrigal.ui.web"]

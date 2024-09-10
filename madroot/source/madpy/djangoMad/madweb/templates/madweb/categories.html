@@ -1,0 +1,16 @@
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Template for category select in single experiment web interface
+	
+	$Id: categories.html 4736 2015-01-30 22:01:55Z brideout $
+{% endcomment %}
+					<div class="row">
+						{{ form.categories.label }}
+					</div>
+					<!-- Category select is its own row in selections column -->
+					<div class="row">
+						<div class="col-sm-12">
+							{{ form.categories }}
+						</div> <!-- end span -->
+					</div> <!-- end row -->

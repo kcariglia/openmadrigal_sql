@@ -1,0 +1,232 @@
+{% load static %}
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/doc_template.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>Other administrative tasks</title>
+<!-- InstanceEndEditable --><!-- InstanceBeginEditable name="head" -->
+
+
+<style type="text/css">
+<!--
+.style1 {font-family: "Courier New", Courier, monospace}
+-->
+</style>
+<!-- InstanceEndEditable -->
+<link href="/static/madrigal.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+	html body {
+		background-color: {{bg_color}};
+	}
+</style>
+<!-- InstanceParam name="href_up_top" type="text" value="admin.html" --><!-- InstanceParam name="href_next_top" type="text" value="ad_logging.html" --><!-- InstanceParam name="href_back_top" type="text" value="ad_createExp.html" --><!-- InstanceParam name="href_back_bottom" type="text" value="ad_createExp.html" --><!-- InstanceParam name="href_up_bottom" type="text" value="admin.html" --><!-- InstanceParam name="href_next_bottom" type="text" value="ad_logging.html" --><!-- InstanceParam name="href_prev_top" type="text" value="ad_createExp.html" --><!-- InstanceParam name="href_uptitle_top" type="text" value="admin.html" --><!-- InstanceParam name="href_nexttitle_top" type="text" value="ad_logging.html" --><!-- InstanceParam name="href_prevtitle_bottom" type="text" value="ad_createExp.html" --><!-- InstanceParam name="href_uptitle_bottom" type="text" value="admin.html" --><!-- InstanceParam name="href_nexttitle_bottom" type="text" value="ad_logging.html" -->
+</head>
+
+<body>
+<table width="100%" border="1" cellpadding="0" cellspacing="2" class="navigation">
+  <tr>
+    <td width="5%"><a href="{% url 'docs' 'ad_createExp.html' %}"><img src="/static/previous.png" alt="previous" width="32" height="32" /></a></td>
+    <td width="5%"><a href="{% url 'docs' 'admin.html' %}"><img src="/static/up.png" alt="up" width="32" height="32" /></a></td>
+    <td width="5%"><a href="{% url 'docs' 'ad_logging.html' %}"><img src="/static/next.png" alt="next" width="32" height="32" /></a></td>
+    <td width="54%"><!-- InstanceBeginEditable name="EditTitleTop" -->Other administrative tasks <!-- InstanceEndEditable --></td>
+    <td width="13%"><a href="{% url 'docs' 'madContents.html' %}">Doc home </a></td>
+    <td width="18%"><a href="/">Madrigal home</a></td>
+  </tr>
+</table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" href="{% url 'docs' 'ad_createExp.html' %}"><!-- InstanceBeginEditable name="PreviousTitle" -->Creating Madrigal experiments <!-- InstanceEndEditable --></A>
+<b class="navlabel">&nbsp;&nbsp;Up:</b>
+<a class="sectref" href="{% url 'docs' 'admin.html' %}"><!-- InstanceBeginEditable name="UpTitle" -->Madrigal admin guide <!-- InstanceEndEditable --></A>
+<b class="navlabel">&nbsp;&nbsp;Next:</b>
+<a class="sectref" href="{% url 'docs' 'ad_logging.html' %}"><!-- InstanceBeginEditable name="NextTitle" -->User access logging  <!-- InstanceEndEditable --></A></div>
+<hr/>
+<!-- InstanceBeginEditable name="EditDoc" -->
+<h1 align="center">Other administrative tasks</h1>
+<p>Some other tasks a Madrigal administrator might need to do:</p>
+<ul>
+  <li><a href="#cached_files">Create cached text or netCDF4 versions of CEDAR Madrigal Hdf5 files</a></li>
+  <li><a href="#private">Set private versus public access for Madrigal data files</a></li>
+  <li><a href="#links">Modifying the Madrigal homepage</a></li>
+  <li><a href="#madrigal_cfg">Modify settings in the madrigal.cfg file</a></li>
+  <li><a href="#siteSpecific">Add documentation specific to your site to Madrigal documentation page</a></li>
+  <li><a href="#rules">Add site-specific  rules-of the-road to the Madrigal experiment page</a></li>
+  <li><a href="#static">Add static pages to your Madrigal site</a></li>
+  <li><a href="#copy_exp">Copy entire experiment directories from one Madrigal site to another</a></li>
+  <li><a href="#updateExpTimes">Reset experiment start and end times according to data in the experiment files</a></li>
+  <li><a href="#register">Registering interest in an experiment or an intrument</a></li>
+  <li><a href="#rebuilding">Rebuilding the madrigal python library</a></li>
+  <li><a href="#experiments">Mounting additional hard drives to expand the experiments disc capacity</a></li>
+  <li><a href="#throttle">Throttling admin emails if too many are sent</a></li>
+  <li><a href="#convert">Converting from http to https</a></li>
+</ul>
+<p>Contact the <a href="mailto:madrigal@haystack.mit.edu">OpenMadrigal administrator</a> <a href="mailto:brideout@haystack.mit.edu"></a> if some other administrative issue arises. </p>
+<h4><a name="cached_files" id="cached_files"></a>Create cached text or netCDF4 versions of CEDAR Madrigal Hdf5 files</h4>
+<p>When users download ascii or netCDF4 versions of CEDAR Madrigal Hdf5 files as is (that is, just the parameters in the file without filtering), these alternative file formats by default are dynamically created. If this takes too long, the Madrigal admistrator can speed that up by creating cached files in the &lt;<em>experiment directory</em>&gt;/overview directory. The cached text file has <em>'.txt.gz</em>' appended to the basename of the CEDAR Madrigal Hdf5 file, and the netCDF4 file has '<em>.nc</em>' appended to the basename of the CEDAR Madrigal Hdf5 file.  These cached files are created with the $MADROOT/bin/createCachedFiles.py script. Here's the usage:</p>
+<pre>
+createCachedFiles.py [--excludeText --excludeNetCDF4 --inst=<instList>  --path=<expPath> 
+--includeNonDefault  --overwrite --includeGeo --numCPU=<numCPU> -h --help]
+
+By default, both text and netCDF4 files created.  Use --excludeText or --excludeNetCDF4 to only create one type.
+By default all instruments will be included.  Use --inst=<comma delimited kinst list> to only include some instruments.
+By default, all experiment directories will be included.  Use --path to limit to a particular directory and all subdirectories.
+By default only default files will be cached.  Use --includeNonDefault to include all files.
+Use --overwrite to overwrite all Hdf5 cached files. Default is to skip existing cached files.
+Set --includeGeo to also convert geophysical files. Default is to skip them.
+numCPU by default is the maximum of (1, numCPUs available - 2).  Use --numCPU to override, but still will not be highter than default.
+-h or --help - print usage and exit
+</pre>
+<h4><a name="private" id="private2"></a>Set private versus public access for Madrigal data files</h4>
+<p>This new feature of Madrigal allows data files to be made either publicly available, or restricted to a limited set of IP address listed in a file. </p>
+<p>To disable this feature and make all your data public, run the following from the $MADROOT directory: </p>
+<pre>$MADROOT/bin/setAccess $MADROOT/experiments public </pre>
+<p>To enable this feature, you must first create a file called "trustedIPs.txt" under MADROOT. This file should contain the IP addresses of hosts considered to be part of the private group, or partial IPs if whole sub-nets should be included. This file is not created during installation. Anyone whose browser's IP matches this list will be able to view files marked as private. For example, if trustedIPs.txt contains the line 132.197.*, any IP address that begins 132.197 will have private access. </p>
+<p>Also, if the fileTab.txt file for that experiment can be overwritten by the web server, anyone whose browser's IP matches this list will be able to to change the access of any file between public and private from the madExperiments listing page. </p>
+<p>To change a large number of experiments to be either public or private, run the following script from the $MADROOT directory: </p>
+<pre>$MADROOT/bin/setAccess dirPath [public || private] </pre>
+<p>where dirPath is the full path name of any directory in $MADROOT/experiments, and the second argument is either public or private. This script will set all experiments in dirPath and below to be public or private. </p>
+<p>The access permission for any given file is set in the fileTab.txt file. See <a href="ad_metadata.html">metadata documentation </a> for details. </p>
+
+<h4><a name="links" id="links"></a>Modifying the Madrigal homepage</h4>
+<p>You can easily modify the Madrigal homepage of you site by modifying the template file $MADROOT/source/madpy/djangoMad/madweb/templates/madweb/index.html.</p>
+
+<h4><a name="madrigal_cfg" id="madrigal_cfg"></a>Modify settings in the madrigal.cfg file</h4>
+<p>The following settings in the <em>madroot</em>/madrigal.cfg file can be modified at any time and the changes will take effect immediately:</p>
+<ul>
+  <li>CONTACT - Mailto link of contact person(s) for this madrigal installation. Multiple email addresses may be included if separated by commas. </li>
+  <li>MAILSERVER - Name of mailserver (possibly localhost if running sendmail) </li>
+  <li>NOTESMANAGER - If you want someone to be notified whenever a user adds a note to an experiment, uncomment this optional line and add the email address. See below for a discussion of the optional notes feature and how to configure it after installation.</li>
+  <li>HTMLSTYLE - Body style of html pages </li>
+  <li>INDEXHEAD - Heading in the top-level Madrigal page </li>
+</ul>
+
+<h4><a name="siteSpecific" id="siteSpecific"></a>Add documentation specific to your site to Madrigal documentation page</h4>
+<p>If you want to add any documentation pages specific to your site to the Madrigal documentation pages, simply put them at a url where they can be indexed. Then edit the file MADROOT/source/madpy/djangoMad/madweb/templates/madweb/madContents.html to modify the line</p>
+<pre>&lt;a href=&quot;#&quot;&gt;</pre>
+<p>to replace # with the url where your site specific documentation is.</p>
+
+<h4><a name="rules" id="rules"></a>Add site-specific  rules-of the-road to the Madrigal experiment page</h4>
+<p>By default, users see only the Cedar rules-of-the-road on the data access page when they first enter the Madrigal site. If you want your users to see rules-of the-road specific to your Madrigal site when the reach the Madrigal experiment page, simply create a text file with your rules called <strong>local_rules_of_the_road.txt</strong> in the <em>madroot</em> directory. </p>
+
+<h4><a name="static" id="static"></a>Add static pages to your Madrigal site</h4>
+<p>Soemtimes its helpful to add static pages to your Madrigal site, such as a page describing your instrument, that you can then simply reference from each individual experiment page.  To do this, simply copy the static file to 
+MADROOT/source/madpy/djangoMad/madweb/static/siteSpecific, and use the url "/static/siteSpecific/[filename]" to refer to it.</p>
+
+
+<h4><a name="copy_exp" id="copy_exp"></a>Copy entire experiment directories from one Madrigal site to another</h4>
+<p> If you want to copy data from one Madrigal site into yours (such as is done during the standard installation with the test data from Haystack) copy all the desired data from another Madrigal site into the appropriate directory in $MADROOT/experiments. Then follow these steps: </p>
+<ol>
+  <li>cd $MADROOT </li>
+  <li>./configureExperiments </li>
+  <li>$MADROOT/bin/updateMaster </li>
+</ol>
+<p>The script configureExperiments automatically edits the metadata files, changing the site id to your site id. This same procedure also works for <a href="#experiments">moving experiments between experiments[0-9]* directories</a>.</p>
+<h4><a name="updateExpTimes" id="updateExpTimes"></a>Reset experiment start and end times according to data in the experiment files</h4>
+<p>Sometimes the experiment start and end times in the metadata (the expTab.txt file) are manually edited, and do not match the start and end times of the data found in the files. The script updateExpTimes.py will examine the start and end times of all the files in an experiment, and set the experiment metadata start and end times to be the earliest and latest times found. Usage:</p>
+<pre>$MADROOT/bin/updateExpTimes.py [experiment_directory]</pre>
+<p>If optional argument <em>experiment_directory</em> given, then it will only update all experiments found in that directory. Default is to update the entire database. Only default or real time files are used to determine the times. Example:</p>
+<pre>$MADROOT/bin/updateExpTimes.py $MADROOT/experiments/1998</pre>
+<p>will update all experiment times for the year 1998.  </p>
+<p>&nbsp; </p>
+<h4><a name="register" id="register"></a>Registering interest in an experiment or an instrument</h4>
+<p>With Madrigal 2.6, users can register interest in an existing experiment or in an instrument.  When a data file is updated
+in that experiment using the standard admin scripts, by default all users registered for that experiment or instrument
+are sent an email.  To ensure that is possible, you simply need to make sure the files 
+<em>$MADROOT/metadata/userdata/regExp.txt</em> and <em>$MADROOT/metadata/userdata/regExp.txt</em> are writable by the web server. If you get a request from a user to unregister them from an experiment or an instrument, simply delete that line with their email from that file. With Madrigal 3.0, you can also use the utility<em> $MADROOT/bin/registrationAdmin.py</em>. Usage is:</p>
+<pre>registrationAdmin.py [--unregister | --register]
+ [--inst=&lt;kinst&gt; | --exp=&lt;expDir&gt;] userEmail</pre>
+<pre>Either unregister or register must be set.
+   Either --inst=&lt;instrument code&gt; or --exp=&lt;expDir&gt; must be set.
+   expDir is in form &lt;experiments/2010/mlh/18jan10&gt;
+</pre>
+<h4><a name="rebuilding" id="rebuilding"></a>Rebuilding the madrigal python library</h4>
+If for any reason you rebuild the madrigal python library by running <em>MADROOT/bin/python setup.py install</em> in the MADROOT/sopurce/madpy directory, you will need to restart the web server after you are done.
+<h4><a name="experiments" id="experiments"></a>Mounting additional hard drives to expand the experiments disc capacity</h4>
+<p>With Madrigal 2.6, administrators can expand the disc space available for experiments by mounting a directory named <em>experiments[0-9]*</em> in the Madroot directory. For example, you can add a directory called <em>experiments2</em> in the Madroot directory and use it for a mount point for additional space for Madrigal experiments. After you create this additional mount, you will need to create a soft link in your web server document root with a soft link to that new directory. For example, say you do the following:</p>
+<ul>
+  <li>You create a new mount called <em>experiments2</em> in your Madroot directory<em>.</em></li>
+  <li>Be sure to set the permission of this new directory so that the Madrigal administrator and the web server can read and write in it.</li>
+  <li>You need to create a soft link from &lt;madroot&gt;/source/madpy/djangoMad/madweb/static to &lt;madroot&gt;/experiments2. For example, <em>cd /opt/madrigal3/source/madpy/djangoMad/madweb/static</em> and then <em>ln -s /opt/madrigal3/experiments2 experiments2</em>.</li>
+</ul>
+<p>You can now make use of this new directory in two ways:</p>
+<ol>
+  <li>You can move experiments or whole directory trees of experiments between different <em>experiments[0-9]*</em> directrories as described in <a href="#copy_exp">Copy entire experiement directories</a> section (remember to run configureExperiments and updateMaster afterwards). Note, however, the experiments with geophysical data should not be moved (years 1950, 1957, and 1963).</li>
+  <li>When running the scripts createExpWithFile.py or createRTExp.py, use the <em>--experimentsDirNum</em> argument to choose the new directory to use. By default the base <em>experiments</em> directory will be used. In the example above, the option <em>--experimentsDirNum</em>=2 would cause <em>experiments2</em> to be used.</li>
+</ol>
+<p>&nbsp;</p>
+<h4><a name="throttle" id="throttle"></a>Throttling admin emails if too many sent</h4>
+<p>If you receive too many emails, you can use a third party tool to throttle the amount.  The tool I have used successfully is django-email-throttler,
+which is described at https://github.com/robert-kisteleki/django-email-throttler.  To install, use pip and then edit your settings_production.py file:</p>
+
+<pre>pip install django-email-throttler</pre>
+<p>Then add the following lines to the end of your file MADROOT/source/madpy/djangoMad/djangoMad/settings_production.py.
+The top lines can be adjusted to set exactly how many emails you get, but these numbers should work fine.  When done, you will 
+need to restart apache for the changes to take affect.</p>
+
+<pre>
+# stuff for email throttling and their defaults
+EMAILTHROTTLER_TMPDIR = '/tmp'
+EMAILTHROTTLER_PREFIX = 'emailthrottler-'
+EMAILTHROTTLER_INTERVAL = 600
+EMAILTHROTTLER_TRUNCATE_SUBJECT = None # 128 is also ok
+EMAILTHROTTLER_SUBJECT_THRESHOLD = 3 # 0 for no-check
+EMAILTHROTTLER_OVERALL_THRESHOLD = 6 # 0 for no-check
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'handlers': {
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'email_backend': 'django_email_throttler.throttler.ThrottledEmailBackend',
+            'include_html': False,
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+    }
+}
+</pre>
+
+<h4><a name="convert" id="convert"></a>Converting from http to https</h4>
+<p>The following are the steps needed to change an existing Madrigal site from http to https</p>
+<ol>
+	<li>In $MADROOT/metadata/siteTab.txt, include https:// in the third field of your site.  For example, change millstone.haystack.mit.edu to https://millstone.haystack.mit.edu</li>
+	<li>Change the MAD<b></b>SERVER line in $MADROOT/madrigal.cfg to include https://  For example, change millstone.haystack.mit.edu to https://millstone.haystack.mit.edu</li>
+	<li>cd $MADROOT/source/madpy</li>
+	<li>$MADROOT/bin/python setup.py install</li>
+	<li>$MADROOT/configureExperiments</li>
+	<li>$MADROOT/bin/updateMaster</li>
+	<li>Let Bill Rideout (brideout@mit.edu) know about the change.</li>
+</ol>
+
+
+<!-- InstanceEndEditable -->
+<table width="100%" border="1" cellpadding="0" cellspacing="2" class="navigation">
+  <tr>
+    <td width="5%"><a href="{% url 'docs' 'ad_createExp.html' %}"><img src="/static/previous.png" alt="previous" width="32" height="32" /></a></td>
+    <td width="5%"><a href="{% url 'docs' 'admin.html' %}"><img src="/static/up.png" alt="up" width="32" height="32" /></a></td>
+    <td width="5%"><a href="{% url 'docs' 'ad_logging.html' %}"><img src="/static/next.png" alt="next" width="32" height="32" /></a></td>
+    <td width="54%"><!-- InstanceBeginEditable name="EditTitleBottom" -->Other administrative tasks <!-- InstanceEndEditable --></td>
+    <td width="13%"><a href="{% url 'docs' 'madContents.html' %}">Doc home </a></td>
+    <td width="18%"><a href="/">Madrigal home</a></td>
+  </tr>
+</table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" href="{% url 'docs' 'ad_createExp.html' %}"><!-- InstanceBeginEditable name="PreviousTitle2" -->Creating Madrigal experiments <!-- InstanceEndEditable --></A>
+<b class="navlabel">&nbsp;&nbsp;Up:</b>
+<a class="sectref" href="{% url 'docs' 'admin.html' %}"><!-- InstanceBeginEditable name="UpTitle2" -->Madrigal admin guide <!-- InstanceEndEditable --></A>
+<b class="navlabel">&nbsp;&nbsp;Next:</b>
+<a class="sectref" href="{% url 'docs' 'ad_logging.html' %}"><!-- InstanceBeginEditable name="NextTitle2" -->User access logging  <!-- InstanceEndEditable --></A></div>
+<hr/>
+<p>&nbsp;</p>
+</body> 
+<!-- InstanceEnd --></html>

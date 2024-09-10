@@ -1,0 +1,33 @@
+#!PYTHONEXE
+
+import sys
+import os
+import traceback
+import madrigal.admin
+import madrigal.metadata
+
+# create MadrigalDB obj
+madDBObj = madrigal.metadata.MadrigalDB()
+
+
+# check number, type of arguments
+if len(sys.argv) != 3:
+    print('usage: setAccess <full experiment directory path> [public || private]')
+    sys.exit(0)
+
+if not sys.argv[2].lower() in ('public', 'private'):
+    print('usage: setAccess <full experiment directory path> [public || private]')
+    sys.exit(0)
+
+# convert second argument to 0 (public) or 1 (private)
+if sys.argv[2].lower()  == 'public':
+    accessMode = 0
+else:
+    accessMode = 1
+
+print('Setting all fileTab.txt files in ' + str(sys.argv[1]) + ' to ' + str(sys.argv[2]))
+madDBObj.setFileAccess(sys.argv[1], accessMode)
+
+print('Access set - run updateMaster to propagate update.')
+    
+

@@ -1,0 +1,1 @@
+560000001,http://grail.haystack.mit.edu/cgi-bin/madrigal/madtoc/1950/gpi/01jan50,Kp; Ap; 10.7 cm flux; sunspot number etc,9999,19500101,000000,20150930,235959,210,0

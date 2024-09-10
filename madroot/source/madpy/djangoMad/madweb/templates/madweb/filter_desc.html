@@ -1,0 +1,87 @@
+{% load static %}
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/doc_template.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Isprint filters description</title>
+<link href="/static/madrigal.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+	html body {
+		background-color: {{bg_color}};
+	}
+</style>
+<!-- InstanceParam name="href_up_top" type="text" value="admin.html" --><!-- InstanceParam name="href_next_top" type="text" value="ad_isprint.html" --><!-- InstanceParam name="href_back_top" type="text" value="ad_other.html" --><!-- InstanceParam name="href_back_bottom" type="text" value="ad_other.html" --><!-- InstanceParam name="href_up_bottom" type="text" value="admin.html" --><!-- InstanceParam name="href_next_bottom" type="text" value="ad_isprint.html" --><!-- InstanceParam name="href_prev_top" type="text" value="ad_other.html" --><!-- InstanceParam name="href_uptitle_top" type="text" value="admin.html" --><!-- InstanceParam name="href_nexttitle_top" type="text" value="ad_isprint.html" --><!-- InstanceParam name="href_prevtitle_bottom" type="text" value="ad_other.html" --><!-- InstanceParam name="href_uptitle_bottom" type="text" value="admin.html" --><!-- InstanceParam name="href_nexttitle_bottom" type="text" value="ad_isprint.html" -->
+</head>
+
+<body>
+
+<h2>Isprint filter description</h2>
+  
+	<center><h4>Creating filter strings for isprint</h4></center>
+	
+	<p>Combine filters below into one string with spaces. Example:</p>
+
+	
+<pre>
+	"date1=12/01/2005 time1=12:00:00 date1=12/02/2005 time1=08:00:00 el=0,45 filter=ti,500,1000"
+</pre>
+
+<h4>Time range</h4>
+
+<pre>
+date1=mm/dd/yyyy - starting date to be examined. If time1 not given, defaults to 0 UT. 
+Example: date1=01/20/1998
+
+time1=hh:mm:ss - starting UT time to be examined. If date1 given, is applied to date1. If not, applies on the first day of the experiment. 
+Example: time1=13:30:00
+
+date2=mm/dd/yyyy - ending date to be examined. If time2 not given, defaults to 0 UT. 
+Example: date2=01/21/1998
+
+time2=hh:mm:ss - ending UT time to be examined - If date2 not given, refers to date1. If date1 and date2 not given, refers to 1st day. 
+Example: time2=15:45:00
+</pre>
+
+<p>In the follow arguments ranges are used. If any range value is not given, it may be used to indicate no lower or upper limit (but the comma is always required). Ranges are inclusive of the end points.</p>
+
+<h4>Geodetic altitude</h4>
+
+<pre>
+z=lower alt limit1, upper alt limit1 [or lower alt limit2 , upper alt limit2 ...] (km) 
+Example 1: z=100,500 This would limit the geodetic altitude to 100 to 500 km. 
+Example 2: z=100,200or300,400 This would limit the geodetic altitude to 100 to 200 km or 300 to 400 km. 
+Example 3: z=,200or300,400 Since the lower limit of the first range is missing, this would limit the geodetic altitude to anything below 200 km or from 300 to 400 km.
+</pre>
+
+<h4>Azimuth (from -180 to 180)</h4>
+
+<pre>
+az=lower az limit1, upper az limit1 [or lower az limit2 , upper az limit2 ...] (from -180 to 180 degrees) 
+Example 1: az=100,120 This would limit the azimuth to 100 to 120 degrees. 
+Example 2: az=-180,-90or90,180 This would limit the azimuth to between -180 and -90 degrees or to between 90 and 180 degrees. Note this allows a filter to go through 180 degrees.
+</pre>
+
+<h4>Elevation (from 0 to 90)</h4>
+
+<pre>
+el=lower el limit1, upper el limit1 [or lower el limit2 , upper el limit2 ...] (from 0 to 90) 
+Example 1: el=0,45 This would limit the elevation from 0 to 45 degrees.
+</pre>
+
+<h4>Pulse length (in seconds)</h4>
+
+<pre>
+plen=lower pl limit1, upper pl limit1 [or lower pl limit2 , upper pl limit2 ...] (pulse len in sec) 
+Example 1: plen=,5e-4 This would limit the pulse length to 5e-4 seconds or less.
+</pre>
+
+<h4>Free form filters</h4>
+
+<pre>
+filter=[mnemonic] or [mnemonic1,[+-*/]mnemonic2] , lower limit1 , upper limit1 [or lower limit2 , upper limit2 ...] (any number of filters may be added) 
+Example: filter=ti,500,1000or2000,3000 Limits the data to points where Ti is between 500 and 1000 degrees or between 2000 and 3000 degrees. Note that the units are always those of the Cedar standard. 
+Example: filter=gdalt,-,sdwht,0, This filter implies "gdalt - sdwht" must be greater than 0.0. Since sdwht is shadow height (the distance above any point on the earth where the sun is first visible), this filter implies that only data in direct sunlight will be displayed. 
+Example: filter=ti,/,Dti,100, Limits the data to points where the ratio Ti/dTi is more than 100.
+</pre>
+

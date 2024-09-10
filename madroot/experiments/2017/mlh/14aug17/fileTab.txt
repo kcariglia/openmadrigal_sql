@@ -1,0 +1,2 @@
+mlh170814a.000.hdf5,9990000015,3410,4,0,1,0,20200127,180955,Realtime-single pulse - very preliminary data,0,,
+mlh170814b.000.hdf5,9990000015,3410,4,0,1,0,20200127,181015,Realtime-alternating code with clutter subtract - very preliminary data,0,,

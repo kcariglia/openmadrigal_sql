@@ -1,0 +1,30 @@
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Base template for View record plot
+	
+	$Id: view_record_plot.html 5040 2015-05-18 20:02:38Z brideout $
+{% endcomment %}
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Record {{recno}} from file {{basename}}</title>
+
+    
+    
+</head>
+<body>
+	<div class="loader" style="display:none"></div>
+	<div class="container-fluid">
+	<center><h4>Record {{recno}} from file {{basename}}</h4></center>
+	
+      <img src="{% url 'view_record_image' %}?expDir={{expDir}}&basename={{basename}}&recno={{recno}}" />
+	
+	
+	</div> <!-- container-fluid -->
+
+	
+</body>
+</html>

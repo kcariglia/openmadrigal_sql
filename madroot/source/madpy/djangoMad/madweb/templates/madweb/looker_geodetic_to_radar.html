@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Base template for Madrigal kindat metadata page
+	
+	$Id: looker_geodetic_to_radar.html 5332 2015-09-25 19:45:35Z brideout $
+{% endcomment %}
+
+{% block title %}Madrigal looker{% endblock %}
+	
+{% block content %}
+<form method=get>
+{{ form.looker_options }}
+<div align=center>
+<h4>Convert Geodetic Coordinates to Azimuth, Elevation, Range</h4>
+</div>
+<p>Select an instrument location, either by selecting an existing instrument or by
+            directly entering the latitude, longitude and altitude of the instrument. Then
+            specify the latitude/longitude/altitude grid for which 
+            look direction and range  will be calculated.</p>
+        
+<table class="table table-condensed">
+	<tr>
+		<td>
+		    <table class="table table-condensed">
+			<caption>
+			Choose an existing instrument, or ...
+			</caption>
+			<tr><td>{{form.instruments}}</td></tr>
+			</table>
+		</td>
+		<td>
+			<table class="table table-condensed">
+			<caption>
+			... set your own instrument coordinates
+			</caption>
+			<tr>
+			<td>Latitude</td>
+			<td>
+				{{form.inst_lat}}
+			</td>
+			</tr>
+			<tr>
+			<td>Longitude (-180 - 180)</td>
+			<td>
+			    {{form.inst_lon}}
+			</td>
+			</tr>
+			<tr>
+			<td>Altitude (km)</td>
+			<td>
+			    {{form.inst_alt}}
+			</td>
+			</tr>
+			</table>
+	</tr>
+	
+	<tr>
+		<td>
+			<table class="table table-condensed">
+			<caption>
+			Set 3D grid of geodetic points to find look direction to
+			</caption>
+			<tr>
+			<th align=center></th>
+			<th align=center>start</th>
+			<th align=center>end</th>
+			<th align=center>delta</th>
+			</tr>
+			<tr>
+			<td>latitude</td>
+			<td>
+			  {{form.start_lat}}
+			</td>
+			<td>
+			  {{form.stop_lat}}
+			</td>
+			<td>
+			  {{form.step_lat}}
+			</td>
+			</tr>
+			<tr>
+			<td>longitude</td>
+			<td>
+			  {{form.start_lon}}
+			</td>
+			<td>
+			  {{form.stop_lon}}
+			</td>
+			<td>
+			  {{form.step_lon}}
+			</td>
+			</tr>
+			<tr>
+			<td>altitude</td>
+			<td>
+			  {{form.start_alt}}
+			</td>
+			<td>
+			  {{form.stop_alt}}
+			</td>
+			<td>
+			  {{form.step_alt}}
+			</td>
+			</tr>
+			</table>
+		</td>
+		<td style="vertical-align:middle" align="center">
+		    <button class="btn btn-primary" id="looker_geodetic_radar_button" data-toggle="tooltip" data-original-title="Click this button to calculate azimuth, elevation, and range from the set instrument location." data-placement="top">Calculate</button>
+		</td>
+    </tr>
+
+</table>
+</form>
+	
+	
+	<script>
+		$('#looker_geodetic_radar_button').on('click', function (e) {
+		    if (!validateForm(this.form))
+		        return(false);
+			this.form.action = "{% url 'looker_output' %}";
+			this.form.submit();
+		})
+		
+		function validateForm(madForm)
+		{
+		
+{% include "madweb/validate_kinst_location.html" %}
+{% include "madweb/validate_grid.html" %}
+			
+			// passed all tests
+			return(true);
+		}
+	</script>
+{% endblock %}

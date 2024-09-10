@@ -1,0 +1,615 @@
+{% load static %}
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/doc_template.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>Creating and editing Madrigal data files </title>
+<!-- InstanceEndEditable --><!-- InstanceBeginEditable name="head" -->
+
+  <style type="text/css">
+td.linenos { background-color: #f0f0f0; padding-right: 10px; }
+span.lineno { background-color: #f0f0f0; padding: 0 5px 0 5px; }
+pre { line-height: 125%; }
+body .hll { background-color: #ffffcc }
+body  { background: #f8f8f8; }
+body .c { color: #408080; font-style: italic } /* Comment */
+body .err { border: 1px solid #FF0000 } /* Error */
+body .k { color: #008000; font-weight: bold } /* Keyword */
+body .o { color: #666666 } /* Operator */
+body .ch { color: #408080; font-style: italic } /* Comment.Hashbang */
+body .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+body .cp { color: #BC7A00 } /* Comment.Preproc */
+body .cpf { color: #408080; font-style: italic } /* Comment.PreprocFile */
+body .c1 { color: #408080; font-style: italic } /* Comment.Single */
+body .cs { color: #408080; font-style: italic } /* Comment.Special */
+body .gd { color: #A00000 } /* Generic.Deleted */
+body .ge { font-style: italic } /* Generic.Emph */
+body .gr { color: #FF0000 } /* Generic.Error */
+body .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+body .gi { color: #00A000 } /* Generic.Inserted */
+body .go { color: #888888 } /* Generic.Output */
+body .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+body .gs { font-weight: bold } /* Generic.Strong */
+body .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+body .gt { color: #0044DD } /* Generic.Traceback */
+body .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+body .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+body .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+body .kp { color: #008000 } /* Keyword.Pseudo */
+body .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+body .kt { color: #B00040 } /* Keyword.Type */
+body .m { color: #666666 } /* Literal.Number */
+body .s { color: #BA2121 } /* Literal.String */
+body .na { color: #7D9029 } /* Name.Attribute */
+body .nb { color: #008000 } /* Name.Builtin */
+body .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+body .no { color: #880000 } /* Name.Constant */
+body .nd { color: #AA22FF } /* Name.Decorator */
+body .ni { color: #999999; font-weight: bold } /* Name.Entity */
+body .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+body .nf { color: #0000FF } /* Name.Function */
+body .nl { color: #A0A000 } /* Name.Label */
+body .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+body .nt { color: #008000; font-weight: bold } /* Name.Tag */
+body .nv { color: #19177C } /* Name.Variable */
+body .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+body .w { color: #bbbbbb } /* Text.Whitespace */
+body .mb { color: #666666 } /* Literal.Number.Bin */
+body .mf { color: #666666 } /* Literal.Number.Float */
+body .mh { color: #666666 } /* Literal.Number.Hex */
+body .mi { color: #666666 } /* Literal.Number.Integer */
+body .mo { color: #666666 } /* Literal.Number.Oct */
+body .sb { color: #BA2121 } /* Literal.String.Backtick */
+body .sc { color: #BA2121 } /* Literal.String.Char */
+body .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+body .s2 { color: #BA2121 } /* Literal.String.Double */
+body .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+body .sh { color: #BA2121 } /* Literal.String.Heredoc */
+body .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+body .sx { color: #008000 } /* Literal.String.Other */
+body .sr { color: #BB6688 } /* Literal.String.Regex */
+body .s1 { color: #BA2121 } /* Literal.String.Single */
+body .ss { color: #19177C } /* Literal.String.Symbol */
+body .bp { color: #008000 } /* Name.Builtin.Pseudo */
+body .vc { color: #19177C } /* Name.Variable.Class */
+body .vg { color: #19177C } /* Name.Variable.Global */
+body .vi { color: #19177C } /* Name.Variable.Instance */
+body .il { color: #666666 } /* Literal.Number.Integer.Long */
+
+  </style>
+
+<!-- InstanceEndEditable -->
+<link href="/static/madrigal.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+	html body {
+		background-color: {{bg_color}};
+	}
+</style>
+<!-- InstanceParam name="href_up_top" type="text" value="admin.html" --><!-- InstanceParam name="href_next_top" type="text" value="ad_createExp.html" --><!-- InstanceParam name="href_back_top" type="text" value="ad_experiments.html" --><!-- InstanceParam name="href_back_bottom" type="text" value="ad_experiments.html" --><!-- InstanceParam name="href_up_bottom" type="text" value="admin.html" --><!-- InstanceParam name="href_next_bottom" type="text" value="ad_createExp.html" --><!-- InstanceParam name="href_prev_top" type="text" value="ad_experiments.html" --><!-- InstanceParam name="href_uptitle_top" type="text" value="admin.html" --><!-- InstanceParam name="href_nexttitle_top" type="text" value="ad_createExp.html" --><!-- InstanceParam name="href_prevtitle_bottom" type="text" value="ad_experiments.html" --><!-- InstanceParam name="href_uptitle_bottom" type="text" value="admin.html" --><!-- InstanceParam name="href_nexttitle_bottom" type="text" value="ad_createExp.html" -->
+</head>
+
+<body>
+<table width="100%" border="1" cellpadding="0" cellspacing="2" class="navigation">
+  <tr>
+    <td width="5%"><a href="{% url 'docs' 'ad_experiments.html' %}"><img src="/static/previous.png" alt="previous" width="32" height="32" /></a></td>
+    <td width="5%"><a href="{% url 'docs' 'admin.html' %}"><img src="/static/up.png" alt="up" width="32" height="32" /></a></td>
+    <td width="5%"><a href="{% url 'docs' 'ad_createExp.html' %}"><img src="/static/next.png" alt="next" width="32" height="32" /></a></td>
+    <td width="54%"><!-- InstanceBeginEditable name="EditTitleTop" -->Creating and editing Madrigal data files <!-- InstanceEndEditable --></td>
+    <td width="13%"><a href="{% url 'docs' 'madContents.html' %}">Doc home </a></td>
+    <td width="18%"><a href="/">Madrigal home</a></td>
+  </tr>
+</table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" href="{% url 'docs' 'ad_experiments.html' %}"><!-- InstanceBeginEditable name="PreviousTitle" -->Madrigal data organization <!-- InstanceEndEditable --></A>
+<b class="navlabel">&nbsp;&nbsp;Up:</b>
+<a class="sectref" href="{% url 'docs' 'admin.html' %}"><!-- InstanceBeginEditable name="UpTitle" -->Madrigal admin guide <!-- InstanceEndEditable --></A>
+<b class="navlabel">&nbsp;&nbsp;Next:</b>
+<a class="sectref" href="{% url 'docs' 'ad_createExp.html' %}"><!-- InstanceBeginEditable name="NextTitle" -->Creating Madrigal experiments <!-- InstanceEndEditable --></A></div>
+<hr/>
+<!-- InstanceBeginEditable name="EditDoc" -->
+<h1 align="center">Creating and editing Madrigal data files</h1>
+<p>A key element in administering the Madrigal database is the ability to create and edit Madrigal data files. An ambitious Madrigal administrator could  read the <a href="/static/CEDARMadrigalHdf5Format.pdf" target="_blank">CEDAR Madrigal Hdf5 format</a> description and write their own code from scratch. However, Madrigal provides API's and examples in two languages, Python and Matlab, to make this chore much, much easier. This section describes how to create Madrigal files using each of those two languages.</p>
+<ul>
+  <li><a href="#python">Python</a></li>
+  <li><a href="#matlab">Matlab</a></li>
+</ul>
+<h2><a name="python" id="python"></a>Python</h2>
+<h3>How have things changed with Madrigal 3?</h3>
+<p>For the most part, python scripts that created Madrigal 2 files will only need to be slightly modified to create Madrigal 3 files. With Madrigal 3, the independent parameters (excluding time) must be explicitly declared. This is because Madrigal 3 files contain both a table layout, and (if there are independent parameters) a grid layout, with the number of dimensions = 1 + (number of independent parameters). The first dimension is always time. The independent parameters are declared in the MadrigalDataRecord init method.</p>
+<p>The second small change is the addition of an optional argument <em>arraySplitParms</em>. If one of more array splitting parameters are given, then multiple grids of data will be created, one grid for each unique combination of values of the array splitting parameters. The idea behind this argument is to make the gridded data less sparse and more useful to the end user. For example, a phased array incoherent scatter radar such as PFISR that simultaneously measures along different beams would split its arrays by the parameter beam_id. This would make the gridded data both dense and more user friendly - a user could simply open the data for the beam of interest.</p>
+<h2>Instructions</h2>
+<p>This section gives an introduction to using the madrigal python API to create new Cedar Madrigal Hdf5 files, and to edit existing Cedar Madrigal Hdf5 files. Examples are given of  <a href="#create"> creating new normal-sized files, </a> <a href="#create_large">creating new large files</a>, and <a href="#edit">editing existing files.</a> Users creating Cedar Madrigal Hdf5 files with python can choose between two sightly different patterns, one which maximizes speed but could have memory issues with very large files, and another that limits memory use with very large files, but is somewhat slower. Complete <a href="madrigal/cedar.m.html">documentation</a> is available as part of the Madrigal Python API documentation. </p>
+<p>The python cedar module was written to simplify the task of creating Cedar Madrigal Hdf5 files as much as possible. The user of this module only needs to know the following about the Cedar format: </p>
+<ul>
+  <li>Cedar Madrigal Hdf5 files are made up of  metadata and data records. Each data record consists of a measurement made with a single instrument over a single interval of time.</li>
+  <li>All parameters in Cedar Madrigal Hdf5 files are defined in the standard. Contact Bill Rideout if you can't find a parameter you need; more can be added.</li>
+  <li>Each data record in a Cedar Madrigal Hdf5 file has the same parameters. These parameters are either scalar (a single measurement per data record), or vectors (called 2D sometimes for historical reasons, but there is a limit of 5 for the number of independent spatial parameters).</li>
+  <li>If there are vector parameters, then the parameters which serve as independent parameters must be specified. Up to 5 may be given.</li>
+  <li>The Cedar Madrigal Hdf5 always contains a Table Layout, where the data is listed in a flat table, which means the scalar parameters are repeated for each row in a single data record.</li>
+  <li>If there are vector parameters, then there will also be one or more Array Layouts. The array layout is a multidimensional layout, with time in one dimension, and one dimension for each independent parameter. When you create this file, you can also choose to specify parameters used to split these arrays. For example, incoherent scatter radar taken with radars that measure different beams over the same time period may decide to have separate arrays for each beam code.</li>
+  <li>A list of Cedar parameters and their units can be found under<em> Access metadata</em> menu item from any Madrigal 3 site. A complete description of each parameter can also be seen by clicking on any parameter name. Parameters can be referred to in the python API either by case-insensitive mnemonics (e.g., "Gdalt") or by integer id. Parameters are set either to float, integer, or string values, according to their type, or to the special values 'missing', 'assumed', or 'knownbad' may be used for numeric values. The values 'assumed' and 'knownbad' can only be applied to error parameters.</li>
+  <li>In addition to data records, the Cedar format also allows two types of records that contain human-readable descriptions of the data: a catalog record and a header record. They are two only for historical reasons; each contains different metadata fields.</li>
+</ul>
+<blockquote>
+  <h3>MadrigalCedarFile</h3>
+</blockquote>
+<p>The high level object in the cedar module is <a href="madrigal/cedar.m.html"> MadrigalCedarFile</a>. This class emulates a python list, and so users may treat it just like a python list. The restriction enforced is that all items in the list must be either <a href="madrigal/cedar.m.html">MadrigalCatalogRecords</a>, <a href="madrigal/cedar.m.html">MadrigalHeaderRecords</a>, or <a href="madrigal/cedar.m.html">MadrigalDataRecords</a>. Each of these three classes supports the method getType(), which returns 'catalog', 'header', and 'data', respectively.</p>
+<blockquote>
+  <a name="catHeadRec" id="catHeadRec"></a><h3>Using Python to add catalog and header records.</h3>
+</blockquote>
+<p>Cedar catalog and header records can be difficult to create.  With the cedar module
+    <a href="madrigal/cedar.m.html"> CatalogHeaderCreator</a>, creating
+    these records should now be much easier.  Catalog and header records contain a lot of information 
+    that can be deduced from the data - this includes which parameters are present, minimum and maximums 
+    of certain parameters, and start and stop times.  The only parts of the catalog or header record that 
+    can't be determined automatically are some optional descriptive text fields.  With this new module,
+    you simply pass in strings of any length if you want to fill in one of those optional descriptive
+    text fields - the module will handle all formating for you.</p>
+<p>Here's a list of the optional descriptive text fields for a <i>catalog</i> record:</p>
+<ul>
+  <li><b>principleInvestigator: </b>names of responsible Principal Investigator(s) or others knowledgeable 
+                                  about the experiment</li>
+  <li><b>expPurpose: </b>brief description of the experiment purpose</li>
+  <li><b>expMode: </b>further elaboration of meaning of experiment mode; e.g. antenna patterns and 
+                      pulse sequences</li>
+  <li><b>cycleTime: </b>minutes for one full measurement cycle (this needs to be a number)</li>
+  <li><b>correlativeExp: </b>any correlative experiments (experiments with related data)</li>
+  <li><b>sciRemarks: </b>scientific remarks</li>
+  <li><b>instRemarks: </b>instrument remarks</li>
+</ul>
+<p>Here's a list of the optional descriptive text fields for a <i>header</i> record:</p>
+<ul>
+  <li><b>kindatDesc: </b>description of how this data was analyzed (the kind of data)</li>
+  <li><b>analyst: </b>name of person(s) who analyzed this data</li>
+  <li><b>comments: </b>additional comments about data (describe any instrument-specific parameters)</li>
+  <li><b>history: </b>a description of the history of the processing of this file</li>
+</ul>
+<p><a name="create" id="create"></a> </p>
+<blockquote>
+  <h3>Creating a new normal-sized file example</h3>
+</blockquote>
+<div class="highlight">
+  <pre><span></span><span class="sd">&quot;&quot;&quot;createSample.py shows an example of creating an entirely new Madrigal</span>
+<span class="sd">file using the Python cedar module.  In particular, it creates a file with</span>
+<span class="sd">a catalog record, a header record, and two data records.  The data records</span>
+<span class="sd">contain two 1D parameters (System temperature - SYSTMP and Transmitter</span>
+<span class="sd">Frequency TFREQ) and five 2D parameters (GDALT, GDLAT, GLON, and TR, and DTR)</span>
+<span class="sd">The independent spatial parameter in this example is just GDALT.</span>
+
+<span class="sd">This example uses the normal-sized pattern for speed, where normal sized is considered 
+less than 3000 records</span><span class="sd">.  In that pattern, all the records are appended to the MadrigalCedarFile </span>
+<span class="sd">object, and then write is called to write everything to file at once, including both the Table and </span>
+<span class="sd">Array Layouts.</span>
+
+<span class="sd">$Id$</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">os.path</span>
+<span class="kn">import</span> <span class="nn">types</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+
+<span class="kn">import</span> <span class="nn">madrigal.metadata</span>
+<span class="kn">import</span> <span class="nn">madrigal.cedar</span>
+
+<span class="c1">################# sample data #################</span>
+
+<span class="n">kinst</span> <span class="o">=</span> <span class="mi">30</span> <span class="c1"># instrument identifier of Millstone Hill ISR</span>
+<span class="n">kindat</span> <span class="o">=</span> <span class="mi">3408</span> <span class="c1"># id of kind of data processing</span>
+<span class="n">nrow</span> <span class="o">=</span> <span class="mi">5</span> <span class="c1"># all data records have 5 2D rows</span>
+
+<span class="n">SYSTMP</span> <span class="o">=</span> <span class="p">(</span><span class="mf">120.0</span><span class="p">,</span> <span class="mf">122.0</span><span class="p">)</span>
+<span class="n">TFREQ</span> <span class="o">=</span> <span class="p">(</span><span class="mf">4.4E8</span><span class="p">,</span> <span class="mf">4.4E8</span><span class="p">)</span>
+
+<span class="n">GDALT</span> <span class="o">=</span> <span class="p">((</span><span class="mf">70.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">,</span> <span class="mf">200.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">,</span> <span class="mf">400.0</span><span class="p">),</span>
+         <span class="p">(</span><span class="mf">70.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">,</span> <span class="mf">200.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">,</span> <span class="mf">400.0</span><span class="p">))</span>
+
+<span class="n">GDLAT</span> <span class="o">=</span> <span class="p">((</span><span class="mf">42.0</span><span class="p">,</span> <span class="mf">42.0</span><span class="p">,</span> <span class="mf">42.0</span><span class="p">,</span> <span class="mf">42.0</span><span class="p">,</span> <span class="mf">42.0</span><span class="p">),</span>
+         <span class="p">(</span><span class="mf">42.0</span><span class="p">,</span> <span class="mf">42.0</span><span class="p">,</span> <span class="mf">42.0</span><span class="p">,</span> <span class="mf">42.0</span><span class="p">,</span> <span class="mf">42.0</span><span class="p">))</span>
+
+<span class="n">GLON</span>  <span class="o">=</span> <span class="p">((</span><span class="mf">270.0</span><span class="p">,</span> <span class="mf">270.0</span><span class="p">,</span> <span class="mf">270.0</span><span class="p">,</span> <span class="mf">270.0</span><span class="p">,</span> <span class="mf">270.0</span><span class="p">),</span>
+         <span class="p">(</span><span class="mf">270.0</span><span class="p">,</span> <span class="mf">270.0</span><span class="p">,</span> <span class="mf">270.0</span><span class="p">,</span> <span class="mf">270.0</span><span class="p">,</span> <span class="mf">270.0</span><span class="p">))</span>
+
+<span class="n">TR</span>    <span class="o">=</span> <span class="p">((</span><span class="s1">&#39;missing&#39;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.3</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">),</span>
+         <span class="p">(</span><span class="s1">&#39;missing&#39;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.7</span><span class="p">,</span> <span class="mf">2.4</span><span class="p">,</span> <span class="mf">3.1</span><span class="p">))</span>
+
+
+<span class="n">DTR</span>   <span class="o">=</span> <span class="p">((</span><span class="s1">&#39;missing&#39;</span><span class="p">,</span> <span class="s1">&#39;assumed&#39;</span><span class="p">,</span> <span class="s1">&#39;assumed&#39;</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">),</span>
+         <span class="p">(</span><span class="s1">&#39;missing&#39;</span><span class="p">,</span> <span class="s1">&#39;assumed&#39;</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
+
+<span class="c1">################# end sample data #################</span>
+
+<span class="n">newFile</span> <span class="o">=</span> <span class="s1">&#39;/tmp/testCedar.hdf5&#39;</span>
+
+<span class="c1"># create a new Madrigal file </span>
+<span class="n">cedarObj</span> <span class="o">=</span> <span class="n">madrigal</span><span class="o">.</span><span class="n">cedar</span><span class="o">.</span><span class="n">MadrigalCedarFile</span><span class="p">(</span><span class="n">newFile</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+
+<span class="c1"># create all data records -  each record lasts one minute</span>
+<span class="n">startTime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2005</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">recTime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">60</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">recno</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+    <span class="n">endTime</span> <span class="o">=</span> <span class="n">startTime</span> <span class="o">+</span> <span class="n">recTime</span>
+    <span class="n">dataRec</span> <span class="o">=</span> <span class="n">madrigal</span><span class="o">.</span><span class="n">cedar</span><span class="o">.</span><span class="n">MadrigalDataRecord</span><span class="p">(</span><span class="n">kinst</span><span class="p">,</span>
+                                                <span class="n">kindat</span><span class="p">,</span>
+                                                <span class="n">startTime</span><span class="o">.</span><span class="n">year</span><span class="p">,</span>
+                                                <span class="n">startTime</span><span class="o">.</span><span class="n">month</span><span class="p">,</span>
+                                                <span class="n">startTime</span><span class="o">.</span><span class="n">day</span><span class="p">,</span>
+                                                <span class="n">startTime</span><span class="o">.</span><span class="n">hour</span><span class="p">,</span>
+                                                <span class="n">startTime</span><span class="o">.</span><span class="n">minute</span><span class="p">,</span>
+                                                <span class="n">startTime</span><span class="o">.</span><span class="n">second</span><span class="p">,</span>
+                                                <span class="n">startTime</span><span class="o">.</span><span class="n">microsecond</span><span class="o">/</span><span class="mi">10000</span><span class="p">,</span>
+                                                <span class="n">endTime</span><span class="o">.</span><span class="n">year</span><span class="p">,</span>
+                                                <span class="n">endTime</span><span class="o">.</span><span class="n">month</span><span class="p">,</span>
+                                                <span class="n">endTime</span><span class="o">.</span><span class="n">day</span><span class="p">,</span>
+                                                <span class="n">endTime</span><span class="o">.</span><span class="n">hour</span><span class="p">,</span>
+                                                <span class="n">endTime</span><span class="o">.</span><span class="n">minute</span><span class="p">,</span>
+                                                <span class="n">endTime</span><span class="o">.</span><span class="n">second</span><span class="p">,</span>
+                                                <span class="n">endTime</span><span class="o">.</span><span class="n">microsecond</span><span class="o">/</span><span class="mi">10000</span><span class="p">,</span>
+                                                <span class="p">(</span><span class="s1">&#39;systmp&#39;</span><span class="p">,</span> <span class="s1">&#39;tfreq&#39;</span><span class="p">),</span>
+                                                <span class="p">(</span><span class="s1">&#39;gdalt&#39;</span><span class="p">,</span> <span class="s1">&#39;gdlat&#39;</span><span class="p">,</span> <span class="s1">&#39;glon&#39;</span><span class="p">,</span> <span class="s1">&#39;tr&#39;</span><span class="p">,</span> <span class="s1">&#39;dtr&#39;</span><span class="p">),</span>
+                                                <span class="n">nrow</span><span class="p">,</span> <span class="n">ind2DList</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;gdalt&#39;</span><span class="p">])</span>
+
+    <span class="c1"># set 1d values</span>
+    <span class="n">dataRec</span><span class="o">.</span><span class="n">set1D</span><span class="p">(</span><span class="s1">&#39;systmp&#39;</span><span class="p">,</span> <span class="n">SYSTMP</span><span class="p">[</span><span class="n">recno</span><span class="p">])</span>
+    <span class="n">dataRec</span><span class="o">.</span><span class="n">set1D</span><span class="p">(</span><span class="s1">&#39;tfreq&#39;</span><span class="p">,</span> <span class="n">TFREQ</span><span class="p">[</span><span class="n">recno</span><span class="p">])</span>
+
+    <span class="c1"># set 2d values</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nrow</span><span class="p">):</span>
+        <span class="n">dataRec</span><span class="o">.</span><span class="n">set2D</span><span class="p">(</span><span class="s1">&#39;gdalt&#39;</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">GDALT</span><span class="p">[</span><span class="n">recno</span><span class="p">][</span><span class="n">n</span><span class="p">])</span>
+        <span class="n">dataRec</span><span class="o">.</span><span class="n">set2D</span><span class="p">(</span><span class="s1">&#39;gdlat&#39;</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">GDLAT</span><span class="p">[</span><span class="n">recno</span><span class="p">][</span><span class="n">n</span><span class="p">])</span>
+        <span class="n">dataRec</span><span class="o">.</span><span class="n">set2D</span><span class="p">(</span><span class="s1">&#39;glon&#39;</span><span class="p">,</span>  <span class="n">n</span><span class="p">,</span> <span class="n">GLON</span><span class="p">[</span><span class="n">recno</span><span class="p">][</span><span class="n">n</span><span class="p">])</span>
+        <span class="n">dataRec</span><span class="o">.</span><span class="n">set2D</span><span class="p">(</span><span class="s1">&#39;tr&#39;</span><span class="p">,</span>    <span class="n">n</span><span class="p">,</span> <span class="n">TR</span><span class="p">[</span><span class="n">recno</span><span class="p">][</span><span class="n">n</span><span class="p">])</span>
+        <span class="n">dataRec</span><span class="o">.</span><span class="n">set2D</span><span class="p">(</span><span class="s1">&#39;dtr&#39;</span><span class="p">,</span>   <span class="n">n</span><span class="p">,</span> <span class="n">DTR</span><span class="p">[</span><span class="n">recno</span><span class="p">][</span><span class="n">n</span><span class="p">])</span>
+
+    <span class="c1"># append new data record</span>
+    <span class="n">cedarObj</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dataRec</span><span class="p">)</span>
+
+    <span class="n">startTime</span> <span class="o">+=</span> <span class="n">recTime</span>                                 
+
+<span class="c1"># write new file</span>
+<span class="n">cedarObj</span><span class="o">.</span><span class="n">write</span><span class="p">()</span>
+
+<span class="c1"># next, use the cedar.CatalogHeaderCreator class to add catalog and header </span>
+<span class="n">catHeadObj</span> <span class="o">=</span> <span class="n">madrigal</span><span class="o">.</span><span class="n">cedar</span><span class="o">.</span><span class="n">CatalogHeaderCreator</span><span class="p">(</span><span class="n">newFile</span><span class="p">)</span>
+<span class="n">catHeadObj</span><span class="o">.</span><span class="n">createCatalog</span><span class="p">(</span><span class="n">principleInvestigator</span><span class="o">=</span><span class="s2">&quot;John Holt&quot;</span><span class="p">,</span> <span class="n">sciRemarks</span><span class="o">=</span><span class="s2">&quot;Test data only - do not use&quot;</span><span class="p">)</span>
+<span class="n">catHeadObj</span><span class="o">.</span><span class="n">createHeader</span><span class="p">(</span><span class="n">analyst</span><span class="o">=</span><span class="s2">&quot;Bill Rideout&quot;</span><span class="p">,</span> <span class="n">comments</span><span class="o">=</span><span class="s2">&quot;Do not use this data&quot;</span><span class="p">)</span>
+<span class="n">catHeadObj</span><span class="o">.</span><span class="n">write</span><span class="p">()</span>
+</pre></div>
+
+
+<p><a name="create_large" id="create2"></a></p>
+  <h3>Creating a new large file example</h3>
+  <div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;createSampleLargeFile.py shows an example of creating an entirely new,</span>
+<span class="sd">very large Madrigal file using the Python cedar module.  </span>
+
+<span class="sd">In particular, it creates a file with</span>
+<span class="sd">a catalog record, a header record, and one hundred thousand data records.  Because this</span>
+<span class="sd">is a large file, it calls dump for every five hundred records, which writes all the data</span>
+<span class="sd">to file in the Table Layout.  This limits the memory footprint to just over 1GB.</span>
+<span class="sd">This example closes with a call to close(), which triggers the </span>
+<span class="sd">creation of Array Layout, which again keeps the memory footprint down by only reading</span>
+<span class="sd">in a set number of records at a time.</span>
+
+<span class="sd">The data records</span>
+<span class="sd">contain two 1D parameters (System temperature - SYSTMP and Transmitter</span>
+<span class="sd">Frequency TFREQ) and five 2D parameters (GDALT, GDLAT, GLON, and TR, and DTR)</span>
+<span class="sd">The independent spatial parameter in this example is just GDALT.</span>
+
+<span class="sd">$Id$</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">os.path</span>
+<span class="kn">import</span> <span class="nn">types</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+
+<span class="kn">import</span> <span class="nn">madrigal.metadata</span>
+<span class="kn">import</span> <span class="nn">madrigal.cedar</span>
+
+<span class="c1">################# sample data #################</span>
+
+<span class="n">kinst</span> <span class="o">=</span> <span class="mi">30</span> <span class="c1"># instrument identifier of Millstone Hill ISR</span>
+<span class="n">kindat</span> <span class="o">=</span> <span class="mi">3408</span> <span class="c1"># id of kind of data processing</span>
+<span class="n">nrow</span> <span class="o">=</span> <span class="mi">5</span> <span class="c1"># all data records have 5 2D rows</span>
+
+<span class="n">SYSTMP</span> <span class="o">=</span> <span class="p">(</span><span class="mf">120.0</span><span class="p">,</span> <span class="mf">122.0</span><span class="p">)</span>
+<span class="n">TFREQ</span> <span class="o">=</span> <span class="p">(</span><span class="mf">4.4E8</span><span class="p">,</span> <span class="mf">4.4E8</span><span class="p">)</span>
+
+<span class="n">GDALT</span> <span class="o">=</span> <span class="p">((</span><span class="mf">70.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">,</span> <span class="mf">200.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">,</span> <span class="mf">400.0</span><span class="p">),</span>
+         <span class="p">(</span><span class="mf">70.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">,</span> <span class="mf">200.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">,</span> <span class="mf">400.0</span><span class="p">))</span>
+
+<span class="n">GDLAT</span> <span class="o">=</span> <span class="p">((</span><span class="mf">42.0</span><span class="p">,</span> <span class="mf">42.0</span><span class="p">,</span> <span class="mf">42.0</span><span class="p">,</span> <span class="mf">42.0</span><span class="p">,</span> <span class="mf">42.0</span><span class="p">),</span>
+         <span class="p">(</span><span class="mf">42.0</span><span class="p">,</span> <span class="mf">42.0</span><span class="p">,</span> <span class="mf">42.0</span><span class="p">,</span> <span class="mf">42.0</span><span class="p">,</span> <span class="mf">42.0</span><span class="p">))</span>
+
+<span class="n">GLON</span>  <span class="o">=</span> <span class="p">((</span><span class="mf">270.0</span><span class="p">,</span> <span class="mf">270.0</span><span class="p">,</span> <span class="mf">270.0</span><span class="p">,</span> <span class="mf">270.0</span><span class="p">,</span> <span class="mf">270.0</span><span class="p">),</span>
+         <span class="p">(</span><span class="mf">270.0</span><span class="p">,</span> <span class="mf">270.0</span><span class="p">,</span> <span class="mf">270.0</span><span class="p">,</span> <span class="mf">270.0</span><span class="p">,</span> <span class="mf">270.0</span><span class="p">))</span>
+
+<span class="n">TR</span>    <span class="o">=</span> <span class="p">((</span><span class="s1">&#39;missing&#39;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.3</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">),</span>
+         <span class="p">(</span><span class="s1">&#39;missing&#39;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.7</span><span class="p">,</span> <span class="mf">2.4</span><span class="p">,</span> <span class="mf">3.1</span><span class="p">))</span>
+
+
+<span class="n">DTR</span>   <span class="o">=</span> <span class="p">((</span><span class="s1">&#39;missing&#39;</span><span class="p">,</span> <span class="s1">&#39;assumed&#39;</span><span class="p">,</span> <span class="s1">&#39;assumed&#39;</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">),</span>
+         <span class="p">(</span><span class="s1">&#39;missing&#39;</span><span class="p">,</span> <span class="s1">&#39;assumed&#39;</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
+
+<span class="c1">################# end sample data #################</span>
+
+<span class="n">newFile</span> <span class="o">=</span> <span class="s1">&#39;/tmp/testCedar.hdf5&#39;</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">newFile</span><span class="p">)</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="k">pass</span>
+
+<span class="c1"># create a new Madrigal file </span>
+<span class="n">cedarObj</span> <span class="o">=</span> <span class="n">madrigal</span><span class="o">.</span><span class="n">cedar</span><span class="o">.</span><span class="n">MadrigalCedarFile</span><span class="p">(</span><span class="n">newFile</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+
+<span class="c1"># create all data records -  each record lasts one minute</span>
+<span class="n">startTime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2005</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">recTime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">recno</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100000</span><span class="p">):</span>
+    <span class="n">endTime</span> <span class="o">=</span> <span class="n">startTime</span> <span class="o">+</span> <span class="n">recTime</span>
+    <span class="n">dataRec</span> <span class="o">=</span> <span class="n">madrigal</span><span class="o">.</span><span class="n">cedar</span><span class="o">.</span><span class="n">MadrigalDataRecord</span><span class="p">(</span><span class="n">kinst</span><span class="p">,</span>
+                                                <span class="n">kindat</span><span class="p">,</span>
+                                                <span class="n">startTime</span><span class="o">.</span><span class="n">year</span><span class="p">,</span>
+                                                <span class="n">startTime</span><span class="o">.</span><span class="n">month</span><span class="p">,</span>
+                                                <span class="n">startTime</span><span class="o">.</span><span class="n">day</span><span class="p">,</span>
+                                                <span class="n">startTime</span><span class="o">.</span><span class="n">hour</span><span class="p">,</span>
+                                                <span class="n">startTime</span><span class="o">.</span><span class="n">minute</span><span class="p">,</span>
+                                                <span class="n">startTime</span><span class="o">.</span><span class="n">second</span><span class="p">,</span>
+                                                <span class="n">startTime</span><span class="o">.</span><span class="n">microsecond</span><span class="o">/</span><span class="mi">10000</span><span class="p">,</span>
+                                                <span class="n">endTime</span><span class="o">.</span><span class="n">year</span><span class="p">,</span>
+                                                <span class="n">endTime</span><span class="o">.</span><span class="n">month</span><span class="p">,</span>
+                                                <span class="n">endTime</span><span class="o">.</span><span class="n">day</span><span class="p">,</span>
+                                                <span class="n">endTime</span><span class="o">.</span><span class="n">hour</span><span class="p">,</span>
+                                                <span class="n">endTime</span><span class="o">.</span><span class="n">minute</span><span class="p">,</span>
+                                                <span class="n">endTime</span><span class="o">.</span><span class="n">second</span><span class="p">,</span>
+                                                <span class="n">endTime</span><span class="o">.</span><span class="n">microsecond</span><span class="o">/</span><span class="mi">10000</span><span class="p">,</span>
+                                                <span class="p">(</span><span class="s1">&#39;systmp&#39;</span><span class="p">,</span> <span class="s1">&#39;tfreq&#39;</span><span class="p">),</span>
+                                                <span class="p">(</span><span class="s1">&#39;gdalt&#39;</span><span class="p">,</span> <span class="s1">&#39;gdlat&#39;</span><span class="p">,</span> <span class="s1">&#39;glon&#39;</span><span class="p">,</span> <span class="s1">&#39;tr&#39;</span><span class="p">,</span> <span class="s1">&#39;dtr&#39;</span><span class="p">),</span>
+                                                <span class="n">nrow</span><span class="p">,</span> <span class="n">ind2DList</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;gdalt&#39;</span><span class="p">])</span>
+
+    <span class="c1"># set 1d values</span>
+    <span class="n">dataRec</span><span class="o">.</span><span class="n">set1D</span><span class="p">(</span><span class="s1">&#39;systmp&#39;</span><span class="p">,</span> <span class="n">SYSTMP</span><span class="p">[</span><span class="n">recno</span> <span class="o">%</span> <span class="mi">2</span><span class="p">])</span>
+    <span class="n">dataRec</span><span class="o">.</span><span class="n">set1D</span><span class="p">(</span><span class="s1">&#39;tfreq&#39;</span><span class="p">,</span> <span class="n">TFREQ</span><span class="p">[</span><span class="n">recno</span> <span class="o">%</span> <span class="mi">2</span><span class="p">])</span>
+
+    <span class="c1"># set 2d values</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nrow</span><span class="p">):</span>
+        <span class="n">dataRec</span><span class="o">.</span><span class="n">set2D</span><span class="p">(</span><span class="s1">&#39;gdalt&#39;</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">GDALT</span><span class="p">[</span><span class="n">recno</span> <span class="o">%</span> <span class="mi">2</span><span class="p">][</span><span class="n">n</span><span class="p">])</span>
+        <span class="n">dataRec</span><span class="o">.</span><span class="n">set2D</span><span class="p">(</span><span class="s1">&#39;gdlat&#39;</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">GDLAT</span><span class="p">[</span><span class="n">recno</span> <span class="o">%</span> <span class="mi">2</span><span class="p">][</span><span class="n">n</span><span class="p">])</span>
+        <span class="n">dataRec</span><span class="o">.</span><span class="n">set2D</span><span class="p">(</span><span class="s1">&#39;glon&#39;</span><span class="p">,</span>  <span class="n">n</span><span class="p">,</span> <span class="n">GLON</span><span class="p">[</span><span class="n">recno</span> <span class="o">%</span> <span class="mi">2</span><span class="p">][</span><span class="n">n</span><span class="p">])</span>
+        <span class="n">dataRec</span><span class="o">.</span><span class="n">set2D</span><span class="p">(</span><span class="s1">&#39;tr&#39;</span><span class="p">,</span>    <span class="n">n</span><span class="p">,</span> <span class="n">TR</span><span class="p">[</span><span class="n">recno</span> <span class="o">%</span> <span class="mi">2</span><span class="p">][</span><span class="n">n</span><span class="p">])</span>
+        <span class="n">dataRec</span><span class="o">.</span><span class="n">set2D</span><span class="p">(</span><span class="s1">&#39;dtr&#39;</span><span class="p">,</span>   <span class="n">n</span><span class="p">,</span> <span class="n">DTR</span><span class="p">[</span><span class="n">recno</span> <span class="o">%</span> <span class="mi">2</span><span class="p">][</span><span class="n">n</span><span class="p">])</span>
+
+    <span class="c1"># append new data record</span>
+    <span class="n">cedarObj</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dataRec</span><span class="p">)</span>
+
+    <span class="n">startTime</span> <span class="o">+=</span> <span class="n">recTime</span>     
+    
+    <span class="k">if</span> <span class="n">recno</span> <span class="o">%</span> <span class="mi">500</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">recno</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">cedarObj</span><span class="o">.</span><span class="n">dump</span><span class="p">()</span> <span class="c1"># this puts everything on disk and removes it from RAM</span>
+    <span class="k">if</span> <span class="n">recno</span> <span class="o">%</span> <span class="mi">10000</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># give some feedback</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;At </span><span class="si">%i</span><span class="s1"> records&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">recno</span><span class="p">))</span>
+        
+<span class="c1"># finished adding new records</span>
+<span class="n">cedarObj</span><span class="o">.</span><span class="n">dump</span><span class="p">()</span> <span class="c1"># write whatever records are still in RAM</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;about to call close, which will also create the array layout&#39;</span><span class="p">)</span> 
+<span class="n">cedarObj</span><span class="o">.</span><span class="n">close</span><span class="p">()</span> <span class="c1"># this triggers creation of the Array Layout, then closes file</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;Finally, using CatalogHeaderCreator to add some descriptive text.&#39;</span><span class="p">)</span>
+<span class="c1"># next, use the cedar.CatalogHeaderCreator class to add catalog and header </span>
+<span class="n">catHeadObj</span> <span class="o">=</span> <span class="n">madrigal</span><span class="o">.</span><span class="n">cedar</span><span class="o">.</span><span class="n">CatalogHeaderCreator</span><span class="p">(</span><span class="n">newFile</span><span class="p">)</span>
+<span class="n">catHeadObj</span><span class="o">.</span><span class="n">createCatalog</span><span class="p">(</span><span class="n">principleInvestigator</span><span class="o">=</span><span class="s2">&quot;John Holt&quot;</span><span class="p">,</span> <span class="n">sciRemarks</span><span class="o">=</span><span class="s2">&quot;Test data only - do not use&quot;</span><span class="p">)</span>
+<span class="n">catHeadObj</span><span class="o">.</span><span class="n">createHeader</span><span class="p">(</span><span class="n">analyst</span><span class="o">=</span><span class="s2">&quot;Bill Rideout&quot;</span><span class="p">,</span> <span class="n">comments</span><span class="o">=</span><span class="s2">&quot;Do not use this data&quot;</span><span class="p">)</span>
+<span class="n">catHeadObj</span><span class="o">.</span><span class="n">write</span><span class="p">()</span>
+</pre></div>
+<p><a name="edit" id="edit"></a>
+</p>
+<h2>Editing an existing file example</h2>
+<div class="highlight">
+  <pre><span class="sd">&quot;&quot;&quot;editSample.py shows an example of editing existing data in a Madrigal</span>
+<span class="sd">file using the Python cedar module.  In particular, it edits the sample file</span>
+<span class="sd"><span class="s">mlh980120g.002.hdf5</span> to increase all Ti values by a factor of 1.2</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">os.path</span>
+<span class="kn">import</span> <span class="nn">types</span>
+
+<span class="kn">import</span> <span class="nn">madrigal.metadata</span>
+<span class="kn">import</span> <span class="nn">madrigal.cedar</span>
+
+<span class="n">metaObj</span> <span class="o">=</span> <span class="n">madrigal</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">MadrigalDB</span><span class="p">()</span>
+
+<span class="n">orgFile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">metaObj</span><span class="o">.</span><span class="n">getMadroot</span><span class="p">(),</span> <span class="s">&#39;experiments/1998/mlh/20jan98/mlh980120g.002.hdf5&#39;</span><span class="p">)</span>
+<span class="n">newFile</span> <span class="o">=</span> <span class="s">&#39;/tmp/mlh980120g.002.hdf5&#39;</span>
+
+<span class="c"># read the Madrigal file into memory</span>
+<span class="n">cedarObj</span> <span class="o">=</span> <span class="n">madrigal</span><span class="o">.</span><span class="n">cedar</span><span class="o">.</span><span class="n">MadrigalCedarFile</span><span class="p">(</span><span class="n">orgFile</span><span class="p">)</span>
+
+<span class="c"># loop through each record, increasing all Ti values by a factor of 1.2</span>
+<span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">cedarObj</span><span class="p">:</span>
+    <span class="c"># skip header and catalog records</span>
+    <span class="k">if</span> <span class="n">record</span><span class="o">.</span><span class="n">getType</span><span class="p">()</span> <span class="o">==</span> <span class="s">&#39;data&#39;</span><span class="p">:</span>
+        <span class="c"># loop through each 2D roow</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">getNrow</span><span class="p">()):</span>
+            <span class="n">presentTi</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">get2D</span><span class="p">(</span><span class="s">&#39;Ti&#39;</span><span class="p">,</span> <span class="n">row</span><span class="p">)</span>
+            <span class="c"># make sure its not a special string value, eg &#39;missing&#39;</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">presentTi</span><span class="p">)</span> <span class="o">!=</span> <span class="n">types</span><span class="o">.</span><span class="n">StringType</span><span class="p">:</span>
+                <span class="n">record</span><span class="o">.</span><span class="n">set2D</span><span class="p">(</span><span class="s">&#39;Ti&#39;</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">presentTi</span><span class="o">*</span><span class="mf">1.2</span><span class="p">)</span>
+
+<span class="c"># write edited file</span>
+<span class="n">cedarObj</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">newFilename</span><span class="o">=</span><span class="n">newFile</span><span class="p">)</span></pre></div>
+
+<p>&nbsp; </p>
+<h2><a name="matlab" id="matlab"></a>Matlab</h2>
+<p>To create CEDAR Madrigal Hdf5 files with Matlab, you will need to put the file MadrigalHdf5File.m on your Matlab path.  You also need to run the Matlab script on a server with Madrigal installed, since ultimately Matlab will simply write your information to a *.mat file, and then call the python script createMadrigalHdf5FromMatlab.py to convert that *.mat file to the output Hdf5 file. The script createMadrigalHdf5FromMatlab.py is installed in MADROOT/bin as part of the Madrigal installation.</p>
+<p>You may however, run MadrigalHdf5File.m on a non-Madrigal server, and save the output file as a *.mat file, rather than an Hdf5 file.  You could then convert that *.mat file into a Madrigal file on a server with Madrigal installed, using the convertToMadrigal function also defined in MadrigalHdf5File.m.</p>
+<p>There are only seven methods in the main class of this API, along with one helper method needed only if not running on a Madrigal server:</p>
+<ol>
+  <li>MadrigalHdf5File (the init method)</li>
+  <li>appendRecord (called once for each Madrigal record added)</li>
+  <li>set1DParm (called  for each one D parameter in each Madrigal record)</li>
+  <li>set2DParm (called  for each two D parameter in each Madrigal record, passes in a vector of length equal to number of rows in record)</li>
+  <li>setCatalog - called once per file; set some metadata beyond the default automatically added</li>
+  <li>setHeader - called once per file; set the rest of the metadata</li>
+  <li>write - called when file complete</li>
+</ol>
+<p>These seven methods are documented below, along with the helper method convertToMadrigal. An <a href="#matlab_example">example Matlab script</a> that creates a CEDAR Madrigal Hdf5 file is also given.</p>
+
+<div class="highlight">
+  <pre><span class="nn">classdef</span> MadrigalHdf5File<br />    <span class="nb">% class MadrigalHdf5File allows the creation of Madrigal Hdf5 files via<br />    % Matlab.  The general idea of this class is to simply write out all<br />    % data for the file in a Matlab struct array.  Then the python script<br />    % createMadrigalHdf5FromMatlab is called from this scriptto create all <br />    % metadata and alternate array layouts.  This keeps the amount of Matlab <br />    % code here at a minimum.  See file testMadrigalHdf5File.m for example<br />    % usage.</span>
+
+   <span class="nn">methods<br />        function</span> madFile = MadrigalHdf5File(filename, oneDParms, ...<br />                independent2DParms, twoDParms, arraySplittingParms)<br />            <span class="nb">% Object constructor for MadrigalHdf5File<br />            % Inputs:<br />            %   filename - the filename to write to.  Must end *.hdf5,<br/>            %     .hdf, or .mat.  If .mat, writes a Matlab file that must<br/>            %     later be converted to Madrigal using convertToMadrigal<br />            %   oneDParms - a cell array of strings representing 1D parms.  May be<br />            %     empty.  Example:<br />            %     cellstr(char('azm', 'elm', 'sn', 'beamid'))<br />            %   independent2DParms - a cell array of strings representing independent <br />            %     2D parms.  May be empty (ie, {}). Examples:<br />            %       cellstr(char('range'))<br />            %       cellstr(char('gdlat', 'glon'))<br />            %       cellstr(char())<br />            %   twoDParms - a cell array of strings representing dependent <br />            %     2D parms.  May be empty (ie, {}). Examples:<br />            %       cellstr(char('ti', 'dti', 'ne', 'dne'))<br />            %       cellstr(char())<br />            %   arraySplittingParms - a cell array of strings representing  <br />            %     parameters whose values are used to split arrays.  May <br />            %     be empty, in which case set to {}. Example:<br />            %       cellstr(char('beamid'))<br />            %  skipArray - optional argument.  If set to true, no array<br />            %      layout created.  If false or not passed in, array layout<br />            %     created if any 2D variables.</span>
+
+     <span class="nn">function</span> madFile = appendRecord(madFile, ut1_unix, ut2_unix, kindat, ...<br />                kinst, numRows)<br />            <span class="nb">% appendRecord adds a new record to MadrigalHdf5File.  It<br />            % returns the record number of the present row (first will be<br />            % 0)<br />            %  Inputs:<br />            %    madFile - the created MadrigalHdf5File object<br />            %    ut1_unix, ut2_unix - unix start and end time of record in<br />            %      float seconds since 1970-01-01<br />            %    kindat - integer kind of data code. See metadata.<br />            %    kinst - integer instrument code.  See metadata.<br />            %    numRows - number of rows of 2D data.  If all 1D data, set<br />            %    to 1<br />            %  Returns:<br />            %    the record number of the present row (first will be 0)<br />            %  Affects:<br />            %    Updates madFile.recordCount, appends to madFile.data the<br />            %    number of rows numRows with all data except stdParms set<br />            %    to NaN.  Use set1D and set2D to populate that record using<br />            %    recNum as index.</span>
+
+    <span class="nn">function</span> madFile = set1DParm(madFile, parm, value, lastRec)<br />            <span class="nb">% set1DParm sets the values of 1D parm parm to value value for<br />            % record with lastRecord value lastRec</span>
+
+    <span class="nn">function</span> madFile = set2DParm(madFile, parm, values, lastRec)<br />            <span class="nb">% set2DParm sets the values of 2D parm parm to value values for<br />            % record with lastRecord value lastRec</span>
+
+    <span class="nn">function</span> madFile = setCatalog(madFile, principleInvestigator, expPurpose, expMode, ...<br />                                      cycleTime, correlativeExp, sciRemarks, instRemarks)<br />            <span class="nb">% setCatalog allows setting extra information in the catalog<br />            % record.  This method is optional.  Even if this method is not<br />            % called, the catalog record will contain a description of the<br />            % instrument (kinst code and name) and kind of data brief<br />            % description, along with a list of description of the<br />            % parameters in the file, and the first and last times of the<br />            % measurements.<br />            %<br />            % Inputs:<br />            %<br />            %    principleInvestigator - Names of responsible Principal Investigator(s) or <br />            %       others knowledgeable about the experiment.<br />            %    expPurpose - Brief description of the experiment purpose<br />            %    expMode - Further elaboration of meaning of MODEXP; e.g. antenna patterns <br />            %       and pulse sequences.<br />            %    cycleTime - Minutes for one full measurement cycle - must<br />            %       be numeric<br />            %    correlativeExp - Correlative experiments (experiments with related data)<br />            %    sciRemarks - scientific remarks<br />            %    instRemarks - instrument remarks<br />            %</span>
+
+    <span class="nn">function</span> madFile = setHeader(madFile, kindatDesc, analyst, comments, history)<br />            <span class="nb">% setHeader allows setting extra information in the header<br />            % record.  This method is optional.<br />            %<br />            % Inputs:<br />            %<br />            %    kindatDesc - description of how this data was analyzed (the kind of data)<br />            %    analyst - name of person who analyzed this data<br />            %    comments - additional comments about data (describe any instrument-specific parameters)<br />            %    history - a description of the history of the processing of this file<br />            %</span>
+
+    <span class="nn">function</span> write(madFile)<br />            <span class="nb">% write writes out the complete Hdf5 file to madFile.filename</span>
+    
+<span class="nn">function</span> convertToMadrigal(matFile, madrigalFile)<br />    <span class="nb">% convertToMadrigal converts a matlab mat file to Madrigal Hdf5 file<br/>    %   Inputs:<br/>    %      matFile - existing Matlab .mat file created earlier<br/>    %      madrigalFile - madrigal file to create.  Must end *.hdf5, .h5,<br/>    %     .hdf, or .mat.<br/></span>
+    </pre>
+</div>
+
+
+<a name="matlab_example"></a>Example usage of MadrigalHdf5File
+<div class="highlight">
+<pre>
+<span class="nb">% test/example script to exercise MadrigalHdf5File
+%
+% $Id: testMadrigalHdf5File.m 4644 2015-01-13 19:30:37Z brideout $</span>
+filename = <span class="s">'/Users/brideout/Documents/workspace/mad3_0/madroot/source/madmatlab/example.h5'</span>;
+oneDParms = cellstr(char(<span class="s">'azm'</span>, <span class="s">'elm'</span>, <span class="s">'sn'</span>, <span class="s">'beamid'</span>));
+independent2DParms = cellstr(char(<span class="s">'range'</span>));
+twoDParms = cellstr(char(<span class="s">'ti'</span>, <span class="s">'dti'</span>));
+<span class="nb">% Use {} for independent2DParms and twoDParms if all scalar parameters</span>
+arraySplittingParms = cellstr(char(<span class="s">'beamid'</span>));
+<span class="nb">% Use arraySplittingParms = {}; for no splitting</span>
+
+<span class="nb">% some hard-coded fake data</span>
+ut1_unix = 1.0E9;
+ut2_unix = 1.0E9 + 100;
+kindat = 3410;
+kinst= 30;
+numRows = 5;
+azm = 100.0;
+elm = 45.0;
+sn = 0.5;
+range = [100.0, 150.0, 200.0, 250.0, 300.0];
+ti = [1000.0, 1100.0, 1200.0, 1300.0, 1400.0];
+dti = [100.0, 150.0, 200.0, 250.0, 300.0];
+beamids = [1,2,1,2,1,2,1,2,1,2];
+
+
+madFile = MadrigalHdf5File(filename, oneDParms, ...
+          independent2DParms, twoDParms, arraySplittingParms);
+      
+<span class="nn">for</span> rec = 1:10
+    madFile = madFile.appendRecord(ut1_unix, ut2_unix, kindat, ...
+        kinst, numRows);
+
+    <span class="nb">% set 1D values</span>
+    madFile = madFile.set1DParm(<span class="s">'azm'</span>, azm, madFile.lastRecord);
+    madFile = madFile.set1DParm(<span class="s">'elm'</span>, elm, madFile.lastRecord);
+    madFile = madFile.set1DParm(<span class="s">'sn'</span>, sn, madFile.lastRecord);
+    madFile = madFile.set1DParm(<span class="s">'beamid'</span>, beamids(rec), madFile.lastRecord);
+    
+    <span class="nb">% set 2D and independent variables</span>
+    madFile = madFile.set2DParm(<span class="s">'range'</span>, range, madFile.lastRecord);
+    madFile = madFile.set2DParm(<span class="s">'ti'</span>, ti, madFile.lastRecord);
+    madFile = madFile.set2DParm(<span class="s">'dti'</span>, dti, madFile.lastRecord);
+    
+<span class="nn">end</span>
+
+<span class="nb">% add catalog and header info</span>
+principleInvestigator = <span class="s">'Bill Rideout'</span>;
+expPurpose = <span class="s">'Measure the ionosphere'</span>;
+expMode = <span class="s">'Vector measurements'</span>;
+cycleTime = 20.0;
+correlativeExp = ''; 
+sciRemarks = <span class="s">'Big solar storm'</span>; 
+instRemarks = <span class="s">'Working well!!!'</span>;
+madFile = madFile.setCatalog(principleInvestigator, expPurpose, expMode, ...
+                            cycleTime, correlativeExp, sciRemarks, instRemarks);
+
+kindatDesc = <span class="s">'Regular processing'</span>;
+analyst = <span class="s">'Phil Erickson'</span>; 
+comments = <span class="s">'Include unusual parameter description here'</span>;
+history = <span class="s">'Reprocessed four times'</span>;
+madFile = madFile.setHeader(kindatDesc, analyst, comments, history);
+
+write(madFile);
+</pre>
+
+<h3>Converting an old Madrigal 2 file to Madrigal 3</h3>
+<p>If you have old Madrigal 2 files you want to convert to Madrigal 3, you can use $MADROOT/bin/exportToHdf.py</p>
+<pre>
+$MADROOT/bin/exportToHdf.py -h
+
+exportToHdf.py is a script used to convert a Madrigal 2 file to hdf5 format.
+
+Required arguments:
+
+    --cedarFilename - full path of existing Madrigal file. 
+
+    --hdf5Filename - full path of hdf5 file to write.
+
+Optional arguments - set these to add layouts, parameters or filters.  Default is to use cachedFiles.ini:
+    
+    --independentSpatialParms - a comma separated list of parameters as mnemonics
+        that represent independent spatial variables.  Causes array layout to be added to 
+        output Hdf5 file.  If not given, uses $/home/midasop/mad3/cachedFiles.ini
+
+    --arraySplittingParms - a comma separated list of parameters as mnemonics used to split
+        arrays into subarrays.  For example, beamcode would split data with separate beamcodes
+        into separate arrays. The number of separate arrays will be up to the product of the number of 
+        unique values found for each parameter, with the restriction that combinations with no records will
+        not create a separate array. .  If not given, uses $/home/midasop/mad3/cachedFiles.ini
+    
+    --extraParameters - These parameters will be added to the output file if 
+                        they are not already in the input file. Comma-delimited.  Default is no
+                        extra parameter
+                        
+    --filter - Filter argument as in isprint command as string (eg, 'ti.500,2000') Only one allowed.
+               Default is no filtering
+               
+    --status - use to set status of file.  Default is 1 (default).  Use -1 to get from fileTab (error raised
+            if not available)
+
+Example:
+    exportToHdf --cedarFilename=/opt/madrigal/experiments/1998/mlh/20jan98/mil20100112.001
+                --hdf5Filename=/home/user/data/mil20100112.hdf5
+                --independentSpatialParms=range
+                --arraySplittingParms=kinst,pl,mdtyp
+                --extraParameters=ti,te
+                --filter=ti,500,1000
+</pre>
+</div>
+<!-- InstanceEndEditable -->
+<table width="100%" border="1" cellpadding="0" cellspacing="2" class="navigation">
+  <tr>
+    <td width="5%"><a href="{% url 'docs' 'ad_experiments.html' %}"><img src="/static/previous.png" alt="previous" width="32" height="32" /></a></td>
+    <td width="5%"><a href="{% url 'docs' 'admin.html' %}"><img src="/static/up.png" alt="up" width="32" height="32" /></a></td>
+    <td width="5%"><a href="{% url 'docs' 'ad_createExp.html' %}"><img src="/static/next.png" alt="next" width="32" height="32" /></a></td>
+    <td width="54%"><!-- InstanceBeginEditable name="EditTitleBottom" -->Creating and editing Madrigal data files <!-- InstanceEndEditable --></td>
+    <td width="13%"><a href="{% url 'docs' 'madContents.html' %}">Doc home </a></td>
+    <td width="18%"><a href="/">Madrigal home</a></td>
+  </tr>
+</table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" href="{% url 'docs' 'ad_experiments.html' %}"><!-- InstanceBeginEditable name="PreviousTitle2" -->Madrigal data organization <!-- InstanceEndEditable --></A>
+<b class="navlabel">&nbsp;&nbsp;Up:</b>
+<a class="sectref" href="{% url 'docs' 'admin.html' %}"><!-- InstanceBeginEditable name="UpTitle2" -->Madrigal admin guide <!-- InstanceEndEditable --></A>
+<b class="navlabel">&nbsp;&nbsp;Next:</b>
+<a class="sectref" href="{% url 'docs' 'ad_createExp.html' %}"><!-- InstanceBeginEditable name="NextTitle2" -->Creating Madrigal experiments <!-- InstanceEndEditable --></A></div>
+<hr/>
+<p>&nbsp;</p>
+</body> 
+<!-- InstanceEnd --></html>

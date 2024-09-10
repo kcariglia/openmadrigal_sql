@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Base template for Looker Geomagnetic from Geodetic Form
+	
+	$Id: looker_geomagnetic_from_geodetic.html 5332 2015-09-25 19:45:35Z brideout $
+{% endcomment %}
+
+{% block title %}Madrigal looker{% endblock %}
+	
+{% block content %}
+<form method=get>
+{{ form.looker_options }}
+<div align=center>
+<h4>Geomagnetic Coordinates vs Latitude, Longitude, Altitude</h4>
+</div>
+<p>Specify the latitude/longitude/altitude grid on which geomagnetic coordinates will be calculated. 
+The epoch for which the IGRF geomagnetic coordinates will be calculated may also be specified.</p>
+        
+<table class="table table-condensed">
+	<tr>
+		<td>
+			<table class="table table-condensed">
+			<caption>
+			Set 3D grid of geodetic points to convert to geomagnetic
+			</caption>
+			<tr>
+			<th align=center></th>
+			<th align=center>start</th>
+			<th align=center>end</th>
+			<th align=center>delta</th>
+			</tr>
+			<tr>
+			<td>apex latitude</td>
+			<td>
+			  {{form.start_lat}}
+			</td>
+			<td>
+			  {{form.stop_lat}}
+			</td>
+			<td>
+			  {{form.step_lat}}
+			</td>
+			</tr>
+			<tr>
+			<td>apex longitude</td>
+			<td>
+			  {{form.start_lon}}
+			</td>
+			<td>
+			  {{form.stop_lon}}
+			</td>
+			<td>
+			  {{form.step_lon}}
+			</td>
+			</tr>
+			<tr>
+			<td>altitude</td>
+			<td>
+			  {{form.start_alt}}
+			</td>
+			<td>
+			  {{form.stop_alt}}
+			</td>
+			<td>
+			  {{form.step_alt}}
+			</td>
+			</tr>
+			</table>
+		</td>
+		<td style="vertical-align:middle" align="center">
+		    <table class="table table-condensed">
+		    <tr><td style="vertical-align:middle" align="center">Geomagnetic field epoch: {{form.year}}</td></tr>
+		    <tr><td>&nbsp;</td></tr>
+		    <tr><td style="vertical-align:middle" align="center"><button class="btn btn-primary" id="looker_geomagetic_from_geodetic_button" data-toggle="tooltip" data-original-title="Click this button to calculate geomagnetic coordinates from a grid of geodetic points." data-placement="top">Calculate</button></td></tr>
+		    </table>
+		</td>
+    </tr>
+
+</table>
+</form>
+	
+	
+	<script>
+		$('#looker_geomagetic_from_geodetic_button').on('click', function (e) {
+		    if (!validateForm(this.form))
+		        return(false);
+			this.form.action = "{% url 'looker_output' %}";
+			this.form.submit();
+		})
+		
+		function validateForm(madForm)
+		{
+		
+{% include "madweb/validate_grid.html" %}
+{% include "madweb/validate_year.html" %}
+			
+			// passed all tests
+			return(true);
+		}
+	</script>
+{% endblock %}

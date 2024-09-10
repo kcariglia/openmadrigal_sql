@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Base template for Madrigal download as is script interface
+	
+	$Id: download_as_is_script.html 5323 2015-09-25 18:02:35Z brideout $
+{% endcomment %}
+
+{% block title %}Create download as is script{% endblock %}
+
+
+{% block extra_head %}
+    {% include "madweb/generate_download_javascript.html" %}
+{% endblock %}
+    
+{% block content %}
+    <center><h4>Create a script command to download a series of existing Madrigal files in the format of your choice</h4></center>
+	
+	<div class="row">
+	<form id="id_form">
+	
+		<div class="col-sm-6">
+			<div class="col-md-12">
+				{{ form.categories.label }}<br>
+				{{ form.categories }}
+				<p></p>
+			</div> <!-- end subdivide -->
+			<div class="col-md-12">
+				{{ form.instruments.label }}&nbsp;&nbsp;<i>(Year range shows data available):</i><br>
+				{{ form.instruments }}
+			</div> <!-- end subdivide -->
+			<div class="col-md-12">
+			    <p></p>
+				{{ form.format_select.label }}
+				{{ form.format_select }}
+			</div> <!-- end subdivide -->
+			<div class="col-md-12">
+			    <p></p>
+				{{ form.language_select.label }}
+				{{ form.language_select }}
+			</div> <!-- end subdivide -->
+		</div>
+		
+		<div class="col-sm-6">
+			<div class="col-md-12">
+				{{ form.start_date.label }}<br>
+				{{ form.start_date }}
+			    <p></p>
+			</div> <!-- end subdivide -->
+			<div class="col-md-12">
+				{{ form.end_date.label }}<br>
+				{{ form.end_date }}
+			    <p></p>
+			</div> <!-- end subdivide -->
+		</div>
+	
+	</div> <!-- class=row -->
+	
+	<div class="panel-group" id="accordion">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				<h3 class="panel-title">
+					<a href="#optional_panel" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion">Optional filters: kinds of data, experiment names, file status <span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></a>
+				</h3>
+			</div> <!-- end panel-heading -->
+			<div id="optional_panel" class="panel-collapse collapse">
+				<div class="panel-body">
+				
+				<div class="row">
+				
+					<div class="col-sm-6">
+					    {{ form.kindat_select.label }}<br>
+						{{ form.kindat_select }}
+					</div>
+					
+					<div class="col-sm-3">
+						<a data-toggle="tooltip" data-original-title="To filter by experiment name, enter all or part of an experiment name (case insensitive, do not use wildcards).  Leave blank for all experiment names." data-placement="bottom">Filter experiments by name: </a>
+						{{ form.expName }}
+					</div>
+					
+					<div class="col-sm-3">
+						<a data-toggle="tooltip" data-original-title="To filter by file description string, enter all or part of a file description string (case insensitive, do not use wildcards).  Leave blank for all files." data-placement="bottom">Filter files by description: </a>
+						{{ form.fileDesc }}
+					</div>
+				    
+				</div> <!-- class=row -->
+				
+				</div> <!-- end panel-body -->
+			</div> <!-- end panel-collapse -->
+		</div> <!-- end panel-primary -->
+	</div> <!-- end panel-group -->
+	
+	<div> <!-- button div -->
+    <center>
+        <button  type="button" class="btn btn-primary"  data-toggle="tooltip" data-original-title="Click this button to generate the needed command in the language of your choice." data-placement="bottom" onclick="generateCommand(this.form)">Generate command</button>
+    </center>
+	</div>
+	
+	</form>
+	
+	<br>
+	<div><pre id="script_output"></pre></div>
+{% endblock %}

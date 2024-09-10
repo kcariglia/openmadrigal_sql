@@ -1,0 +1,32 @@
+
+		    // apex latitude tests
+		    var fl_apex_lat_str = $.trim($('#id_fl_apex_lat').val());
+			var fl_apex_lat = Number(fl_apex_lat_str);
+			if (isNaN(fl_apex_lat) || fl_apex_lat_str.length == 0)
+			{
+				alert('Field line apex latitude is invalid number: ' + fl_apex_lat_str);
+				return(false);
+			}
+			if (fl_apex_lat < -90.0 || fl_apex_lat > 90.0)
+			{
+				alert('Field line apex latitude must be between -90 and 90, not: ' + fl_apex_lat_str);
+				return(false);
+			}
+			
+			
+			// apex longitude tests
+		    var fl_apex_lon_str = $.trim($('#id_fl_apex_lon').val());
+			var fl_apex_lon = Number(fl_apex_lon_str);
+			if (isNaN(fl_apex_lon) || fl_apex_lon_str.length == 0)
+			{
+				alert('Field line apex longitude is invalid number: ' + fl_apex_lon_str);
+				return(false);
+			}
+			if (fl_apex_lon < -180.0 || fl_apex_lon > 180.0)
+			{
+				alert('Field line apex longitude must be between -180 and 180, not: ' + fl_apex_lon_str);
+				return(false);
+			}
+			
+
+			

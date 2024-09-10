@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Base template for Looker output page
+	
+	$Id: looker_output.html 5332 2015-09-25 19:45:35Z brideout $
+{% endcomment %}
+
+{% block title %}Madrigal looker{% endblock %}
+
+{% block content %}
+	<center><h4>Looker output: {{type}}</h4></center>
+	
+    {% if datetime %}
+	<p>UT time: {{ datetime }}</p>
+	{% endif %}
+	<pre>{{text}}
+	</pre>
+{% endblock %}

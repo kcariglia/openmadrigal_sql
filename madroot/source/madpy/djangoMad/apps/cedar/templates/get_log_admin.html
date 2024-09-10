@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Base template for Madrigal Get Log Admin page
+	
+	$Id: get_log_admin.html 5763 2016-08-15 17:09:11Z brideout $
+{% endcomment %}
+
+{% block title %}Download usage log{% endblock %}
+
+{% block content %}
+
+<script language = "JavaScript">
+	//Site object to hold information about available instrument data
+	function Site(siteId, kinst, instName)
+	{
+		this.siteId=siteId;
+		this.kinst=kinst;
+		this.instName=instName;
+	}
+
+	//siteArr holds an array of Site objects
+	var siteArr = new Array();
+{% for site in form.siteList %}
+	siteArr[{{forloop.counter0}}] = new Site({{site.0}}, {{site.1}}, "{{site.2}}");
+{% endfor %}
+
+
+	function selectSite(madForm)
+	{
+		if (!validateForm(madForm))
+		{
+			return false;
+		}
+		for(var count = 0; count < madForm.site.options.length; count++)
+		{
+			if (madForm.site[count].selected)
+			var siteId = madForm.site.options[count].value;
+		}
+		madForm.kinst.options.length = 0;
+		var opt = new Option("All instruments", 0, true, true);
+		madForm.kinst.options[madForm.kinst.options.length] = opt;
+		for(var count = 0; count < siteArr.length; count++)
+		{
+			if (siteId == siteArr[count].siteId)
+			{
+				var opt = new Option(siteArr[count].instName, siteArr[count].kinst, false, false);
+				madForm.kinst.options[madForm.kinst.options.length] = opt;
+			}
+		}
+	}
+	function trim(strText)
+	{
+		// this will get rid of leading spaces
+		while (strText.substring(0,1) == ' ')
+			strText = strText.substring(1, strText.length);
+		// this will get rid of trailing spaces
+		while (strText.substring(strText.length-1,strText.length) == ' ')
+			strText = strText.substring(0, strText.length-1);
+		return strText;
+	}
+
+	function isEmpty(textObj)
+	{
+		var newValue = trim(textObj.value);
+		var newLength = newValue.length;
+		if(newLength == 0)
+		{
+			return true;
+		}
+		return false;
+	}
+
+	function isInt(textObj)
+	{
+		var newValue = trim(textObj);
+		var newLength = newValue.length;
+		for (var i = 0; i != newLength; i++)
+		{
+			aChar = newValue.substring(i,i+1);
+			if(aChar < "0" || aChar > "9")
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
+	function validateForm(madForm)
+	{
+		for(var count = 0; count < madForm.site.options.length; count++)
+		{
+			if (madForm.site[count].selected)
+			var siteId = parseInt(madForm.site.options[count].value);
+		}
+		if (siteId == 0)
+		{
+			alert("Please choose a site first.");
+			return false;
+		}
+		var startList = madForm.startDate.value.split("-");
+		if (startList.length != 3)
+		{
+			alert("Start date must be in form YYYY-MM-DD");
+			return false;
+		}
+		for(var i=0; i < 3; i++)
+		{
+			if (!(isInt(startList[i])))
+			{
+				alert("Start date must be in form YYYY-MM-DD");
+				return false;
+			}
+		}
+		try
+		{
+			var year = parseInt(startList[0]);
+			var month = parseInt(startList[1]);
+			var day = parseInt(startList[2]);
+			var thisDate1 = new Date(year, month-1, day);
+			var thisDate = new Date(thisDate1.getTime());
+			if (thisDate.getDate() != day)
+			{
+				throw "Date error";
+			}
+		}
+		catch (e)
+		{
+			alert("Invalid entry for start date.  Check number of days in month.");
+			return false;
+		}
+		var endList = madForm.endDate.value.split("-");
+		if (endList.length != 3)
+		{
+			alert("End date must be in form YYYY-MM-DD");
+			return false;
+		}
+		for(var i=0; i < 3; i++)
+		{
+			if (!(isInt(endList[i])))
+			{
+				alert("End date must be in form YYYY-MM-DD");
+				return false;
+			}
+		}
+		try
+		{
+			var year = parseInt(endList[0]);
+			var month = parseInt(endList[1]);
+			var day = parseInt(endList[2]);
+			var thisDate1 = new Date(year, month-1, day);
+			var thisDate = new Date(thisDate1.getTime());
+			if (thisDate.getDate() != day)
+			{
+				throw "Date error";
+			}
+		}
+		catch (e)
+		{
+			alert("Invalid entry for end date.  Check number of days in month.");
+			return false;
+		}
+		return true;
+	}
+	function submitForm(madForm)
+	{
+		if (!validateForm(madForm))
+		{
+			return false;
+		}
+		if (isEmpty(madForm.password))
+		{
+			alert("password cannot be empty");
+			return false;
+		}
+		madForm.submit()
+	}
+
+</script>
+
+
+	<center><h2>Download usage log for your instruments (Madrigal Adminstrators only)</h2></center>
+	
+	<p>This page allows Madrigal administrators to download the usage log from the CEDAR archival Madrigal site for their instruments. 
+	As an administrator, you can choose to download the complete usage log, or select just part of the log based on instrument and/or 
+	date range. The data range refers to the date of data access, not the date the data was taken. The log file format is the 
+	<a href="ad_logging.html">same</a> as in a 
+	standard Madrigal site. If you have any password problems, please contact <a href="mailto:brideout@haystack.mit.edu">Bill Rideout</a>.<p>
+	
+	<form name="download_usage_form" method="post">
+	
+	<center>
+	{% if form.non_field_errors %}
+		<p style="color: red;">
+	        Please correct the error{{ form.errors|pluralize }} below.
+		</p>
+		{{ form.non_field_errors }}
+	{% endif %}
+	<div>
+	<table class="table table-condensed">
+		<tr valign=center>
+			<td align=left>Madrigal site</td>
+			<td align=left>Password</td>
+			<td align=left>Instrument(s)</td>
+			<td align=left>Start date (YYYY-MM-DD)</td>
+			<td align=left>End date (YYYY-MM-DD)</td>
+		</tr>
+		<tr>
+	      <td> {{ form.site }}</td>
+	      <td> {{ form.password }} </td>
+	      <td> {{ form.kinst }} </td>
+	      <td>{{ form.startDate }}</td>
+	      <td>{{ form.endDate }}</td>
+	    </tr>
+	</table>
+	<p align="center">
+      <input name="getLog" type="button" id="Get log" value="Get log" onClick="submitForm(this.form)"/>
+    </p>
+	</div>
+	</center>
+	
+
+{% endblock %}

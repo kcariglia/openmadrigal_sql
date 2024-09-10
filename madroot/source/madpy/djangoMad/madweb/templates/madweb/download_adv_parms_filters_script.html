@@ -1,0 +1,34 @@
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Template for Ajax response to create download advanced parameter filter html
+	
+	$Id: download_adv_parms_filters_script.html 5186 2015-08-21 15:10:36Z brideout $
+{% endcomment %}
+<table class="table table-bordered table-condensed">
+	<thead>
+        <tr>
+            <th>Optional filters using any parameter mnemonic for this instrument</th>
+            <th>Lower limit (leave blank if no lower limit)</th>
+            <th>Upper limit (leave blank if no upper limit)</th>
+        </tr>
+    </thead>
+	<tr>
+		<td>{{ form.parm_1 }}</td>
+		<td>{{ form.parm_1_lower }}</td>
+		<td>{{ form.parm_1_upper }}</td>
+		<td></td>
+	</tr>
+	<tr>
+		<td>{{ form.parm_2 }}</td>
+		<td>{{ form.parm_2_lower }}</td>
+		<td>{{ form.parm_2_upper }}</td>
+		<td></td>
+	</tr>
+	<tr>
+		<td>{{ form.parm_3 }}</td>
+		<td>{{ form.parm_3_lower }}</td>
+		<td>{{ form.parm_3_upper }}</td>
+		<td></td>
+	</tr>
+</table>

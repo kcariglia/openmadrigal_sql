@@ -1,0 +1,30 @@
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Template for show info in single experiment web interface
+	
+	$Id: show_info.html 4845 2015-02-27 16:44:41Z brideout $
+{% endcomment %}
+                    <!-- show is its own row in main column -->
+					<div class="row">
+						<div class="panel panel-default">
+							<div class="panel-body box">
+							<pre>
+							{{ text|safe }}
+							</pre>
+							</div>
+						</div>
+					</div> <!-- end row -->
+					
+					<style>
+					div.box{
+					  font-family: monospace;
+					  overflow-x: scroll;
+					  max-height: 80%;
+					  overflow-y: scroll;
+					}
+					</style>
+					
+					
+					
+					

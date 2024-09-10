@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Base template for Madrigal get metadata page
+	
+	$Id: get_metadata.html 5336 2015-09-27 15:14:33Z brideout $
+{% endcomment %}
+
+{% block title %}Download Madrigal metadata files{% endblock %}
+
+{% block content %}
+	<center><h4>Download metadata files from this local site</h4></center>
+	
+	<form>
+	{{ form }}
+	
+	
+	<div> <!-- button div -->
+	    <center>
+	        <button class="btn btn-primary" id="get_metadata_button" >Download</button>
+	    </center>
+	</div>
+	</form>
+{% endblock %}

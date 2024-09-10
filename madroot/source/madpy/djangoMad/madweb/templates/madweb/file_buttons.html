@@ -1,0 +1,212 @@
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Template for file buttons in single experiment web interface
+	
+	$Id: file_buttons.html 7319 2021-03-04 21:22:21Z brideout $
+{% endcomment %}
+                    <!-- file_buttons is its own row in main column -->
+					<div class="row">
+					
+						<div class="btn-toolbar" style="margin: 0;">
+			              <div class="btn-group">
+			                <button class="btn btn-primary" id="show_plots" data-toggle="tooltip" data-original-title="Click this button to show plots and any other documentation associated with this experiment." data-placement="bottom">{{ plot_label | default:"Plots/docs"}}</button>
+			              </div><!-- /btn-group -->
+			              <div class="btn-group">
+			                <button class="btn btn-primary dropdown-toggle my-dropdown" data-toggle="dropdown" title="Use this dropdown menu to download the file to your computer either as is (faster), or with selected parameters and filters (slower)." data-placement="right">Download file <span class="caret"></span></button>
+			                <ul class="dropdown-menu">
+			                  <li><a href="javascript:downloadAsIs()" data-toggle="tooltip" data-original-title="Download the file in your choice of formats as is (faster than Select parameters/filters)." data-placement="right">As is</a></li>
+			                  <li><a href="javascript:getAdvanced('download')" data-toggle="tooltip" data-original-title="Download the file with the parameters (and possibly data filters) you select (slower than As is)." data-placement="right">Select parameters/filters</a></li>
+			                </ul>
+			              </div><!-- /btn-group -->
+			              <div class="btn-group">
+			                <button class="btn btn-primary dropdown-toggle my-dropdown" data-toggle="dropdown" id="print_file_button" title="Use this dropdown menu to print the file to your web browser either as is (faster), or with selected parameters and filters (slower)." data-placement="right">Print file <span class="caret"></span></button>
+			                <ul class="dropdown-menu">
+			                  <li><a href="javascript:printAsIs()" data-toggle="tooltip" data-original-title="Print the file in your browser as is (faster than Select parameters/filters)." data-placement="right">As is</a></li>
+			                  <li><a href="javascript:getAdvanced('print')" data-toggle="tooltip" data-original-title="Print the file in your browser with the parameters (and possibly data filters) you select (slower than As is)." data-placement="right">Select parameters/filters</a></li>
+			                  <li><a href="javascript:listRecords()" data-toggle="tooltip" data-original-title="List the individual records in this file." data-placement="right">List records in file</a></li>
+			                </ul>
+			              </div><!-- /btn-group -->
+			              <div class="btn-group">
+			                <button class="btn btn-primary" id="show_info" data-toggle="tooltip" data-original-title="Click this button to show the descriptive text associated with the selected file." data-placement="bottom">View file info</button>
+			              </div><!-- /btn-group -->
+			              <div class="btn-group">
+			                <button class="btn btn-primary" id="show_doi" data-toggle="tooltip" data-original-title="Click this button to show a full citation with a permanent url useful for citing this data file in a publication." data-placement="bottom">Cite this file</button>
+			              </div><!-- /btn-group -->
+			            </div><!-- /btn-toolbar -->
+			            
+			            <script>
+			            $('[data-toggle="tooltip"]').tooltip();
+					    $('[data-toggle="tooltip"]').on('show.bs.tooltip', function() {
+						    // Only one tooltip should ever be open at a time
+						    $('.tooltip').not(this).hide();
+						});
+					    $('.my-dropdown').dropdown();
+						$('.my-dropdown').tooltip();
+		
+			            $('#show_plots').on('click', function (e) {
+							var expID = '{{ form.exp_id.label }}';
+							var url = '{% url 'show_plots' %}' + '?experiment_list=' + expID;
+							// first delete all forms that are now out of date
+	        				divIndex = $(".single_form").index($( "#file_data" ))
+	        				$(".single_form").slice(divIndex).empty()
+				            // second populate the file_data html if '0' not selected
+				            if (expID != '0') {
+				            	$(".single_form").slice(divIndex,divIndex+1).load(url);
+            				}
+						})
+						
+						function downloadAsIs () {
+							var expID = '{{ form.exp_id.label }}';
+							var basename = '{{ form.basename.label }}';
+							var url = '{% url 'download_as_is' %}' + '?experiment_list=' + expID + '&file_list=' + basename;
+							// first delete all forms that are now out of date
+	        				divIndex = $(".single_form").index($( "#file_data" ))
+	        				$(".single_form").slice(divIndex).empty()
+				            // second populate the download as is html if '0' not selected
+				            if (basename != '0') {
+				            	$(".single_form").slice(divIndex,divIndex+1).load(url);
+            				}
+						}
+						
+						function getAdvanced (type) {
+						    var filesize = parseInt({{ form.filesize.label }});
+						    var size_mb = parseInt(filesize / (1024*1025));
+						    if (size_mb > 50) {
+	            		           alert("The file to be analyzed is " + size_mb + " MBs.  Files greater than 50 MBs cannot be analyzed fast enough for a response via the web, and downloading the file directly is recommended. You can download the file using the Download File -> As Is selection.");
+	            		           return;
+	            		        }
+						    if (size_mb > 10) {
+	            		           var answer = confirm("The file to be analyzed is " + size_mb + " MBs.  Files greater than 10 MBs can take a long time to analyze, and downloading the file directly is recommended. You can download the file instead by hitting Cancel, then using the Download File -> As Is selection.");
+	            		           if(!answer) {
+	            		        	     return;
+	            		           }
+	            		        }
+							var expID = '{{ form.exp_id.label }}';
+							var basename = '{{ form.basename.label }}';
+							var url = '{% url 'get_advanced' %}' + '?type=' + type + '&experiment_list=' + expID + '&file_list=' + basename;
+							// refresh page
+	        				window.location.href = url;
+						}
+						
+						function printAsIs () {
+						    var filesize = parseInt({{ form.filesize.label }});
+						    var size_mb = parseInt(filesize / (1024*1025));
+						    if (size_mb > 10) {
+	            		        var answer = confirm("The file to be printed is " + size_mb + " MBs.  Files greater than 10 MBs can be even larger when converted to ascii and crash your browser. Downloading the file directly is recommended. You can download the file instead by hitting Cancel, then using the Download File -> As Is selection.");
+	            		        if(!answer) {
+	            		        	return;
+	            		        }
+	            		    }
+							var expID = '{{ form.exp_id.label }}';
+							var basename = '{{ form.basename.label }}';
+							var url = '{% url 'print_as_is' %}' + '?experiment_list=' + expID + '&file_list=' + basename;
+							// first delete all forms that are now out of date
+	        				divIndex = $(".single_form").index($( "#file_data" ))
+	        				$(".single_form").slice(divIndex).empty()
+				            // second populate the print as is html if '0' not selected
+				            if (basename != '0') {
+				            	$.ajax({url: url, 
+				            		beforeSend: function () {
+						                $("#print_file_button").html("Printing...");
+						            },
+				            		success: function(result){
+				            		    var resultArr = result.split(":");
+				            		    var filesize = parseInt(resultArr[0]);
+				            		    var mbytes = Math.floor(filesize/1000000);
+				            		    if (mbytes > 50) {
+				            		        var answer = confirm("The ascii file to be printed is " + mbytes + " MBs.  Are you sure you want to print it in your browser?  You can download the file as ascii instead by hitting Cancel, then using the Download file button.");
+				            		        if(!answer) {
+				            		            $("#print_file_button").html("Print File ");
+				            		        	return;
+				            		        }
+				            		    }
+							        	// if we made it here, its okay to load the text
+							        	url = url + '&text=' + resultArr[1];
+							        	$.ajax({url: url,
+							        		success: function(result){
+							        		    $(".single_form").slice(divIndex,divIndex+1).html(result);
+							        			$("#print_file_button").html("Print File ");
+							        		},
+							        	});
+							    	},
+							    	error: function (xhr) {
+						            	$("#print_file_button").html("Print File ");
+							            alert('Printing error: ' + xhr);
+							        }
+							    });
+            				}
+						}
+						
+						function listRecords() {
+						    var expID = '{{ form.exp_id.label }}';
+							var basename = '{{ form.basename.label }}';
+							var url = '{% url 'list_records' %}' + '?experiment_list=' + expID + '&file_list=' + basename;
+							// first delete all forms that are now out of date
+	        				divIndex = $(".single_form").index($( "#file_data" ))
+	        				$(".single_form").slice(divIndex).empty()
+				            // second populate the print as is html if '0' not selected
+				            if (basename != '0') {
+				            	$.ajax({url: url, 
+				            		beforeSend: function () {
+						                $("#print_file_button").html("Listing...");
+						            },
+				            		success: function(result){
+				            		    var resultArr = result.split(":");
+							            $(".single_form").slice(divIndex,divIndex+1).html(result);
+							        	$("#print_file_button").html("Print File ");
+							    	},
+							    	error: function (xhr) {
+						            	$("#print_file_button").html("Print File ");
+							            alert('Printing error: ' + xhr);
+							        }
+							    });
+            				}
+						}
+						
+						$('#show_info').on('click', function (e) {
+							var expID = '{{ form.exp_id.label }}';
+							var basename = '{{ form.basename.label }}';
+							var url = '{% url 'show_info' %}' + '?experiment_list=' + expID + '&file_list=' + basename;
+							// first delete all forms that are now out of date
+	        				divIndex = $(".single_form").index($( "#file_data" ))
+	        				$(".single_form").slice(divIndex).empty()
+				            // second populate the print as is html if '0' not selected
+				            if (basename != '0') {
+				            	//$(".single_form").slice(divIndex,divIndex+1).load(url);
+				            	$.ajax({url: url, 
+				            		success: function(result){
+							        	$(".single_form").slice(divIndex,divIndex+1).html(result);
+							    	},
+							    	error: function (xhr) {
+							            alert('Printing error: ' + xhr);
+							        }
+							    });
+            				}
+						})
+						
+						$('#show_doi').on('click', function (e) {
+							var expID = '{{ form.exp_id.label }}';
+							var basename = '{{ form.basename.label }}';
+							var url = '{% url 'show_doi' %}' + '?experiment_list=' + expID + '&file_list=' + basename;
+							// first delete all forms that are now out of date
+	        				divIndex = $(".single_form").index($( "#file_data" ))
+	        				$(".single_form").slice(divIndex).empty()
+				            // second populate the print as is html if '0' not selected
+				            if (basename != '0') {
+				            	//$(".single_form").slice(divIndex,divIndex+1).load(url);
+				            	$.ajax({url: url, 
+				            		success: function(result){
+							        	$(".single_form").slice(divIndex,divIndex+1).html(result);
+							    	},
+							    	error: function (xhr) {
+							            alert('Printing error: ' + xhr);
+							        }
+							    });
+            				}
+						})
+						
+						</script>
+			            
+					</div> <!-- end row -->
+					

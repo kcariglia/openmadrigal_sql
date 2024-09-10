@@ -1,0 +1,55 @@
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Template for Madrigal user registration
+	
+	$Id: register.html 7650 2024-06-25 19:47:06Z brideout $
+{% endcomment %}
+
+{# Load CSS and JavaScript #}
+{% load static %}
+
+<script type="text/javascript" src="{% static "jquery.min.js" %}"></script>
+
+<link rel="stylesheet" href="{% static "lib/css/bootstrap.min.css" %}" type="text/css" />
+<script type="text/javascript" src="{% static "lib/js/bootstrap.min.js" %}"></script>
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>{% block title %}Madrigal Database{% endblock %}</title>
+</head>
+<body>
+
+	<div class="loader" style="display:none"></div>
+	<div class="container-fluid">
+		{% include "navbar.html" %}
+		
+		<span style="font-weight: bold;">Please enter your name, 
+		email, and affiliation below. The server will retain this information 
+		for logging and error reporting purposes, including reporting usage to the instrument PI.
+		This information will be saved as a 
+		cookie on your browser, so these fields need only be filled in 
+		once. No password is required.<br><br></span>
+		
+		{% if form.errors %}
+		    <p style="color: red;">
+			Please correct the error{{ form.errors|pluralize }} below.</p>
+		{% endif %}
+		
+		<form method="get">
+		<table class="table table-bordered table-condensed"> 
+			{{ form.as_table }}
+		</table>
+		I consent to storing this information on the Madrigal server. Contact {{contact_email}} in case of questions.
+		<input type="hidden" id="redirect" name="redirect" value="{{ redirect }}">
+		
+		<div align="center"><input value="Submit" type="submit"></div>
+		</form>
+	
+	</div> <!-- container-fluid -->
+	
+</body>
+</html>

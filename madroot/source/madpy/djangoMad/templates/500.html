@@ -1,0 +1,44 @@
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Base template for Madrigal Error page
+	
+	$Id: list.html 4916 2015-04-22 20:44:20Z brideout $
+{% endcomment %}
+
+{# Load CSS and JavaScript #}
+{% load static %}
+
+<link rel="stylesheet" href="{% static "lib/css/bootstrap.min.css" %}" type="text/css" />
+<script type="text/javascript" src="{% static "lib/js/bootstrap.min.js" %}"></script>
+
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>{% block title %}Page not available{% endblock %}</title>
+    
+</head>
+<body>
+	<div class="loader" style="display:none"></div>
+	<div class="container-fluid">
+	{% include "navbar.html" %}
+	<center><h4>Page not available - your Madrigal administrator has been notified.</h4></center>
+	
+	
+	</div> <!-- container-fluid -->
+
+	<script>
+	    $('[data-toggle="tooltip"]').tooltip();
+	    $('[data-toggle="tooltip"]').on('show.bs.tooltip', function() {
+		    // Only one tooltip should ever be open at a time
+		    $('.tooltip').not(this).hide();
+		});
+	    $('.my-dropdown').dropdown();
+		$('.my-dropdown').tooltip();
+	</script>
+	
+</body>
+</html>

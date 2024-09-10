@@ -1,0 +1,184 @@
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Template for html code to for Hdf5 parms automatically selected by creating an Hdf5 file
+	
+	$Id: hdf5_time_parms.html 6162 2017-08-29 16:00:43Z brideout $
+{% endcomment %}
+
+{% comment %}
+	Add the hdf5_prolog only if separateProlog is True (when files might be downloaded, not purely ascii)
+{% endcomment %}
+
+{% if widget.attrs.separateProlog %}
+<div class="hdf5_prolog"><!-- html to display for hdf5 files -->
+	<h5>The following parameters are automatically included in the Madrigal Hdf5 format:</h5>
+	      <div class="container">
+	    
+	          <div class="row">
+	      
+	      <div class="col-xs-12 col-sm-4 col-md-2">
+	      <a href="JavaScript:popup('YEAR')">
+		    <span class="label label-primary" 
+	         data-toggle="tooltip" data-original-title="Year (universal time) - y" data-placement="bottom">YEAR</span></a>
+	      </div>
+	      
+	      <div class="col-xs-12 col-sm-4 col-md-2"> 
+	      <a href="JavaScript:popup('MONTH')">
+		    <span class="label label-primary" 
+	         data-toggle="tooltip" data-original-title="Month (universal time) - m" data-placement="bottom">MONTH</span></a>
+	      </div>
+	      
+	      <div class="col-xs-12 col-sm-4 col-md-2"> 
+	      <a href="JavaScript:popup('DAY')">
+		    <span class="label label-primary" 
+	         data-toggle="tooltip" data-original-title="Day (universal time) - d" data-placement="bottom">DAY</span></a>
+	      </div>
+	      
+	      <div class="col-xs-12 col-sm-4 col-md-2"> 
+	      <a href="JavaScript:popup('HOUR')">
+		    <span class="label label-primary" 
+	         data-toggle="tooltip" data-original-title="Hour (universal time) - h" data-placement="bottom">HOUR</span></a>
+	      </div>
+	      
+	      <div class="col-xs-12 col-sm-4 col-md-2"> 
+	      <a href="JavaScript:popup('MIN')">
+		    <span class="label label-primary" 
+	         data-toggle="tooltip" data-original-title="Minute (universal time) - m" data-placement="bottom">MIN</span></a>
+	      </div>
+	      
+	      <div class="col-xs-12 col-sm-4 col-md-2"> 
+	      <a href="JavaScript:popup('SEC')">
+		    <span class="label label-primary" 
+	         data-toggle="tooltip" data-original-title="Second (universal time) - s" data-placement="bottom">SEC</span></a>
+	      </div>
+	      
+	          </div> <!-- end row -->
+	          
+	          <div class="row">&nbsp;&nbsp;</div> <!-- blank row -->
+	      
+	    
+	          <div class="row">
+	      
+	      <div class="col-xs-12 col-sm-4 col-md-2"> 
+	      <a href="JavaScript:popup('UT1_UNIX')">
+		    <span class="label label-primary" 
+	         data-toggle="tooltip" data-original-title="Unix seconds (1/1/1970) at start - s" data-placement="bottom">UT1_UNIX</span></a>
+	      </div>
+	      
+	      <div class="col-xs-12 col-sm-4 col-md-2"> 
+	      <a href="JavaScript:popup('UT2_UNIX')">
+		    <span class="label label-primary" 
+	         data-toggle="tooltip" data-original-title="Unix seconds (1/1/1970) at end - s" data-placement="bottom">UT2_UNIX</span></a>
+	      </div>
+	      
+	      <div class="col-xs-12 col-sm-4 col-md-2"> 
+	      <a href="JavaScript:popup('RECNO')">
+		    <span class="label label-primary" 
+	         data-toggle="tooltip" data-original-title="Logical Record Number - N/A" data-placement="bottom">RECNO</span></a>
+	      </div>
+	      
+	      <div class="col-xs-12 col-sm-4 col-md-2"> 
+	      <a href="JavaScript:popup('KINST')">
+		    <span class="label label-primary" 
+	         data-toggle="tooltip" data-original-title="Instrument Code - N/A" data-placement="bottom">KINST</span></a>
+	      </div>
+	      
+	      <div class="col-xs-12 col-sm-4 col-md-2"> 
+	      <a href="JavaScript:popup('KINDAT')">
+		    <span class="label label-primary" 
+	         data-toggle="tooltip" data-original-title="Kind of data - N/A" data-placement="bottom">KINDAT</span></a>
+	      </div>
+	      
+	          </div> <!-- end row -->
+	    
+	      </div><!-- end container -->
+      
+ </div> <!-- end html to display for hdf5 files -->
+ {% endif %}
+ 
+ 
+ <div class="standard_prolog"><!-- html to display for non-hdf5 files -->
+ 
+   <h5>Madrigal Hdf5 Prolog Parameters</h5>
+	    <div class="container">
+	    
+	      
+	          <div class="row">
+	      
+	      <div class="col-xs-12 col-sm-4 col-md-2"><label for="id_parameters_YEAR"><input name="parameters" id="id_parameters_YEAR" type="checkbox"  value="YEAR"> 
+	      <a href="JavaScript:popup('YEAR')">
+		    <span class="label label-primary" 
+	         data-toggle="tooltip" data-original-title="Year (universal time) - y" data-placement="bottom">YEAR</span></a>
+	      </label></div>
+
+	      <div class="col-xs-12 col-sm-4 col-md-2"><label for="id_parameters_MONTH"><input name="parameters" id="id_parameters_MONTH" type="checkbox"  value="MONTH"> 
+	      <a href="JavaScript:popup('MONTH')">
+		    <span class="label label-primary" 
+	         data-toggle="tooltip" data-original-title="Month (universal time) - m" data-placement="bottom">MONTH</span></a>
+	      </label></div>
+  
+	      <div class="col-xs-12 col-sm-4 col-md-2"><label for="id_parameters_DAY"><input name="parameters" id="id_parameters_DAY" type="checkbox"  value="DAY"> 
+	      <a href="JavaScript:popup('DAY')">
+		    <span class="label label-primary" 
+	         data-toggle="tooltip" data-original-title="Day (universal time) - d" data-placement="bottom">DAY</span></a>
+	      </label></div>
+	      
+	      <div class="col-xs-12 col-sm-4 col-md-2"><label for="id_parameters_HOUR"><input name="parameters" id="id_parameters_HOUR" type="checkbox"  value="HOUR"> 
+	      <a href="JavaScript:popup('HOUR')">
+		    <span class="label label-primary" 
+	         data-toggle="tooltip" data-original-title="Hour (universal time) - h" data-placement="bottom">HOUR</span></a>
+	      </label></div>
+	      
+	      <div class="col-xs-12 col-sm-4 col-md-2"><label for="id_parameters_MIN"><input name="parameters" id="id_parameters_MIN" type="checkbox"  value="MIN"> 
+	      <a href="JavaScript:popup('MIN')">
+		    <span class="label label-primary" 
+	         data-toggle="tooltip" data-original-title="Minute (universal time) - m" data-placement="bottom">MIN</span></a>
+	      </label></div>
+	      
+	      <div class="col-xs-12 col-sm-4 col-md-2"><label for="id_parameters_SEC"><input name="parameters" id="id_parameters_SEC" type="checkbox"  value="SEC"> 
+	      <a href="JavaScript:popup('SEC')">
+		    <span class="label label-primary" 
+	         data-toggle="tooltip" data-original-title="Second (universal time) - s" data-placement="bottom">SEC</span></a>
+	      </label></div>
+	      
+	          </div> <!-- end row -->
+	      
+
+	          <div class="row">
+	      
+	      <div class="col-xs-12 col-sm-4 col-md-2"><label for="id_parameters_UT1_UNIX"><input name="parameters" id="id_parameters_UT1_UNIX" type="checkbox"  value="UT1_UNIX"> 
+	      <a href="JavaScript:popup('UT1_UNIX')">
+		    <span class="label label-primary" 
+	         data-toggle="tooltip" data-original-title="Unix seconds (1/1/1970) at start - s" data-placement="bottom">UT1_UNIX</span></a>
+	      </label></div>
+	      
+	      <div class="col-xs-12 col-sm-4 col-md-2"><label for="id_parameters_UT2_UNIX"><input name="parameters" id="id_parameters_UT2_UNIX" type="checkbox"  value="UT2_UNIX"> 
+	      <a href="JavaScript:popup('UT2_UNIX')">
+		    <span class="label label-primary" 
+	         data-toggle="tooltip" data-original-title="Unix seconds (1/1/1970) at end - s" data-placement="bottom">UT2_UNIX</span></a>
+	      </label></div>
+
+	      <div class="col-xs-12 col-sm-4 col-md-2"><label for="id_parameters_RECNO"><input name="parameters" id="id_parameters_RECNO" type="checkbox"  value="RECNO"> 
+	      <a href="JavaScript:popup('RECNO')">
+		    <span class="label label-primary" 
+	         data-toggle="tooltip" data-original-title="Logical Record Number - N/A" data-placement="bottom">RECNO</span></a>
+	      </label></div>
+	      
+	      <div class="col-xs-12 col-sm-4 col-md-2"><label for="id_parameters_KINST"><input name="parameters" id="id_parameters_KINST" type="checkbox"  value="KINST"> 
+	      <a href="JavaScript:popup('KINST')">
+		    <span class="label label-primary" 
+	         data-toggle="tooltip" data-original-title="Instrument Code - N/A" data-placement="bottom">KINST</span></a>
+	      </label></div>
+	      
+	      <div class="col-xs-12 col-sm-4 col-md-2"><label for="id_parameters_KINDAT"><input name="parameters" id="id_parameters_KINDAT" type="checkbox"  value="KINDAT"> 
+	      <a href="JavaScript:popup('KINDAT')">
+		    <span class="label label-primary" 
+	         data-toggle="tooltip" data-original-title="Kind of data - N/A" data-placement="bottom">KINDAT</span></a>
+	      </label></div>
+	      
+	          </div> <!-- end row -->
+
+	      </div><!-- end container -->
+	      
+ </div> <!-- end html to display for non-hdf5 files -->

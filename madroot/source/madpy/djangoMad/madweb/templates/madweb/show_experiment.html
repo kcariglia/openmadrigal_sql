@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Base template for Madrigal show experiment web interface
+	
+	$Id: show_experiment.html 7310 2021-03-02 14:31:06Z brideout $
+{% endcomment %}
+
+{% block title %}Show Madrigal experiment{% endblock %}
+    
+{% block extra_head %}
+    <script>
+    
+        function changeFile (select) {
+        	var basename = select.options[select.selectedIndex].value;
+        {% if form.exp_id %}
+			var url = '{% url 'change_files' %}' + '?experiment_list={{ form.exp_id.label }}&file_list=' + basename;
+		{% else %}
+			var exp_id = $("#id_experiment_list")[0].options[$("#id_experiment_list")[0].selectedIndex].value;
+			var url = '{% url 'change_files' %}' + '?experiment_list=' + exp_id + '&file_list=' + basename;
+		{% endif %}
+            // first delete all forms that are now out of date
+            divIndex = $(".single_form").index($( "#file_buttons" ))
+            $(".single_form").slice(divIndex).empty()
+            // second populate the file_list html if '0' not selected
+            if (basename != '0') {
+            	    $(".single_form").slice(divIndex,divIndex+1).load(url);
+            }
+        }
+        
+        {% include "madweb/fileDownload.js" %}
+        
+    </script>
+{% endblock %}
+    
+{% block content %}
+	<center><h4> {{ form.exp_desc.label }} </h4></center>
+	
+	{% include "madweb/file_list.html" %}
+
+	<!-- file select div -->
+	<div class="col-md-12 single_form" id="file_buttons">
+		{% if form.file_buttons %}
+			{% include "madweb/file_buttons.html" %}
+		{% endif %}
+	</div> <!-- end subdivide -->
+	<div>&nbsp;</div>
+
+	<!-- file select div -->
+	<div class="col-md-12 single_form" id="file_data">
+		{% if form.show_plots %}
+			{% include "madweb/show_plots.html" %}
+		{% elif form.plot_list %}
+			{% include "madweb/show_plots.html" %}
+		{% endif %}
+	</div> <!-- end subdivide -->
+{% endblock %}

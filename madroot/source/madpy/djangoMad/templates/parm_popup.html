@@ -1,0 +1,32 @@
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Template for html code to allow parameter popup descriptions
+	
+	$Id: parm_popup.html 4868 2015-03-06 14:49:02Z brideout $
+{% endcomment %}
+
+					<script>
+					
+					var parmDesc ={};
+					{% for parm, parmDesc in parmList %}
+					parmDesc['{{ parm }}'] = "{{ parmDesc|safe }}";
+					{% endfor %}
+
+					
+					function popup(acronym)
+					{
+						info2 = window.open ("","","WIDTH=600,HEIGHT=400,SCROLLBARS=yes");
+						info2.document.write("<HTML><HEAD><TITLE>" + acronym + "<\/TITLE>");
+						info2.document.write("<BODY>");
+						info2.document.write("<CENTER><B>");
+						info2.document.write(acronym);
+						info2.document.write("<\/B><\/CENTER><P>");
+						info2.document.write(parmDesc[acronym]);
+						info2.document.write('<p><form><center><input type="button" value="Close Window" onClick="window.close()">');
+						info2.document.write('<\/form><\/center>');
+						info2.document.write("<\/BODY><\/HTML>");
+						info2.document.close();
+					}
+				
+					</script>

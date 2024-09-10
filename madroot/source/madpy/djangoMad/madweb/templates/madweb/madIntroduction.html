@@ -1,0 +1,71 @@
+{% load static %}
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/doc_template.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>Madrigal history</title>
+<!-- InstanceEndEditable --><!-- InstanceBeginEditable name="head" -->
+<!-- InstanceEndEditable -->
+<link href="/static/madrigal.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+	html body {
+		background-color: {{bg_color}};
+	}
+</style>
+<!-- InstanceParam name="href_up_top" type="text" value="madContents.html" --><!-- InstanceParam name="href_next_top" type="text" value="whatsNew.html" --><!-- InstanceParam name="href_back_top" type="text" value="madContents.html" --><!-- InstanceParam name="href_back_bottom" type="text" value="madContents.html" --><!-- InstanceParam name="href_up_bottom" type="text" value="madContents.html" --><!-- InstanceParam name="href_next_bottom" type="text" value="whatsNew.html" --><!-- InstanceParam name="href_prev_top" type="text" value="madContents.html" --><!-- InstanceParam name="href_uptitle_top" type="text" value="madContents.html" --><!-- InstanceParam name="href_nexttitle_top" type="text" value="whatsNew.html" --><!-- InstanceParam name="href_prevtitle_bottom" type="text" value="madContents.html" --><!-- InstanceParam name="href_uptitle_bottom" type="text" value="madContents.html" --><!-- InstanceParam name="href_nexttitle_bottom" type="text" value="whatsNew.html" -->
+</head>
+
+<body>
+<table width="100%" border="1" cellpadding="0" cellspacing="2" class="navigation">
+  <tr>
+    <td width="5%"><a href="{% url 'docs' 'madContents.html' %}"><img src="/static/previous.png" alt="previous" width="32" height="32" /></a></td>
+    <td width="5%"><a href="{% url 'docs' 'madContents.html' %}"><img src="/static/up.png" alt="up" width="32" height="32" /></a></td>
+    <td width="5%"><a href="{% url 'docs' 'whatsNew.html' %}"><img src="/static/next.png" alt="next" width="32" height="32" /></a></td>
+    <td width="54%"><!-- InstanceBeginEditable name="EditTitleTop" -->Brief history of Madrigal <!-- InstanceEndEditable --></td>
+    <td width="13%"><a href="{% url 'docs' 'madContents.html' %}">Doc home </a></td>
+    <td width="18%"><a href="/">Madrigal home</a></td>
+  </tr>
+</table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" href="{% url 'docs' 'madContents.html' %}"><!-- InstanceBeginEditable name="PreviousTitle" -->Doc home <!-- InstanceEndEditable --></A>
+<b class="navlabel">&nbsp;&nbsp;Up:</b>
+<a class="sectref" href="{% url 'docs' 'madContents.html' %}"><!-- InstanceBeginEditable name="UpTitle" -->Doc home <!-- InstanceEndEditable --></A>
+<b class="navlabel">&nbsp;&nbsp;Next:</b>
+<a class="sectref" href="{% url 'docs' 'whatsNew.html' %}"><!-- InstanceBeginEditable name="NextTitle" -->What's new in Madrigal 3.0?  <!-- InstanceEndEditable --></A></div>
+<hr/>
+<!-- InstanceBeginEditable name="EditDoc" -->
+<center>
+  <h1>Brief history of Madrigal </h1>
+</center>
+<p>Madrigal is a database of ground-based measurements and models of   the Earth's upper atmosphere and ionosphere. It is the community database of the   Coupling, Energetics and Dynamics of Atmospheric Regions (<a href="http://cedarweb.vsp.ucar.edu/wiki/index.php/Main_Page">CEDAR</a>) program, which   is devoted to the characterization and understanding of the atmosphere above   about 60 km, with emphasis on the various processes that determine the basic   structure and composition of the atmosphere, and on the mechanisms that couple   different atmospheric regions. Instruments developed or upgraded under CEDAR   include interferometers, spectrometers, imagers, lidars and medium,   high-frequency and incoherent scatter radars.  The success of   CEDAR has been due, in large measure, to its ability to encourage collaborative   efforts coalescing observations, theory and modeling. The CEDAR community   includes about 800 scientists and students from around the world.</p>
+<p>From the inception of the CEDAR program in 1988, there has been a   great concern among the members of the CEDAR community to make the data   collected by the CEDAR instruments easily accessible for joint studies.   Consequently, a high priority was placed on establishing a repository for CEDAR   data and model results. An incoherent scatter radar database had been   established at the National Center for Atmospheric Research (NCAR) in 1985, and   this evolved into the CEDAR Database in 1989. By the end of 1997, it had grown   to include data from 44 instruments and 16 models. Over 200 users have requested   information from the Database. In 2012, the Madrigal database and the CEDAR database were combined into a single database system, the Madrigal CEDAR database, based at MIT Haystack Observatory.</p>
+<p>A central element of the CEDAR Database is a standard data format.   With Madrigal 3.0 the file format is now Hdf5, with a well-defined layout and parameters. This new CEDAR Hdf5 format is described <a href="/static/CEDARMadrigalHdf5Format.pdf" target="_blank">here</a>. This format replaced the old <a href="/static/cedarFormat.pdf">16 bit integer based format</a> that evolved from the format used by the earlier incoherent scatter   database, which in turn evolved from an earlier version of Madrigal developed at the MIT Haystack   Observatory in 1980. </p>
+<p>Haystack maintains and develops  the Madrigal CEDAR database as an open-source project with community contributions.  With the Madrigal CEDAR database, the site owner stores only their own data, which they can add to or update at any time. However, because the Madrigal database shares its metadata with all other Madrigal sites, users browsing any Madrigal site can search for data at any other Madrigal site. In addition, a central archival Madrigal site (<a href="http://cedar.openmadrigal.org" target="_self">cedar.openmadrigal.org</a>) archives all Madrigal sites and stores data not stored at other Madrigal sites.</p>
+<p>Madrigal data are arranged into &quot;experiments&quot;, which may contain   data files, images, documentation, links, etc.   A key feature of Madrigal is its  seamless integration   of archival and real-time data. A realtime file on Madrigal is accessed in exactly the same way as any archival file.</p>
+<p>Madrigal has been installed at numerous locations in addition to   Millstone Hill, including EISCAT, SRI International, and Jicamarca. The inventories of   experiments available at each installation are available to the other   installations through shared metadata.  New Madrigal sites can be automatically added at any time.</p>
+<p>Madrigal is an open source project with a central <a href="http://cedar.openmadrigal.org/openmadrigal">developer's web site</a> and a <a href="http://atlas.haystack.mit.edu/cgi-bin/millstone_viewvc.cgi/openmadrigal/" target="_self">central repository</a>. A complete Subversion archive of all   Madrigal software, including software which is not included with the standard   distribution, is available at the developer's web site. There is also an Open Madrigal mailing list   and developer's forum. Any group wishing to install Madrigal to distribute their instrument's data is welcome to - see the http://cedar.openmadrigal.org/openmadrigal web site for details. The  <a href="http://atlas.haystack.mit.edu/cgi-bin/millstone_viewvc.cgi/openmadrigal/" target="_self">central repository</a> link is a place where all data from all Madrigal sites is archived. It can also be used to access data, although accessing the local sites is preferred.</p>
+<!-- InstanceEndEditable -->
+<table width="100%" border="1" cellpadding="0" cellspacing="2" class="navigation">
+  <tr>
+    <td width="5%"><a href="{% url 'docs' 'madContents.html' %}"><img src="/static/previous.png" alt="previous" width="32" height="32" /></a></td>
+    <td width="5%"><a href="{% url 'docs' 'madContents.html' %}"><img src="/static/up.png" alt="up" width="32" height="32" /></a></td>
+    <td width="5%"><a href="{% url 'docs' 'whatsNew.html' %}"><img src="/static/next.png" alt="next" width="32" height="32" /></a></td>
+    <td width="54%"><!-- InstanceBeginEditable name="EditTitleBottom" -->Brief overview of Madrigal <!-- InstanceEndEditable --></td>
+    <td width="13%"><a href="{% url 'docs' 'madContents.html' %}">Doc home </a></td>
+    <td width="18%"><a href="/">Madrigal home</a></td>
+  </tr>
+</table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" href="{% url 'docs' 'madContents.html' %}"><!-- InstanceBeginEditable name="PreviousTitle2" -->Doc Home <!-- InstanceEndEditable --></A>
+<b class="navlabel">&nbsp;&nbsp;Up:</b>
+<a class="sectref" href="{% url 'docs' 'madContents.html' %}"><!-- InstanceBeginEditable name="UpTitle2" -->Doc home <!-- InstanceEndEditable --></A>
+<b class="navlabel">&nbsp;&nbsp;Next:</b>
+<a class="sectref" href="{% url 'docs' 'whatsNew.html' %}"><!-- InstanceBeginEditable name="NextTitle2" -->What's new in Madrigal 3.0? <!-- InstanceEndEditable --></A></div>
+<hr/>
+<p>&nbsp;</p>
+</body> 
+<!-- InstanceEnd --></html>

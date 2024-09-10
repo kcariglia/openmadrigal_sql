@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Base template for Madrigal ftp years interface
+	
+	$Id: ftp_years.html 5326 2015-09-25 18:46:21Z brideout $
+{% endcomment %}
+
+{% block title %}Madrigal FTP interface{% endblock %}
+	
+{% block content %}
+	<ul class="breadcrumb">
+	    <li><a href="{% url 'ftp' %}">Instrument</a></li>
+	    <li class="active"><span class="glyphicon glyphicon-arrow-right"></span>Year</li>
+    </ul>
+
+	<p>Choose year for {{inst_name}}:</p>
+	{% for year in yearList %}
+		<p><a href="{% url 'ftp_year' fullname email affiliation kinst year %}">{{year}}</a></p>
+	{% endfor %}
+{% endblock %}

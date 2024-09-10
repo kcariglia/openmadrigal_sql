@@ -1,0 +1,111 @@
+{% load static %}
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/doc_template.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>Accessing Madrigal through the web</title>
+<!-- InstanceEndEditable --><!-- InstanceBeginEditable name="head" -->
+<style type="text/css">
+<!--
+.style1 {color: #004080}
+-->
+</style>
+<!-- InstanceEndEditable -->
+<link href="/static/madrigal.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+	html body {
+		background-color: {{bg_color}};
+	}
+</style>
+<!-- InstanceParam name="href_up_top" type="text" value="wt_contents.html" --><!-- InstanceParam name="href_next_top" type="text" value="rt_contents.html" --><!-- InstanceParam name="href_back_top" type="text" value="wt_dataOrg.html" --><!-- InstanceParam name="href_back_bottom" type="text" value="wt_dataOrg.html" --><!-- InstanceParam name="href_up_bottom" type="text" value="wt_contents.html" --><!-- InstanceParam name="href_next_bottom" type="text" value="rt_contents.html" --><!-- InstanceParam name="href_prev_top" type="text" value="wt_dataOrg.html" --><!-- InstanceParam name="href_uptitle_top" type="text" value="wt_contents.html" --><!-- InstanceParam name="href_nexttitle_top" type="text" value="rt_contents.html" --><!-- InstanceParam name="href_prevtitle_bottom" type="text" value="wt_dataOrg.html" --><!-- InstanceParam name="href_uptitle_bottom" type="text" value="wt_contents.html" --><!-- InstanceParam name="href_nexttitle_bottom" type="text" value="rt_contents.html" -->
+</head>
+
+<body>
+<table width="100%" border="1" cellpadding="0" cellspacing="2" class="navigation">
+  <tr>
+    <td width="5%"><a href="{% url 'docs' 'wt_dataOrg.html' %}"><img src="/static/previous.png" alt="previous" width="32" height="32" /></a></td>
+    <td width="5%"><a href="{% url 'docs' 'wt_contents.html' %}"><img src="/static/up.png" alt="up" width="32" height="32" /></a></td>
+    <td width="5%"><a href="{% url 'docs' 'rt_contents.html' %}"><img src="/static/next.png" alt="next" width="32" height="32" /></a></td>
+    <td width="54%"><!-- InstanceBeginEditable name="EditTitleTop" -->
+    Accessing Madrigal through the web <!-- InstanceEndEditable --></td>
+    <td width="13%"><a href="{% url 'docs' 'madContents.html' %}">Doc home </a></td>
+    <td width="18%"><a href="/">Madrigal home</a></td>
+  </tr>
+</table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" href="{% url 'docs' 'wt_dataOrg.html' %}"><!-- InstanceBeginEditable name="PreviousTitle" -->Data Organization <!-- InstanceEndEditable --></A>
+<b class="navlabel">&nbsp;&nbsp;Up:</b>
+<a class="sectref" href="{% url 'docs' 'wt_contents.html' %}"><!-- InstanceBeginEditable name="UpTitle" -->Web Tutorial - TOC <!-- InstanceEndEditable --></A>
+<b class="navlabel">&nbsp;&nbsp;Next:</b>
+<a class="sectref" href="{% url 'docs' 'rt_contents.html' %}"><!-- InstanceBeginEditable name="NextTitle" -->Remote API Tutorial <!-- InstanceEndEditable --></A></div>
+<hr/>
+<!-- InstanceBeginEditable name="EditDoc" -->
+<h1 align="center">Accessing Madrigal data through the web</h1>
+<table width="100%" border="2">
+  <tbody>
+    <tr>
+      <td><a href="#access_data">Access data</a></td>
+      <td><a href="#access_metadata">Access metadata</a></td>
+      <td><a href="#run_models">Run models</a></td>
+      <td><a href="#other_sites">Other Madrigal sites</a></td>
+    </tr>
+  </tbody>
+</table>
+<p align="center">&nbsp;</p>
+<div id="access_data"><h2 align="left">Access data</h2></div>
+<p align="left">To access data from a Madrigal site, choose the<em> Access data</em> pull-down menu. There are four choices:</p>
+<ol>
+  <li><em>Select single experiment</em> - With this web interface, you will browse through all Madrigal data at all Madrigal site to find the experiment you wish. Once at that experiment, you can download the data in any file format you want, or download just the parameters (including derived parameters) you want, with an option of filtering the data. You can also see the experiment plots, or list the records in the experiment files.</li>
+  <li><em>List experiments</em> - With this web interface, you can get a list of Madrigal experiments with the selection criteria you specify. Once you choose an experiment, you can do the exact same things as with <em>Select single experiment</em>.</li>
+  <li><em>Create a command to download multiple exps</em> - With this web interface, you can create a command with just a few clicks to download all the data you want from Madrigal with a single command to you local computer. This is the way to download multiple experiments at once, rather than repeatedly using the web interface. You will have the choice of downloading the data files as they exist, or you can select the parameters (including derived parameters) you want, with an option of filtering the data. You will need to install the API of the computer language of your choice, and the download link is also found in this web interface.</li>
+  <li><em>FTP-like access</em> - An ftp-like web interface with very simple url patterns. Meant primarily for non-English speakers who find the other web interfaces to be challenging.</li>
+</ol>
+<p align="center"><img src="/static/access_data.jpg" width="1062" height="551" alt=""/></p>
+<p align="left">&nbsp;</p>
+<div id="access_metadata"><h2 align="left">Access metadata</h2></div>
+<p align="left">To access Madrigal metadata, use the <em>Access metadata</em> pull-down menu. Madrigal metadata can be useful if you are writing scripts to use the Madrigal API's beyond what the web interface will generate for you. Four types of metadata can be listed:</p>
+<ol>
+  <li>Metadata about individual Madrigal sites. You can use this link to see an up-to-date list of all Madrigal sites.</li>
+  <li>Metadata about individual Madrigal instruments.</li>
+  <li>Metadata about all defined CEDAR parameters.</li>
+  <li>Metadata about the different kinds of data files associated with each instrument.</li>
+</ol>
+<p align="left"><img src="/static/access_metadata.jpg" width="1062" height="551" alt=""/></p>
+<p align="left">&nbsp;</p>
+<div id="run_models"><h2 align="left">Run models</h2></div>
+<p align="left">Use the <em>Run models</em> pull-down menu to run model code via Madrigal. There are three options:</p>
+<ol>
+  <li><em>Run Madrigal derivation engine</em> - Get derived Madrigal parameters (such as geophysical values, Magnetic feild values, model outputs such as MSIS or IRI, etc) for a specified time and range of points.</li>
+  <li><em>Looker</em> - Calculate values associated with &quot;looking&quot; from a particular observation point. For example, you can calculate the aspect angle of the magnetic field from a particular look direction from a particular point.</li>
+  <li><em>ISR emprical models</em> - A link to a web page that will run an empirical model for numerous incoherent scatter radars.</li>
+</ol>
+<p><img src="/static/run_models.jpg" width="1062" height="551" alt=""/></p>
+<div id="other_sites"><h2>Other Madrigal sites</h2></div>
+<p>Use the <em>Other Madrigal sites</em> pull-down menu to jump to the home page of other Madrigal sites.</p>
+<p><img src="/static/other_sites.jpg" width="1062" height="551" alt=""/></p>
+<p align="left">&nbsp;</p>
+<!-- InstanceEndEditable -->
+<table width="100%" border="1" cellpadding="0" cellspacing="2" class="navigation">
+  <tr>
+    <td width="5%"><a href="{% url 'docs' 'wt_dataOrg.html' %}"><img src="/static/previous.png" alt="previous" width="32" height="32" /></a></td>
+    <td width="5%"><a href="{% url 'docs' 'wt_contents.html' %}"><img src="/static/up.png" alt="up" width="32" height="32" /></a></td>
+    <td width="5%"><a href="{% url 'docs' 'rt_contents.html' %}"><img src="/static/next.png" alt="next" width="32" height="32" /></a></td>
+    <td width="54%"><!-- InstanceBeginEditable name="EditTitleBottom" -->Accessing data through the web<!-- InstanceEndEditable --></td>
+    <td width="13%"><a href="{% url 'docs' 'madContents.html' %}">Doc home </a></td>
+    <td width="18%"><a href="/">Madrigal home</a></td>
+  </tr>
+</table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" href="{% url 'docs' 'wt_dataOrg.html' %}"><!-- InstanceBeginEditable name="PreviousTitle2" -->Data Organization <!-- InstanceEndEditable --></A>
+<b class="navlabel">&nbsp;&nbsp;Up:</b>
+<a class="sectref" href="{% url 'docs' 'wt_contents.html' %}"><!-- InstanceBeginEditable name="UpTitle2" -->Web Tutorial - TOC <!-- InstanceEndEditable --></A>
+<b class="navlabel">&nbsp;&nbsp;Next:</b>
+<a class="sectref" href="{% url 'docs' 'rt_contents.html' %}"><!-- InstanceBeginEditable name="NextTitle2" -->Remote API Tutorial <!-- InstanceEndEditable --></A></div>
+<hr/>
+<p>&nbsp;</p>
+</body> 
+<!-- InstanceEnd --></html>

@@ -1,0 +1,38 @@
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Template for parameter listing forms
+	
+	$Id: parameter_multiple.html 6157 2017-08-01 19:01:07Z brideout $
+{% endcomment %}
+
+{% with id=widget.attrs.id %}
+  {% for group, options, index in widget.optgroups %}
+    {% if group == "Madrigal Hdf5 Prolog Parameters" %}
+        {% include "madweb/hdf5_time_parms.html" %}
+    {% else %}
+	    <h5>{{ group }}</h5>
+	    <div class="container">
+	    {% for option in options %}
+	      {% if forloop.counter0|modulo:6 %}
+	          <div class="row">
+	      {% endif %}
+	      <div class="col-xs-12 col-sm-4 col-md-2"><label for="id_{{ option.name }}_{{ option.value }}"><input name="{{ option.name }}" id="id_{{ option.name }}_{{ option.value }}" type="checkbox"  value="{{ option.value }}"> 
+	      <a href="JavaScript:popup('{{ option.value }}')">
+	      {% if option.attrs.isDerivedDict|get_item:option.value %}
+		     <span class="label label-default" 
+		  {% else %}
+		    <span class="label label-primary" 
+		  {% endif %}
+	         data-toggle="tooltip" data-original-title="{{ option.attrs.parmDescDict|get_item:option.value}}" data-placement="bottom">{{ option.value }}</span></a>
+	      </label></div>
+	      {% if forloop.counter0|add:"1"|modulo:6 or option == options|last%}
+	          </div> <!-- end row -->
+	      {% endif %}
+	    {% endfor %}
+	    {% if group %}
+	      </div><!-- end container -->
+	    {% endif %}
+    {% endif %}
+  {% endfor %}
+{% endwith %}

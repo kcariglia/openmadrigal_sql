@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Base template for Madrigal ftp kindat interface
+	
+	$Id: ftp_kindats.html 5326 2015-09-25 18:46:21Z brideout $
+{% endcomment %}
+
+{% block title %}Madrigal FTP interface{% endblock %}
+	
+{% block content %}
+	<ul class="breadcrumb">
+	    <li><a href="{% url 'ftp' %}">Instrument</a></li>
+	    <li><span class="glyphicon glyphicon-arrow-right"></span><a href="{% url 'ftp_instrument' fullname email affiliation kinst %}">Year</a></li>
+	    <li class="active"><span class="glyphicon glyphicon-arrow-right"></span>Kind of data</li>
+    </ul>
+
+	<p>Choose kind of data for {{inst_name}}, year {{year}}:</p>
+	{% for kindat_desc, kindat in kindatDescList %}
+		<p><a href="{% url 'ftp_kindat' fullname email affiliation kinst year kindat %}">{{kindat_desc}}</a></p>
+	{% endfor %}
+{% endblock %}

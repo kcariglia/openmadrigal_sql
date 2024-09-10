@@ -1,0 +1,1 @@
+560000000,http://grail.haystack.mit.edu/cgi-bin/madrigal/madtoc/1963/imf/27nov63,Interplanetary Mag Field and Solar Wind,9999,19631127,000000,20150908,235959,120,0

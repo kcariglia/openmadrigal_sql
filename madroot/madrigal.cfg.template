@@ -1,0 +1,41 @@
+# Template file for madrigal.cfg file
+# Copy this file to madrigal.cfg and then edit as appropriate
+# before running installMadrigal.
+#
+#  $Id: madrigal.cfg.template 7315 2021-03-04 18:55:21Z brideout $
+
+
+# This must be changed to point to the madrigal root directory.
+MADROOT = /CHANGEME/madrigal
+
+
+# Top level url of Madrigal site - if not http:// then give full top level
+# For example, MADSERVER = https://cedar.openmadrigal.org
+MADSERVER = www.invalid.edu
+
+# Top-level Madrigal document virtual directory,
+# relative to MADSERVER. 
+# If blank, set equal to . (eg, MADSERVERROOT = .)
+MADSERVERROOT = madrigal
+
+# Set the Site ID - Must be unique.  Contact Bill Rideout
+# at brideout@haystack.mit.edu for an offical siteid.
+# Siteid 99999 is invalid.
+SITEID = 99999
+
+# Set the body style of html pages via the BODY tag
+HTMLSTYLE = <BODY BGCOLOR=#FFFFFF LINK=#008000 VLINK=#003366>
+
+# Set the Heading in the top-level Madrigal page (index.html)
+# CHANGEME is typically set to the name of your site
+INDEXHEAD = Welcome to the Madrigal Database at CHANGEME
+
+# Set the contact person for this madrigal installation 
+# set CHANGEME@invalid.edu to be your email
+CONTACT = <A HREF="MAILTO:CHANGEME@invalid.edu">Madrigal administator</A><BR>
+
+# Set the name of the mailserver sendmail is running on (if not localhost) 
+MAILSERVER = localhost
+
+# Set the label on the plot/docs button to something different if desired
+PLOTBUTTONLABEL = Plots/Docs

@@ -1,0 +1,90 @@
+{# Load CSS and JavaScript #}
+{% load static %}
+
+<script type="text/javascript" src="{% static "jquery.min.js" %}"></script>
+
+<link rel="stylesheet" href="{% static "lib/css/bootstrap.min.css" %}" type="text/css" />
+<script type="text/javascript" src="{% static "lib/js/bootstrap.min.js" %}"></script>
+
+{% load bootstrap3 %}
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="shortcut icon" type="image/png" href="/static/favicon.ico"/>
+	<title>{% block title %}MADRIGAL DATABASE:::{% endblock %}</title>
+    <style type="text/css">
+        .loader {
+			position: fixed;
+			left: 0px;
+			top: 0px;
+			width: 100%;
+			height: 100%;
+			z-index: 9999;
+			background: url({% static "imgs/page-loader.gif" %}) 50% 50% no-repeat;
+		}
+    </style>
+    {% block extra_head %}{% endblock %}
+    {% block categories_js %}{% endblock %}
+    {% block instruments_js %}{% endblock %}
+    {% block years_js %}{% endblock %}
+    {% block months_js %}{% endblock %}
+</head>
+<body>
+	<div class="loader" style="display:none"></div>
+	<div class="container-fluid">
+	{% include "navbar.html" %}
+
+		<div class="row">
+			<div class="col-sm-12">
+		    {% bootstrap_messages %}
+		    </div>
+	    </div>
+	    
+	    <div class="row">
+			
+			<div class="col-sm-3">
+			{% block categories %}{% endblock %}
+			{% block instruments %}{% endblock %}
+	    	{% block years %}{% endblock %}
+	    	{% block months %}{% endblock %}
+			</div>
+			
+			<div class="col-sm-9">
+			{% block experiment %}{% endblock %}
+			{% block download %}{% endblock %}
+			{% block information %}{% endblock %}
+			</div>
+			
+		</div>
+	    <p></p>
+	    
+	    {% comment %}
+	    
+	    <div class="row">
+	    	<div class="col-sm-12">{% block download %}{% endblock %}</div>
+	    </div>
+	    <p></p>
+	    
+	    <div class="row">
+		    <div class="col-sm-12">{% block information %}{% endblock %}</div>
+	    </div>{% endcomment %}
+	    
+	    <p><hr></p>
+	
+	    <footer class="row">
+	        <div class="col-sm-6">
+	            <p>MIT Haystack Observatory</p>
+	        </div>
+	        <div class="col-sm-6" style="text-align:right">
+	            <p>
+	            </p>
+	        </div>
+	    </footer>
+	
+	</div> <!-- container-fluid -->
+	
+</body>
+</html>

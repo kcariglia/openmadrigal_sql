@@ -1,0 +1,77 @@
+# $Id: Makefile.solaris 3304 2011-01-17 15:25:59Z brideout $
+#
+# ----------------------------------------------------------------------
+#       Solaris makefile for Madrigal Fortran API (Distribution version)
+# ----------------------------------------------------------------------
+
+# ----------------------------------------------------------------------
+#       Site-dependent definitions - change these as needed
+# ----------------------------------------------------------------------
+
+# Madrigal root directory
+MADROOT =  /home/hyperion/brideout/madR/madroot
+
+# Solaris Make program
+MAKE = /usr/ccs/bin/make
+
+# Solaris Fortran compiler
+FC = /opt/local/SUNWspro/bin/f77
+
+# Solaris C compiler
+CC = /opt/local/SUNWspro/bin/cc
+
+# Library directory
+LIBDIR = $(MADROOT)/lib/solaris
+
+# Solaris Binary directory
+BINDIR = $(MADROOT)/bin/solaris
+
+# ----------------------------------------------------------------------
+#       End of site-dependent definitions
+# ----------------------------------------------------------------------
+
+# ----------------------------------------------------------------------
+#       Print Command
+# ----------------------------------------------------------------------
+
+PRINT = lp
+
+# ----------------------------------------------------------------------
+#       Library directives
+# ----------------------------------------------------------------------
+
+LDLIBS = -L$(LIBDIR) -lmadrec -lgeo -lnsl -lsunmath -lmvec
+
+# ----------------------------------------------------------------------
+#       Fortran compiler options
+# ----------------------------------------------------------------------
+
+FFLAGS = -O -PIC
+
+# ----------------------------------------------------------------------
+#       Link editor options 
+# ----------------------------------------------------------------------
+
+LDFLAGS = -R$(LIBDIR)
+
+# ----------------------------------------------------------------------
+#       Libraries and Programs
+# ----------------------------------------------------------------------
+
+
+all: clean tmaddataF77 tmadrecF77 tmaddata_nofile_F77
+
+
+tmaddataF77: tmaddataF77.o
+	$(LINK.f) tmaddataF77.o $(LDLIBS) -o $@
+
+tmadrecF77: tmadrecF77.o
+	$(LINK.f) tmadrecF77.o $(LDLIBS) -o $@
+	
+
+tmadrec_nofile_F77: tmadrec_nofile_F77.o
+	$(LINK.f) tmadrec_nofile_F77.o $(LDLIBS) -o $@
+
+
+clean cleanup:
+	rm -f tmaddataF77 tmadrecF77  tmaddata_nofile_F77 core *.o *.BAK *.CKP *%

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Base template for Madrigal parameter metadata page
+	
+	$Id: site_metadata.html 4949 2015-04-29 15:21:17Z brideout $
+{% endcomment %}
+
+{% block title %}Madrigal parameter metadata{% endblock %}
+
+{% block content %}
+	<center><h4>List of CEDAR/Madrigal parameters</h4></center>
+	
+	<h4> Parameter categories </h4>
+	
+	<div class="panel panel-default">
+	<div class="panel-body box">
+	<table class="table table-condensed">
+	<tbody>
+	{% for categoryUrl in categoryUrlList %}
+	{% if forloop.counter0|divisibleby:3 %}<tr>{% endif %}
+	    <td>{{ categoryUrl|safe }}</td>
+	{% if forloop.counter|divisibleby:3 or forloop.last %}</tr>{% endif %}
+	{% endfor %}
+	</tbody>
+	</table>
+	</div>
+	</div>
+	
+	{% for items in parmList %}
+	   {% if items|length == 1 %}
+	       {% if forloop.counter0 != 0 %}
+		       </tbody>
+			</table>
+		   {% endif %}
+		   <a name="{{ items.0.split|join:"_" }}"></a>
+	       <h4>{{ items.0 }}</h4>
+		   
+		<table class="table table-condensed">
+			<thead>
+			    <tr>
+			    	<th>Mnemonic</th>
+			        <th>Description</th>
+			        <th>Units</th>
+			        <th>Parameter Id</th>
+			    </tr>
+			</thead>
+			<tbody>
+		{% else %}
+			    {% if forloop.counter|divisibleby:2 %}
+			    <tr class="active">
+			    {% else %}
+			    <tr class="success">
+			    {% endif %}
+			        <td>{{ items.0 }}</td>
+			        <td>{{ items.1 }}</td>
+			        <td>{{ items.2 }}</td>
+			        <td>{{ items.3 }}</td>
+			    </tr>
+		 {% endif %}
+			
+	{% endfor %}
+{% endblock %}

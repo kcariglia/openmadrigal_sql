@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Base template for Looker Conjugate from Geodetic Form
+	
+	$Id: looker_conjugate_from_geodetic.html 5899 2016-11-30 21:30:08Z brideout $
+{% endcomment %}
+
+{% block title %}Madrigal looker{% endblock %}
+	
+{% block content %}
+<form method=get>
+{{ form.looker_options }}
+<div align=center>
+<h4>Point/Magnetic Conjugate Point vs Latitude, Longitude, Altitude</h4>
+</div>
+<p>Specify the latitude/longitude/altitude grid on which point/magnetic conjugate point parameters will be 
+calculated. You can also choose which parameters will be calculated. 
+This calculation is done for a single UT time. </p>
+        
+<table class="table table-condensed">
+	<tr>
+		<td>
+			<table class="table table-condensed">
+			<caption>
+			Set 3D grid of input geodetic points
+			</caption>
+			<tr>
+			<th align=center></th>
+			<th align=center>start</th>
+			<th align=center>end</th>
+			<th align=center>delta</th>
+			</tr>
+			<tr>
+			<td>apex latitude</td>
+			<td>
+			  {{form.start_lat}}
+			</td>
+			<td>
+			  {{form.stop_lat}}
+			</td>
+			<td>
+			  {{form.step_lat}}
+			</td>
+			</tr>
+			<tr>
+			<td>apex longitude</td>
+			<td>
+			  {{form.start_lon}}
+			</td>
+			<td>
+			  {{form.stop_lon}}
+			</td>
+			<td>
+			  {{form.step_lon}}
+			</td>
+			</tr>
+			<tr>
+			<td>altitude</td>
+			<td>
+			  {{form.start_alt}}
+			</td>
+			<td>
+			  {{form.stop_alt}}
+			</td>
+			<td>
+			  {{form.step_alt}}
+			</td>
+			</tr>
+			</table>
+		</td>
+		<td style="vertical-align:middle" align="center">
+		    <p>{{ form.datetime.label }}</p>
+		    {{ form.datetime }}
+		</td>
+    </tr>
+        <td style="vertical-align:middle" align="center">
+            <table class="table table-condensed">
+				<caption>
+				Choose output parameters
+				</caption>
+				<tr>
+					<td>
+					  {{form.pList.0}}
+					</td>
+					<td>
+					  {{form.pList.1}}
+					</td>
+				</tr>
+				<tr>
+					<td>
+					  {{form.pList.2}}
+					</td>
+					<td>
+					  {{form.pList.3}}
+					</td>
+				</tr>
+				<tr>
+					<td>
+					  {{form.pList.4}}
+					</td>
+					<td>
+					  {{form.pList.5}}
+					</td>
+				</tr>
+			</table>
+        </td>
+        <td style="vertical-align:middle" align="center">
+            <button class="btn btn-primary" id="looker_conjugate_from_geodetic_button" data-toggle="tooltip" data-original-title="Click this button to calculate point/magnetic conjugate point parameters from an input grid of geodetic points." data-placement="top">Calculate</button>
+        </td>
+    <tr>
+    </tr>
+
+</table>
+</form>
+	
+	<script>
+		$('#looker_conjugate_from_geodetic_button').on('click', function (e) {
+		    if (!validateForm(this.form))
+		        return(false);
+			this.form.action = "{% url 'looker_output' %}";
+			this.form.submit();
+		})
+		
+		function validateForm(madForm)
+		{
+		    // declarations
+		    var js_date;
+		    
+		    // read some form info
+		    var selectedParms = $("input[name=pList]:checked");
+		    var datetime_0 = $.trim($('#id_datetime_0').val());
+		    var datetime_1 = $.trim($('#id_datetime_1').val());
+		    
+		    // parameter check
+		    if (selectedParms.length == 0)
+		    {
+			    alert('You must select at least one parameter to derive');
+			    return(false);
+			}
+			
+			//start_date and end_date
+			js_date = new Date(datetime_0 + 'T' + datetime_1);
+			if (isNaN(js_date))
+			{
+			    alert('Illegal datetime: ' + datetime_0 + 'T' + datetime_1);
+			    return(false);
+			}
+		
+{% include "madweb/validate_grid.html" %}
+            
+			
+			// passed all tests
+			return(true);
+		}
+	</script>
+
+{% endblock %}

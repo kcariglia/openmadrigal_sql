@@ -1,0 +1,17 @@
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Template for year select in single experiment web interface
+	
+	$Id: years.html 4789 2015-02-12 15:07:25Z brideout $
+{% endcomment %}
+					<!-- label is its own row in selections column -->
+					<div class="row">
+						{{ form.years.label }}
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<!-- Year select is its own row in selections column -->
+							{{ form.years }}
+						</div> <!-- end span -->
+					</div> <!-- end row -->

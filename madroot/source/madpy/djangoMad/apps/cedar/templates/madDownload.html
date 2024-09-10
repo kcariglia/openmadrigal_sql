@@ -1,0 +1,95 @@
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Base template for Madrigal Download page
+	
+	$Id: madDownload.html 6943 2019-07-11 16:45:50Z brideout $
+{% endcomment %}
+
+<html>
+<head>
+<title>Madrigal Database Documentation - Download Madrigal</title>
+<style type="text/css">
+<!--
+.style1 {color: #0000FF}
+-->
+</style>
+</head>
+<BODY BGCOLOR=#EEEEFF LINK=#008000 VLINK=#003366>
+
+<center>
+<h1>Download Python, Matlab,  or IDL APIs to remotely access Madrigal</h1>
+</center>
+
+<p>Madrigal is now easy to access from any platform remotely using
+web services.    
+Since these API's have been tested on both Windows and Unix, they are available
+both as tar files and zip files.</p>
+<p align="center"><strong>To use any of these API's, there is usually <u>no need to read any documentation</u>. Just create the command to run using the web page at <em><a href="http://cedar.openmadrigal.org/chooseScript/">http://cedar.openmadrigal.org/chooseScript/</a></em> .</strong></p>
+<p><em>New!</em> - The python, Matlab, and IDL API's now all have a <span class="style1">globalDownload</span> method, which allows you to download any group of Madrigal files with one simple command. Also, they can now download Hdf5, netCDF4, and Ascii files from Madrigal 3 site such as http://cedar.openmadrigal.org.</p>
+<ul>
+   <li><b>Download madrigalWeb python Madrigal API</b> - This 3.2.4 release works with both python 2 and python 3.  It has a new feature that allows users to create a single citation that points to a list of CEDAR Madrigal files.
+     <ul>
+      <li><a href="/static/distributionFiles/madrigalWeb-3.2.4.tar.gz">madrigalWeb-3.2.4.tar.gz</a> (last updated Jun. 27, 2024)</li>
+      <li><a href="/static/distributionFiles/madrigalWeb-3.2.4-py3-none-any.whl">madrigalWeb-3.2.4-py3-none-any.whl</a> (last updated Jun. 27, 2024) </li>
+      <li>Can also be installed via pip: <em>pip install madrigalWeb</em></li>
+      <li>Documentation -  <a href="http://cedar.openmadrigal.org/docs/name/rt_python.html" target="_self">Scripts</a>, <a href="http://cedar.openmadrigal.org/docs/name/rt_python.html" target="_self">Tutorial</a>, <a href="http://cedar.openmadrigal.org/docs/name/rr_python.html" target="_self">Reference</a></li>
+     </ul>
+   </li>
+   <li><b>Download remote Matlab Madrigal API</b> - This 2.4.8 release works fully with both Madrigal 3.0 and Madrigal 2.6.
+     This release requires wget to download files or run isprint. 
+     <ul>
+      <li><a href="/static/distributionFiles/remoteMatlabAPI-2.4.8.tar.gz">remoteMatlabAPI-2.4.8.tar.gz</a> (last updated Nov. 15, 2022)</li>
+      <li><a href="/static/distributionFiles/remoteMatlabAPI-2.4.8.zip">remoteMatlabAPI-2.4.8.zip</a> (last updated Nov. 15, 2022)</li>
+      <li>Documentation -  <a href="http://cedar.openmadrigal.org/docs/name/rt_matlab.html" target="_self">Scripts</a>, <a href="http://cedar.openmadrigal.org/docs/name/rt_matlab.html" target="_self">Tutorial</a>, <a href="http://cedar.openmadrigal.org/docs/name/rr_matlab.html" target="_self">Reference</a></li>
+   </ul></li> 
+  <li><b>Download remote IDL Madrigal API </b>- This 1.3.4 release works fully with both Madrigal 3.0 and Madrigal 2.6.
+     This release requires wget be installed.
+    <ul>
+      <li><a href="/static/distributionFiles/remoteIDL_API-1.3.4.tar.gz">remoteIDL_API-1.3.4.tar.gz</a> (last updated  Jul. 29, 2019)</li>
+      <li><a href="/static/distributionFiles/remoteIDL_API-1.3.4.zip">remoteIDL_API-1.3.4.zip</a> (last updated  Jul. 29, 2019)</li>
+      <li>Documentation - <a href="http://cedar.openmadrigal.org/docs/name/rt_idl.html" target="_self">Scripts</a>, <a href="http://cedar.openmadrigal.org/docs/name/rt_idl.html" target="_self">Tutorials</a>, <a href="http://cedar.openmadrigal.org/docs/name/rr_idl.html" target="_self">Reference</a></li>
+    </ul>
+  </li>
+</ul>
+<p>&nbsp;</p>
+
+<h3 align="center">Try Madrigal 3.2 (python 3 based) at http://millstonehill.haystack.mit.edu</h3>
+<p align="center">&nbsp;</p>
+
+<center>
+  <h1>Download Madrigal 3.2.8 - Released June 27, 2024</h1>
+</center>
+
+Madrigal 3.2.8 is now released. Unlike Madrigal 3.0, Madrigal 3.2.8 is built on python 3. It is also compatible with running Madrigal using https.  
+Like Madrigal 3.0, Madrigal 3.2.8 is based on Hdf5, and no longer uses the non-standard CEDAR file format. 
+It also has an all-new Django/bootstrap based web interface. For a full list of new features,
+see the <a href="http://cedar.openmadrigal.org/docs/name/whatsNew.html"> Madrigal What's New page</a>.  Please contact 
+<a href="mailto:brideout@haystack.mit.edu">Bill Rideout</a> with any questions or problems. Now requires autotools (automake,
+autoconf, aclocal, autoheader, libtoolize) be installed.
+<p></p>
+
+Complete instructions for <a href="http://millstonehill.haystack.mit.edu/docs/name/ad_install.html">
+installing Madrigal for the first
+time</a>, or for <a href="http://millstonehill.haystack.mit.edu/docs/name/ad_upgrade.html">
+upgrading to the latest release</a>, are available in the 
+documentation</a>.
+
+<p></p>
+
+<h3>Complete Madrigal Distribution</H3>
+
+<ul>
+
+<li><a href="/static/distributionFiles/madrigal328.tar.gz">Download Madrigal 3.2.8</a>
+ (released June 27, 2024) .  Please contact <a href="mailto:brideout@haystack.mit.edu">Bill Rideout</a> with any problems.</li>
+
+<li><a href=
+"/static/distributionFiles/experiments.tar.gz">
+Download Madrigal 3 Sample Experiments (needed when Madrigal first installed).</a></li>
+<li>Madrigal 3 requires slight changes to programs that create Madrigal files, because now independent parameters must be declared.  See the <a href="http://cedar.openmadrigal.org/docs/name/ad_createFiles.html">documentation</a> for details</li>
+
+</ul>
+</body>
+</html>
+

@@ -1,0 +1,130 @@
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Generic navbar code shared by all Madrigal pages
+	
+	$Id: navbar.html 6641 2018-11-06 18:02:21Z brideout $
+{% endcomment %}
+		<style>
+		/* --- Style --- This CSS for a custom color navbar for Madrigal was generated using url http://work.smarchal.com/twbscolor/css/e74c3cc0392becf0f1ffbbbc0 */
+		.navbar-default {
+		  background-color: #21A7EB;
+		  border-color: #2182EB;
+		}
+		.navbar-default .navbar-brand {
+		  color: #ecf0f1;
+		}
+		.navbar-default .navbar-brand:hover, .navbar-default .navbar-brand:focus {
+		  color: #ffbbbc;
+		}
+		.navbar-default .navbar-text {
+		  color: #ecf0f1;
+		}
+		.navbar-default .navbar-nav > li > a {
+		  color: #ecf0f1;
+		}
+		.navbar-default .navbar-nav > li > a:hover, .navbar-default .navbar-nav > li > a:focus {
+		  color: #ffbbbc;
+		}
+		.navbar-default .navbar-nav > li > .dropdown-menu {
+		  background-color: #21A7EB;
+		}
+		.navbar-default .navbar-nav > li > .dropdown-menu > li > a {
+		  color: #ecf0f1;
+		}
+		.navbar-default .navbar-nav > li > .dropdown-menu > li > a:hover,
+		.navbar-default .navbar-nav > li > .dropdown-menu > li > a:focus {
+		  color: #ffbbbc;
+		  background-color: #2182EB;
+		}
+		.navbar-default .navbar-nav > li > .dropdown-menu > li > .divider {
+		  background-color: #21A7EB;
+		}
+		.navbar-default .navbar-nav > .active > a, .navbar-default .navbar-nav > .active > a:hover, .navbar-default .navbar-nav > .active > a:focus {
+		  color: #ffbbbc;
+		  background-color: #2182EB;
+		}
+		.navbar-default .navbar-nav > .open > a, .navbar-default .navbar-nav > .open > a:hover, .navbar-default .navbar-nav > .open > a:focus {
+		  color: #ffbbbc;
+		  background-color: #2182EB;
+		}
+		.navbar-default .navbar-toggle {
+		  border-color: #2182EB;
+		}
+		.navbar-default .navbar-toggle:hover, .navbar-default .navbar-toggle:focus {
+		  background-color: #2182EB;
+		}
+		.navbar-default .navbar-toggle .icon-bar {
+		  background-color: #ecf0f1;
+		}
+		.navbar-default .navbar-collapse,
+		.navbar-default .navbar-form {
+		  border-color: #ecf0f1;
+		}
+		.navbar-default .navbar-link {
+		  color: #ecf0f1;
+		}
+		.navbar-default .navbar-link:hover {
+		  color: #ffbbbc;
+		}
+		
+		@media (max-width: 767px) {
+		  .navbar-default .navbar-nav .open .dropdown-menu > li > a {
+		    color: #ecf0f1;
+		  }
+		  .navbar-default .navbar-nav .open .dropdown-menu > li > a:hover, .navbar-default .navbar-nav .open .dropdown-menu > li > a:focus {
+		    color: #ffbbbc;
+		  }
+		  .navbar-default .navbar-nav .open .dropdown-menu > .active > a, .navbar-default .navbar-nav .open .dropdown-menu > .active > a:hover, .navbar-default .navbar-nav .open .dropdown-menu > .active > a:focus {
+		    color: #ffbbbc;
+		    background-color: #2182EB;
+		  }
+		}
+		</style>
+    	<nav class="navbar navbar-default" role="navigation">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#collapse">
+                  <span class="sr-only">Toggle navigation</span>
+                  <span class="glyphicon glyphicon-arrow-down"></span>
+                  MENU
+                </button>
+            </div>
+            <div class="collapse navbar-collapse" id="collapse">
+                <ul class="nav navbar-nav">
+                    <li {{ home_active|safe }}><a href="{% url 'index' %}" data-toggle="tooltip" data-original-title="Click here to return to the home page of the {{ site_name }} Madrigal site." data-placement="bottom">{{ site_name }} Home</a></li>
+                    <li class="dropdown"><a href="#" data-toggle="dropdown" class="my-dropdown" title="Use this dropdown menu to access all data anywhere on any Madrigal site.  See the tooltips for each choice for more information." data-placement="right">Access data<span class="caret"></span></a>
+                    	<ul class="dropdown-menu">
+                        	<li {{ list_active|safe }}><a href="{% url 'view_list' %}" data-toggle="tooltip" data-original-title="List a range of experiments on any Madrigal site that you can then choose from, and then access its data" data-placement="right">List experiments</a></li>
+                        	<li {{ single_active|safe }}><a href="{% url 'view_single' %}" data-toggle="tooltip" data-original-title="Navigate to a single experiment on any Madrigal site, and access that experiment&#39;s data" data-placement="right">Select single experiment</a></li>
+                            <li {{ script_active|safe }}><a href="{% url 'choose_script' %}" data-toggle="tooltip" data-original-title="Use this link to create a command that will download data from a range of experiments at once" data-placement="right">Create a command to download multiple exps</a></li>
+                            <li {{ ftp_active|safe }}><a href="{% url 'ftp' %}" data-toggle="tooltip" data-original-title="Simple ftp-like UI" data-placement="right">FTP-like access</a></li>
+                        </ul>                    
+                    </li>
+                    <li class="dropdown"><a href="#" data-toggle="dropdown" class="my-dropdown" title="Use this dropdown menu to access all Madrigal metadata. See the tooltips for each choice for more information." data-placement="right">Access metadata<span class="caret"></span></a>
+                    	<ul class="dropdown-menu">
+                    	    <li {{ site_active|safe }}><a href="{% url 'site_metadata' %}" data-toggle="tooltip" data-original-title="List all metadata related to individual Madrigal sites." data-placement="right">Madrigal site metadata</a></li>
+                        	<li {{ inst_active|safe }}><a href="{% url 'instrument_metadata' %}" data-toggle="tooltip" data-original-title="List all metadata related to individual Madrigal instruments." data-placement="right">Instrument metadata</a></li>
+                            <li {{ parm_active|safe }}><a href="{% url 'parameter_metadata' %}" data-toggle="tooltip" data-original-title="List all metadata related to individual CEDAR parameters." data-placement="right">CEDAR Parameters</a></li>
+                            <li {{ kindat_active|safe }}><a href="{% url 'kindat_metadata' %}" data-toggle="tooltip" data-original-title="List all metadata related to individual Madrigal kind of data file codes (also called kindats). Each Madrigal file has a single kind of data code." data-placement="right">Kind of data metadata</a></li>
+                            <li {{ filter_active|safe }}><a href="{% url 'docs' 'filter_desc.html' %}" data-toggle="tooltip" data-original-title="Describe use of filters in Madrigal." data-placement="right">Filter string metadata</a></li>
+                        </ul>                    
+                    </li>
+                    <li class="dropdown"><a href="#" data-toggle="dropdown" class="my-dropdown" title="Click here to access modeling tools associated with Madrigal." data-placement="right">Run models<span class="caret"></span></a>
+                    	<ul class="dropdown-menu">
+                    	    <li {{ madCalculator_active|safe }}><a href="{% url 'madrigal_calculator' %}" data-toggle="tooltip" data-original-title="Calculate any Madrigal parameter for a given time and range of lat, lon, and alt." data-placement="right">Run Madrigal derivation engine</a></li>
+                        	<li {{ looker_active|safe }}><a href="{% url 'looker_main' %}" data-toggle="tooltip" data-original-title="Simple Geodetic and Geomagnetic (IGRF) coordinate transformations (aka looker)." data-placement="right">Looker</a></li>
+                            <li><a href="http://models.haystack.mit.edu/models/" data-toggle="tooltip" data-original-title="Run ISR empirical models developed from historical ISR data by Shunrong Zhang." data-placement="right">ISR empirical models</a></li>
+                        </ul> 
+                    </li>
+                    <li {{ doc_active|safe }}><a href="docs/name/madContents.html" data-toggle="tooltip" data-original-title="Click here to see Madrigal documentation on the web interface, using scripts to automate data access, Madrigal administration, and information for Madrigal developers." data-placement="bottom">Documentation</a></li>
+                    <li class="dropdown"><a href="#" data-toggle="dropdown" class="my-dropdown" title="Use this dropdown menu to navigate to another Madrigal site."  data-placement="left">Other Madrigal sites<span class="caret"></span></a>
+                    	<ul class="dropdown-menu">
+                    	{% for siteName, siteUrl in site_list %}
+                        	<li><a href="{{ siteUrl }}" data-toggle="tooltip" data-original-title="Navigate to Madrigal site at {{ siteName }}" data-placement="left">{{ siteName }}</a></li>
+                        {% endfor %}
+                        </ul>                    
+                    </li>
+                    <li><a href="http://cedar.openmadrigal.org/openmadrigal" data-toggle="tooltip" data-original-title="Click here to go to OpenMadrigal, where you can download API&#39;s in python, Matlab, and IDL to run Madrigal scripts, and access Madrigal&#39;s source code." data-placement="bottom">OpenMadrigal</a></li>  
+                </ul> 
+            </div>
+         </nav> 

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Base template for Madrigal main script interface
+	
+	$Id: show_experiment.html 4934 2015-04-24 19:43:37Z brideout $
+{% endcomment %}
+
+{% block title %}Create download command{% endblock %}
+
+{% block content %}
+	<div class="btn-toolbar" style="margin: 0;">
+      <div class="btn-group">
+        <button class="btn btn-primary" id="download_apis" data-toggle="tooltip" data-original-title="Click this button to go to the page to download the python, Matlab, or IDL API's." data-placement="bottom">Download software (first time only)</button>
+        &nbsp;&nbsp;&nbsp<a data-toggle="tooltip" data-original-title="This page allows you to write a script in either python, Matlab, or IDL to download as much of this local Madrigal database as you want to your local computer with a single command. You will generate this command by using this web page, so there is no need to read the API documentation. The software you will download allows your choosen language to interact with the Madrigal database." data-placement="bottom">Why do I need to download software first?</a>
+      </div><!-- /btn-group -->
+    </div><!-- /btn-toolbar -->
+    <br>
+    
+	<h4>Select what kind of command to create</h4>
+	
+	<div class="btn-toolbar" style="margin: 0;">
+      <div class="btn-group">
+        <button class="btn btn-primary" id="download_as_is" data-toggle="tooltip" data-original-title="Click this button to create a command to download a group of Madrigal files as is (without extra parameters or filters)." data-placement="bottom">Download a group of files as is (faster)</button>
+      </div><!-- /btn-group -->
+      <div class="btn-group">
+        <button class="btn btn-primary" id="download_advanced" data-toggle="tooltip" data-original-title="Click this button to create a command to download data with user selected parameters and filters." data-placement="bottom">Download data with selected parms/filters (slower)</button>
+      </div><!-- /btn-group -->
+    </div><!-- /btn-toolbar -->
+    
+    <br>
+    <p>If you want to create a citation to a <strong>group</strong> of files, <a href="{% url 'docs' 'rt_python.html' %}">instructions on using the globalCitation.py script are here.<a>
+
+	<script>
+	    $('#download_apis').on('click', function (e) {
+			var url = 'http://cedar.openmadrigal.org/madrigalDownload';
+			window.location.href = url;
+		})
+		
+		$('#download_as_is').on('click', function (e) {
+			var url = '{% url 'download_as_is_script' %}';
+			window.location.href = url;
+		})
+		
+		$('#download_advanced').on('click', function (e) {
+			var url = '{% url 'download_advanced_script' %}';
+			window.location.href = url;
+		})
+		
+		
+	</script>
+{% endblock %}

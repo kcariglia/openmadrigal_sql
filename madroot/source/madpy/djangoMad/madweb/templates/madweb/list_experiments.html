@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Base template for Madrigal list experiment web interface
+	
+	$Id: list_experiments.html 5322 2015-09-25 17:38:11Z brideout $
+{% endcomment %}
+
+{% block title %}List Madrigal experiments{% endblock %}
+
+{% block content %}
+	<center><h4>List of selected Madrigal experiments</h4></center>
+	
+	<table class="table table-condensed">
+		<thead>
+		    <tr>
+		    {% if not localOnly %}
+		        <th>Madrigal site</th>
+		    {% endif %}
+		        <th>Instrument name</th>
+		        <th>Start</th>
+		        <th>End</th>
+		        <th>Experiment name<th>
+		    </tr>
+		</thead>
+		<tbody>
+		{% for exp in expList %}
+		    {% if forloop.counter|divisibleby:2 %}
+		    <tr class="active">
+		    {% else %}
+		    <tr class="success">
+		    {% endif %}
+		    {% if not localOnly %}
+		        <td>{{ exp.8 }}</td>
+		    {% endif %}
+		        <td><a href="{{ exp.1 }}">{{ exp.3 }}</a></td>
+		        <td>{{ exp.5 }}</td>
+		        <td>{{ exp.6 }}</td>
+		        <td>{{ exp.2 }}</td>
+		    </tr>
+		{% endfor %}
+		</tbody>
+	</table>
+{% endblock %}

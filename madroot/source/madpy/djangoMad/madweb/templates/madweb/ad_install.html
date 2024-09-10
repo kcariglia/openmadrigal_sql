@@ -1,0 +1,179 @@
+{% load static %}
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/doc_template.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>Installing Madrigal for the first time</title>
+<!-- InstanceEndEditable --><!-- InstanceBeginEditable name="head" --><!-- InstanceEndEditable -->
+<link href="/static/madrigal.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+	html body {
+		background-color: {{bg_color}};
+	}
+</style>
+<!-- InstanceParam name="href_up_top" type="text" value="admin.html" --><!-- InstanceParam name="href_next_top" type="text" value="ad_upgrade.html" --><!-- InstanceParam name="href_back_top" type="text" value="ad_appropriate.html" --><!-- InstanceParam name="href_back_bottom" type="text" value="ad_appropriate.html" --><!-- InstanceParam name="href_up_bottom" type="text" value="admin.html" --><!-- InstanceParam name="href_next_bottom" type="text" value="ad_upgrade.html" --><!-- InstanceParam name="href_prev_top" type="text" value="ad_appropriate.html" --><!-- InstanceParam name="href_uptitle_top" type="text" value="admin.html" --><!-- InstanceParam name="href_nexttitle_top" type="text" value="ad_upgrade.html" --><!-- InstanceParam name="href_prevtitle_bottom" type="text" value="ad_appropriate.html" --><!-- InstanceParam name="href_uptitle_bottom" type="text" value="admin.html" --><!-- InstanceParam name="href_nexttitle_bottom" type="text" value="ad_upgrade.html" -->
+</head>
+
+<body>
+<table width="100%" border="1" cellpadding="0" cellspacing="2" class="navigation">
+  <tr>
+    <td width="5%"><a href="{% url 'docs' 'ad_appropriate.html' %}"><img src="/static/previous.png" alt="previous" width="32" height="32" /></a></td>
+    <td width="5%"><a href="{% url 'docs' 'admin.html' %}"><img src="/static/up.png" alt="up" width="32" height="32" /></a></td>
+    <td width="5%"><a href="{% url 'docs' 'ad_upgrade.html' %}"><img src="/static/next.png" alt="next" width="32" height="32" /></a></td>
+    <td width="54%"><!-- InstanceBeginEditable name="EditTitleTop" -->Installing Madrigal for the first time <!-- InstanceEndEditable --></td>
+    <td width="13%"><a href="{% url 'docs' 'madContents.html' %}">Doc home </a></td>
+    <td width="18%"><a href="/">Madrigal home</a></td>
+  </tr>
+</table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" href="{% url 'docs' 'ad_appropriate.html' %}"><!-- InstanceBeginEditable name="PreviousTitle" -->Is Madrigal appropriate? <!-- InstanceEndEditable --></A>
+<b class="navlabel">&nbsp;&nbsp;Up:</b>
+<a class="sectref" href="{% url 'docs' 'admin.html' %}"><!-- InstanceBeginEditable name="UpTitle" -->Madrigal admin guide <!-- InstanceEndEditable --></A>
+<b class="navlabel">&nbsp;&nbsp;Next:</b>
+<a class="sectref" href="{% url 'docs' 'ad_upgrade.html' %}"><!-- InstanceBeginEditable name="NextTitle" -->Upgrading Madrigal <!-- InstanceEndEditable --></A></div>
+<hr/>
+<!-- InstanceBeginEditable name="EditDoc" -->
+<h1 align="center">Installing Madrigal for the first time </h1>
+<h4 align="left">Prerequisites</h4>
+<p>Madrigal is meant to be installed on any Unix-like OS, including Mac and Linux. Most of the prerequisites for Madrigal are pre-installed in any modern unix distribution. They are: </p>
+<ol>
+  <li>A C and a FORTRAN  compiler. The free GNU compilers may be downloaded from the <a href="http://www.gnu.org/software/gcc/">GNU Website </a>.</li>
+  <li>Autotools (automake, autoconf, aclocal, libtoolize, autoheader)</li>
+  <li>A web server. See instructions below to run a Django application (which Madrigal is) on apache.</li>
+  <li>The environmental variable MADROOT should be set to the path to the Madrigal installation directory. Its recommended this be done in your login script (eg, .bash_profile) because you will need it to run administrative scripts later.</li>
+  <li>With Madrigal 3, the installation uses a version of python 3 you install yourself, and you have permission to install into. The easiest way I have found to install python with scientific tools is to use either apt-get (for ubuntu), or the Anaconda python distribution, or pip. The following python modules need to be installed:
+    <ol>
+      <li>django (version 1.11 or greater)</li>
+      <li>pip and setuptools</li>
+      <li>numpy</li>
+      <li>scipy</li>
+      <li>matplotlib</li>
+      <li>netCDF4</li>
+      <li>h5py</li>
+      <li>sqlparse</li>
+      <li>filelock</li>
+      <li>bootstrap3 (can be installed via <em>pip install django-bootstrap3</em>)</li>
+      <li>aacgmv2 (can be installed via <em>pip install aacgmv2</em>)<br />
+      <li>packaging (can be installed via <em>pip install packaging</em>)<br />
+      <li>madrigalWeb (can be installed via <em>pip install madrigalWeb</em>)<br />
+      </li>
+    </ol>
+  </li>
+</ol>
+<p>In addition, you need to have Autotools (automake, autoconf, aclocal, libtoolize, autoheader) installed, along with h5repack (may be part of h5utils package).</p>
+<pre></pre>
+<h4 align="left">Installation instructions </h4>
+<p align="left">Madrigal can be installed on any unix server with a web server configured for Django. If you want to link your data in with data on other Madrigal servers, please notify the <a href="mailto:madrigal@haystack.mit.edu">OpenMadrigal administrator</a>. In general you do not need root permission to install madrigal once the prerequisites listed above are installed. </p>
+<ol>
+  <li>Create a directory to be used as your Madrigal root directory on your unix server. This directory will be referred to as MADROOT. </li>
+  <li>Create the environment variable MADROOT with that directory path. </li>
+  <li>Download the latest Madrigal distribution file, madrigal*.tar.gz from the <a href="http://cedar.openmadrigal.org/madrigalDownload/">OpenMadrigal distribution page</a> to MADROOT. </li>
+  <li>gunzip madrigal*.tar.gz </li>
+  <li>tar -xf madrigal*.tar </li>
+  <li>Repeat the 3 steps above to get and untar the Sample Experiments file <em>experiments.tar.gz</em>. </li>
+  <li>Make sure $MADROOT/bin/python links to the version of python with the required modules listed above. For example, if you are using anaconda, you might run &lt;<em>ln -s //anaconda/bin/python $MADROOT/bin/python</em>&gt;.</li>
+  <li>If desired, copy any data from your old $MADROOT/experiments directory to this new $MADROOT/experiments directory.</li>
+  <li>In madroot, there will now be a file called madrigal.cfg.template. Copy it to madrigal.cfg, and edit all the configuration parameters, as described in the <a href="#edit">Editing madrigal.cfg</a> section below. </li>
+  <li>Configure your web server to run the Madrigal Django application. Instruction for apache can be found in the <a href="#django">Configuring Apache for a Madrigal Django Application</a> section below. If you are running a webserver other than apache, please consult the Django documentation for your particular webserver. </li>
+  <li>Edit the file MADROOT/metadata/siteTab.txt with a unique id to include your site. The format of siteTab.txt is described <a href="ad_metadata.html#siteTab">here</a>. Note that if your site will be running https, the third field will begin https://.  If you want to be an official Madrigal site that other Madrigal sites share data with, request the <a href="mailto:madrigal@haystack.mit.edu">OpenMadrigal administrator</a> to assign you this id. If this is just a test site, use any id not already in the siteTab.txt file. Finally, make sure the last column of the line for your site ends <em>,3.0</em> . This tells all sites that you site is now a Madrigal 3 site. For example: <pre>999,mad31,localhost,madrigal,cgi-bin/madrigal,madrigal/servlets,Bill Rideout,MIT Haystack Observatory,Route 40,,Westford,MA,01886,USA,1-781-981-5624,brideout@haystack.mit.edu,3.0</pre></li>
+  <li>Be sure to cd to MADROOT before running the following step. Then you should be able to complete the installation simply by typing <br />
+    <pre>&lt;sudo&gt; bash installMadrigal  &> install.log &</pre>
+	   
+  The <em>sudo</em> is required only if installing modules on your default version of python requires sudo. There may be a long pause when running updateMaster near the end of the installation since the instParmTab.txt metadata file is being built for the first time by examining every data file, but future calls to updateMaster will be much faster since only new experiments are examined. Help with any installation errors is available from the <a href="mailto:madrigal@haystack.mit.edu">OpenMadrigal administrator</a>. </li>
+  <li>If there were no errors, your madrigal installation should be running at the url given by MADSERVERROOT. </li>
+  <li>If you want to receive notices about updates to Madrigal, sign up for the openmadrigal-admin mailing list under http://cedar.openmadrigal.org/openmadrigal. </li>
+  <li>Set the script <em>madroot</em>/bin/updateMaster up as a cron job to run once a day. </li>
+  <li>If you want to add any documentation pages specific to your site to the Madrigal documentation pages, see the <a href="ad_other.html#siteSpecific">other admin tasks</a> section of this manual.</li>
+  <li>If you want to add your own rules of the road to the Madrigal experiment page, see the <a href="ad_other.html#rules">other admin tasks</a> section of this manual.</li>
+</ol>
+<p> </p>
+<h4><a name="edit" id="edit"></a>Editing the madrigal.cfg file </h4>
+The madrigal.cfg file contains all the configuration information specific to your installation. This section discusses how to edit that file for each parameter.  The madrigal.cfg.template file contains examples of each parameter. 
+<ul>
+  <li>MADROOT - Madrigal root directory (absolute). This must be set as an environmental variable. </li>
+  <li>MAD<b></b>SERVER - Web server for accessing Madrigal.  For https, add https:// to the beginning.  If not given, uses http </li>
+  <li>MAD<b></b>SERVERROOT - document virtual directory relative to MAD<b></b>SERVER. 
+  If the full Madrigal Url is the same as the MAD<b></b>SERVER field
+   (for example, if the url is <i>http://madrigal.hao.ucar.edu/</i>), then set this field to a period. (Example: 
+   <i>MAD<b></b>SERVERROOT = .</i> ) </li>
+  <li>SITEID - Site ID - Must be unique and same as in siteTab.txt </li>
+  <li>HTMLSTYLE - Body style of html pages </li>
+  <li>INDEXHEAD - Heading in the top-level Madrigal page </li>
+  <li>CONTACT - Mailto link of contact person(s) for this madrigal installation. Multiple email addresses may be included if separated by commas. </li>
+  <li>MAILSERVER - Name of mailserver (possibly localhost if running sendmail) </li>
+  <li>PLOTBUTTONLABEL - By default the button to show additional documentation is labelled Plots/Docs. Change this line for a different label. <br>
+  </li>
+</ul>
+
+<h4><a name="django" id="django"></a>Configuring Apache for a Madrigal Django Application</h4>
+<p>Some configuration of apache is required to run a Django application like Madrigal. If you are running a webserver other than apache, please consult the Django documentation for your particular webserver. We will configure apache to run Madrigal in mod_wsgi daemon mode for improved performance.</p>
+<p>The first step is to make sure mod_wsgi is installed as part of your apache webserver. If not, see mod_wsgi installation directions. Once installed, add the line</p>
+<pre>LoadModule wsgi_module modules/mod_wsgi.so</pre>
+<p>near the top of the httpd.conf file. Next add the follow section, with <em>MADROOT</em>, <em>MADSERVERROOT</em> and <em>YOUR_SERVER</em> replaced with values for your server from the madrigal.cfg file described below. Note that if <em>MADSERVERROOT</em> is zero length (that is, if the full Madrigal Url is the same as the MAD<b></b>SERVER field
+  - for example, if the url is <i>http://madrigal.hao.ucar.edu/</i>) then /<em>MADSERVERROOT</em> just becomes / unlike in the madrigal.cfg file when it becomes a period.  Set <em>NUM_CPU</em> to about one half available on your server.</p>
+
+<pre>SetEnv PYTHONPATH <em>MADROOT</em>/source/madpy/djangoMad/
+WSGIDaemonProcess <em>YOUR_SERVER</em> python-path=<em>MADROOT</em>/source/madpy/djangoMad processes=<em>NUM_CPU</em> display-name=%{GROUP} lang='en_US.UTF-8' locale='en_US.UTF-8'
+WSGIProcessGroup <em>YOUR_SERVER</em>
+WSGIScriptAlias /<em>MADSERVERROOT</em> <em>MADROOT</em>/source/madpy/djangoMad/djangoMad/wsgi.py process-group=<em>YOUR_SERVER</em>
+Alias /<em>MADSERVERROOT</em>/static/ <em>MADROOT</em>/source/madpy/djangoMad/madweb/static/
+WSGIApplicationGroup %{GLOBAL}</pre>
+
+<pre> &lt;Directory <em>MADROOT</em>/source/madpy/djangoMad/madweb/static&gt;</pre>
+<blockquote>
+  <pre>Require all granted</pre>
+</blockquote>
+<pre>
+&lt;/Directory&gt;
+&lt;Directory <em>MADROOT</em>/source/madpy/djangoMad/djangoMad&gt;</pre>
+<blockquote>
+  <pre>&lt;Files wsgi.py&gt;  </pre>
+  <blockquote>
+    <pre>Require all granted</pre>
+  </blockquote>
+  <pre>&lt;/Files&gt;</pre>
+</blockquote>
+<pre>&lt;/Directory&gt;
+</pre>
+
+<p>You may also need to add to your apache configuration file <em>SetEnv LD_LIBRARY_PATH $MADROOT/lib</em>, possibly along with other library paths.</p>
+
+<p>Finally, you need to edit the file <em>MADROOT</em>/source/madpy/djangoMad/djangoMad/settings_production_template.py, and save it as <em>MADROOT</em>/source/madpy/djangoMad/djangoMad/settings_production.py. 
+Note that if <em>MADSERVERROOT</em> is zero length then /<em>MADSERVERROOT</em>/static just becomes /static. The lines to be edited are:</p>
+<pre>SECRET_KEY = '*****'
+ALLOWED_HOSTS = ['madrigal3.haystack.mit.edu']
+ADMINS = (('Bill Rideout', 'brideout@haystack.mit.edu'),)
+EMAIL_HOST = 'hyperion.haystack.mit.edu'
+MANAGERS = (('Bill Rideout', 'brideout@haystack.mit.edu'),)
+
+<p>You can generate a new secret key for your site at http://www.miniwebtool.com/django-secret-key-generator/, which is recommended for security reasons.  The other lines are self-explanatory. </p>
+<p>When you are done, be sure to restart apache for the changes to take effect. Note that because this Madrigal Django application runs in daemon mode, it will be necessary to restart the web server if you ever update the python code.</p>
+
+<h3>Throttling Madrigal admin emails</h3>
+<p>Sometimes Madrigal users write scripts that cause numerous admin emails, and in addition malicious users can also generate numerous admin emails.
+If you would like to throttle the number of Madrigal admin emails you receive, see <a href="{% url 'docs' 'ad_other.html' %}#throttle">Throttling admin emails</a></p>
+<!-- InstanceEndEditable -->
+<table width="100%" border="1" cellpadding="0" cellspacing="2" class="navigation">
+  <tr>
+    <td width="5%"><a href="{% url 'docs' 'ad_appropriate.html' %}"><img src="/static/previous.png" alt="previous" width="32" height="32" /></a></td>
+    <td width="5%"><a href="{% url 'docs' 'admin.html' %}"><img src="/static/up.png" alt="up" width="32" height="32" /></a></td>
+    <td width="5%"><a href="{% url 'docs' 'ad_upgrade.html' %}"><img src="/static/next.png" alt="next" width="32" height="32" /></a></td>
+    <td width="54%"><!-- InstanceBeginEditable name="EditTitleBottom" -->Installing Madrigal for the first time <!-- InstanceEndEditable --></td>
+    <td width="13%"><a href="{% url 'docs' 'madContents.html' %}">Doc home </a></td>
+    <td width="18%"><a href="/">Madrigal home</a></td>
+  </tr>
+</table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" href="{% url 'docs' 'ad_appropriate.html' %}"><!-- InstanceBeginEditable name="PreviousTitle2" -->Is Madrigal appropriate? <!-- InstanceEndEditable --></A>
+<b class="navlabel">&nbsp;&nbsp;Up:</b>
+<a class="sectref" href="{% url 'docs' 'admin.html' %}"><!-- InstanceBeginEditable name="UpTitle2" -->Madrigal admin guide <!-- InstanceEndEditable --></A>
+<b class="navlabel">&nbsp;&nbsp;Next:</b>
+<a class="sectref" href="{% url 'docs' 'ad_upgrade.html' %}"><!-- InstanceBeginEditable name="NextTitle2" -->Upgrading Madrigal <!-- InstanceEndEditable --></A></div>
+<hr/>
+<p>&nbsp;</p>
+</body> 
+<!-- InstanceEnd --></html>

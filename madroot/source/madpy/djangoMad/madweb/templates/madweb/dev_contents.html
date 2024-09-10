@@ -1,0 +1,87 @@
+{% load static %}
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/doc_template.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>Madrigal developer's guide</title>
+<!-- InstanceEndEditable --><!-- InstanceBeginEditable name="head" --><!-- InstanceEndEditable -->
+<link href="/static/madrigal.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+	html body {
+		background-color: {{bg_color}};
+	}
+</style>
+<!-- InstanceParam name="href_up_top" type="text" value="madContents.html" --><!-- InstanceParam name="href_next_top" type="text" value="madrigal/index.html" --><!-- InstanceParam name="href_back_top" type="text" value="ad_isprint.html" --><!-- InstanceParam name="href_back_bottom" type="text" value="ad_isprint.html" --><!-- InstanceParam name="href_up_bottom" type="text" value="madContents.html" --><!-- InstanceParam name="href_next_bottom" type="text" value="madrigal/index.html" --><!-- InstanceParam name="href_prev_top" type="text" value="ad_isprint.html" --><!-- InstanceParam name="href_uptitle_top" type="text" value="madContents.html" --><!-- InstanceParam name="href_nexttitle_top" type="text" value="madrigal/index.html" --><!-- InstanceParam name="href_prevtitle_bottom" type="text" value="ad_isprint.html" --><!-- InstanceParam name="href_uptitle_bottom" type="text" value="madContents.html" --><!-- InstanceParam name="href_nexttitle_bottom" type="text" value="madrigal/index.html" -->
+</head>
+
+<body>
+<table width="100%" border="1" cellpadding="0" cellspacing="2" class="navigation">
+  <tr>
+    <td width="5%"><a href="{% url 'docs' 'ad_isprint.html' %}"><img src="/static/previous.png" alt="previous" width="32" height="32" /></a></td>
+    <td width="5%"><a href="{% url 'docs' 'madContents.html' %}"><img src="/static/up.png" alt="up" width="32" height="32" /></a></td>
+    <td width="5%"><a href="{% url 'docs' 'madrigal/index.html' %}"><img src="/static/next.png" alt="next" width="32" height="32" /></a></td>
+    <td width="54%"><!-- InstanceBeginEditable name="EditTitleTop" -->Madrigal developer's guide <!-- InstanceEndEditable --></td>
+    <td width="13%"><a href="{% url 'docs' 'madContents.html' %}">Doc home </a></td>
+    <td width="18%"><a href="/">Madrigal home</a></td>
+  </tr>
+</table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" href="{% url 'docs' 'ad_isprint.html' %}"><!-- InstanceBeginEditable name="PreviousTitle" -->Using isprint<!-- InstanceEndEditable --></A>
+<b class="navlabel">&nbsp;&nbsp;Up:</b>
+<a class="sectref" href="{% url 'docs' 'madContents.html' %}"><!-- InstanceBeginEditable name="UpTitle" -->Doc home <!-- InstanceEndEditable --></A>
+<b class="navlabel">&nbsp;&nbsp;Next:</b>
+<a class="sectref" href="{% url 'docs' 'madrigal/index.html' %}"><!-- InstanceBeginEditable name="NextTitle" -->Internal python API<!-- InstanceEndEditable --></A></div>
+<hr/>
+<!-- InstanceBeginEditable name="EditDoc" -->
+<h1 align="center">Madrigal developer's guide</h1>
+<p>This section of the Madrigal documentation is meant for developers working to extend or modify Madrigal. It is not meant for users of Madrigal or Madrigal administrators. </p>
+<p>With the release of Madrigal 3.0, Madrigal has only a single python API. The C and Fortran code installed in Madrigal is purely scientific code used in the derivation engine, and is exposed only as a python extension, madrigal._derive.</p>
+<p>The web interface is now a Django web application, and no direct cgi scripts remain. The django application is contained in MADROOT/source/madpy/djangoMad.</p>
+<ul>
+  <li><a href="madrigal/index.html">Internal Madrigal Python API</a>
+    <ul>
+      <li><a href="{% url 'docs' 'madrigal/admin.m.html' %}">madrigal.admin</a></li>
+      <li><a href="{% url 'docs' 'madrigal/cedar.m.html' %}">madrigal.cedar</a></li>
+      <li><a href="{% url 'docs' 'madrigal/data.m.html' %}">madrigal.data</a></li>
+      <li><a href="{% url 'docs' 'madrigal/derivation.m.html' %}">madrigal.derivation</a></li>
+      <li><a href="{% url 'docs' 'madrigal/isprint.m.html' %}">madrigal.isprint</a></li>
+      <li><a href="{% url 'docs' 'madrigal/metadata.m.html' %}">madrigal.metadata</a></li>
+      <li><a href="{% url 'docs' 'madrigal/openmadrigal.m.html' %}">madrigal.openmadrigal</a></li>
+      <li><a href="{% url 'docs' 'madrigal/ui/index.html' %}">madrigal.ui</a>
+        <ul>
+          <li><a href="{% url 'docs' 'madrigal/ui/madrigalPlot.m.html' %}">madrigal.ui.madrigalPlot</a></li>
+          <li><a href="{% url 'docs' 'madrigal/ui/userData.m.html' %}">madrigal.ui.userData</a></li>
+          <li><a href="{% url 'docs' 'madrigal/ui/web.m.html' %}">madrigal.ui.web</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="{% url 'docs' 'dev_derivation.html' %}">Madrigal derivation engine</a></li>
+  <li><a href="/static/CEDARMadrigalHdf5Format.pdf">CEDAR Madrigal Hdf5 file format</a></li>
+  <li><a href="/static/cedarFormat.pdf">Deprecated Cedar file format</a></li>
+</ul>
+<!-- InstanceEndEditable -->
+<table width="100%" border="1" cellpadding="0" cellspacing="2" class="navigation">
+  <tr>
+    <td width="5%"><a href="{% url 'docs' 'ad_isprint.html' %}"><img src="/static/previous.png" alt="previous" width="32" height="32" /></a></td>
+    <td width="5%"><a href="{% url 'docs' 'madContents.html' %}"><img src="/static/up.png" alt="up" width="32" height="32" /></a></td>
+    <td width="5%"><a href="{% url 'docs' 'madrigal/index.html' %}"><img src="/static/next.png" alt="next" width="32" height="32" /></a></td>
+    <td width="54%"><!-- InstanceBeginEditable name="EditTitleBottom" -->Madrigal developer's guide<!-- InstanceEndEditable --></td>
+    <td width="13%"><a href="{% url 'docs' 'madContents.html' %}">Doc home </a></td>
+    <td width="18%"><a href="/">Madrigal home</a></td>
+  </tr>
+</table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" href="{% url 'docs' 'ad_isprint.html' %}"><!-- InstanceBeginEditable name="PreviousTitle2" -->Using isprint <!-- InstanceEndEditable --></A>
+<b class="navlabel">&nbsp;&nbsp;Up:</b>
+<a class="sectref" href="{% url 'docs' 'madContents.html' %}"><!-- InstanceBeginEditable name="UpTitle2" -->Doc home <!-- InstanceEndEditable --></A>
+<b class="navlabel">&nbsp;&nbsp;Next:</b>
+<a class="sectref" href="{% url 'docs' 'madrigal/index.html' %}"><!-- InstanceBeginEditable name="NextTitle2" -->Internal python API  <!-- InstanceEndEditable --></A></div>
+<hr/>
+<p>&nbsp;</p>
+</body> 
+<!-- InstanceEnd --></html>

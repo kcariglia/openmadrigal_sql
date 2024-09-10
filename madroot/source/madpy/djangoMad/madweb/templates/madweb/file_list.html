@@ -1,0 +1,134 @@
+{% comment %}
+	Written by Bill Rideout brideout@haystack.mit.edu
+	
+	Template for file select in single experiment web interface
+	
+	$Id: file_list.html 4937 2015-04-28 18:05:23Z brideout $
+{% endcomment %}
+
+        {% if form.exp_desc %}
+        <script>
+        function registerExp () {
+            var message = "Click OK to confirm that " + 
+			"you want to receive emails to {{ form.user_email.label }} " + 
+			"whenever this experiment ({{ form.exp_desc.label }}) " + 
+			"is updated.";
+			if (!confirm(message)) return;
+        	{% if form.exp_id %}
+				var exp_id = {{ form.exp_id.label }};
+			{% else %}
+				var exp_id = $("#id_experiment_list")[0].options[$("#id_experiment_list")[0].selectedIndex].value;
+			{% endif %}
+			var url = '{{ redirect }}' + '?experiment_list=' + exp_id + '&registerExp=true';
+            {{ loader }}(url, exp_id);
+        }
+        
+        function registerInst () {
+            var message = "Click OK to confirm that " + 
+			"you want to receive emails to {{ form.user_email.label }} " + 
+			"whenever this instrument ({{ form.inst_desc.label }}) " + 
+			"is updated.";
+			if (!confirm(message)) return;
+        	{% if form.exp_id %}
+				var exp_id = {{ form.exp_id.label }};
+			{% else %}
+				var exp_id = $("#id_experiment_list")[0].options[$("#id_experiment_list")[0].selectedIndex].value;
+			{% endif %}
+			var url = '{{ redirect }}' + '?experiment_list=' + exp_id + '&registerInst=true';
+            {{ loader }}(url, exp_id);
+        }
+        
+        function unregisterExp () {
+            var message = "Click OK to confirm that " + 
+			"you no longer want to receive emails to {{ form.user_email.label }} " + 
+			"whenever this experiment ({{ form.exp_desc.label }}) " + 
+			"is updated.";
+			if (!confirm(message)) return;
+        	{% if form.exp_id %}
+				var exp_id = {{ form.exp_id.label }};
+			{% else %}
+				var exp_id = $("#id_experiment_list")[0].options[$("#id_experiment_list")[0].selectedIndex].value;
+			{% endif %}
+			var url = '{{ redirect }}' + '?experiment_list=' + exp_id + '&unregisterExp=true';
+            {{ loader }}(url, exp_id);
+        }
+        
+        function unregisterInst () {
+            var message = "Click OK to confirm that " + 
+			"you no longer want to receive emails to {{ form.user_email.label }} " + 
+			"whenever this instrument ({{ form.inst_desc.label }}) " + 
+			"is updated.";
+			if (!confirm(message)) return;
+        	{% if form.exp_id %}
+				var exp_id = {{ form.exp_id.label }};
+			{% else %}
+				var exp_id = $("#id_experiment_list")[0].options[$("#id_experiment_list")[0].selectedIndex].value;
+			{% endif %}
+			var url = '{{ redirect }}' + '?experiment_list=' + exp_id + '&unregisterInst=true';
+            {{ loader }}(url, exp_id);
+        }
+        
+        function reloadFiles () {
+        	{% if form.exp_id %}
+				var exp_id = {{ form.exp_id.label }};
+			{% else %}
+				var exp_id = $("#id_experiment_list")[0].options[$("#id_experiment_list")[0].selectedIndex].value;
+			{% endif %}
+			if ($("#id_includeNonDefault")[0].checked)
+			    includeNonDefault = 1;
+			else
+			    includeNonDefault = 0;
+			var url = '{{ redirect }}' + '?experiment_list=' + exp_id
+			if (includeNonDefault == 1)
+			    url += '&includeNonDefault=' + includeNonDefault;
+            {{ loader }}(url, exp_id);
+        }
+        
+        function loadSingleForm(url, exp_id)
+        {
+            // first delete all forms that are now out of date
+	        divIndex = $(".single_form").index($( "#file_select" ))
+            $(".single_form").slice(divIndex).empty()
+            // second populate the file_list html if '0' not selected
+            if (exp_id != '0') {
+            	$(".single_form").slice(divIndex,divIndex+1).load(url);
+            }
+        }
+        
+        function loadPage(url, exp_id)
+        {
+            window.location.href = url;
+        }
+        
+        </script>
+        {% endif %}
+        
+                    <!-- exp_info is its own row in main column -->
+					<div class="row">
+						<table class="table table-bordered table-condensed">
+							<tr>
+								<td><small>PI: <a HREF="MAILTO:{{ form.pi_email.label }}">{{ form.pi_name.label }}</a> - please contact before using this data</small></td>
+								{% if form.register.label == '0' %}
+								<td><small>Email me if <a HREF="javascript:registerExp()">this experiment</a> OR if <a HREF="javascript:registerInst()"> any {{ form.inst_desc.label }} experiment</a> is updated.</small></td>
+								{% elif form.register.label == '1' %}
+								<td><small>Click <a HREF="javascript:unregisterExp()">here</a> to unregister for email for this experiment.</small></td>
+								{% elif form.register.label == '2' %}
+								<td><small>Click <a HREF="javascript:unregisterInst()">here</a> to unregister for email for {{ form.inst_desc.label }}.</small></td>
+								{% endif %}
+								<td>{{ form.includeNonDefault.label }}{{ form.includeNonDefault }}</td>
+								
+							</tr>
+						</table>
+					</div>
+					
+					<!-- label is its own row in main column -->
+					<div class="row">
+						{{ form.file_list.label }}
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<!-- file_list select is its own row in main column -->
+							{{ form.file_list }}
+						</div> <!-- end span -->
+					</div> <!-- end row -->
+					<p></p>

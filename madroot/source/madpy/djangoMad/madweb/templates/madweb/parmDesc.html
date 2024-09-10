@@ -1,0 +1,732 @@
+<html>
+<head>
+<title>Madrigal Parameter Documentation</title>
+<script language = "JavaScript">
+
+    function popup(link)
+    {
+        info2 = window.open (link,"MadrigalHelp","WIDTH=800,HEIGHT=600,SCROLLBARS=yes,TOOLBAR=yes,MENUBAR=yes")
+    }
+
+</script>
+
+<style type="text/css">
+	html body {
+		background-color: {{bg_color}};
+	}
+</style>
+
+</head>
+<body>
+<center>
+<h1>Details of selected Madrigal Parameters</h1>
+</center>
+
+
+<hr size="4">
+Madrigal parameters are a superset of Cedar parameters, defined in the 
+<a href=javascript:popup("cedarFormat.pdf")>CEDAR File Format (pdf)</a>.  The purpose of this
+document is to more fully document these parameters than can be expressed in 
+the 40 character offical Cedar description field.  Not all Madrigal parameters
+can be found here.
+<p></p>
+
+<A NAME="SUNRISE_HOUR"></A>
+SUNRISE_HOUR<br>
+Code 0: (not a cedar parameter)  Ionospheric sunrise (hour)<br>
+This parameter gives the hour UT that sunrise occurs at that particular
+point in space that particular day.  If that point in space is either in sunlight or in shadow
+the entire UT day, sunrise_hour will be missing.  To find out which, display the
+<a href=#SDWHT>Shadow height (SDWHT)</a> parameter.  If shadow height is less that the altitude of the
+point, its in sunlight; if shadow height is greater than the altitude, its in the earth's shadow.<BR>
+
+Note that this calculation takes into account the changing earth-sun distance, and the geodetic shape 
+of the earth.  It does not include atmospheric bending of light or earth's surface features (mountains, etc.).
+<p></p>
+
+<A NAME="SUNSET_HOUR"></A>
+SUNSET_HOUR<br>
+Code 0: (not a cedar parameter)  Ionospheric sunset (hour)<br>
+This parameter gives the hour UT that sunset occurs at that particular
+point in space that particular day.  If that point in space is either in sunlight or in shadow
+the entire UT day, sunset_hour will be missing.  To find out which, display the
+<a href=#SDWHT>Shadow height (SDWHT)</a> parameter.  If shadow height is less that the altitude of the
+point, its in sunlight; if shadow height is greater than the altitude, its in the earth's shadow.<BR>
+
+Note that this calculation takes into account the changing earth-sun distance, and the geodetic shape 
+of the earth.  It does not include atmospheric bending of light or earth's surface features (mountains, etc.).
+<p></p>
+
+<A NAME="CONJ_SUNRISE_H"></A>
+CONJ_SUNRISE_H<br>
+Code 0: (not a cedar parameter) Mag conj point sunrise (hour)<br>
+This parameter gives the hour UT that sunrise occurs at the magnetic conjugate point of the particular
+point in space that particular day.  If the magnetic conjugate point in space is either in sunlight or in shadow
+the entire UT day, conj_sunrise_h will be missing.  To find out which, display the
+<a href=#MAGCONJSDWHT>Mag conj shadow height (MAGCONJSDWHT)</a> parameter.  If the mag conj shadow height is 
+less that the altitude of the
+point, its in sunlight; if mag conj shadow height is greater than the altitude, its in the earth's shadow.<BR>
+
+Note that this calculation takes into account the changing earth-sun distance, and the geodetic shape 
+of the earth.  It does not include atmospheric bending of light or earth's surface features (mountains, etc.).
+<p></p>
+
+<A NAME="CONJ_SUNSET_H"></A>
+CONJ_SUNSET_H<br>
+Code 0: (not a cedar parameter) Mag conj point sunset (hour)<br>
+This parameter gives the hour UT that sunset occurs at the magnetic conjugate point of the particular
+point in space that particular day.  If the magnetic conjugate point in space is either in sunlight or in shadow
+the entire UT day, conj_sunset_h will be missing.  To find out which, display the
+<a href=#MAGCONJSDWHT>Mag conj shadow height (MAGCONJSDWHT)</a> parameter.  If the mag conj shadow height is 
+less that the altitude of the
+point, its in sunlight; if mag conj shadow height is greater than the altitude, its in the earth's shadow.<BR>
+
+Note that this calculation takes into account the changing earth-sun distance, and the geodetic shape 
+of the earth.  It does not include atmospheric bending of light or earth's surface features (mountains, etc.).
+<p></p>
+
+<p><A NAME="MLT"></A>
+  MLT<br>
+  Code 54: Magnetic Local Time (hour) <br>
+  This parameter gives the magnetic local time of a particular point in space and time.  
+  If derived, it uses the Altitude Adjusted Corrected Geomag. Coordinates to
+  define the magnetic coordinates of the sun and the location of
+  the point where MLT is desired. Uses code written by Kile Baker.  Only works
+  for times after 1987.</p>
+  
+<p><a name="JDAYNO"></a>JDAYNO<br>
+Julian day number (changes at UT midnight)<br>
+The number of days since Jan 1, 4713 BC 0 UT. Note that this is different by 12 hours from the astronomical definition, which starts at 12 UT that same day. See JULIAN_DAY for the parameter that starts at 12 UT.</p>
+
+<p><a name="JULIAN_DAY"></a>JULIAN_DAY<br>
+Julian day number (changes at 12 UT)<br>
+The number of 24 hour periods since Jan 1, 4713 BC 12 UT. Note that this is the standard astronomical usage. See JDAYNO for the parameter that starts at 0 UT.</p>
+
+<p><a name="JULIAN_DATE"></a>JULIAN_DATE<br>
+Julian date (float)<br>
+A floating point representation of the number of days  since Jan 1, 4713 BC 12 UT. Note that this is the standard astronomical usage. </p>
+<p></p>
+
+<A NAME="GDLAT2"></A>
+GDLAT2<br>
+Code 162: Geodetic latitude of second instrument (deg) <br>
+This parameter gives the latitude of a second instrument.  
+It is used whenever a difference is given between a parameter measured at this
+instrument minus the value at a second instrument.  For example, this parameter can be used
+to given the difference between two magnetometer readings.
+<p></p>
+
+<A NAME="GLON2"></A>
+GLON2<br>
+Code 172: Geodetic longitude of second inst (deg) <br>
+This parameter gives the longitude of a second instrument.  
+It is used whenever a difference is given between a parameter measured at this
+instrument minus the value at a second instrument.  For example, this parameter can be used
+to given the difference between two magnetometer readings.
+<p></p>
+
+<A NAME="SZEN"></A>
+SZEN<br>
+Code 180: Solar zenith angle in measurement vol (deg) <br>
+This parameter gives the solar zenith angle in degrees.  If 0 degrees, the sun is directly
+overhead.  A solar zenith angle of between 90 and 180 degrees does not mean the sun is not
+visible, due to the finite solid angle of the sun and the altitude the point may be above the
+earth's surface.  Use <a href=#SDWHT>Shadow height (SDWHT)</a> parameter to determine if a point 
+is in sunlight.  If shadow height is less that the altitude of the
+point, its in sunlight; if shadow height is greater than the altitude, its in the earth's shadow.
+<p></p>
+
+<A NAME="SZENC"></A>
+SZENC<br>
+Code 183: Conjugate solar zenith angle (deg) <br>
+This parameter gives the solar zenith angle at the magnetic confugate point in degrees.  If 0 degrees, the sun is directly
+overhead the magnetic conjugate point.  A solar zenith angle of between 90 and 180 degrees does not mean the sun is not
+visible at the mag conj point, due to the finite solid angle of the sun and the altitude the point may be above the
+earth's surface.  Use the <a href=#MAGCONJSDWHT>Mag conj shadow height (MAGCONJSDWHT)</a> parameter to determine if the 
+magnetic conjugate point is in sunlight.  If shadow height is less that the altitude of the
+point, its in sunlight; if shadow height is greater than the altitude, its in the earth's shadow.
+<p></p>
+
+<A NAME="SDWHT"></A>
+SDWHT<br>
+Code 186: Shadow height (km) <br>
+This parameter gives the height above the earth's surface at which any part of the sun can be seen.  It depends only 
+on the time, and on the geodetic latitude and longitude.  During the day shadow height will be zero.  Since the sun is
+larger than the earth, the shadow height is always finite. If shadow height is less that the altitude of a given
+point in space, its in sunlight; if shadow height is greater than the altitude, its in the earth's shadow.<BR>
+
+Note that this calculation takes into account the changing earth-sun distance, and the geodetic shape 
+of the earth.  It does not include atmospheric bending of light or earth's surface features (mountains, etc.).
+<p></p>
+
+<A NAME="BN"></A>
+<A NAME="BE"></A>
+<A NAME="BD"></A>
+<A NAME="BMAG"></A>
+<A NAME="BDEC"></A>
+<A NAME="BINC"></A>
+IGRF model<br>
+Based on <a href="http://www.ngdc.noaa.gov/IAGA/vmod/igrf.html">IGRF 11</a> released in January 2010.
+<p></p>
+
+<A NAME="BDH"></A>
+BDH<br>
+Code 236: Delta H-comp of geomag fld (local-remote) <br>
+This parameter gives the difference in the horizontal component of the magnetic
+field between this instrument's location, and a second instrument.  The parameters
+GDLAT2 and GLON2 specify the location of the second instrument.  The difference
+is the local instrument minus the second instrument.
+<p></p>
+
+<A NAME="HAV0LT_L"></A>
+HAV0LT_L<br>
+Code 238: Avg of geomag H comp - 22-02LT (local) <br>
+This parameter represents the average geomagnetic horizontal component taken for the 
+four contiguous hours around that UT day's local midnight (from 22 local time to 02 
+local time).  For an instrument just to the east of 0 degrees longitude, this means 
+that the average may include measurements from the previous UT day.  For an instrument 
+just to the west of 0 degrees longitude, this means the the average may include 
+measurements from the following UT day.  This value will be constant for the entire
+UT day.  This parameter uses the local instrument's data.
+<p></p>
+
+<A NAME="HAV0LT_R"></A>
+HAV0LT_R<br>
+Code 240: Avg of geomag H comp - 22-02LT (remote) <br>
+This parameter is similar to HAV0LT_L, except that is uses data from the remote
+magnetometer located at the position set by GDLAT2 and GLON2.  It represents the average 
+geomagnetic horizontal component taken for the 
+four contiguous hours around that UT day's local midnight (from 22 local time to 02 
+local time).  For an instrument just to the east of 0 degrees longitude, this means 
+that the average may include measurements from the previous UT day.  For an instrument 
+just to the west of 0 degrees longitude, this means the the average may include 
+measurements from the following UT day.  This value will be constant for the entire
+UT day.
+<p></p>
+
+<A NAME="MAGCONJSDWHT"></A>
+MAGCONJSDWHT<br>
+Code 0: (not a cedar parameter) Magnetic conjugate shadow height (km) <br>
+This parameter gives the height above the earth's surface at the magnetic conjugate point's latitude and longitude at 
+which any part of the sun can be seen. See <a href=#SDWHT>Shadow height (SDWHT)</a> parameter for more details.
+<p></p>
+
+
+<A NAME="CGM_LAT"></A>
+CGM_LAT<br>
+Code 0: (not a cedar parameter) Corrected geomagnetic latitude (deg) <br>
+This parameter gives the location of a point in Corrected geomagnetic latitude.
+This method uses code developed by Vladimir Papitashvili.  For more information on CGM coordinates
+and this code, click <a href=javascript:popup("http://nssdc.gsfc.nasa.gov/space/cgm/cgmm_des.html")> here.</a>
+<p></p>
+
+<A NAME="CGM_LONG"></A>
+CGM_LONG<br>
+Code 0: (not a cedar parameter) Corrected geomagnetic longitude (deg) <br>
+This parameter gives the location of a point in Corrected geomagnetic longitude.
+This method uses code developed by Vladimir Papitashvili.  For more information on CGM coordinates
+and this code, click <a href=javascript:popup("http://nssdc.gsfc.nasa.gov/space/cgm/cgmm_des.html")> here.</a>
+<p></p>
+
+<A NAME="TSYG_EQ_XGSM"></A>
+TSYG_EQ_XGSM<br>
+Code 0: (not a cedar parameter) Tsyganenko field GSM XY plane X point (earth radii) <br>
+This parameter gives the X value in GSM coordinates of where the field line associated
+with a given input point in space and time crosses the GSM XY plane.  GSM stands for 
+<a href=javascript:popup("http://www.spenvis.oma.be/spenvis/help/background/coortran/coortran.html")>
+Geocentric Solar Magnetospheric System</a>, and its XY plane is the equatorial plane of
+the earth's magnetic dipole field.  The field lines are traced using the 
+<a href=javascript:popup("http://nssdc.gsfc.nasa.gov/space/model/magnetos/data-based/modeling.html")>Tsyganenko
+Magnetospheric model</a>, so external effects on the earth's magnetic field such the solar wind are
+taken into account.  This code uses the 2001 Tsyganenko model, which averages solar wind values
+over the past hour, instead of simply using present values.
+<p></p>
+
+<A NAME="TSYG_EQ_YGSM"></A>
+TSYG_EQ_YGSM<br>
+Code 0: (not a cedar parameter) Tsyganenko field GSM XY plane Y point (earth radii) <br>
+This parameter gives the Y value in GSM coordinates of where the field line associated
+with a given input point in space and time crosses the GSM XY plane.  GSM stands for 
+<a href=javascript:popup("http://www.spenvis.oma.be/spenvis/help/background/coortran/coortran.html")>
+Geocentric Solar Magnetospheric System</a>, and its XY plane is the equatorial plane of
+the earth's magnetic dipole field.  The field lines are traced using the 
+<a href=javascript:popup("http://nssdc.gsfc.nasa.gov/space/model/magnetos/data-based/modeling.html")>Tsyganenko
+Magnetospheric model</a>, so external effects on the earth's magnetic field such the solar wind are
+taken into account.  This code uses the 2001 Tsyganenko model, which averages solar wind values
+over the past hour, instead of simply using present values.
+<p></p>
+
+<A NAME="TSYG_EQ_XGSE"></A>
+TSYG_EQ_XGSM<br>
+Code 0: (not a cedar parameter) Tsyganenko field GSE XY plane X point (earth radii) <br>
+This parameter gives the X value in GSE coordinates of where the field line associated
+with a given input point in space and time crosses the GSE XY plane.  GSE stands for 
+<a href=javascript:popup("http://www.spenvis.oma.be/spenvis/help/background/coortran/coortran.html")>
+Geocentric Solar Ecliptic System</a>, and its XY plane is the equatorial plane of
+the earth's rotation.  The field lines are traced using the 
+<a href=javascript:popup("http://nssdc.gsfc.nasa.gov/space/model/magnetos/data-based/modeling.html")>Tsyganenko
+Magnetospheric model</a>, so external effects on the earth's magnetic field such the solar wind are
+taken into account.  This code uses the 2001 Tsyganenko model, which averages solar wind values
+over the past hour, instead of simply using present values.
+<p></p>
+
+<A NAME="TSYG_EQ_YGSE"></A>
+TSYG_EQ_YGSM<br>
+Code 0: (not a cedar parameter) Tsyganenko field GSE XY plane Y point (earth radii) <br>
+This parameter gives the Y value in GSE coordinates of where the field line associated
+with a given input point in space and time crosses the GSE XY plane.  GSE stands for 
+<a href=javascript:popup("http://www.spenvis.oma.be/spenvis/help/background/coortran/coortran.html")>
+Geocentric Solar Ecliptic System</a>, and its XY plane is the equatorial plane of
+the earth's rotation.  The field lines are traced using the 
+<a href=javascript:popup("http://nssdc.gsfc.nasa.gov/space/model/magnetos/data-based/modeling.html")>Tsyganenko
+Magnetospheric model</a>, so external effects on the earth's magnetic field such the solar wind are
+taken into account.  This code uses the 2001 Tsyganenko model, which averages solar wind values
+over the past hour, instead of simply using present values.
+<p></p>
+
+<A NAME="E_REG_S_LAT"></A>
+<A NAME="E_REG_S_LON"></A>
+<A NAME="E_REG_S_SDWHT"></A>
+<A NAME="E_REG_N_LAT"></A>
+<A NAME="E_REG_N_LON"></A>
+<A NAME="E_REG_N_SDWHT"></A>
+Parameters describing the interception point of the magnetic field line associated with a given point in space
+with the E region.  Input point must be above 150 km, or missing returned.<br>
+<ul>
+   <li><i>E_REG_S_LAT</i> - The latitude of the southern point where the magnetic field line defined by the input
+   point hits the E region (100 km)</li>
+   <li><i>E_REG_S_LON</i> - The longitude of the southern point where the magnetic field line defined by the input
+   point hits the E region (100 km)</li>
+   <li><i>E_REG_S_SDWHT</i> - The shadow height of the southern point where the magnetic field line defined by the input
+   point hits the E region (100 km).  Shadow height is the altitude of the lowest point on the line of constant geodetic 
+   lat and lon in sunlight.</li>
+   <li><i>E_REG_N_LAT</i> - The latitude of the northern point where the magnetic field line defined by the input
+   point hits the E region (100 km)</li>
+   <li><i>E_REG_N_LON</i> - The longitude of the northern point where the magnetic field line defined by the input
+   point hits the E region (100 km)</li>
+   <li><i>E_REG_N_SDWHT</i> - The shadow height of the northern point where the magnetic field line defined by the input
+   point hits the E region (100 km).  Shadow height is the altitude of the lowest point on the line of constant geodetic 
+   lat and lon in sunlight.</li>
+</ul>
+Code 0: (not a cedar parameter) These parameters are considered missing if the input point in below the E region.
+<p></p>
+
+<A NAME="ASPECT"></A>
+ASPECT<br>
+Code 0: (not a cedar parameter) Magnetic aspect angle <br>
+The angle between the magnetic field line and the radar beam at a given point in the beam.  A radar beam
+looking up the magnetic field line would have ASPECT == 0 (or 180), and a beam perpendicular to the magnetic field line
+would have an aspect angle of 90 degrees.
+<p></p>
+
+
+
+<A NAME="DST"></A>
+DST<br>
+Code 330: Dst Index (nT) <br>
+The Madrigal DST data is taken from two sources.  If available, verified DST data is taken from 
+ftp://ftp.ngdc.noaa.gov/STP/GEOMAGNETIC_DATA/INDICES/DST.  If not available there,
+realtime DST data is taken from the World Data Center for Geomagnetism, Kyoto at
+http://swdcwww.kugi.kyoto-u.ac.jp/dst_realtime.
+<p></p>
+
+<p><A NAME="FBAR"></A>
+  FBAR<br>
+  Code 352: F10.7 Multiday average observed (Ottawa/Penticton)<br>
+  The 81 day average value of F10.7, centered at the day of interest.  
+  For days less than 41 days in the past, the average is always over
+  the last 81 days from the present.<br>
+  
+  This data comes from ftp://ftp.ngdc.noaa.gov/STP/SOLAR_DATA/SOLAR_RADIO/FLUX/.  The
+  following is from their website:<br>
+  
+  The sun emits radio energy with a slowly varying intensity.  This radio flux,
+  which originates from atmospheric layers high in the sun's chromosphere and low
+  in its corona, changes gradually from day-to-day, in response to the number of
+  spot groups on the disk.  Radio intensity levels consist of emission from three
+  sources:  from the undisturbed solar surface, from developing active regions,
+  and from short-lived enhancements above the daily level.  Solar flux density at
+  2800 megaHertz has been recorded routinely by radio telescope near Ottawa since
+  February 14, 1947.  Each day, levels are determined at local noon (1700 GMT)
+  and then corrected to within a few percent for factors such as antenna gain,
+  atmospheric absorption, bursts in progress, and background sky temperature.
+  Beginning in June 1991, the solar flux density measurement source is Penticton,
+B.C., Canada.</p>
+<p>&nbsp;</p>
+
+<A NAME="HPOW"></A>
+<A NAME="HPOW_I"></A>
+  HPOW and HPOW_I<br>
+<p>Code 365: Hemispheric Power Input and Code 366: Hemispheric Power Index</p>
+
+<p>The Hemispheric Power calculation is based on the original method that was developed from the NASA TIROS satellites that had energy channels that went up to approximately the same energy as the second highest channel in the DMSP SSJ instruments. The algorithm integrates the total power through an auroral pass omitting the top channel for consistency with the earlier satellites, evaluates statistical error estimate, and normalizes the total based on the estimate of the geometry of the pass (e.g., cutting directly through both sides of the auroral oval vs just skimming it along the edge).</p>
+<p>The Hemispheric Power Index (HPOW_I) is an integer related to the Hemispheric Power Input (HPOW) in Watts by:</p>
+<p>HPOW_I = round(2.09 ln (HPOW/1.0E9))</p>
+<p> References:</p>
+<p>Hardy, D. A., M. S. Gussenhoven, and E. Holeman (1985), A statistical model of auroral electron precipitation, J. Geophys. Res., 90(A5), 4229–4248, doi:10.1029/JA090iA05p04229.</p>
+<p>Fuller-Rowell, T. J., and D. S. Evans (1987), Height-integrated Pedersen and Hall conductivity patterns inferred from the TIROS-NOAA satellite data, J. Geophys. Res., 92(A7), 7606–7618, doi:10.1029/JA092iA07p07606.</p>
+<p>Maeda, S., T. J. Fuller-Rowell, and D. S. Evans (1989), &quot;Zonally averaged dynamical and compositional response of the thermosphere to auroral activity during September 18–24, 1984&quot;&quot;, J. Geophys. Res., 94(A12), 16869–16883, doi:10.1029/JA094iA12p16869.</p>
+
+<A NAME="FPI_DATAQUAL"></A>
+FPI_DATAQUAL<br>
+Code 461: FPI data quality code<br>
+<p>
+    FPI data are ONLY included in the Madrigal files if:
+    <ol>
+    <li>absolute value of (FWHMi - FWHMm) <  FWHMm*0.2, where FWHMi is the Gaussian fit FWHM of the ith record number (data point), and FWHMm is the median FWHM for all points sampled during a given night of data,  AND </li>
+    <li>absolute value of (LCi - LCm) < LCm*0.2, where LCi is the Gaussian fit line center of the ith record number (data point), and LCm is the median line center for all points sampled during a given night, AND</li>
+    <li>BKi < BKm*10.0 where BKi is the constant term of the Gaussian fit to the spectral background (we fit for constant, linear, & quadratic  terms) of the ith record number (data point), and BKm is the median constant background term for all points sampled during a given night of data,  AND</li>
+    <li>(TRESi - TRESm) < TRESm*3.0, where TRESi is the absolute value of the total residual (spectral data points - Gaussian fit) of the ith record number (data point), and TRESm is the median of the total residual values sampled during a given night of data, AND</li>
+    <li>AMPi/BKi > 0.2, where AMPi is the Gaussian amplitude maximum of the ith record number (data point) and BKi is the constant background term of the same, ith record number. (We require that the background not be more than 5X brighter than the signal.)</li>
+    </ol></p>
+    <p>
+    Therefore data are already filtered for bad points.  A "FPI Data Quality" assessements is then assigned beyond that.  The data user can choose to include or exclude qualities of 1 or 2 as they see fit.  It is not immediately evident that surviving data records with quality assignments of "1" or "2" might be auroral (for example), or slight contamination, or just bright twilight. 
+     </p><p>
+    The quality designation moves from 0 --> 1 if:
+    <ul>
+    <li>TRESi > 25. Rayleighs, or</li>
+    <li>BKi > 50. Rayleighs, or</li>
+    <li>AMPi/BKi < 0.75 or</li>
+    <li>moon phase > 75%</li>
+    </ul>
+     </p><p>
+    The quality designation moves from 1 --> 2 if:
+    <ul>
+    <li>TRESi > 75 Rayleighs, or</li>
+    <li>BKi > 200. Rayleighs, or</li>
+    <li>AMPi/BKi < 0.5 or</li>
+    <li>moon phase > 90%</li>
+    </p>
+
+<A NAME="CHISQ"></A>
+CHISQ<br>
+Code 420: Reduced-chi square of fit<br>
+If all statistical assumptions are correct, the expectation value of
+chi-square is one. In fact, it tends to be much smaller when the
+signal-to-noise ratio is large. This is probably due to the large
+correlations between the lag products in this case, which are not
+taken into account in the fit.
+<p></p>
+
+<A NAME="GFIT"></A>
+GFIT<br>
+Code 430: Goodness of fit<br>
+This is 1000 times the root mean square deviation of the fit from
+the the measured autocorrelation function (ACF). Since the ACF is
+normalized to 1.0, values of ~1000 indicate ~100% deviations, values
+of ~100 indicate ~10% deviations and values ~10 indicate ~1%
+deviations.
+<p></p>
+
+<A NAME="MHDQC1"></A>
+MHDQC1<br>
+Code 461: Millstone Hill data quality code 1<br>
+The data quality parameter is generated by an algorithm which
+attempts to detect the presence of either a satellite echo or
+radio frequency interference (RFI), resulting in a 0 for clean
+spectra and a 1 for contaminated spectra.  The algorithm's
+thresholds are deliberately set to avoid false detections on
+genuine incoherent scatter signals, and therefore data
+contaminated by weaker satellite or RFI signals will not always
+be flagged.  In particular, the algorithm will miss
+satellites/RFI at altitudes with significant heavy ion (mass >
+O+) fractions, or for altitudes with temperatures < 300 K. This
+parameter should not be used as the sole data quality flag.
+<p></p>
+
+<A NAME="DPOPL"></A>
+DPOPL<br>
+Code -505: Uncertainty in Log10(uncorrected electron density)<br>
+This is computed from the statistical uncertainty of the fit ACF at
+zero lag. In conformity with the CEDAR standard, it is the logarithm
+of the uncertainty, not the uncertainty of the logarithm. If the fit
+fails, the density itself is still stored in the data record, and
+the uncertainty is missing.  This statistical uncertainty is
+normally much smaller than the larger uncertainty in the density
+calibration, which is ~20%.
+<p></p>
+
+
+<A NAME="NE_MODEL"></A>
+<A NAME="NEL_MODEL"></A>
+<A NAME="TE_MODEL"></A>
+<A NAME="TI_MODEL"></A>
+<A NAME="VO_MODEL"></A>
+<A NAME="HMAX_MODEL"></A>
+<A NAME="NMAX_MODEL"></A>
+<A NAME="NE_MODELDIFF"></A>
+<A NAME="NEL_MODELDIFF"></A>
+<A NAME="TE_MODELDIFF"></A>
+<A NAME="TI_MODELDIFF"></A>
+<A NAME="VO_MODELDIFF"></A>
+INCOHERENT SCATTER RADAR IONOSPHERIC MODEL (ISRIM)
+
+<p>ISRIMs have been developed from long-term datasets of seven incoherent 
+scatter radars spanning invariant latitudes from 25 to 75 degrees in 
+American, European and Asian longitudes at Svalbard, Tromso, Sondrestrom, 
+Millstone Hill, St. Santin, Arecibo and Shigaraki. These models represent 
+electron density, ion and electron temperatures, and ion drifts in the E and F 
+regions, giving a comprehensive quantitative description of ionospheric properties.
+The modelled values of HMAX and NMAX are always based on local models.</p>
+
+<p>The parameters *_MODEL give model results; the parameters *_MODELDIFF give (measured - model) results.</p>
+<ul>
+<li>Ne - electron density in m^-3 </li>
+<li>Nel - log10(electron density in m^-3) </li>
+<li>Te - electron temperature in K </li>
+<li>Ti - ion temperature in K </li>
+<li>Vo - line of sight ion velocity in m/s (pos=away) </li>
+<li>Hmax - Height of peak denity in km </li>
+<li>Nmax - Electron density at peak in m^-3 </li>
+</ul>
+
+<p>Visit http://madrigal.haystack.mit.edu/models/ or contact <a href="mailto:shunrong@haystack.mit.edu">
+Shunrong Zhang</a> at MIT Haystack for more information and latest development. Detailed descriptions about 
+the ISRIMs are given in the following papers:</p>
+<ul>
+<li>Zhang, S.-R., J. M. Holt, A. P. van Eyken, M. McCready, C. Amory-Mazaudier, S. Fukao, 
+and M. Sulzer (2005), Ionospheric local model and climatology from long-term databases 
+of multiple incoherent scatter radars, Geophys. Res. Lett., 32, 
+L20102, doi:10.1029/2005GL023603 </li>
+
+<li>Holt, J. M., S.-R. Zhang, and M. J. Buonsanto (2002), Regional and local ionospheric 
+models based on Millstone Hill incoherent scatter radar data, Geophys. Res. Lett., 
+29(8), 10.1029/2002GL014678.</li>
+</ul>
+<p></p>
+
+<A NAME="NE_IRI"></A>
+<A NAME="NEL_IRI"></A>
+<A NAME="TN_IRI"></A>
+<A NAME="TI_IRI"></A>
+<A NAME="TE_IRI"></A>
+<A NAME="PO+_IRI"></A>
+<A NAME="PNO+_IRI"></A>
+<A NAME="PO2+_IRI"></A>
+<A NAME="PHE+_IRI"></A>
+<A NAME="PH+_IRI"></A>
+<A NAME="PN+_IRI"></A>
+IRI
+<p>The following parameters are derived using the 
+<a href=javascript:popup("http://modelweb.gsfc.nasa.gov/ionos/iri.html")>International Reference Ionosphere (IRI)</a>
+model - 2007 version:</p>
+<ul>
+<li>NE_IRI - IRI Electron density (Ne) m-3</li>
+<li>NEL_IRI - IRI Log Electron density (Ne) lg(m-3)</li>
+<li>TN_IRI - IRI Neutral temperature K</li>
+<li>TI_IRI - IRI Ion temperature K</li>
+<li>TE_IRI - IRI Electron temperature K</li>
+<li>PO+_IRI - IRI Composition - [O+]/Ne </li>
+<li>PNO+_IRI - IRI Composition - [NO+]/Ne </li>
+<li>PO2+_IRI - IRI Composition - [O2+]/Ne </li>
+<li>PHE+_IRI - IRI Composition - [HE+]/Ne </li>
+<li>PH+_IRI - IRI Composition - [H+]/Ne </li>
+<li>PN+_IRI - IRI Composition - [N+]/Ne </li>
+</ul>
+<p>The IRI code was last imported into Madrigal in August 2007.  The routine irisub is called using all the suggested defaults,
+as listed in the source code comments.  The code is modified only to use geophysical parameters from Madrigal rather than from the 
+files included in the source code distribution.  This is to allow more frequent and automatic updating of those geophysical
+parameters.</p>
+
+<p></p>
+
+<A NAME="VNHLU"></A>
+VNHLU<br>
+Code 807: Line of sight horizontal velocity of the neutral atmosphere (positive = away from instrument) 
+in meters/second. If all the velocity is horizontal, then this is equal to the line of sight velocity
+divided by the cosine of the elevation calculated at the pierce point.
+<p></p>
+
+
+<A NAME="TNM"></A>
+<A NAME="TINFM"></A>
+<A NAME="MOL"></A>
+<A NAME="NTOTL"></A>
+<A NAME="NN2L"></A>
+<A NAME="NO2L"></A>
+<A NAME="NOL"></A>
+<A NAME="NARL"></A>
+<A NAME="NHEL"></A>
+<A NAME="NHL"></A>
+<A NAME="NN4SL"></A>
+MSIS 2000
+<p>The following neutral atmosphere parameters are derived using the 
+<a href=javascript:popup("http://uap-www.nrl.navy.mil/models_web/msis/msis_home.htm")>MSIS 2000 model.</a>
+The MSIS 2000 model is run with the anomalous oxygen option included.  Inputs to the model include an array
+of Ap data covering times from the time requested to 57 hours prior to the requested time.  Madrigal uses its
+internal database of Ap values to populate all these times.  Other inputs include F10.7 data from 24 hours earlier
+and from an 81 day average centered on the time requested.  This means the model will not calculate MSIS values for
+days less than 40 days in the past.</p>
+<ul>
+<li>TNM - Code 811:  Model Neutral temperature K</li>
+<li>TINFM - Code 821:  Model Exospheric temperature K</li>
+<li>MOL - Code 830:  Log10 (nutrl atm mass density in kg/m3)   lg(m-3)</li>
+<li>NTOTL - Code 840:  Log10 (nutrl atm number density in m-3) lg(m-3)</li>
+<li>NN2L - Code 850:  Nutrl atm compositn-log10([N2] in m-3)  lg(m-3)</li>
+<li>NO2L - Code 860:  Nutrl atm compositn-log10([O2] in m-3)  lg(m-3)</li>
+<li>NOL - Code 870:  Nutrl atm composition-log10([O] in m-3) lg(m-3)</li>
+<li>NARL - Code 880:  Nutrl atm compositn-log10([AR] in m-3)  lg(m-3)</li>
+<li>NHEL - Code 890:  Nutrl atm compositn-log10([HE] in M-3)  lg(m-3)</li>
+<li>NHL - Code 900:  Nutrl atm composition-log10([H] in m-3) lg(m-3)</li>
+<li>NN4SL - Code 902:  Nutrl atm compstn-log10([N(4S)] in m-3) lg(m-3)</li>
+</ul>
+
+<p></p>
+
+<A NAME="PDCON"></A>
+<A NAME="PDCONL"></A>
+<A NAME="HLCON"></A>
+<A NAME="HLCONL"></A>
+<h4> Notes on conductivity parameters </h4>
+<p>When derived by the Madrigal derivation engine, Pedersen and Hall conductivities are calculated following 
+R. W. Schunk and A F. Nagy, in <i>Ionospheres: Physics, Plasma Physics, and Chemistry</i>.  See 
+http://atlas.haystack.mit.edu/cgi-bin/millstone_viewvc.cgi/openmadrigal/trunk/madroot/source/madf/geolib/conduct.f for source code.  
+Electron density, and ion and electron temperatures are taken from ISR data.  The molecular percentage and 
+the percent hydrogen are taken from the IRI model, and neutral parameters are taken from MSIS.</p>
+
+
+<A NAME="BXGSM"></A>
+<A NAME="BYGSM"></A>
+<A NAME="BZGSM"></A>
+<A NAME="BIMF"></A>
+<A NAME="BXGSE"></A>
+<A NAME="BYGSE"></A>
+<A NAME="BZGSE"></A>
+<A NAME="SWDEN"></A>
+<A NAME="SWSPD"></A>
+<A NAME="SWQ"></A>
+<h4> Notes on interplanetary magnetic field parameters </h4>
+
+The interplanetary magnetic field data is taken from ftp://nssdcftp.gsfc.nasa.gov/spacecraft_data/omni/.  The following
+are the notes supplied with this data:<p></p>
+
+These are the "OMNI" data, hourly interplanetary magnetic field
+and solar wind as data prepared by NSSDC, NASA GSFC.  Users
+are encouraged to acknowledge NSSDC.  The IMF/Solar wind qualifier
+(parameter SWQ) identifies the observing satellite; the
+thousands and hundreds digits are the IMF ID and the tens and ones
+digits are the solar wind ID:<p></p>
+<table>
+<tr><th>-- Satellite Name --</th><th>-- ID --	</th></tr>
+<tr><td>No spacecraft		</td><td>0			</td></tr>
+<tr><td>HEOS 1 and HEOS 2	</td><td>1			</td></tr>
+<tr><td>VELA 3				</td><td>3			</td></tr>
+<tr><td>OGO 5				</td><td>5			</td></tr>
+<tr><td>PROGNOZ 10			</td><td>10			</td></tr>
+<tr><td>ISEE 1				</td><td>11			</td></tr>
+<tr><td>ISEE 2				</td><td>12			</td></tr>
+<tr><td>ISEE 3				</td><td>13			</td></tr>
+<tr><td>IMP 1  (Expl 18)	</td><td>18			</td></tr>
+<tr><td>IMP 3  (Expl 28)	</td><td>28			</td></tr>
+<tr><td>AIMP 1 (Expl 33)	</td><td>33			</td></tr>
+<tr><td>IMP 4  (Expl 34)	</td><td>34			</td></tr>
+<tr><td>AIMP 2 (Expl 35)	</td><td>35			</td></tr>
+<tr><td>IMP 5  (Expl 41)	</td><td>41			</td></tr>
+<tr><td>IMP 6  (Expl 43)	</td><td>43			</td></tr>
+<tr><td>IMP 7  (Expl 47)	</td><td>47			</td></tr>
+<tr><td>IMP 8  (Expl 50)	</td><td>50			</td></tr>
+<tr><td>WIND</td><td>51
+</table><p></p>
+Use of these data in publications should be accompanied by
+acknowledgements of the National Space Science Data Center.
+<p></p>
+NSSDC Contact:<br>
+Dr. J. H. King, king@nssdca.gsfc.nasa.gov<br>
+Dr. N. Papitashvili, natasha@nssdca.gsfc.nasa.gov<br>
+Code 633,GSFC/NASA, Greenbelt, MD, 20771<br>
+<p></p>
+<b>Explanation of coordinate systems</b>
+<p></p>
+The interplanetary magnetic field data are available in two coordinate systems,
+the Geocentric Solar Magnetospheric System (GSM) which has parameters BXGSM,
+BYGSM, and BZGSM, and the Geocentric Solar Ecliptic System (GSE) which has parameters BXGSE,
+BYGSE, and BZGSE.  The following explanation of these two system was taken from a more
+complete <a href=javascript:popup("http://www.spenvis.oma.be/spenvis/help/background/coortran/coortran.html")>
+tutorial</a>:
+<p></p>
+<i>Geocentric Solar Magnetospheric System</i>
+<p></p>
+The Geocentric Solar Magnetospheric System (GSM), as with both the GSE and GSEQ systems, 
+has its X-axis from the Earth to the
+Sun. The Y-axis is defined to be perpendicular to the Earth's magnetic dipole so that the 
+X-Z plane contains the dipole axis. The positive
+Z-axis is chosen to be in the same sense as the northern magnetic pole. The difference 
+between the GSM system and the GSE and
+GSEQ is simply a rotation about the X-axis. 
+<p></p>
+<i>Geocentric Solar Ecliptic System</i>
+<p></p>
+The Geocentric Solar Ecliptic System (GSE) has its X-axis pointing from the Earth towards the 
+sun and its Y-axis is chosen to be in the
+ecliptic plane pointing towards dusk (thus opposing planetary motion). Its Z-axis is parallel 
+to the ecliptic pole. Relative to an inertial
+system this system has a yearly rotation. 
+<p></p>
+
+
+
+
+
+<A NAME="CXR"></A>
+<A NAME="CYR"></A>
+<A NAME="CZR"></A>
+CXR CYR CZR<br>
+Code 3331: Bperp. Direction Cosine (South [Apex])<br>
+Code 3332: Bperp. Direction Cosine (East [Apex])<br>
+Code 3333: Direction Cosine (Up field line [Apex])<br>
+<p>
+The simple definition of these parameters is as follows:<br>
+<ul>
+<li>CXR =  x-direction cosine of the radar line-of-sight with respect to apex coords.</li>
+<li>CYR =  y-direction cosine of the radar line-of-sight with respect to apex coords.</li>
+<li>CZR =  z-direction cosine of the radar line-of-sight with respect to apex coords.</li>
+</ul>
+Where <ul>
+      <li>x = -apex latitude (apex south)</li>
+      <li>y = apex longitude (apex east)</li>
+      <li>z = distance upward along field line</li>
+</ul>     
+The precise definition is as follows:
+<p>
+cxr, cyr, czr are the contravariant components of the unit-length radar
+line-of-sight vector with respect to a non-orthogonal coordinate system
+("apex coordinates") defined for all points by -1 times the apex
+latitude of the point (apex south), the geographic longitude of the
+apex of the field line on which the point lies (apex east) and the
+distance along the field line of the point (apex up-B).
+<p></p>
+
+<A NAME="NSAMPLES_SNR_SUMRUL"></A>
+NSAMPLES_SNR_SUMRUL<br>
+Code 3347: Num Samples SNR sum rule<br>
+Number of range samples used for summation
+rule in constructing SNR profile.
+<p></p>
+
+<A NAME="NSTEP_SNR_SUMRULEO"></A>
+NSTEP_SNR_SUMRULEO<br>
+Code 3348: Num steps SNR sum rule<br>
+Step in samples between consecutive
+applications of the SNR summation rule.
+<p></p>
+
+
+<A NAME="VDOPP"></A>
+VDOPP<br>
+Code 3350: Line of sight Doppler Vlos (pos = away)<br>
+This is a separate non-linear least squares calculation of the
+Doppler velocity, which, unlike parameter 580, does not assume an
+incoherent scatter spectrum. This may be particularly useful in
+coherent echo studies.
+<p></p>
+
+
+
+
+<hr size="2">
+Revised: October 25, 2005<br>
+ 
+
+<hr size="2">
+</body>
+</html>

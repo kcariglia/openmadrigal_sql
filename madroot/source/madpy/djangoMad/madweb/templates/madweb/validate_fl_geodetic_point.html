@@ -1,0 +1,44 @@
+
+		    // latitude tests
+		    var fl_lat_str = $.trim($('#id_fl_lat').val());
+			var fl_lat = Number(fl_lat_str);
+			if (isNaN(fl_lat) || fl_lat_str.length == 0)
+			{
+				alert('Field line latitude is invalid number: ' + fl_lat_str);
+				return(false);
+			}
+			if (fl_lat < -90.0 || fl_lat > 90.0)
+			{
+				alert('Field line latitude must be between -90 and 90, not: ' + fl_lat_str);
+				return(false);
+			}
+			
+			
+			// longitude tests
+		    var fl_lon_str = $.trim($('#id_fl_lon').val());
+			var fl_lon = Number(fl_lon_str);
+			if (isNaN(fl_lon) || fl_lon_str.length == 0)
+			{
+				alert('Field line longitude is invalid number: ' + fl_lon_str);
+				return(false);
+			}
+			if (fl_lon < -180.0 || fl_lon > 180.0)
+			{
+				alert('Field line longitude must be between -180 and 180, not: ' + fl_lon_str);
+				return(false);
+			}
+			
+			// altitude tests
+		    var fl_alt_str = $.trim($('#id_fl_alt').val());
+			var fl_alt = Number(fl_alt_str);
+			if (isNaN(fl_alt) || fl_alt_str.length == 0)
+			{
+				alert('Field line altitude is invalid number: ' + fl_alt_str);
+				return(false);
+			}
+			if (fl_alt < 0.0)
+			{
+				alert('Field line altitude must not be less than 0, not: ' + fl_alt_str);
+				return(false);
+			}
+			
