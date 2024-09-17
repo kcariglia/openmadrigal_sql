@@ -10,6 +10,7 @@ license = {text = "MIT"}
 classifiers = ["License :: OSI Approved :: MIT License"]
 dependencies = [
     "svn",
+    "numpy",
     "h5py",
     "scipy",
     "django",
