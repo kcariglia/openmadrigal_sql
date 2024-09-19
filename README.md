@@ -7,3 +7,7 @@ The Madrigal database is designed to hold data about the upper atmosphere. One o
 Detailed instructions for installation can be found at http://cedar.openmadrigal.org/docs/name/admin.html
 
 For support, contact brideout@mit.edu, cariglia@mit.edu, or pje@mit.edu.
+
+To cite Madrigal use:
+
+Rideout W., Cariglia K. Openmadrigal URL: http://cedar.openmadrigal.org
