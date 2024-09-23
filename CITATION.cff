@@ -17,7 +17,7 @@ authors:
     family-names: Cariglia
     email: cariglia@mit.edu
     affiliation: MIT Haystack Observatory
-repository-code: 'https://github.com/billrideout/openmadrigal'
+repository-code: 'https://github.com/MITHaystack/openmadrigal'
 url: 'http://cedar.openmadrigal.org/openmadrigal'
 abstract: >-
   Madrigal is an upper atmospheric science database used by
