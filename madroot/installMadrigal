@@ -195,12 +195,18 @@ then
     exit -1
 fi
 
+function get_pyenv() {
+	which python
+}
+env_str=$(get_pyenv)
+env_pip="${env_str:0:(-5)}ip"
+
 echo "********** Installing bootstrap calendar **********"
 cd source/madpy/djangoMad/bootstrap_calendar/dist
 rm -rf django_bootstrap_calendar-0.1.1
 tar -xzf django_bootstrap_calendar-0.1.1.tar.gz
 cd django_bootstrap_calendar-0.1.1
-pip install .
+${env_pip} install .
 if [ $? -ne 0 ]
 then
     exit -1
@@ -209,7 +215,7 @@ cd ../../../django-bootstrap3-datetimepicker-2.2.3/dist
 rm -rf django_bootstrap3_datetimepicker-2.2.3
 tar -xzf django_bootstrap3_datetimepicker-2.2.3.tar.gz
 cd django_bootstrap3_datetimepicker-2.2.3
-pip install .
+${env_pip} install .
 if [ $? -ne 0 ]
 then
     exit -1
@@ -220,7 +226,7 @@ cd ../../../../../..
 echo "********** Installing madrigal python library **********"
 cd source/madpy
 rm -f -r build
-pip install .
+${env_pip} install .
 if [ $? -ne 0 ]
 then
     exit -1
