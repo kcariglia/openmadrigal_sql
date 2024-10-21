@@ -825,19 +825,19 @@ class MadrigalCedarFile:
         if missing is not None:
             missing = str(missing)
             missing_len = len(missing)
-            missing_search = '\ ' * max(0, missing_len-3) + 'nan'
+            missing_search = r'\ ' * max(0, missing_len-3) + 'nan'
             if missing_len < 3:
                 missing = ' ' * (3-missing_len) + missing
         if assumed is not None:
             assumed = str(assumed)
             assumed_len = len(assumed)
-            assumed_search = '\ ' * max(0, assumed_len-3) + 'inf'
+            assumed_search = r'\ ' * max(0, assumed_len-3) + 'inf'
             if assumed_len < 3:
                 assumed = ' ' * (3-assumed_len) + assumed
         if knownbad is not None:
             knownbad = str(knownbad)
             knownbad_len = len(knownbad)
-            knownbad_search = '\ ' * max(0, knownbad_len-4) + '-inf'
+            knownbad_search = r'\ ' * max(0, knownbad_len-4) + '-inf'
             if knownbad_len < 4:
                 knownbad = ' ' * (4-knownbad_len) + knownbad
             
@@ -3018,7 +3018,7 @@ class MadrigalCedarFile:
             else:
                 lastIndex = 0
             self._recIndexList.append((lastIndex, lastIndex + len(item.getDataset())))
-            if len(self._ind2DList) > 0:
+            if len(self._ind2DList) > 0 and not self._skipArray:
                 dataset = item.getDataset()
                 rowsToCheck = dataset
                     
