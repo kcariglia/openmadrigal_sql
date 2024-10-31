@@ -114,11 +114,11 @@ fi
 cd ../..
 
 
-
+env_pip=$(which pip)
 echo "********** Installing madrigal python library **********"
 cd madpy
 rm -f -r build
-pip install .
+${env_pip} install .
 if [ $? -ne 0 ]
 then
     exit -1

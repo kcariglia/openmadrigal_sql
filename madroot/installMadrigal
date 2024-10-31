@@ -195,11 +195,7 @@ then
     exit -1
 fi
 
-function get_pyenv() {
-	which python
-}
-env_str=$(get_pyenv)
-env_pip="${env_str:0:(-5)}ip"
+env_pip=$(which pip)
 
 echo "********** Installing bootstrap calendar **********"
 cd source/madpy/djangoMad/bootstrap_calendar/dist
