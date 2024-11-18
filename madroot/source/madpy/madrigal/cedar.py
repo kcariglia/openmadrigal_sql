@@ -4758,7 +4758,10 @@ class MadrigalCatalogRecord:
                 kinstStr = kinstTempStr % (self.getKinst(), kinstName)
                 if len(kinstStr) > 80:
                     kinstStr = kinstStr[:80]
-                textArr[i]['File Notes'] = kinstStr + ' ' * (80 - len(kinstStr))
+                try:
+                    textArr[i]['File Notes'] = kinstStr + ' ' * (80 - len(kinstStr))
+                except:
+                    textArr[i]['File Notes'] = kinstStr.encode() + ' '.encode() * (80 - len(kinstStr.encode()))
             elif i == 2:
                 modExpStr = modExpTempStr % (self.getModexp(), self.getModexpDesc())
                 if len(modExpStr) > 80:
@@ -5239,7 +5242,10 @@ class MadrigalHeaderRecord:
                 kinstStr = kinstTempStr % (self.getKinst(), kinstName)
                 if len(kinstStr) > 80:
                     kinstStr = kinstStr[:80]
-                textArr[i]['File Notes'] = kinstStr + ' ' * (80 - len(kinstStr))
+                try:
+                    textArr[i]['File Notes'] = kinstStr + ' ' * (80 - len(kinstStr))
+                except:
+                    textArr[i]['File Notes'] = kinstStr.encode() + ' '.encode() * (80 - len(kinstStr.encode()))
             elif i == 2:
                 kindatStr = kindatTempStr % (self.getKindat(), 
                                              self._madKindatObj.getKindatDescription(self.getKindat(),

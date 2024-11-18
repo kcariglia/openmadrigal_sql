@@ -28,6 +28,7 @@ import random
 import copy
 import glob
 import packaging.version
+import bisect
 
 # third party imports
 import numpy
@@ -1147,6 +1148,7 @@ class MadrigalDB:
         # loop through all experiments to create four lists:
         #  acceptedExpIdList, acceptedExpKinstList, acceptedExpStartTimeList, and acceptedExpDirList
         acceptedExpIdList = []
+        acceptedExpIdDict = {}
         acceptedExpKinstList = []
         acceptedExpStartTimeList = []
         acceptedExpDirList = []
@@ -1248,6 +1250,7 @@ class MadrigalDB:
 
             # this experiment has made it through all filters, append its id, kinst, startTime, and dir
             acceptedExpIdList.append(madExpObj.getExpIdByPosition(position))
+            acceptedExpIdDict[madExpObj.getExpIdByPosition(position)] = len(acceptedExpIdList) - 1
             acceptedExpKinstList.append(thisKinst)
             acceptedExpStartTimeList.append(thisStartTime)
             # find the directory based on url
@@ -1262,6 +1265,8 @@ class MadrigalDB:
                 dir += 'experiments/'
             dir += url[index+8:]
             acceptedExpDirList.append(dir)
+            
+        sortedAcceptedExpIdList = sorted(acceptedExpIdList)
 
         # now loop through the file object to find all files
         position = -1
@@ -1276,13 +1281,12 @@ class MadrigalDB:
                 break
             
             # skip this file if expId not in acceptedExpIdList
-            if thisExpId not in acceptedExpIdList:
+            if sortedAcceptedExpIdList[bisect.bisect_left(sortedAcceptedExpIdList, thisExpId)] != thisExpId:
                 continue
 		
 	        # apply kindatList filter
-            thisKindat = madFileObj.getKindatByPosition(position)
-            
             if kindatList != None:
+                thisKindat = madFileObj.getKindatByPosition(position)
                 if thisKindat not in kindatList:
                     continue
 
@@ -1305,7 +1309,7 @@ class MadrigalDB:
                 
 
             # this file has been accepted by all filters - first, get its experiment index
-            expIndex = acceptedExpIdList.index(thisExpId)
+            expIndex = acceptedExpIdDict[thisExpId]
 
             thisFilename = acceptedExpDirList[expIndex] + '/' + madFileObj.getFilenameByPosition(position)
 
