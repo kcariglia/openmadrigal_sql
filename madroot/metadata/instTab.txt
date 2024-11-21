@@ -134,7 +134,7 @@
 5360,kfp,Millstone Hill High-Res Fabry-Perot,42.6,288.5,0.0,Robert Kerr,Computational Physics Inc,55 Middlesex Street, Unit 210,North Chelmsford,MA,01863-1561,USA,978-251-4554,rkerr@cpi.com,10
 5362,bfp,Brazil Imaging Doppler Fabry-Perot,-22.703764,314.99071,0.52,Robert Kerr,Computational Physics Inc,55 Middlesex Street, Unit 210,North Chelmsford,MA,01863-1561,USA,978-251-4554,rkerr@cpi.com,10
 5370,aif,Arecibo Imaging Doppler Fabry-Perot,18.345,293.25,0.0,Robert Kerr,Computational Physics Inc,55 Middlesex Street, Unit 210,North Chelmsford,MA,01863-1561,USA,978-251-4554,rkerr@cpi.com,10
-5380,clf,Culebra Fabry-Perot,18.3298,294.6932,0.0,Robert Kerr,Computational Physics Inc,55 Middlesex Street, Unit 210,North Chelmsford,MA,01863-1561,USA,978-251-4554,rkerr@cpi.com,10
+5380,clf,CCORE FPI,18.3298,294.6932,0.0,Pedrina Terra dos Santos,Florida Space Institute/UCF,12354 Research Pkwy,,Orlando,FL,,USA,(407) 823-6351,pedrina.santos@ucf.edu,10
 5430,wfp,Watson Lake Fabry-Perot,,,,Rick Niciejewski,Space Physics Research Laboratory,The University of Michigan,2455 Hayward,Ann Arbor,MI,48109-2143,USA,313-747-3445,niciejew@umich.edu,10
 5460,cfp,College Fabry-Perot,65.,213.,0.0,Robert Sica,Department of Physics,University of Western Ontario,,London,Ontario,N6A 3K7,CANADA,519-679-2111-x6509,sica@uwo.ca,10
 5465,pkf,Poker Flat all-sky scanning Fabry-Perot,65.12,212.57,0.44,Mark Conde,Geophysical Institute,University of Alaska,903 Koyukuk Drive,Fairbanks,AK, 99775-7320,USA,(907)-474-7347,mark.conde@gi.alaska.edu,10
