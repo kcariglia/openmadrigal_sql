@@ -4,7 +4,7 @@ views for docs app
 @author: Bill Rideout
 @contact: brideout@haystack.mit.edu
 
-$Id: views.py 7499 2023-05-01 21:01:59Z brideout $
+$Id: views.py 7738 2024-11-26 16:50:32Z brideout $
 '''
 # standard python imports
 import os, os.path, sys
@@ -25,6 +25,9 @@ import madrigal.metadata
 import madrigal.ui.web
 import madrigal.openmadrigal
 import subversion_operations
+import github_operations
+
+# note that github now holds Madrigal metadata, and subversion the experiment control files
 
 # helper methods
 def get_exp_info(control_file, rev):
@@ -201,7 +204,7 @@ def get_latest_metadata_version(request):
     madDB = madrigal.metadata.MadrigalDB()
     fullPath = request.GET['fullPath']
     
-    subObj = subversion_operations.reader('OpenMadrigal')
+    subObj = github_operations.reader()
     output = os.path.join('/tmp', os.path.basename(fullPath))
     path = os.path.join('trunk', fullPath)
     subObj.getFile(path, '/tmp')
@@ -229,7 +232,7 @@ def get_all_metadata_versions(request):
     madDB = madrigal.metadata.MadrigalDB()
     fullPath = request.GET['fullPath']
     
-    subObj = subversion_operations.reader('OpenMadrigal')
+    subObj = github_operations.reader()
     path = os.path.join('trunk', fullPath)
     revDict = subObj.getFileRevsDates(path)
             
@@ -252,7 +255,7 @@ def get_metadata_version(request):
     fullPath = request.GET['fullPath']
     version = request.GET['version']
     
-    subObj = subversion_operations.reader('OpenMadrigal')
+    subObj = github_operations.reader()
     output = os.path.join('/tmp', os.path.basename(fullPath))
     path = os.path.join('trunk', fullPath)
     subObj.getFile(path, '/tmp', version)
