@@ -3,7 +3,7 @@
 @author: Bill Rideout
 @contact: brideout@haystack.mit.edu
 
-$Id: views.py 7667 2024-07-30 19:28:29Z kcariglia $
+$Id: views.py 7693 2024-09-05 20:55:24Z kcariglia $
 '''
 # standard python imports
 import os.path
@@ -852,9 +852,9 @@ def list_experiments(request):
     
     kinstList = [int(kinst) for kinst in listForm.cleaned_data['instruments']]
     startDate = listForm.cleaned_data['start_date']
-    startDT = datetime.datetime(startDate.year, startDate.month, startDate.day, startDate.hour, startDate.minute, startDate.second)
+    startDT = datetime.datetime(startDate.year, startDate.month, startDate.day, 0, 0, 0)
     endDate = listForm.cleaned_data['end_date']
-    endDT = datetime.datetime(endDate.year, endDate.month, endDate.day, endDate.hour, endDate.minute, endDate.second)
+    endDT = datetime.datetime(endDate.year, endDate.month, endDate.day, 23, 59, 59)
     localOnly = not listForm.cleaned_data['isGlobal']
     expList = madWeb.getExperimentList(kinstList, startDT, endDT, localOnly)
     
@@ -1534,25 +1534,32 @@ def get_metadata(request):
                 '4': 'parmCodes.txt',
                 '5': 'siteTab.txt',
                 '6': 'typeTab.txt',
-                '7': 'instKindatTab.txt',
+                '7': 'instData.txt',#'instKindatTab.txt',
                 '8': 'instParmTab.txt',
                 '9': 'madCatTab.txt',
                 '10': 'instType.txt'}
     form = madweb.forms.GetMetadataForm(request.GET)
     if form.is_valid():
         madDB = madrigal.metadata.MadrigalDB()
-        downloadFile = os.path.join(madDB.getMetadataDir(), 
-                                    fileDict[form.cleaned_data['fileType']])
+        table = fileDict[form.cleaned_data['fileType']][:-4]
+
+        text = madDB.getTableStr(table)
+
+
+        """ downloadFile = os.path.join(madDB.getMetadataDir(), 
+                                    fileDict[form.cleaned_data['fileType']]) """
+        
+        return(django.http.HttpResponse(text))
         
 
-        f = open(downloadFile, 'rb')
+        """ f = open(downloadFile, 'rb')
         filename = os.path.basename(downloadFile)
         chunk_size = 8192
         response = StreamingHttpResponse(FileWrapper(f, chunk_size),
                                          content_type=mimetypes.guess_type(downloadFile)[0])
         response['Content-Length'] = os.path.getsize(downloadFile)    
         response['Content-Disposition'] = "attachment; filename=%s" % (filename)
-        return(response)
+        return(response) """
     
     else:
         madDB = madrigal.metadata.MadrigalDB()
@@ -1923,6 +1930,7 @@ def get_experiments_service(request):
     except:
         local = 1
     
+    
     # if startsec or endsec in (60, 61), handle correctly
     if startsec in (60, 61):
         tmpTime = datetime.datetime(startyear,
@@ -2009,6 +2017,7 @@ def get_experiments_service(request):
         madExpObj = madrigal.metadata.MadrigalExperiment(madDBObj, filename)
         
     madExpObj.sortByDateSite()
+
 
     # loop through the data
     if not startTimeFilter is None:

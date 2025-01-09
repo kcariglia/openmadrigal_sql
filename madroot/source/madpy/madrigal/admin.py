@@ -3,7 +3,7 @@
 The main role of this module is to update the data in the Madrigal database.  Also contains a
 notification class and a standard error handing class.
 
-$Id: admin.py 7690 2024-09-05 19:42:13Z brideout $
+$Id: admin.py 7739 2025-01-09 14:44:38Z kcariglia $
 """
 # standard python imports
 import os, os.path, sys
@@ -1546,24 +1546,85 @@ class MadrigalDBAdmin:
             print('Warning - skipping updating geophysical files too often will make them out of date.')
         
         print('*** Updating local metadata ***')
+        s = datetime.datetime.now()
         self.__updateLocalMetadata__()
+        e = datetime.datetime.now()
+        print("local meta took {} ms".format((e-s).microseconds))
         print('*** Updating metadata from other Madrigal sites ***')
         self.__updateGlobalMetadata__()
+        e = datetime.datetime.now()
+        print("global meta took {} s".format((e-s).seconds))
         print('*** Checking OpenMadrigal for any metadata updates ***')
         self.__checkOpenMadrigalMetadata__()
+        e = datetime.datetime.now()
+        print("openmad meta took {} s".format((e-s).seconds))
+
+        #tmp only, need to double check total # exps and files
+        eObj = madrigal.metadata.MadrigalExperiment(self.__madDB)
+        fObj = madrigal.metadata.MadrigalMetaFile(self.__madDB)
+        print("total exps: {}   total files: {}".format(eObj.getExpCount(), fObj.getFileCount()))
 
         # instParmTab.txt
-        print('*** Rebuilding instParmTab.txt ***')
-        obj = madrigal.metadata.MadrigalInstrumentParameters(self.__madDB)
-        obj.rebuildInstParmTable()
+        #print('*** Rebuilding instParmTab.txt ***')
+        #obj = madrigal.metadata.MadrigalInstrumentParameters(self.__madDB)
+        #obj.rebuildInstParmTable()
+        e = datetime.datetime.now()
+        print("updateMaster took {} s".format((e-s).seconds))
         
         # instKindatTab.txt
-        print('*** Rebuilding instKindatTab.txt ***')
-        obj = madrigal.metadata.MadrigalInstrumentKindats(self.__madDB)
-        obj.rebuildInstKindatTable()
+        #print('*** Rebuilding instKindatTab.txt ***')
+        #obj = madrigal.metadata.MadrigalInstrumentData(self.__madDB)
+        #obj.rebuildInstDataTable()
 
         print('updateMaster complete...')
 
+
+    def __setExpIdsForSite(self, siteID):
+        """
+        docs here, FIX ME
+        """
+        expObj = madrigal.metadata.MadrigalExperiment(self.__madDB)
+        idsAndIdxs = expObj.getAllExpIDs(siteID)
+        expIDs = [i[0] for i in idsAndIdxs]
+        expIdxs = [i[1] for i in idsAndIdxs]
+
+        toFix = numpy.argwhere(numpy.array(expIDs) <= (siteID * 10000000))
+
+        if len(toFix) == 0:
+            # all expIDs are ok
+            return
+        
+        maxId = int(numpy.max(expIDs))
+        
+        #print("exps to fix: {}".format(len(toFix)))
+        for idx in toFix:
+            index = expIdxs[int(idx)] #why are there two indices????? FIX ME
+            #expPosition = expIdxs[index]
+            newID = maxId + 1
+            maxId = newID
+
+            #expDir = expObj.getExpDirByPosition(index)
+            #metaFile = os.path.join(expDir, 'fileTab.txt')
+            #print("expdir is {}".format(expDir))
+            #print("metafile is {}".format(metaFile))
+            #fileObj = madrigal.metadata.MadrigalMetaFile(self.__madDB, metaFile)
+            #numFiles = fileObj.getFileCount()
+
+            #print("files to fix: {}".format(numFiles))
+
+            expObj.setExpIdByPosition(index, newID)
+            #[fileObj.setExpIdByPosition(pos, newID) for pos in list(range(numFiles))]
+
+        # need to enforce experiment id uniqueness
+        idsAndIdxs = expObj.getAllExpIDs(siteID)
+        expIDs = [i[0] for i in idsAndIdxs]
+        if (len(expIDs) != len(set(expIDs))):
+            # unique constraint failed
+            raise madrigal.admin.MadrigalError("Found nonunique expID after resetting expIDs for site {}".format(siteID),
+                                          traceback.format_exception(sys.exc_info()[0],
+                                                                    sys.exc_info()[1],
+                                                                    sys.exc_info()[2]))
+            
 
 
     def __updateLocalMetadata__(self):
@@ -1572,50 +1633,7 @@ class MadrigalDBAdmin:
         """
         localSiteID = self.__madDB.getSiteID() # used to check that experiments do not have wrong siteID
         
-        metaDict = {}
-        metaDict['expText'] = [] # a list of text lines of combined expTab.txt file
-        metaDict['expIds'] = [] # a list of all expIds found in locals dirs
-        metaDict['expIds2'] = [] # a list of all expIds found summary expDir.txt
-        metaDict['fileText'] = [] # a list of text lines of combined fileTab.txt file
-        metaDict['presentCount'] = 0 # experiment count so far
-        metaDict['totalCount'] = 0 # count of all experiments found in first count
-        metaDict['localSiteId'] = localSiteID
-        
-        # make sure metaDict['expIds'] and metaDict['expIds2'] contains minimum value
-        metaDict['expIds'].append(self.__madDB.getSiteID() * 10000000)
-        metaDict['expIds2'].append(self.__madDB.getSiteID() * 10000000)
-        
-        # get all experiment directories
-        expDirList = self.__madDB.getExperimentDirs()
-        
-        # first walk to to simply fill out metaDict['expIds']
-        for thisExpDir in expDirList:
-            if not os.path.isdir(thisExpDir):
-                continue
-            for root, dirs, files, in os.walk(thisExpDir):
-                         self.__walkExpDirIds__(metaDict, root, dirs + files)
-        
-        for thisExpDir in expDirList:
-            if not os.path.isdir(thisExpDir):
-                continue
-            for root, dirs, files in os.walk(thisExpDir):
-                         self.__walkExpDir__(metaDict, root, dirs + files)
-
-        # update expTab.txt
-        f = open(os.path.join(self.__madDB.getMadroot(), 'metadata/expTab.txt'), 'w', encoding='utf-8')
-        delimiter = ''
-        f.write(delimiter.join(metaDict['expText']))
-        f.close()
-        
-        # now sort it by date to speed searches
-        madExpObj = madrigal.metadata.MadrigalExperiment(self.__madDB)
-        madExpObj.sortByDateSite()
-        madExpObj.writeMetadata(os.path.join(self.__madDB.getMadroot(), 'metadata/expTab.txt'))
-
-        # update fileTab.txt
-        f = open(os.path.join(self.__madDB.getMadroot(), 'metadata/fileTab.txt'), 'w', encoding='utf-8')
-        f.write(delimiter.join(metaDict['fileText']))
-        f.close()
+        self.__setExpIdsForSite(localSiteID)
 
 
     def __updateGlobalMetadata__(self):
@@ -1623,8 +1641,9 @@ class MadrigalDBAdmin:
         from the main madrigal server.
         """
 
-        expTabAll = ''
-        fileTabAll = ''
+        # expTabAll = ''
+        # fileTabAll = ''
+        s = datetime.datetime.now()
 
         localSiteID = self.__madDB.getSiteID()
 
@@ -1632,52 +1651,42 @@ class MadrigalDBAdmin:
 
         for site in siteList:
             siteID = site[0]
+            #print("on site {}".format(siteID))
             # skip local site
             if siteID == localSiteID:
                 continue
-            siteName = site[1]
-            siteDir = '%s_%i' % (siteName, siteID)
-
-            expMetadataFile = os.path.join(siteDir, 'expTab.txt')
-            fileMetadataFile = os.path.join(siteDir, 'fileTab.txt')
 
             try:
-                thisExpText  = self.__openMad.getMetadataFromOpenMadrigal(expMetadataFile)
-                thisFileText = self.__openMad.getMetadataFromOpenMadrigal(fileMetadataFile)
+                expText = self.__openMad.getExpMetadata(siteID)
+
+                if not expText:
+                    continue
+
+                self.__madDB.addExperimentsMetadata(expText)
+                e = datetime.datetime.now()
+
+                #print("finished adding exp data after {} s".format((e-s).seconds))
+
+                fileText = self.__openMad.getFileMetadata(siteID)
+                e = datetime.datetime.now()
+                #print("just got filetext after {} s".format((e-s).seconds))
+
+                if not fileText:
+                    continue
+
+                self.__madDB.addFilesMetadata(fileText)
+                e = datetime.datetime.now()
+                #print("finished adding file data after {} s".format((e-s).seconds))
+
+                self.__setExpIdsForSite(siteID)
+                e = datetime.datetime.now()
+                #print("finished resetting expIDs after {} s".format((e-s).seconds))
             except:
-                continue
+                raise madrigal.admin.MadrigalError("Problem updating global metadata",
+                                              traceback.format_exception(sys.exc_info()[0],
+                                                                        sys.exc_info()[1],
+                                                                        sys.exc_info()[2]))
 
-            expTabAll += thisExpText
-            fileTabAll += thisFileText
-
-        # append local data
-        f = open(os.path.join(self.__madDB.getMadroot(), 'metadata/expTab.txt'))
-        expTabAll += f.read()
-        f.close()
-
-        f = open(os.path.join(self.__madDB.getMadroot(), 'metadata/fileTab.txt'))
-        fileTabAll += f.read()
-        f.close()
-
-        # write *All.txt files
-        f = open(os.path.join(self.__madDB.getMadroot(), 'metadata/expTabAll.txt'), 'w', encoding='utf-8')
-        f.write(expTabAll)
-        f.close()
-        
-        # now sort it by date to speed searches
-        madExpObj = madrigal.metadata.MadrigalExperiment(self.__madDB,
-                                                         os.path.join(self.__madDB.getMadroot(), 
-                                                                      'metadata/expTabAll.txt'))
-        madExpObj.sortByDateSite()
-        madExpObj.writeMetadata(os.path.join(self.__madDB.getMadroot(), 'metadata/expTabAll.txt'))
-
-
-        f = open(os.path.join(self.__madDB.getMadroot(), 'metadata/fileTabAll.txt'), 'w', encoding='utf-8')
-        f.write(fileTabAll)
-        f.close()
-        
-        # rewrite instData.txt
-        self._updateInstData()
 
 
     def __checkOpenMadrigalMetadata__(self):
@@ -1697,13 +1706,14 @@ class MadrigalDBAdmin:
         url = 'http://cedar.openmadrigal.org/compareToArchive.py?filePath=%s&fileTextMd5=%s'
         
         for metadataFile in metadataFiles:
-            localMetadataFile = os.path.join(self.__madDB.getMadroot(), 'metadata', os.path.basename(metadataFile))
+            localMetadataFile = os.path.basename(metadataFile)[:-4]
             archivePath = 'madroot/%s' % (metadataFile)
             
-            f = open(localMetadataFile)
-            text = f.read().encode('utf-8')
-            f.close()
-            textMd5 = hashlib.md5(text)
+            # f = open(localMetadataFile)
+            # text = f.read().encode('utf-8')
+            # f.close()
+            text = self.__madDB.getTableStr(localMetadataFile)
+            textMd5 = hashlib.md5(text.encode('utf-8'))
             md5Str = textMd5.hexdigest() # md5 checksum of local metadata file
 
             thisUrl = url % (archivePath, md5Str)
@@ -1732,9 +1742,11 @@ class MadrigalDBAdmin:
             # this metadata file needs updating
             print('Downloading revised version of metadata file %s from OpenMadrigal' % (metadataFile))
             text = self.__openMad.getLatestSubversionVersion(os.path.join('madroot',metadataFile))
-            f = open(localMetadataFile, 'w', encoding='utf-8')
-            f.write(text)
-            f.close()
+            siteObj = madrigal.metadata.MadrigalSite(self.__madDB)
+            siteObj.updateSiteTab(text)
+            # f = open(localMetadataFile, 'w', encoding='utf-8')
+            # f.write(text)
+            # f.close()
             
     def _updateInstData(self):
         """_updateInstData updates the summary files instData.txt and instDataPriv.txt based on 
@@ -2000,8 +2012,8 @@ class MadrigalDBAdmin:
     
             # skip if wrong site id
             if expObj.getExpSiteIdByPosition(0) != arg['localSiteId']:
-                print('Warning: Experiment %s has wrong site id = %i.  This site id = %s' % \
-                      (dirname, expObj.getExpSiteIdByPosition(0), str(arg['localSiteId'])))
+                print('Warning: Experiment %s has wrong site id = %i.  This site id = %i' % \
+                      (dirname, expObj.getExpSiteIdByPosition(0), arg['localSiteId']))
                 return
     
             # add this id if unique

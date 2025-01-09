@@ -1,6 +1,6 @@
 """The openmadrigal module provides access to all OpenMadrigal installations via http and to OpenMadrigal Subversion.
 
-$Id: openmadrigal.py 7044 2019-10-07 19:13:16Z brideout $
+$Id: openmadrigal.py 7696 2024-09-05 20:58:02Z kcariglia $
 """
 
 
@@ -104,18 +104,20 @@ class OpenMadrigal:
         if serverName == None:
             return None
 
-        # get site relative cgi path
+        """ # get site relative cgi path
         relativeCgi = self.__madSite.getSiteRelativeCGI(siteId)
         if relativeCgi == None:
-            return None
+            return None """
 
         # create url string
-        if not relativeCgi in ('', '.'):
+        urlStr = serverName +  \
+                     '/getMetadata?fileType=' + str(metadataType)
+        """ if not relativeCgi in ('', '.'):
             urlStr = serverName + '/' + \
                      relativeCgi + '/getMetadata?fileType=' + str(metadataType)
         else:
             urlStr = serverName +  \
-                     '/getMetadata?fileType=' + str(metadataType)
+                     '/getMetadata?fileType=' + str(metadataType) """
         if urlStr.find('http') == -1:
             urlStr = self._webProtocol + '://' + urlStr
         
