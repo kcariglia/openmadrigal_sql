@@ -283,7 +283,7 @@ if __name__ == '__main__':
     print('Set site version to 3.0 if needed')
     mdSiteObj = madrigal.metadata.MadrigalSite(madDB)
     siteID = madDB.getSiteID()
-    if siteID != '3.0':
+    if mdSiteObj.getSiteVersion(siteID) != '3.0':
         mdSiteObj.setSiteVersionBySiteID(siteID, '3.0')
         mdSiteObj.writeMetadata()
         
