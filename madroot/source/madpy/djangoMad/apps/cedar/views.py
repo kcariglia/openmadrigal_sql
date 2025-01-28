@@ -201,13 +201,11 @@ def get_latest_metadata_version(request):
         request - contains key fullPath - full path to the Madrigal file in Subversion relative to trunk
             (example: 'madroot/metadata/siteTab.txt')
     """
-    madDB = madrigal.metadata.MadrigalDB()
     fullPath = request.GET['fullPath']
     
     subObj = github_operations.reader()
     output = os.path.join('/tmp', os.path.basename(fullPath))
-    path = os.path.join('trunk', fullPath)
-    subObj.getFile(path, '/tmp')
+    subObj.getFile(fullPath, '/tmp')
     
     f = open(output)
     fileStr = f.read()
@@ -229,12 +227,10 @@ def get_all_metadata_versions(request):
             (example: 'madroot/metadata/siteTab.txt')
             
     """
-    madDB = madrigal.metadata.MadrigalDB()
     fullPath = request.GET['fullPath']
     
     subObj = github_operations.reader()
-    path = os.path.join('trunk', fullPath)
-    revDict = subObj.getFileRevsDates(path)
+    revDict = subObj.getFileRevsDates(fullPath)
             
     retStr = ''
     for k in sorted(revDict):
@@ -251,14 +247,12 @@ def get_metadata_version(request):
             (example: 'madroot/metadata/siteTab.txt'), and key version
         
     """
-    madDB = madrigal.metadata.MadrigalDB()
     fullPath = request.GET['fullPath']
     version = request.GET['version']
     
     subObj = github_operations.reader()
     output = os.path.join('/tmp', os.path.basename(fullPath))
-    path = os.path.join('trunk', fullPath)
-    subObj.getFile(path, '/tmp', version)
+    subObj.getFile(fullPath, '/tmp', version)
     
     f = open(output, 'rb')
     text = f.read()
@@ -279,8 +273,8 @@ def get_open_madrigal_shared_files(request):
         
     For now hardcoded path to files
     """
-    path = '/usr/local/apache2/htdocs/madrigal/distributionFiles/metadata'
-    path3 = '/usr/local/apache2/htdocs/madrigal/distributionFiles/metadata3' # used because siteTab.txt for mad3 is incompatible
+    path = '/opt/openmadrigal/madroot/source/madpy/djangoMad/madweb/static/distributionFiles/metadata'
+    path3 = '/opt/openmadrigal/madroot/source/madpy/djangoMad/madweb/static/distributionFiles/metadata3' # used because siteTab.txt for mad3 is incompatible
     filename = request.GET['filename']
     if filename == 'siteTab.txt':
         fullPath = os.path.join(path3, filename)
