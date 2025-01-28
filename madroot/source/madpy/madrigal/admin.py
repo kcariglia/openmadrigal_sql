@@ -1693,7 +1693,7 @@ class MadrigalDBAdmin:
         not be updated.  If you want to change these files, it is best to contact the OpenMadrigal
         development administrator (madrigal@haystack.mit.edu)
         """
-        metadataFiles = ('metadata3/siteTab.txt', 'metadata/instTab.txt', 'metadata/instType.txt')
+        metadataFiles = ('metadata/siteTab.txt', 'metadata/instTab.txt', 'metadata/instType.txt')
         url = 'http://cedar.openmadrigal.org/compareToArchive.py?filePath=%s&fileTextMd5=%s'
         
         for metadataFile in metadataFiles:

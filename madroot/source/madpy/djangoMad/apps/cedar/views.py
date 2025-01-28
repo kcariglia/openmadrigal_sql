@@ -273,13 +273,9 @@ def get_open_madrigal_shared_files(request):
         
     For now hardcoded path to files
     """
-    path = '/opt/openmadrigal/madroot/source/madpy/djangoMad/madweb/static/distributionFiles/metadata'
-    path3 = '/opt/openmadrigal/madroot/source/madpy/djangoMad/madweb/static/distributionFiles/metadata3' # used because siteTab.txt for mad3 is incompatible
+    path = '/opt/openmadrigal/madroot/source/madpy/djangoMad/madweb/static/distributionFiles/metadata' # used because siteTab.txt for mad3 is incompatible
     filename = request.GET['filename']
-    if filename == 'siteTab.txt':
-        fullPath = os.path.join(path3, filename)
-    else:
-        fullPath = os.path.join(path, filename)
+    fullPath = os.path.join(path, filename)
     f = open(fullPath, 'r')
     text = f.read()
     f.close()
