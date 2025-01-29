@@ -234,7 +234,7 @@ def get_all_metadata_versions(request):
             
     retStr = ''
     for k in sorted(revDict):
-        retStr += '%i\n' % (revDict[k])
+        retStr += '{}\n'.format(revDict[k])
     
     return(django.http.HttpResponse(retStr))
 

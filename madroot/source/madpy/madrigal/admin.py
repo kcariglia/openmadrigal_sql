@@ -1694,7 +1694,7 @@ class MadrigalDBAdmin:
         development administrator (madrigal@haystack.mit.edu)
         """
         metadataFiles = ('metadata/siteTab.txt', 'metadata/instTab.txt', 'metadata/instType.txt')
-        url = 'http://cedar.openmadrigal.org/compareToArchive.py?filePath=%s&fileTextMd5=%s'
+        url = 'https://cedar.openmadrigal.org/compareToArchive.py?filePath=%s&fileTextMd5=%s'
         
         for metadataFile in metadataFiles:
             localMetadataFile = os.path.join(self.__madDB.getMadroot(), 'metadata', os.path.basename(metadataFile))

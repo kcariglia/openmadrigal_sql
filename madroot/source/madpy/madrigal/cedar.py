@@ -978,7 +978,7 @@ class MadrigalCedarFile:
                             # set all -1 values to inf
                             assumedIndices = numpy.where(dataset_view[name] == -1.0)
                             if len(assumedIndices):
-                                dataset_view[name][assumedIndices] = numpy.Inf
+                                dataset_view[name][assumedIndices] = numpy.inf
                         if knownbad is not None:
                             # set all -2 values to ninf
                             knownbadIndices = numpy.where(dataset_view[name] == -2.0)

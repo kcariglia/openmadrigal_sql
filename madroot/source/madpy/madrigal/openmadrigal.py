@@ -46,10 +46,10 @@ class OpenMadrigal:
 
 
     #constants
-    _webProtocol  = "http"
+    _webProtocol  = "https"
     """ Change the above string to use another web protocol such as https. """
     
-    _openMadrigalUrl = 'http://cedar.openmadrigal.org/'
+    _openMadrigalUrl = 'https://cedar.openmadrigal.org/'
     
     
     # the following constants are used by cgi script getMetadata
