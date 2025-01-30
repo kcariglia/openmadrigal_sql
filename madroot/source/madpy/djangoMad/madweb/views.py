@@ -2476,6 +2476,23 @@ def get_madfile_service(request):
     
     # log data access
     madWebObj.logDataAccess(fileName, user_fullname, user_email, user_affiliation)
+
+    # check filename validity
+    __dirConvStr1 = '/experiments[0-9]*/[0-9][0-9][0-9][0-9]/[a-z][a-z0-9][a-z0-9]/[a-zA-Z0-9\-_]*$'
+    __dirConvStr2 = '/experiments[0-9]*/[0-9][0-9][0-9][0-9]/[a-z][a-z0-9][a-z0-9]/[0-3][0-9][a-z][a-z0-9][a-z0-9][0-9][0-9].?'
+    v1 = re.search(__dirConvStr1, fileName)
+    v2 = re.search(__dirConvStr2, fileName)
+    endsWithH5 = fileName.endswith(".h5") or fileName.endswith(".hdf5")
+    startsWithMadroot = fileName.startswith(madDB.getMadroot())
+
+    if not(endsWithH5 and startsWithMadroot):
+        # not an hdf5 file and doesn't start with madroot, invalid file
+        return(HttpResponse('<p>fileName {} not allowed<p>'.format(fileName)))
+        
+    if not v1:
+        if not v2:
+            # no experiment directory found, invalid file
+            return(HttpResponse('<p>fileName {} not allowed<p>').format(fileName))
     
     if fileType in (-1, -3):
         # may need to create temp file
