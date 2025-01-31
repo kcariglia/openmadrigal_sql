@@ -291,7 +291,10 @@ def get_open_madrigal_shared_files(request):
         # contains extra dir, not allowed
         return(django.http.HttpResponse("Invalid dirname {}".format(filename)))
     
-    if (len(fsplit) == 2) and (len(fsplit[0].split("_")) != 2):
+    if (len(fsplit) == 2) and ("mad3" in filename):
+        filename = fsplit[1]
+    
+    elif (len(fsplit) == 2) and (len(fsplit[0].split("_")) != 2):
         # invalid site directory
         return(django.http.HttpResponse("Invalid site dir {}".format(filename)))
     
