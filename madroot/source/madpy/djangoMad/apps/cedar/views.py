@@ -10,6 +10,7 @@ $Id: views.py 7738 2024-11-26 16:50:32Z brideout $
 import os, os.path, sys
 import random
 import datetime
+import mimetypes
 import re
 import xml.dom.minidom
 import hashlib
@@ -19,6 +20,7 @@ import django, django.http
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from . import forms
+from wsgiref.util import FileWrapper
 
 # madrigal imports
 import madrigal.metadata
@@ -307,10 +309,23 @@ def get_open_madrigal_shared_files(request):
         return(django.http.HttpResponse("Invalid filename {}".format(filename)))
 
     fullPath = os.path.join(path, filename)
-    f = open(fullPath, 'r')
-    text = f.read()
-    f.close()
-    return(django.http.HttpResponse(text))
+
+    if fullPath.endswith(".tar.gz"):
+        f = open(fullPath, "rb")
+        chunk_size = 8192
+        file_type = mimetypes.guess_type(fullPath)[0]
+        if file_type is None:
+            file_type = 'application/octet-stream'
+        response = django.http.StreamingHttpResponse(FileWrapper(f, chunk_size),
+                                        content_type=file_type)
+        response['Content-Length'] = os.path.getsize(fullPath)    
+        response['Content-Disposition'] = "attachment; filename=%s" % (filename)
+        return(response)
+    else:
+        f = open(fullPath, 'r')
+        text = f.read()
+        f.close()
+        return(django.http.HttpResponse(text))
     
   
 def get_madrigal_videos(request):
