@@ -275,6 +275,34 @@ def get_open_madrigal_shared_files(request):
     """
     path = '/opt/openmadrigal/madroot/source/madpy/djangoMad/madweb/static/distributionFiles/metadata' # used because siteTab.txt for mad3 is incompatible
     filename = request.GET['filename']
+
+    validFnames = ["siteTab.txt", "instTab.txt",
+                    "instType.txt", "status.dat",
+                    "ig_rz.dat", "expTab.txt",
+                    "fileTab.txt", "geofil.tar.gz"]
+
+    # validate filename
+    if ".." in filename:
+        # directory traversal is not allowed
+        return(django.http.HttpResponse("Directory traversal not allowed"))
+    
+    fsplit = filename.split("/")
+    if len(fsplit) > 2:
+        # contains extra dir, not allowed
+        return(django.http.HttpResponse("Invalid dirname {}".format(filename)))
+    
+    if (len(fsplit) == 2) and (len(fsplit[0].split("_")) != 2):
+        # invalid site directory
+        return(django.http.HttpResponse("Invalid site dir {}".format(filename)))
+    
+    valid = False
+    for fname in validFnames:
+        if fname in filename:
+            valid = True
+
+    if not valid:
+        return(django.http.HttpResponse("Invalid filename {}".format(filename)))
+
     fullPath = os.path.join(path, filename)
     f = open(fullPath, 'r')
     text = f.read()
