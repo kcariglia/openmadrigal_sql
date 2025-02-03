@@ -338,6 +338,7 @@
 539,DC spike,K,DC,%12.5e,14,6,0,0
 540,Height of maximum electron density,km,HMAX,%12.5e,14,6,0,0
 541,Scale ht of Chapman model electron den,km,HSCHAP,%12.5e,14,6,0,0
+542,Standard deviation of the rate of change of total electron content (TEC),TECU/sec,ROTI,%12.5e,14,6,0,0
 550,Ion temperature (Ti),K,TI,%9.1f,11,6,0,0
 551,Ion temperature from RPA flag (1 = good; 2 = caution; 3 = poor; don't use; 4 = undetermined),N/A,TI_RPA_FLAG,%i,14,6,1,0
 552,Hydrogen ion temperature,K,TIH,%9.1f,11,6,0,0
@@ -798,10 +799,10 @@
 3126,Averaged Meridional wind per cycle,ms-1,AVGMW,%12.5e,14,16,0,0
 3128,Averaged Temperature of neutrals/cycle,K,AVGT,%12.5e,14,16,0,0
 3130,Averaged Intensity of neutrals,cnt,AVGI,%12.5e,14,16,0,0
-3132,Jicamarca radar operation parameter 33,N/A,JRO33,%12.5e,14,16,0,0
-3133,Jicamarca radar operation parameter 34,N/A,JRO34,%12.5e,14,16,0,0
-3134,Jicamarca radar operation parameter 35,N/A,JRO35,%12.5e,14,16,0,0
-3135,Jicamarca radar operation parameter 36,N/A,JRO36,%12.5e,14,16,0,0
+3132,Jicamarca radar operation parameter 33,N/A,W beam log10(1+SNR(RxA)),%12.5e,14,16,0,0
+3133,Jicamarca radar operation parameter 34,N/A,W beam log10(1+SNR(RxB)),%12.5e,14,16,0,0
+3134,Jicamarca radar operation parameter 35,N/A,E beam log10(1+SNR(RxAC)),%12.5e,14,16,0,0
+3135,Jicamarca radar operation parameter 36,N/A,E beam log10(1+SNR(RxD)),%12.5e,14,16,0,0
 3136,Jicamarca radar operation parameter 37,N/A,JRO37,%12.5e,14,16,0,0
 3137,Jicamarca radar operation parameter 38,N/A,JRO38,%12.5e,14,16,0,0
 3138,Jicamarca radar operation parameter 39,N/A,JRO39,%12.5e,14,16,0,0
