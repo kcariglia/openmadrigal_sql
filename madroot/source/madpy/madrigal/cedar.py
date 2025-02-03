@@ -983,7 +983,7 @@ class MadrigalCedarFile:
                             # set all -2 values to ninf
                             knownbadIndices = numpy.where(dataset_view[name] == -2.0)
                             if len(knownbadIndices):
-                                dataset_view[name][knownbadIndices] = numpy.NINF
+                                dataset_view[name][knownbadIndices] = -numpy.inf
                             
             lastRecno = None
             for i in range(len(dataset_view)):
