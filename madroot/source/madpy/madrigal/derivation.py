@@ -1434,8 +1434,11 @@ class MadrigalDerivation:
                 
             else:
                 # call either C or Python derivation engine
+                print("calling {}".format(methodName))
                 if isC:
                     # C method
+                    print("input: {}".format(inputArr))
+                    print("output: {}".format(outputArr))
                     madrigal._derive.madDispatch(methodName, inputArr, outputArr)
                 else:
                     # python method
@@ -1978,13 +1981,13 @@ class MadrigalDerivationMethods:
                     f.close()
                 except:
                     pass
-                outputArr[:5] = numpy.NaN
+                outputArr[:5] = numpy.nan
                 return
             
             
         # check that data is available
         if aveUT < self.startGeoUT or aveUT > self.endGeoUT:
-            outputArr[:5] = numpy.NaN
+            outputArr[:5] = numpy.nan
             return
         
         # check if cache needs to be updated
@@ -2007,20 +2010,20 @@ class MadrigalDerivationMethods:
             self.geoTable = numpy.array(self.geoTable[selection.tolist()])
             f.close()
             if len(self.geoTable) == 0:
-                outputArr[:5] = numpy.NaN
+                outputArr[:5] = numpy.nan
                 return
             
         # find out where this value fits
         index = numpy.searchsorted(self.geoTable['ut1_unix'], [aveUT])[0]
         if index == 0:
-            outputArr[:5] = numpy.NaN
+            outputArr[:5] = numpy.nan
             return
         
         correctRow = None
         if aveUT - self.geoTable['ut1_unix'][index-1] <= 10800.0: # three hours - the spacing of data in file
             correctRow = self.geoTable[index-1]
         else:
-            outputArr[:5] = numpy.NaN
+            outputArr[:5] = numpy.nan
             return
         
         outputArr[0] = correctRow['kp']
@@ -2069,13 +2072,13 @@ class MadrigalDerivationMethods:
                     f.close()
                 except:
                     pass
-                outputArr[:1] = numpy.NaN
+                outputArr[:1] = numpy.nan
                 return
             
             
         # check that data is available
         if aveUT < self.startDstUT or aveUT > self.endDstUT:
-            outputArr[:1] = numpy.NaN
+            outputArr[:1] = numpy.nan
             return
         
         # check if cache needs to be updated
@@ -2097,20 +2100,20 @@ class MadrigalDerivationMethods:
             self.dstTable = numpy.array(self.dstTable[selection.tolist()])
             f.close()
             if len(self.dstTable) == 0:
-                outputArr[:1] = numpy.NaN
+                outputArr[:1] = numpy.nan
                 return
             
         # find out where this value fits
         index = numpy.searchsorted(self.dstTable['ut1_unix'], [aveUT])[0]
         if index == 0:
-            outputArr[:1] = numpy.NaN
+            outputArr[:1] = numpy.nan
             return
         
         correctRow = None
         if aveUT - self.dstTable['ut1_unix'][index-1] <= 3600.0: # one hour - the spacing of data in file
             correctRow = self.dstTable[index-1]
         else:
-            outputArr[:1] = numpy.NaN
+            outputArr[:1] = numpy.nan
             return
 
         outputArr[0] = correctRow['dst']
@@ -2157,13 +2160,13 @@ class MadrigalDerivationMethods:
                     f.close()
                 except:
                     pass
-                outputArr[:10] = numpy.NaN
+                outputArr[:10] = numpy.nan
                 return
             
             
         # check that data is available
         if aveUT < self.startImfUT or aveUT > self.endImfUT:
-            outputArr[:10] = numpy.NaN
+            outputArr[:10] = numpy.nan
             return
         
         # check if cache needs to be updated
@@ -2185,20 +2188,20 @@ class MadrigalDerivationMethods:
             self.imfTable = numpy.array(self.imfTable[selection.tolist()])
             f.close()
             if len(self.imfTable) == 0:
-                outputArr[:10] = numpy.NaN
+                outputArr[:10] = numpy.nan
                 return
             
         # find out where this value fits
         index = numpy.searchsorted(self.imfTable['ut1_unix'], [aveUT])[0]
         if index == 0:
-            outputArr[:10] = numpy.NaN
+            outputArr[:10] = numpy.nan
             return
         
         correctRow = None
         if aveUT - self.imfTable['ut1_unix'][index-1] <= 3600.0: # one hour - the spacing of data in file
             correctRow = self.imfTable[index-1]
         else:
-            outputArr[:10] = numpy.NaN
+            outputArr[:10] = numpy.nan
             return
 
         outputArr[0] = correctRow['bxgsm']
@@ -2233,7 +2236,7 @@ class MadrigalDerivationMethods:
         
         if not inputArr[2] in [30,31,32,5340,5360]:
             # only applies to Millstone ISR
-            outputArr[:1] = numpy.NaN
+            outputArr[:1] = numpy.nan
             return
         
         if self.fof2Table is None:
@@ -2288,20 +2291,20 @@ class MadrigalDerivationMethods:
             self.fof2Table = numpy.array(self.fof2Table[selection.tolist()])
             f.close()
             if len(self.fof2Table) == 0:
-                outputArr[:1] = numpy.NaN
+                outputArr[:1] = numpy.nan
                 return
             
         # find out where this value fits
         index = numpy.searchsorted(self.fof2Table['ut1_unix'], [aveUT])[0]
         if index == 0:
-            outputArr[:1] = numpy.NaN
+            outputArr[:1] = numpy.nan
             return
         
         correctRow = None
         if aveUT - self.fof2Table['ut1_unix'][index-1] <= 1800.0: # 30 minutes - the spacing of data in file
             correctRow = self.fof2Table[index-1]
         else:
-            outputArr[:1] = numpy.NaN
+            outputArr[:1] = numpy.nan
             return
         
         outputArr[0] = correctRow['fof2_mlh']
@@ -2420,7 +2423,7 @@ class MadrigalDerivationMethods:
         
         if not kinst in [20,25,30,31,32,40,72,80,95,5340,5360]:
             # only applies to certain sites
-            outputArr[:2] = numpy.NaN
+            outputArr[:2] = numpy.nan
             return
         
         ipar = 1 # gets Ne
@@ -2429,7 +2432,7 @@ class MadrigalDerivationMethods:
         
         if (kinst in (72, 80, 95) and (elm < 75.0)):
             # local model does not apply
-            outputArr[:2] = numpy.NaN
+            outputArr[:2] = numpy.nan
             return
         
         # get geo data 3 hours before UT1 and 24 hours before UT1
@@ -2438,13 +2441,13 @@ class MadrigalDerivationMethods:
         self.getGeo(newInputArr, newOutputArr)
         ap3_3hour = newOutputArr[1]
         if numpy.isnan(ap3_3hour):
-            outputArr[:2] = numpy.NaN
+            outputArr[:2] = numpy.nan
             return
         newInputArr[:] = ut1_unix - 86400.0 # 24 hours before
         self.getGeo(newInputArr, newOutputArr)
         f107_24hour = newOutputArr[3] * 1.0E22
         if numpy.isnan(f107_24hour):
-            outputArr[:2] = numpy.NaN
+            outputArr[:2] = numpy.nan
             return
 
         madrigal._derive.madIsrim(ut1, kinst, slt, gdalt, gdlat,
@@ -2477,7 +2480,7 @@ class MadrigalDerivationMethods:
         
         if not kinst in [20,25,30,31,32,40,72,80,95,5340,5360]:
             # only applies to certain sites
-            outputArr[:2] = numpy.NaN
+            outputArr[:2] = numpy.nan
             return
         
         ipar = 2 # gets Te
@@ -2486,7 +2489,7 @@ class MadrigalDerivationMethods:
         
         if (kinst in (72, 80, 95) and (elm < 75.0)):
             # local model does not apply
-            outputArr[:2] = numpy.NaN
+            outputArr[:2] = numpy.nan
             return
         
         # get geo data 3 hours before UT1 and 24 hours before UT1
@@ -2495,13 +2498,13 @@ class MadrigalDerivationMethods:
         self.getGeo(newInputArr, newOutputArr)
         ap3_3hour = newOutputArr[1]
         if numpy.isnan(ap3_3hour):
-            outputArr[:2] = numpy.NaN
+            outputArr[:2] = numpy.nan
             return
         newInputArr[:] = ut1_unix - 86400.0 # 24 hours before
         self.getGeo(newInputArr, newOutputArr)
         f107_24hour = newOutputArr[3] * 1.0E22
         if numpy.isnan(f107_24hour):
-            outputArr[:2] = numpy.NaN
+            outputArr[:2] = numpy.nan
             return
         
         madrigal._derive.madIsrim(ut1, kinst, slt, gdalt, gdlat,
@@ -2534,7 +2537,7 @@ class MadrigalDerivationMethods:
         
         if not kinst in [20,25,30,31,32,40,72,80,95,5340,5360]:
             # only applies to certain sites
-            outputArr[:2] = numpy.NaN
+            outputArr[:2] = numpy.nan
             return
         
         ipar = 3 # gets Ti
@@ -2543,7 +2546,7 @@ class MadrigalDerivationMethods:
         
         if (kinst in (72, 80, 95) and (elm < 75.0)):
             # local model does not apply
-            outputArr[:2] = numpy.NaN
+            outputArr[:2] = numpy.nan
             return
         
         # get geo data 3 hours before UT1 and 24 hours before UT1
@@ -2552,13 +2555,13 @@ class MadrigalDerivationMethods:
         self.getGeo(newInputArr, newOutputArr)
         ap3_3hour = newOutputArr[1]
         if numpy.isnan(ap3_3hour):
-            outputArr[:2] = numpy.NaN
+            outputArr[:2] = numpy.nan
             return
         newInputArr[:] = ut1_unix - 86400.0 # 24 hours before
         self.getGeo(newInputArr, newOutputArr)
         f107_24hour = newOutputArr[3] * 1.0E22
         if numpy.isnan(f107_24hour):
-            outputArr[:2] = numpy.NaN
+            outputArr[:2] = numpy.nan
             return
         
         madrigal._derive.madIsrim(ut1, kinst, slt, gdalt, gdlat,
@@ -2646,7 +2649,7 @@ class MadrigalDerivationMethods:
         
         if not kinst in [20,25,30,31,32,40,72,80,95,5340,5360]:
             # only applies to certain sites
-            outputArr[:2] = numpy.NaN
+            outputArr[:2] = numpy.nan
             return
         
         ipar = 5 # gets HMAX, NMAX
@@ -2655,7 +2658,7 @@ class MadrigalDerivationMethods:
         
         if (kinst in (72, 80, 95) and (elm < 75.0)):
             # local model does not apply
-            outputArr[:2] = numpy.NaN
+            outputArr[:2] = numpy.nan
             return
         
         # get geo data 3 hours before UT1 and 24 hours before UT1
@@ -2664,13 +2667,13 @@ class MadrigalDerivationMethods:
         self.getGeo(newInputArr, newOutputArr)
         ap3_3hour = newOutputArr[1]
         if numpy.isnan(ap3_3hour):
-            outputArr[:2] = numpy.NaN
+            outputArr[:2] = numpy.nan
             return
         newInputArr[:] = ut1_unix - 86400.0 # 24 hours before
         self.getGeo(newInputArr, newOutputArr)
         f107_24hour = newOutputArr[3] * 1.0E22
         if numpy.isnan(f107_24hour):
-            outputArr[:2] = numpy.NaN
+            outputArr[:2] = numpy.nan
             return
         
         madrigal._derive.madIsrim(ut1, kinst, slt, gdalt, gdlat,
