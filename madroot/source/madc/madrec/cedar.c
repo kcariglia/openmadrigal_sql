@@ -3029,7 +3029,6 @@ int cedarReadParCodes ()
 
 
     /* now parse the madCatTab.txt.txt file */
-
     cedarGetMadroot(infile);
     (void) strcat(infile, "/metadata/madCatTab.txt");
     if ((fp = fopen (infile, "r")) == NULL) {
@@ -3049,6 +3048,10 @@ int cedarReadParCodes ()
             continue;
         /* set j = catId */
         j = atoi(pToken);
+
+        if (j == -1) {
+            continue;
+        }
 
         /* next, get category description - truncate if too long */
         pToken = strtok(NULL, ",");
