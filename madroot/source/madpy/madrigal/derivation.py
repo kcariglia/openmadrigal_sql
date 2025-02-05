@@ -1434,11 +1434,8 @@ class MadrigalDerivation:
                 
             else:
                 # call either C or Python derivation engine
-                print("calling {}".format(methodName))
                 if isC:
                     # C method
-                    print("input: {}".format(inputArr))
-                    print("output: {}".format(outputArr))
                     madrigal._derive.madDispatch(methodName, inputArr, outputArr)
                 else:
                     # python method

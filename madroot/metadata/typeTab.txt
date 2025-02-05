@@ -517,6 +517,10 @@
 6340_17204,Na lidar radial winds reanalysis 2015
 6340_17205,Na lidar radial winds reanalysis 2015
 6340_17206,Na lidar U-V-W winds
+17208,Andes MR: Zonal and Merid. winds
+17209,Southern Cross MR: Zonal and Merid. winds
+17210,Las Campanas MR: Zonal and Merid. winds
+17211,Buckland Park MR: Zonal and Merid. winds
 1210_17999,Tidal analysis
 1220_17999,Tidal analysis
 1230_17999,Tidal analysis
