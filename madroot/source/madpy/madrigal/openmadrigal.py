@@ -117,10 +117,10 @@ class OpenMadrigal:
             urlStr = serverName +  \
                      '/getMetadata?fileType=' + str(metadataType)
         if urlStr.find('http') == -1:
-            if siteId != 22:
+            if siteId not in (1, 22):
                 urlStr = self._webProtocol + '://' + urlStr
             else:
-                # Illinois site still uses http
+                # Millstone and Illinois sites still uses http
                 urlStr = "http" + '://' + urlStr
         
         
