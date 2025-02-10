@@ -61,12 +61,12 @@ try:
     # first examine file siteTab.txt
     cvsSiteFile = openMad.getLatestCvsVersion('madroot/metadata/siteTab.txt')
     if cvsSiteFile == None:
-        messStr += 'problem with cvs and siteTab.txt\n<br>\n'
+        messStr += 'problem with cvs and siteTab.txt\n\n'
         cvsSiteFile = ''
         
     cvsSiteFile3 = openMad.getLatestCvsVersion('madroot/metadata3/siteTab.txt')
     if cvsSiteFile3 == None:
-        messStr += 'problem with cvs and mad3 siteTab.txt\n<br>\n'
+        messStr += 'problem with cvs and mad3 siteTab.txt\n\n'
         cvsSiteFile3 = ''
 
     # diff against every version from siteList
@@ -78,14 +78,14 @@ try:
             thisVersion = 2
         siteFile = openMad.getSiteMetadata(site[0])
         if siteFile == None:
-            messStr += 'File siteTab.txt not retrieved from site ' + site[1] + '\n<br>\n'
+            messStr += 'File siteTab.txt not retrieved from site ' + site[1] + '\n\n'
         else:
             if thisVersion == 2:
                 if siteFile.strip() != cvsSiteFile.strip():
-                    messStr += 'File siteTab.txt differs from source control at site ' + site[1] + '\n<br>\n'
+                    messStr += 'File siteTab.txt differs from source control at site ' + site[1] + '\n\n'
             else:
                 if siteFile.strip() != cvsSiteFile3.strip():
-                    messStr += 'File mad3 siteTab.txt differs from source control at site ' + site[1] + '\n<br>\n'
+                    messStr += 'File mad3 siteTab.txt differs from source control at site ' + site[1] + '\n\n'
 
     # next examine file instTab.txt
     cvsTypeFile = openMad.getLatestCvsVersion('madroot/metadata/instTab.txt')
@@ -96,24 +96,24 @@ try:
     for site in siteList:
         typeFile = openMad.getInstMetadata(site[0])
         if typeFile == None:
-            messStr += 'File instTab.txt not retrieved from site ' + site[1] + '\n<br>\n'
+            messStr += 'File instTab.txt not retrieved from site ' + site[1] + '\n\n'
         else:
             if typeFile.strip() != cvsTypeFile.strip():
-                messStr += 'File instTab.txt differs from source control at site ' + site[1] + '\n<br>\n'
+                messStr += 'File instTab.txt differs from source control at site ' + site[1] + '\n\n'
 
     # next examine file instTypeTab.txt
     cvsTypeFile = openMad.getLatestCvsVersion('madroot/metadata/instType.txt')
     if cvsTypeFile == None:
-        messStr += 'problem with cvs and instType.txt\n<br>\n'
+        messStr += 'problem with cvs and instType.txt\n\n'
 
     # diff against every version from siteList
     for site in siteList:
         typeFile = openMad.getInstTypeMetadata(site[0])
         if typeFile == None:
-            messStr += 'File instType.txt not retrieved from site ' + site[1] + '\n<br>\n'
+            messStr += 'File instType.txt not retrieved from site ' + site[1] + '\n\n'
         else:
             if typeFile.strip() != cvsTypeFile.strip():
-                messStr += 'File instType.txt differs from source control at site ' + site[1] + '\n<br>\n'
+                messStr += 'File instType.txt differs from source control at site ' + site[1] + '\n\n'
 
     # if messStr not empty, send message to admin
     if len(messStr) > 0:
