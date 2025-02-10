@@ -64,7 +64,7 @@ try:
         messStr += 'problem with cvs and siteTab.txt\n\n'
         cvsSiteFile = ''
         
-    cvsSiteFile3 = openMad.getLatestCvsVersion('madroot/metadata3/siteTab.txt')
+    cvsSiteFile3 = openMad.getLatestCvsVersion('madroot/metadata/siteTab.txt')
     if cvsSiteFile3 == None:
         messStr += 'problem with cvs and mad3 siteTab.txt\n\n'
         cvsSiteFile3 = ''
