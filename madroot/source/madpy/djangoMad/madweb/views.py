@@ -23,7 +23,7 @@ import random
 
 # django imports
 from django.shortcuts import render, redirect
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_protect
 from django.template.context import RequestContext
 #from django.conf import settings
 try:
@@ -61,7 +61,7 @@ maxSize = 50000000 # 50 MB cutoff
 
 
 
-
+@csrf_protect
 def index(request):
     """index is the home page view
     """
@@ -76,23 +76,22 @@ def index(request):
                      'bg_color': bg_color, 'welcome': welcome}
     return render(request, 'madweb/index.html', template_dict)
 
-@csrf_exempt
-def check_registration(view):
-    def check_cookies(request, *args, **kwargs):
-        # this view checks if all the needed cookies are set
+
+@csrf_protect
+def check_registration(request):
+    # this checks if all the needed cookies are set
+    try:
         cookieDict = request.COOKIES
-        try:
-            cookieDict['user_fullname']
-            cookieDict['user_email']
-            cookieDict['user_affiliation']
-            # no need to register
-            return(view(request, *args, **kwargs))
-        except KeyError:
-            return(HttpResponseRedirect(reverse('view_registration') + '?redirect=%s' % (request.get_full_path())))
-        
-    return(check_cookies)
+        cookieDict['user_fullname']
+        cookieDict['user_email']
+        cookieDict['user_affiliation']
+        # no need to register
+        return(request)
+    except:
+        return(HttpResponseRedirect(reverse('view_registration') + '?redirect=%s' % (request.get_full_path())))
+    
             
-            
+@csrf_protect        
 def view_registration(request):
     madDB = madrigal.metadata.MadrigalDB()
     madWeb = madrigal.ui.web.MadrigalWeb(madDB, request)
@@ -132,11 +131,16 @@ def view_registration(request):
 
     
 
-
+@csrf_protect
 def view_single(request):
     """view_single is the single experiment view.  It is supplemented by ajax views to speed performamnce,
     but this view can also create the entire page given a complete query string
     """
+    request = check_registration(request)
+
+    if type(request) == HttpResponseRedirect:
+        return(request)
+
     responseDict = {'single_active': 'class="active"'}
     cookieDict = request.COOKIES
     user_email = cookieDict['user_email']
@@ -365,7 +369,7 @@ def show_plots(request):
     except ValueError:
         # convert expPath to expID
         madDB = madrigal.metadata.MadrigalDB()
-        madWebObj = madrigal.ui.web.MadrigalWeb(madDB, requests)
+        madWebObj = madrigal.ui.web.MadrigalWeb(madDB, request)
         expID = madWebObj.getExpIDFromExpPath(request.GET['experiment_list'], True)
         
     queryDict = request.GET.copy()
@@ -809,10 +813,16 @@ def advanced_print(request):
                                                            'basename': os.path.basename(fullFilename),
                                                            'file_text': file_text, 'bg_color': bg_color})
     
-    
+
+@csrf_protect    
 def view_list(request):
     """view_list is the list experiment view.
     """
+    request = check_registration(request)
+
+    if type(request) == HttpResponseRedirect:
+        return(request)
+    
     madDB = madrigal.metadata.MadrigalDB()
     bg_color = madDB.getBackgroundColor()
     madWebObj = madrigal.ui.web.MadrigalWeb(madDB, request)
@@ -863,12 +873,18 @@ def list_experiments(request):
                                                                'site_list': siteList, 'bg_color': bg_color})
 
 
+@csrf_protect
 def show_experiment(request):
     """show_experiment call that returns the experiment page to support the list experiments UI.  
     
     Inputs:
         request 
     """
+    request = check_registration(request)
+
+    if type(request) == HttpResponseRedirect:
+        return(request)
+    
     madDB = madrigal.metadata.MadrigalDB()
     bg_color = madDB.getBackgroundColor()
     madWebObj = madrigal.ui.web.MadrigalWeb(madDB, request)
@@ -906,7 +922,8 @@ def show_experiment(request):
                                                                     'bg_color': bg_color,
                                                                     'redirect': reverse('show_experiment')})
         
-    
+
+@csrf_protect    
 def show_experiment_v2(request):
     """show_experiment_v2 is a slight variant of show_experiment to accept old form
     calls from Madrigal2 sites.  
@@ -914,6 +931,11 @@ def show_experiment_v2(request):
     Inputs:
         request 
     """
+    request = check_registration(request)
+
+    if type(request) == HttpResponseRedirect:
+        return(request)
+    
     madDB = madrigal.metadata.MadrigalDB()
     bg_color = madDB.getBackgroundColor()
     madWebObj = madrigal.ui.web.MadrigalWeb(madDB, request)
@@ -933,13 +955,18 @@ def show_experiment_v2(request):
                                                               'bg_color': bg_color,
                                                               'redirect': reverse('show_experiment')})
     
-    
+@csrf_protect    
 def choose_script(request):
     """choose_script that returns the choose script page.  
     
     Inputs:
         request 
     """
+    request = check_registration(request)
+
+    if type(request) == HttpResponseRedirect:
+        return(request)
+    
     madDB = madrigal.metadata.MadrigalDB()
     bg_color = madDB.getBackgroundColor()
     madWebObj = madrigal.ui.web.MadrigalWeb(madDB, request)
@@ -1072,9 +1099,15 @@ def generate_parms_filters_script(request):
     return render(request, 'madweb/download_adv_parms_filters_script.html', {'form': form})
 
 
+@csrf_protect
 def ftp(request):
     """ftp creates the first ftp page listing instruments
     """
+    request = check_registration(request)
+
+    if type(request) == HttpResponseRedirect:
+        return(request)
+    
     madDB = madrigal.metadata.MadrigalDB()
     bg_color = madDB.getBackgroundColor()
     madWebObj = madrigal.ui.web.MadrigalWeb(madDB, request)
@@ -1292,7 +1325,7 @@ def ftp_download(request, user_fullname, user_email, user_affiliation, kinst, ye
     return(response)
 
 
-@csrf_exempt
+@csrf_protect
 def ftp_multiple_download(request):
     """ftp_download creates the first ftp kindat page listing individual files
     Inputs: kinst selected, year selected, kindat selected
@@ -2737,7 +2770,7 @@ def mad_time_calculator_service(request):
 
 
 
-@csrf_exempt
+@csrf_protect
 def mad_calculator2_service(request):
     """mad_calculator2_service runs the madCalculator2 service.
     
@@ -2832,7 +2865,7 @@ def mad_calculator2_service(request):
     
     
 
-@csrf_exempt
+@csrf_protect
 def mad_calculator3_service(request):
     """mad_calculator3_service runs the madCalculator3 service.
     
