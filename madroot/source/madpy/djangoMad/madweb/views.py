@@ -1787,7 +1787,7 @@ def looker_output(request):
         raise ValueError('Unknown looker_option <%s>' % (str(request.GET['looker_options'])))
     
     
-    
+  
 def get_version_service(request):
     """get_version_service runs the getVersionService.py service.  
     
@@ -1802,7 +1802,7 @@ def get_version_service(request):
     return(HttpResponse(madSiteObj.getSiteVersion(siteID)))
     
     
-    
+   
 def get_instruments_service(request):
     """get_instruments_service runs the getInstrumentsService.py service.  
     
@@ -2569,7 +2569,7 @@ def get_madfile_service(request):
         os.remove(tmpFile)
     return(response)
         
-    
+  
 def mad_calculator_service(request):
     """mad_calculator_service runs the madCalculator service.  
     
@@ -2770,7 +2770,7 @@ def mad_time_calculator_service(request):
 
 
 
-@csrf_protect
+
 def mad_calculator2_service(request):
     """mad_calculator2_service runs the madCalculator2 service.
     
@@ -2865,7 +2865,6 @@ def mad_calculator2_service(request):
     
     
 
-@csrf_protect
 def mad_calculator3_service(request):
     """mad_calculator3_service runs the madCalculator3 service.
     
