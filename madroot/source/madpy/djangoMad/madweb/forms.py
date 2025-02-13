@@ -676,6 +676,7 @@ class IsprintChoiceField(django.forms.TypedMultipleChoiceField):
         """
         self.isDerivedDict = kwargs.pop('isDerivedDict')
         self.parmDescDict = kwargs.pop('parmDescDict')
+        self.parmLinkDict = kwargs.pop('parmLinkDict')
         try:
             self.separateProlog = kwargs.pop('separateProlog')
         except:
@@ -683,9 +684,10 @@ class IsprintChoiceField(django.forms.TypedMultipleChoiceField):
         
         kwargs['widget'] = IsprintWidget(attrs={'isDerivedDict':self.isDerivedDict,
                                                 'parmDescDict':self.parmDescDict,
+                                                'parmLinkDict':self.parmLinkDict,
                                                 'separateProlog':self.separateProlog})
         super(IsprintChoiceField, self).__init__(*args, **kwargs)
-        self.widget.set_parm_lists(self.isDerivedDict, self.parmDescDict, self.separateProlog)
+        self.widget.set_parm_lists(self.isDerivedDict, self.parmDescDict, self.parmLinkDict, self.separateProlog)
         
 
         
@@ -704,7 +706,7 @@ class IsprintWidget(django.forms.CheckboxSelectMultiple):
         self.template_name = 'madweb/parameter_multiple.html'
         
         
-    def set_parm_lists(self, isDerivedDict, parmDescDict, separateProlog=False):
+    def set_parm_lists(self, isDerivedDict, parmDescDict, parmLinkDict, separateProlog=False):
         """set_parm_lists sets class variables used by the html renderer
         
         measParmList - parms in the file
@@ -715,6 +717,7 @@ class IsprintWidget(django.forms.CheckboxSelectMultiple):
         """
         self.renderer.isDerivedDict = isDerivedDict
         self.renderer.parmDescDict = parmDescDict
+        self.renderer.parmLinkDict = parmLinkDict
         self.renderer.iterator = itertools.count()
         self.renderer.separateProlog = separateProlog
 
@@ -1667,6 +1670,7 @@ class MadCalculatorForm(django.forms.Form):
         choices = []
         isDerivedDict = {}
         self.parmDescDict = {}
+        self.parmLinkDict = {}
         for catDesc, catID in catList:
             if catDesc in rejectedCats[1:]:
                 continue
@@ -1682,7 +1686,17 @@ class MadCalculatorForm(django.forms.Form):
                     continue
                 theseParms.append((parm, parm))
                 isDerivedDict[parm] = True
-                self.parmDescDict[parm] = madParmObj.getParmDescription(parm)
+
+                desc = madParmObj.getParmDescription(parm)
+                splitDesc = desc.split()
+
+                # separate parmDesc from parmLink if link to parmDesc.html exists
+                if splitDesc[-1].startswith(madDB.getTopLevelUrl()) and splitDesc[-1].endswith(parm):
+                    self.parmLinkDict[parm] = splitDesc[-1]
+                    self.parmDescDict[parm] = " ".join(splitDesc[:-1])
+                else:
+                    self.parmDescDict[parm] = desc
+
             choices.append((catDesc, theseParms))
             
         
@@ -1715,6 +1729,7 @@ class MadCalculatorForm(django.forms.Form):
                                                        required=False,
                                                        isDerivedDict=isDerivedDict,
                                                        parmDescDict=self.parmDescDict,
+                                                       parmLinkDict=self.parmLinkDict,
                                                        separateProlog=False,
                                                        label = "")
                 

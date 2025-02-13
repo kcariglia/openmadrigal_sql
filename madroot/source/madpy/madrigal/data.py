@@ -3149,9 +3149,8 @@ class MadrigalParameters:
 
         # append link to parmDesc.html if exists
         if self.hasHtmlDesc(parm):
-            retValue += '<br><br>Click <a href=/%s/docs/name/parmDesc.html#' % (self._madDB.getTopLevelUrl()) + parm
-            retValue += '>here</a> for a more detailed description of ' + parm + '.'
-
+            retValue += ' %s/docs/name/parmDesc.html#' % (self._madDB.getTopLevelUrl()) + parm
+            
         return(retValue)
 
 
