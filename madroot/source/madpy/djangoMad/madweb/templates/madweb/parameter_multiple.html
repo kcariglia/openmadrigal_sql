@@ -18,9 +18,9 @@
 	          <div class="row">
 	      {% endif %}
 	      <div class="col-xs-12 col-sm-4 col-md-2"><label for="id_{{ option.name }}_{{ option.value }}"><input name="{{ option.name }}" id="id_{{ option.name }}_{{ option.value }}" type="checkbox"  value="{{ option.value }}"> 
-	      {% if option.attrs.parmLinkDict|get_item:option.value %}
-		  <a href="{{ option.attrs.parmLinkDict|get_item:option.value }}">
-		  {% endif %}
+			{% if option.attrs.parmLinkDict|get_item:option.value %}
+			<a href="{{ option.attrs.parmLinkDict|get_item:option.value }}">
+			{% endif %}
 	      {% if option.attrs.isDerivedDict|get_item:option.value %}
 		     <span class="label label-default" 
 		  {% else %}

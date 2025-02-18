@@ -113,6 +113,7 @@ def getCategoryList(args, kwargs, madInstData, forList=False):
     else:
         local = False
     categories = madInstData.getCategories(local)
+    categories.sort(key=lambda x: x[1])
     if forList:
         catList = [('0', 'All instrument categories'),]
     else:
@@ -145,6 +146,7 @@ def getInstrumentList(args, kwargs, madInstData, header='Select an instrument: '
     else:
         categoryId = 0
     instruments = madInstData.getInstruments(categoryId, local)
+    instruments.sort(key=lambda x: x[1])
     instList = [('0', header),]
     for kinst, instDesc, siteID in instruments:
         if includeYears:
@@ -687,7 +689,9 @@ class IsprintChoiceField(django.forms.TypedMultipleChoiceField):
                                                 'parmLinkDict':self.parmLinkDict,
                                                 'separateProlog':self.separateProlog})
         super(IsprintChoiceField, self).__init__(*args, **kwargs)
-        self.widget.set_parm_lists(self.isDerivedDict, self.parmDescDict, self.parmLinkDict, self.separateProlog)
+        self.widget.set_parm_lists(self.isDerivedDict, self.parmDescDict,
+                                    self.parmLinkDict,
+                                      self.separateProlog)
         
 
         
@@ -755,6 +759,7 @@ class IsprintForm(django.forms.Form):
         choices = []
         isDerivedDict = {}
         parmDescDict = {}
+        parmLinkDict = {}
         for catDesc, catID in catList:
             if catID not in list(catDict.keys()):
                 continue
@@ -765,7 +770,15 @@ class IsprintForm(django.forms.Form):
                     isDerivedDict[parm] = True
                 else:
                     isDerivedDict[parm] = False
-                parmDescDict[parm] = madParmObj.getParmDescription(parm)
+                desc = madParmObj.getParmDescription(parm)
+                splitDesc = desc.split()
+
+                # separate parmDesc from parmLink if link to parmDesc.html exists
+                if splitDesc[-1].startswith(madDB.getTopLevelUrl()) and splitDesc[-1].endswith(parm):
+                    parmLinkDict[parm] = splitDesc[-1]
+                    parmDescDict[parm] = " ".join(splitDesc[:-1])
+                else:
+                    parmDescDict[parm] = desc
             choices.append((catDesc, theseParms))
             
         choices_with_null = [('None', 'None')] + choices
@@ -798,6 +811,7 @@ class IsprintForm(django.forms.Form):
                                                        initial=['YEAR', 'MIN'],
                                                        isDerivedDict=isDerivedDict,
                                                        parmDescDict=parmDescDict,
+                                                       parmLinkDict=parmLinkDict,
                                                        separateProlog=separateProlog,
                                                        label = "")
         
@@ -1309,7 +1323,6 @@ class ListExpForm(django.forms.Form):
                                                                      choices=getCategoryList(args, kwargs, madInstData, True), 
                                                                      initial='0',
                                                                      label='Choose instrument category(s):')
-        
         self.fields['instruments'] = django.forms.MultipleChoiceField(widget = django.forms.SelectMultiple(),
                                                                       choices=getInstrumentList(args, kwargs, madInstData, 'All instruments', local=False, includeYears=True),
                                                                       initial='0', label='Choose instrument(s)')
@@ -1583,6 +1596,7 @@ class AdvScriptParmsForm(django.forms.Form):
         choices = []
         isDerivedDict = {}
         parmDescDict = {}
+        parmLinkDict = {}
         for catDesc, catID in catList:
             if catID not in list(catDict.keys()):
                 continue
@@ -1590,7 +1604,15 @@ class AdvScriptParmsForm(django.forms.Form):
             for parm in catDict[catID][1]:
                 theseParms.append((parm, parm))
                 isDerivedDict[parm] = False
-                parmDescDict[parm] = madParmObj.getParmDescription(parm)
+                desc = madParmObj.getParmDescription(parm)
+                splitDesc = desc.split()
+
+                # separate parmDesc from parmLink if link to parmDesc.html exists
+                if splitDesc[-1].startswith(madDB.getTopLevelUrl()) and splitDesc[-1].endswith(parm):
+                    parmLinkDict[parm] = splitDesc[-1]
+                    parmDescDict[parm] = " ".join(splitDesc[:-1])
+                else:
+                    parmDescDict[parm] = desc
             choices.append((catDesc, theseParms))
             
         super(AdvScriptParmsForm, self).__init__(*args, **kwargs)
@@ -1600,6 +1622,7 @@ class AdvScriptParmsForm(django.forms.Form):
                                                        required=False,
                                                        isDerivedDict=isDerivedDict,
                                                        parmDescDict=parmDescDict,
+                                                       parmLinkDict=parmLinkDict,
                                                        separateProlog=False,
                                                        label = "")
         

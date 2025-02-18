@@ -193,6 +193,10 @@
 	        window.location.href = url;
 	        return;
 	    }
+
+		// sort category list before rebuilding
+		categoryArr.sort((a, b) => a.name.localeCompare(b.name));
+
 	    // reset all selections
 	    madForm.categories.options.length = 0;
 	    madForm.instruments.options.length = 0;
@@ -230,6 +234,9 @@
 			if (madForm.instruments[count].selected)
 				instSelectArr[instSelectArr.length] = Number(madForm.instruments.options[count].value);
 		}
+
+		// sort instrument list before rebuilding
+		instArr.sort((a, b) => a.name.localeCompare(b.name));
 		
 		// rebuild instruments list
 		madForm.instruments.options.length = 0;
@@ -286,7 +293,6 @@
 			$('#id_instruments').scrollTop(0)
 		}
 		
-        
 	}
 
 	
