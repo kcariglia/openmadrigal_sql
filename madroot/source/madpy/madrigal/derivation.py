@@ -37,6 +37,7 @@ import types
 import numpy
 import h5py
 import aacgmv2
+import pymap3d
 
 # Madrigal imports
 import madrigal.cedar
@@ -163,15 +164,15 @@ MadrigalDerivedMethods["getElmDel"] = [("EL1", "EL2",),
 MadrigalDerivedMethods["getDElmDDel"] = [("DEL1", "DEL2",),
                                          ("DELM", "DDEL",)]
 MadrigalDerivedMethods["getGeod"] = [("KINST", "AZM", "ELM", "RANGE",),
-                                     ("GDLAT", "GLON", "GDALT",)]
+                                     ("GDLAT", "GLON", "GDALT",), 'python']
 MadrigalDerivedMethods["getDGeod"] = [("KINST", "AZM", "DAZM", "ELM", "DELM", "RANGE", "DRANGE",),
-                                      ("DGDLAT", "DGLON", "DGDALT",)]
+                                      ("DGDLAT", "DGLON", "DGDALT",), 'python']
 MadrigalDerivedMethods["getGeodGdalt"] = [("KINST", "AZM", "ELM", "GDALT",),
-                                          ("GDLAT", "GLON",)]
+                                          ("GDLAT", "GLON",), 'python']
 MadrigalDerivedMethods["getGeodAlt"] = [("GDLATR", "GDLONR",),
-                                        ("GDLAT", "GLON",)]
+                                        ("GDLAT", "GLON",), 'python']
 MadrigalDerivedMethods["getAzElRange"] = [("GDLAT", "GLON", "GDALT", "GDLATR", "GDLONR", "GALTR",),
-                                          ("AZM","ELM", "RANGE",)]
+                                          ("AZM","ELM", "RANGE",), 'python']
 MadrigalDerivedMethods["getSZen"] = [("UT1", "UT2", "GDLAT", "GLON",),
                                      ("SZEN",)]
 MadrigalDerivedMethods["getSltmut"] = [("UT1", "UT2", "GLON",),
@@ -1915,6 +1916,16 @@ class MadrigalDerivationMethods:
             self.getDiff_B_up(inputArr, outputArr)
         elif methodName == 'getDiff_Bd':
             self.getDiff_Bd(inputArr, outputArr)
+        elif methodName == 'getGeod':
+            self.getGeod(inputArr, outputArr)
+        elif methodName == 'getDGeod':
+            self.getDGeod(inputArr, outputArr)
+        elif methodName == 'getGeodGdalt':
+            self.getGeodGdalt(inputArr, outputArr)
+        elif methodName == 'getGeodAlt':
+            self.getGeodAlt(inputArr, outputArr)
+        elif methodName == 'getAzElRange':
+            self.getAzElRange(inputArr, outputArr)
         else:
             raise ValueError('method %s not implemented' % (methodName))
         
@@ -3102,9 +3113,244 @@ class MadrigalDerivationMethods:
         """
         outputArr[0] = -1.0 * inputArr[0]
         return
+    
+
+    def getGeod(self, inputArr, outputArr):
+        """getGeod derives Geodetic lat, long and alt from kinst, azm, elm, and range
         
+        getGeod modifies the outputArr with the values of:
+
+           "GDLAT", "GLON", "GDALT":
+                  GDLAT - geodetic latitude of measurement
+                  GLON - geodetic longitude of measurement
+                  GDALT - geodetic altitude of measurement (km)
+
+        given an inputArr with:
+
+           "KINST", "AZM", "ELM", "RANGE":
+                  KINST - instrument id
+                  AZM - mean azimuth in deg
+                  ELM - mean elevation in deg
+                  RANGE - range in km
+        """
+        kinst = int(inputArr[0])
+        azm = inputArr[1]
+        elm = inputArr[2]
+        range = inputArr[3]
         
-            
+        instAlt = self.madInst.getAltitude(kinst)
+        instLat = self.madInst.getLatitude(kinst)
+        instLon = self.madInst.getLongitude(kinst)
+
+        # aer2geodetic takes range and instAlt in meters, outAlt in meters
+        outLat, outLon, outAlt = pymap3d.aer.aer2geodetic(azm, elm, range * 1000, instLat, instLon, instAlt * 1000)
+        outputArr[0] = outLat
+        outputArr[1] = outLon
+        outputArr[2] = outAlt / 1000.0
+        return
+    
+
+    def getDGeod(self, inputArr, outputArr):
+        """getDGeod derives error in Geodetic lat, long and alt
+             from azm, dazm, elm, delm, range, and drange
+        
+        getDGeod modifies the outputArr with the values of:
+
+           "DGDLAT", "DGLON", "DGDALT":
+                  DGDLAT - error in geodetic latitude
+                  DGLON - error in geodetic longitude
+                  DGDALT - error in geodetic altitude
+
+           given an inputArr with:
+
+           "KINST", "AZM", "DAZM", "ELM", "DELM", "RANGE", "DRANGE":
+                  KINST - instrument id
+                  AZM - mean azimuth in deg
+                  DAZM - error in mean azimuth
+                  ELM - mean elevation in deg
+                  DELM - error in mean elevation
+                  RANGE - range in km
+                  DRANGE - error in range
+
+        Algorithm: Calculate derivatives with respect to AZM, ELM, and
+               RANGE by simply finding the difference with them
+               incremented by 1 degree or 1 km.  These derivitives
+               are:
+                  dlatdaz, dlatdel, dlatdrange
+                  dlondaz, dlondel, dlondrange
+                  daltdaz, daltdel, daltdrange
+ 
+               then:
+ 
+        dgdlat = ((dlatdaz*dazm)^2 + (dlatdel*delm)^2 + (dlatdrange*drange)^2)^1/2
+        dgdlon = ((dlondaz*dazm)^2 + (dlondel*delm)^2 + (dlondrange*drange)^2)^1/2
+        dgdalt = ((daltdaz*dazm)^2 + (daltdel*delm)^2 + (daltdrange*drange)^2)^1/2
+        """
+        # aer2geodetic takes range and instAlt in meters, outAlt in meters
+        kinst = int(inputArr[0])
+        azm = inputArr[1]
+        dazm = inputArr[2]
+        elm = inputArr[3]
+        delm = inputArr[4]
+        range = inputArr[5] * 1000
+        drange = inputArr[6]
+        
+        instAlt = self.madInst.getAltitude(kinst) * 1000
+        instLat = self.madInst.getLatitude(kinst)
+        instLon = self.madInst.getLongitude(kinst)
+
+        dlatdaz = None
+        dlatdel = None
+        dlatdrange = None
+        dlondaz = None
+        dlondel = None
+        dlondrange = None
+        daltdaz = None
+        daltdel = None
+        daltdrange = None
+
+        sLat, sLon, sAlt = pymap3d.aer.aer2geodetic(azm, elm, range, instLat, instLon, instAlt)
+        eLat, eLon, eAlt = pymap3d.aer.aer2geodetic(azm+1, elm, range, instLat, instLon, instAlt)
+        dlatdaz = eLat - sLat
+        eLat, eLon, eAlt = pymap3d.aer.aer2geodetic(azm, elm+1, range, instLat, instLon, instAlt)
+        dlatdel = eLat - sLat
+        eLat, eLon, eAlt = pymap3d.aer.aer2geodetic(azm, elm, range+1000, instLat, instLon, instAlt)
+        dlatdrange = eLat - sLat
+        eLat, eLon, eAlt = pymap3d.aer.aer2geodetic(azm+1, elm, range, instLat, instLon, instAlt)
+        dlondaz = eLon - sLon
+        eLat, eLon, eAlt = pymap3d.aer.aer2geodetic(azm, elm+1, range, instLat, instLon, instAlt)
+        dlondel = eLon - sLon
+        eLat, eLon, eAlt = pymap3d.aer.aer2geodetic(azm, elm, range+1000, instLat, instLon, instAlt)
+        dlondrange = eLon - sLon
+        eLat, eLon, eAlt = pymap3d.aer.aer2geodetic(azm+1, elm, range, instLat, instLon, instAlt)
+        daltdaz = eAlt - sAlt
+        eLat, eLon, eAlt = pymap3d.aer.aer2geodetic(azm, elm+1, range, instLat, instLon, instAlt)
+        daltdel = eAlt - sAlt
+        eLat, eLon, eAlt = pymap3d.aer.aer2geodetic(azm, elm, range+1000, instLat, instLon, instAlt)
+        daltdrange = eAlt - sAlt
+
+        dgdlat = math.sqrt(((dlatdaz * dazm) ** 2) + ((dlatdel * delm) ** 2) + ((dlatdrange * drange) ** 2))
+        dgdlon = math.sqrt(((dlondaz * dazm) ** 2) + ((dlondel * delm) ** 2) + ((dlondrange * drange) ** 2))
+        dgdalt = math.sqrt(((daltdaz * dazm) ** 2) + ((daltdel * delm) ** 2) + ((daltdrange * drange) ** 2))
+
+        outputArr[0] = dgdlat
+        outputArr[1] = dgdlon
+        outputArr[2] = dgdalt / 1000.0
+        return
+    
+
+    def getGeodGdalt(self, inputArr, outputArr):
+        """getGeodGdalt derives Geodetic lat, long and alt from kinst, azm, elm, and gdalt
+        
+        getGeodGdalt modifies the outputArr with the values of:
+
+           "GDLAT", "GLON":
+                  GDLAT - geodetic latitude of measurement
+                  GLON - geodetic longitude of measurement
+
+           given an inputArr with:
+
+           "KINST", "AZM", "ELM", "GDALT":
+                  KINST - instrument id
+                  AZM - mean azimuth in deg
+                  ELM - mean elevation in deg
+                  GDALT - alt in km
+        """
+        kinst = int(inputArr[0])
+        azm = inputArr[1]
+        elm = inputArr[2]
+        range = inputArr[3]
+
+        # protect against elm < 0.0001 deg
+        if ((elm < 0.0001) or (elm > 90.0001)):
+            outputArr[0] = numpy.nan
+            outputArr[1] = numpy.nan
+            return
+        # range passed in as gdalt, convert
+        range = (range / math.sin(elm / 57.29578)) * 1000
+
+        instLat = self.madInst.getLatitude(kinst)
+        instLon = self.madInst.getLongitude(kinst)
+        instAlt = self.madInst.getAltitude(kinst) * 1000
+
+        # aer2geodetic takes range and instAlt in meters, outAlt in meters
+        outLat, outLon, outAlt = pymap3d.aer.aer2geodetic(azm, elm, range, instLat, instLon, instAlt)
+
+        # force glon to between -180 and 180 
+        while (outLon < -180.0):
+            outLon += 360.0
+        while (outLon > +180.0):
+            outLon -= 360.0
+        
+        outputArr[0] = outLat
+        outputArr[1] = outLon
+        return
+    
+
+    def getGeodAlt(self, inputArr, outputArr):
+        """getGeodAlt derives Geodetic lat, long by assuming measured point is
+               directly above instrument
+        
+        getGeodAlt modifies the outputArr with the values of:
+
+           "GDLAT", "GLON":
+                  GDLAT - geodetic latitude of measurement
+                  GLON - longitude of measurement
+
+           given an inputArr with:
+
+           "GDLATR", "GDLONR"
+                  GDLATR - Inst geod latitude (N hemi=pos) - deg
+                  GDLONR - Inst geod longitute - deg
+
+        Algorithm: Sets GDLAT, GLON to station values
+        """
+        outputArr[0] = inputArr[0]
+        outputArr[1] = inputArr[1]
+
+        # force outputArr[1] to between -180 and 180
+        while (outputArr[1] < -180.0):
+            outputArr[1] += 360.0
+        while (outputArr[1] > +180.0):
+            outputArr[1] -= 360.0
+        return
+    
+
+    def getAzElRange(self, inputArr, outputArr):
+        """getAzElRange derives Azm, Elm, and Range given gdlat, glon, gdalt
+        (point position) and gdlatr, glonr, galtr (station position)
+        
+        getAlElRange modifies the outputArr with the values of:
+
+           "AZM", "ELM", "RANGE":
+                  AZM - mean azimuth in deg
+                  ELM - mean elevation in deg
+                  RANGE - range in km
+
+            given an inputArr with:
+
+            "GDLAT", "GLON", "GDALT", "GDLATR", "GDLONR", "GALTR":
+                  GDLAT - geodetic latitude of measurement
+                  GLON - longitude of measurement
+                  GDALT - geodetic altitude of measurement in km
+                  GDLATR - Inst geod latitude (N hemi=pos) - deg
+                  GDLONR - Inst geod longitute - deg
+                  GALTR - geodetic altitude of station in km
+        """
+        gdlat  = inputArr[0]
+        glon   = inputArr[1]
+        gdalt  = inputArr[2] * 1000
+        gdlatr = inputArr[3]
+        gdlonr = inputArr[4]
+        galtr  = inputArr[5] * 1000
+
+        # geodetic2aer takes target and observer alt in meters, outRange in meters
+        outAz, outEl, outRange = pymap3d.aer.geodetic2aer(gdlat, glon, gdalt, gdlatr, gdlonr, galtr)
+
+        outputArr[0] = outAz
+        outputArr[1] = outEl
+        outputArr[2] = outRange / 1000.0
+        return
         
         
     

@@ -19,6 +19,7 @@ dependencies = [
     "setupext",
     "aacgmv2",
     "filelock",
+    "pymap3d"
     ]
 
 [project.urls]
