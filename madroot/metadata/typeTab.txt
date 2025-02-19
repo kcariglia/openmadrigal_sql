@@ -363,6 +363,12 @@
 10217,DMSP F17 flux/energy values
 10218,DMSP F18 flux/energy values
 10219,DMSP F19 flux/energy values
+10242,F12 UT DMSP with quality flags
+10243,F13 UT DMSP with quality flags
+10244,F14 UT DMSP with quality flags
+10245,F15 UT DMSP with quality flags
+10246,DMSP F16 flux/energy values
+10247,DMSP F17 flux/energy values
 72_11100,User EISCAT data
 71_12404,User EISCAT data
 73_12404,User EISCAT data
