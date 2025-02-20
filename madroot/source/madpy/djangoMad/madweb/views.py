@@ -1058,14 +1058,27 @@ def generate_download_advanced_script(request):
     madWebObj = madrigal.ui.web.MadrigalWeb(madDB, request)
     isTrusted = madWebObj.isTrusted()
     form1 = madweb.forms.DownloadAdvancedScriptForm(request.GET, initial = {'isTrusted': isTrusted})
-    if not form1.is_valid():
-        raise ValueError('Form error: %s' % (form1.errors))
+    
+    try:
+        if not form1.is_valid():
+            raise ValueError('Form error: %s' % (form1.errors))
+    except KeyError:
+        return(HttpResponse('<p>Missing arguments in generate_download_advanced_script</p>'))
+    
     form2 = madweb.forms.AdvScriptParmsForm(request.GET)
-    if not form2.is_valid():
-        raise ValueError('Form error: %s' % (form2.errors))
+    try:
+        if not form2.is_valid():
+            raise ValueError('Form error: %s' % (form2.errors))
+    except KeyError:
+        return(HttpResponse('<p>Missing arguments in generate_download_advanced_script</p>'))
+    
     form3 = madweb.forms.AdvScriptParmsFiltersForm(request.GET)
-    if not form3.is_valid():
-        raise ValueError('Form error: %s' % (form3.errors))
+    try:
+        if not form3.is_valid():
+            raise ValueError('Form error: %s' % (form3.errors))
+    except KeyError:
+        return(HttpResponse('<p>Missing arguments in generate_download_advanced_script</p>'))
+    
     cookieDict = request.COOKIES
     if not 'user_fullname' in cookieDict:
         return(HttpResponse('<p>Cookie with user_fullname required for generateAdvancedDownloadScript</p>'))
@@ -1084,7 +1097,10 @@ def generate_parms_script(request):
     Inputs:
         request
     """
-    form = madweb.forms.AdvScriptParmsForm(request.GET)
+    try:
+        form = madweb.forms.AdvScriptParmsForm(request.GET)
+    except ValueError:
+        return(HttpResponse('<p>Missing arguments in generate_parms_script</p>'))
     return render(request, 'madweb/download_adv_parms_script.html', {'form': form,
                                                                         'parmList': form.parmList})
     
@@ -1095,7 +1111,10 @@ def generate_parms_filters_script(request):
     Inputs:
         request
     """
-    form = madweb.forms.AdvScriptParmsFiltersForm(request.GET)
+    try:
+        form = madweb.forms.AdvScriptParmsFiltersForm(request.GET)
+    except ValueError:
+        return(HttpResponse('<p>Missing arguments in generate_parms_filters_script</p>'))
     return render(request, 'madweb/download_adv_parms_filters_script.html', {'form': form})
 
 
@@ -2511,7 +2530,7 @@ def get_madfile_service(request):
     madWebObj.logDataAccess(fileName, user_fullname, user_email, user_affiliation)
 
     # check filename validity
-    __dirConvStr1 = '/experiments[0-9]*/[0-9][0-9][0-9][0-9]/[a-z][a-z0-9][a-z0-9]/[a-zA-Z0-9\-_]*$'
+    __dirConvStr1 = '/experiments[0-9]*/[0-9][0-9][0-9][0-9]/[a-z][a-z0-9][a-z0-9]/[a-zA-Z0-9\\-_]*$'
     __dirConvStr2 = '/experiments[0-9]*/[0-9][0-9][0-9][0-9]/[a-z][a-z0-9][a-z0-9]/[0-3][0-9][a-z][a-z0-9][a-z0-9][0-9][0-9].?'
     v1 = re.search(__dirConvStr1, fileName)
     v2 = re.search(__dirConvStr2, fileName)
