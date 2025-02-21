@@ -471,7 +471,7 @@ def create_citation_group_with_list(request):
         if citation[:11] not in ('https://w3i', 'experiments'):
             return render(request, 'service.html', {'text': 'Illegal url %s' % (citation)})
     id = madDB.createGroupIdWithList(user_fullname, user_email, user_affiliation, citations)
-    return render(request, 'service.html', {'text': 'http://cedar.openmadrigal.org/getCitationGroup?id=%i\n' % (id)})
+    return render(request, 'service.html', {'text': 'https://cedar.openmadrigal.org/getCitationGroup?id=%i\n' % (id)})
     
     
 def get_citation_group_with_filters(request):
