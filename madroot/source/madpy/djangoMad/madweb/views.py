@@ -1010,8 +1010,13 @@ def generate_download_files_script(request):
     madWebObj = madrigal.ui.web.MadrigalWeb(madDB, request)
     isTrusted = madWebObj.isTrusted()
     form = madweb.forms.DownloadAsIsScriptForm(request.GET, initial = {'isTrusted': isTrusted})
-    if not form.is_valid():
-        raise ValueError('Form error: %s' % (form.errors))
+    
+    try:
+        if not form.is_valid():
+            raise ValueError('Form error: %s' % (form.errors))
+    except KeyError:
+        return(HttpResponse('<p>Missing arguments in generate_download_files_script</p>'))
+    
     cookieDict = request.COOKIES
     if not 'user_fullname' in cookieDict:
         return(HttpResponse('<p>Cookie with user_fullname required for generateDownloadFilesScript</p>'))
