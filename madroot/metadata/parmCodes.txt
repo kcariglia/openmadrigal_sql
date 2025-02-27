@@ -118,7 +118,7 @@
 170,Geographic longitude of measurement,deg,GLON,%9.2f,11,1,0,0
 172,Geographic longitude of second inst,deg,GLON2,%9.2f,11,1,1,0
 173,Effective radius of measurement field,km,EFF_RADIUS,%9.2f,14,1,0,0
-175,Four letter GPS receiver code,N/A,GPS_SITE,%4s,11,1,1,0
+175,Four letter GNSS receiver code,N/A,GPS_SITE,%4s,11,1,1,0
 176,GNSS sat type (8 char padded str GPS or GLONASS),N/A,GNSS_TYPE,%8s,11,1,1,0
 177,Receiving station call sign,N/A,CALL_SIGN_RX,%12s,15,1,0,0
 178,Transmitting station call sign,N/A,CALL_SIGN_TX,%12s,15,1,0,0
@@ -254,7 +254,7 @@
 423,No. samples in dir. 2 avg. (northward),N/A,NSMPD2,%9.2f,11,5,0,0
 424,No. samples in dir. 3 avg. (upward),N/A,NSMPD3,%9.2f,11,5,0,0
 425,Wide Reduced-chi sq of fit,N/A,WCHSQ,%12.5e,14,5,0,0
-428,GPS receiver bias,TECU,REC_BIAS,%9.1f,11,5,0,0
+428,GNSS total receiver and satellite bias,TECU,REC_BIAS,%9.1f,11,5,0,0
 430,Goodness of fit,N/A,GFIT,%9.1f,11,5,0,0
 431,Code baud count per pulse,N/A,CBADL,%12.5e,14,5,0,0
 432,No. bauds in code,N/A,CBADN,%9.2f,11,5,0,0
