@@ -1,5 +1,6 @@
 10,(special for MHR only)
 20,Imager time and filter metadata (image data at www.buimaging.com/data)
+21,ALO Airglow Imager
 1002,~1 min or ~20 s 3-freq night photon counts
 10_1040,VERTICAL VELOCITY COMPONENT ONLY
 1050,Basic Derived Parameters
@@ -369,6 +370,7 @@
 10245,F15 UT DMSP with quality flags
 10246,DMSP F16 flux/energy values
 10247,DMSP F17 flux/energy values
+10248,DMSP F18 flux/energy values
 72_11100,User EISCAT data
 71_12404,User EISCAT data
 73_12404,User EISCAT data

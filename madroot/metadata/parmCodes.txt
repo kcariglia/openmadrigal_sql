@@ -1601,6 +1601,7 @@
 4313,Signal path length (assuming shortest path),km,PTHLEN,%7.10f,18,1,0,0
 4314,Latitude of signal center point,deg,LATCEN,%9.2f,12,1,0,0
 4315,Longitude of signal center point,deg,LONCEN,%9.2f,12,1,0,0
+4316,Frame number,N/A,FRAME_NUM,%i,7,14,0,0
 0,Length of this record,N/A,LTOT,%9.0f,11,-2,0,0
 0,Kind of this record,N/A,KREC,%9.0f,11,-2,0,0
 3339,Instrument Code,N/A,KINST,%i,11,-1,0,0
