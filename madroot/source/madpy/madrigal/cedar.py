@@ -1920,7 +1920,7 @@ class MadrigalCedarFile:
                         dset[:] = numpy.iinfo(numpy.int64).min
                     elif self._madParmObj.isString(parm):
                         strLen = self._madParmObj.getStringLen(parm)
-                        dset = numpy.zeros((len(unique_times),), dtype=numpy.dtype((str, strLen)))
+                        dset = numpy.zeros((len(unique_times),), dtype=numpy.dtype(("S" + str(strLen))))
                     else:
                         dset = numpy.zeros((len(unique_times),), dtype=numpy.float64)
                         dset[:] = numpy.nan
@@ -1945,7 +1945,7 @@ class MadrigalCedarFile:
                         dset[:] = numpy.iinfo(numpy.int64).min
                     elif self._madParmObj.isString(parm):
                         strLen = self._madParmObj.getStringLen(parm)
-                        dset = numpy.zeros(twoDShape, dtype=numpy.dtype((str, strLen)))
+                        dset = numpy.zeros(twoDShape, dtype=numpy.dtype(("S" + str(strLen))))
                     else:
                         dset = numpy.zeros(twoDShape, dtype=numpy.float64)
                         dset[:] = numpy.nan
@@ -2035,7 +2035,7 @@ class MadrigalCedarFile:
                             dset2[:] = numpy.iinfo(numpy.int64).min
                         elif self._madParmObj.isString(parm):
                             strLen = self._madParmObj.getStringLen(parm)
-                            dset2 = numpy.zeros(tuple(twoDShape), dtype=numpy.dtype((str, strLen)))
+                            dset2 = numpy.zeros(tuple(twoDShape), dtype=numpy.dtype(("S" + str(strLen))))
                             dset2[:] = ''
                         else:
                             dset2 = numpy.zeros(tuple(twoDShape), dtype=numpy.float64)
@@ -3072,7 +3072,7 @@ class MadrigalCedarFile:
                             if type(thisList[0]) != bytes:
                                 skip = True
                             if type(thisList[0]) == numpy.ndarray:
-                                if thisList[0].dtype.type is numpy.string_:
+                                if thisList[0].dtype.type is numpy.bytes_:
                                     skip = True
                             if not skip:
                                 if numpy.any(numpy.isnan(thisList)):
@@ -4234,7 +4234,7 @@ class MadrigalDataRecord:
                 dataDtype.append((mnem.lower(), int))
             elif self._madParmObj.isString(mnem):
                 strLen = self._madParmObj.getStringLen(mnem)
-                dataDtype.append((mnem.lower(), numpy.string_, strLen))
+                dataDtype.append((mnem.lower(), numpy.bytes_, strLen))
             else: 
                 dataDtype.append((mnem.lower(), float))
             recDType.append((parm.lower(), int))
@@ -4254,7 +4254,7 @@ class MadrigalDataRecord:
                 dataDtype.append((mnem.lower(), int))
             elif self._madParmObj.isString(mnem):
                 strLen = self._madParmObj.getStringLen(mnem)
-                dataDtype.append((mnem.lower(), numpy.string_, strLen))
+                dataDtype.append((mnem.lower(), numpy.bytes_, strLen))
             else: 
                 dataDtype.append((mnem.lower(), float))
             recDType.append((parm.lower(), int))
@@ -4271,7 +4271,7 @@ class MadrigalDataRecord:
                 dataDtype.append((mnem.lower(), int))
             elif self._madParmObj.isString(mnem):
                 strLen = self._madParmObj.getStringLen(mnem)
-                dataDtype.append((mnem.lower(), numpy.string_, strLen))
+                dataDtype.append((mnem.lower(), numpy.bytes_, strLen))
             else: 
                 dataDtype.append((mnem.lower(), float))
             recDType.append((parm.lower(), int))
