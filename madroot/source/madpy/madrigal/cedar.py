@@ -1236,8 +1236,8 @@ class MadrigalCedarFile:
         
         # for string data, always return (Nan, Nan)
         if self._madParmObj.isString(parm):
-            self._minMaxParmDict[parm] = [numpy.NaN, numpy.NaN]
-            return((numpy.NaN, numpy.NaN))
+            self._minMaxParmDict[parm] = [numpy.nan, numpy.nan]
+            return((numpy.nan, numpy.nan))
         
         # create a merged dataset
         datasetList = []
