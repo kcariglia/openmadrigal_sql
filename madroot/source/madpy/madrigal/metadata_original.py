@@ -1281,6 +1281,8 @@ class MadrigalDB:
                 break
             
             # skip this file if expId not in acceptedExpIdList
+            if (len(sortedAcceptedExpIdList) == bisect.bisect_left(sortedAcceptedExpIdList, thisExpId)):
+                continue
             if sortedAcceptedExpIdList[bisect.bisect_left(sortedAcceptedExpIdList, thisExpId)] != thisExpId:
                 continue
 		
