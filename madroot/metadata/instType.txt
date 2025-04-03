@@ -17,3 +17,6 @@
 17,Distributed Ground Based Satellite Receivers
 18,Photometers
 19,Ground Based Solar Receivers
+20,SCINDA Scintillation Receivers
+21,Riometers
+22,VLF

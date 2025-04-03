@@ -120,8 +120,8 @@
 173,Effective radius of measurement field,km,EFF_RADIUS,%9.2f,14,1,0,0
 175,Four letter GNSS receiver code,N/A,GPS_SITE,%4s,11,1,1,0
 176,GNSS sat type (8 char padded str GPS or GLONASS),N/A,GNSS_TYPE,%8s,11,1,1,0
-177,Receiving station call sign,N/A,CALL_SIGN_RX,%12s,15,1,0,0
-178,Transmitting station call sign,N/A,CALL_SIGN_TX,%12s,15,1,0,0
+177,Receiving station call sign,N/A,CALL_SIGN_RX,%12s,14,1,0,0
+178,Transmitting station call sign,N/A,CALL_SIGN_TX,%12s,14,1,0,0
 180,Solar zenith angle in measurement vol,deg,SZEN,%9.2f,11,1,1,0
 181,Solar azimuth angle,deg,SUNAZ,%9.2f,11,1,0,0
 183,Conjugate solar zenith angle,deg,SZENC,%9.2f,11,1,1,0
@@ -1592,6 +1592,13 @@
 4185,Wind uncertainty - LSF to sky fringes,ms-1,FIT_SIGMA,%12.5e,14,18,1,0
 4187,Wind uncertainty - fluct in cal source,ms-1,CAL_SIGMA,%12.5e,14,18,1,0
 4200,Satellite id,N/A,SAT_ID,%i,14,18,0,0
+4300,20 MHz band,V,R_20,%5.5f,12,14,0,0
+4301,30 MHz band,V,R_30,%5.5f,12,14,0,0
+4302,38.2 MHz international radio quiet band,V,R_QUIET,%5.5f,12,14,0,0
+4303,50 MHz band,V,R_50,%5.5f,12,14,0,0
+4304,VLF starting frequency,kHz,VLF_LOWER_FREQ,%2.1f,4,11,0,0
+4305,VLF ending frequency,kHz,VLF_UPPER_FREQ,%2.1f,4,11,0,0
+4306,VLF frequency range intensity,V,VLF_INTENSITY,%2.6f,9,11,0,0
 4307,Decimal latitude of sending station,deg,TXLAT,%9.2f,12,1,0,0
 4308,Decimal longitude of sending station,deg,TXLON,%9.2f,12,1,0,0
 4309,Decimal latitude of receiving station,deg,RXLAT,%9.2f,12,1,0,0
@@ -1602,6 +1609,25 @@
 4314,Latitude of signal center point,deg,LATCEN,%9.2f,12,1,0,0
 4315,Longitude of signal center point,deg,LONCEN,%9.2f,12,1,0,0
 4316,Frame number,N/A,FRAME_NUM,%i,7,14,0,0
+4317,Pseudorandom noise code,N/A,PRN,%i,7,14,0,0
+4318,Frequency of satellite link signal,MHz,LINK_FREQ,%5.3f,9,5,0,0
+4319,Estimated time of sunset at ionospheric pierce point (UTC),hours,SUNSET_IPP,%3.3f,7,0,0,0
+4320,Estimated time of sunrise at ionospheric pierce point (UTC),hours,SUNRISE_IPP,%3.3f,7,0,0,0
+4321,Distance of satellite link from Earth center,km,LINK_RAD,%3.3f,7,1,0,0
+4322,Ground to satellite azimuth angle,deg,LINK_AZ,%4.5f,10,1,0,0
+4323,Ground to satellite elevation angle,deg,LINK_EL,%4.5f,10,1,0,0
+4324,Geographic latitude of satellite link,deg,LINK_LAT,%4.5f,10,1,0,0
+4325,Geographic longitude of satellite link,deg,LINK_LON,%4.5f,10,1,0,0
+4326,Channel for satellite link,N/A,LINK_CHAN,%i,7,14,0,0
+4327,Decorrelation time; channel 1,sec,TAU1,%4.4f,9,0,0,0
+4328,Signal strength; input channel 1,dB,SS1,%4.4f,9,5,0,0
+4329,S4 amplitude scintillation index; channel 2,N/A,S4_SCIN2,%12.5e,14,16,1,0
+4330,Sigma Phi phase scintillation; channel 2,N/A,SIGMA_PHI2,%12.5e,14,16,1,0
+4331,Decorrelation time; channel 2,sec,TAU2,%4.4f,9,0,0,0
+4332,Signal strength; input channel 2,dB,SS2,%4.4f,9,5,0,0
+4333,Drift velocity,m/s,DRIFT,%4.4f,9,5,0,0
+4334,Receiver type,N/A,RCVR_TYPE,%20s,21,14,0,0
+4335,Antenna type,N/A,ANT_TYPE,%20s,21,14,0,0
 0,Length of this record,N/A,LTOT,%9.0f,11,-2,0,0
 0,Kind of this record,N/A,KREC,%9.0f,11,-2,0,0
 3339,Instrument Code,N/A,KINST,%i,11,-1,0,0

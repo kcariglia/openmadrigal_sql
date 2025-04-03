@@ -1170,5 +1170,15 @@
 3000320,Resolved Velocity - Barker/MPS Code (D-region) - 20 min
 3000325,Resolved Velocity - Barker/MPS Code (D-region) - 30 min
 3000364,Resolved Velocity - Barker/MPS Code (D-region) - 30 sec
-17577,Poker Flat Meteor Radar
+17560,South Pole Station Fluxgate Magnetometer
+17561,McMurdo Fluxgate Magnetometer
+17570,South Pole Station Riometer
+17571,McMurdo Riometer
+17572,South Pole Station photometer
+17573,McMurdo Photometer
+17574,South Pole Station VLF
+17575,South Pole Station Searchcoil Magnetometer
+17576,McMurdo Searchcoil Magnetometer
 17578,Amateur Radio Signal Report
+17579,SCINDA GPS scintillation data
+17580,SCINDA GEO scintillation data

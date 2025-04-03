@@ -224,6 +224,15 @@
 8271,sum,DASI-SUGARHILLS Magnetometer,47.1,-93.7,0,Jenn Gannon,Computational Physics,,,Louisville,Colorado,,USA,,gannon@cpi.com,14
 8300,smt,Sodankyla Magnetometer,67.367,26.633,0.178,Tero Raita,Sodankyla Geophysical Observatory,Tahtelantie 62,,Sodankyla,,FIN-99600,Finland,+358-294-480864,tero.raita@sgo.fi,14
 8301,aio,Aerospace Nightglow Imager 2,-30.25,-70.73,2.53,James H. Hecht,Andes Lidar Observatory,,,La Serena,Coquimbo,,Chile,,James.H.Hecht@aero.org,13
-8400,jsn,Jason/Topex Ocean TEC,0.0,0.0,0.0,Anthea Coster,MIT/Haystack Observatory,Off Route 40,,Westford,MA,01886,USA,781-981-5753,acoster@haystack.mit.edu,9
-8307,pmr,Poker Flat Meteor Radar,65.1,-147.5,0.0,Denise Thorsen,University of Alaska Fairbanks,,,Fairbanks,AK,99775-5915,USA,907-474-7052,dlthorsen@alaska.edu,7
+8302,jra,Jicamarca SCINDA Scintillation Receiver,-11.95,-76.88,0.531,Keith Groves,Jicamarca Radio Observatory,,,Lima,Lima-13,,Peru,(617) 552-8767,keith.groves@bc.edu,20
+8305,sps,South Pole Station Searchcoil Magnetometer,-90,0,2.835,Allan Weatherwax,MIT/Haystack Observatory,Route 40,,Westford,MA,01886,USA,617-715-5584,wxwax@mit.edu,14
+8306,mcs,McMurdo Searchcoil Magnetometer,-77.9,166.7,0.01,Allan Weatherwax,MIT/Haystack Observatory,Route 40,,Westford,MA,01886,USA,617-715-5584,wxwax@mit.edu,14
 8308,rsd,Amateur Radio Signal Report,0.0,0.0,0.0,Nathaniel Frissell,University of Scranton,800 Linden St,,Scranton,PA,18510,USA,570-941-7400,nathaniel.frissell@scranton.edu,4
+8309,spa,South Pole Station Fluxgate Magnetometer,-90,0,2.835,Allan Weatherwax,MIT/Haystack Observatory,Route 40,,Westford,MA,01886,USA,617-715-5584,wxwax@mit.edu,14
+8310,mcm,McMurdo Fluxgate Magnetometer,-77.9,166.7,0.01,Allan Weatherwax,MIT/Haystack Observatory,Route 40,,Westford,MA,01886,USA,617-715-5584,wxwax@mit.edu,14
+8400,jsn,Jason/Topex Ocean TEC,0.0,0.0,0.0,Anthea Coster,MIT/Haystack Observatory,Off Route 40,,Westford,MA,01886,USA,781-981-5753,acoster@haystack.mit.edu,9
+8500,spr,South Pole Station Riometer,-90,0,2.835,Allan Weatherwax,MIT/Haystack Observatory,Route 40,,Westford,MA,01886,USA,617-715-5584,wxwax@mit.edu,21
+8501,mmr,McMurdo Riometer,-77.9,166.7,0.01,Allan Weatherwax,MIT/Haystack Observatory,Route 40,,Westford,MA,01886,USA,617-715-5584,wxwax@mit.edu,21
+8502,spp,South Pole Station Photometer,-90,0,2.835,Allan Weatherwax,MIT/Haystack Observatory,Route 40,,Westford,MA,01886,USA,617-715-5584,wxwax@mit.edu,18
+8503,mmp,McMurdo Photometer,-77.9,166.7,0.01,Allan Weatherwax,MIT/Haystack Observatory,Route 40,,Westford,MA,01886,USA,617-715-5584,wxwax@mit.edu,18
+8504,spv,South Pole Station VLF,-90,0,2.835,Allan Weatherwax,MIT/Haystack Observatory,Route 40,,Westford,MA,01886,USA,617-715-5584,wxwax@mit.edu,22
