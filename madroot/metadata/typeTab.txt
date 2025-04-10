@@ -1182,3 +1182,4 @@
 17578,Amateur Radio Signal Report
 17579,SCINDA GPS scintillation data
 17580,SCINDA GEO scintillation data
+17581,South Pole All Sky Imager

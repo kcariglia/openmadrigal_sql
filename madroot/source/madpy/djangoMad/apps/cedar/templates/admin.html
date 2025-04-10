@@ -59,11 +59,13 @@ script is located in Subversion under OpenMadrigalSVN/trunk/madroot/source/madpy
 All scripts in this crontab are in Subversion in the OpenMadrigal repository. This script includes both administrative jobs (such as updateMaster, import_madrigal.py, etc) and jobs that automatically load data into the CEDAR Madrigal site from instrument PI's who do not run their own local Madrigal sites.</p>
 
 <h3>Building and releasing new versions of the Madrigal API's </h3>
-<p>Madrigal has client API's written in python, Matlab, and IDL. All three have testMadrigal* scripts to run that test all functionality.  
-They are rebuilt whenever you run <i>make -f Makefile.gnu</i> in the main development directory. Version with *.tar.gz and *.zip are built for each of the three. 
-To release new version, edit the file in Subversion OpenMadrigalSVN/trunk/madroot/source/madpy/djangoMad/apps/cedar/templates/madDownload.html with the new release number.
-This madDownload.html needs to be installed in /opt/madrigal3/source/madpy/djangoMad/apps/cedar/templates.  The new source files should be installed on madrigal in /opt/madrigal3/source/madpy/djangoMad/madweb/static/distributionFiles/.
-In addition, the version of madrigalWeb on pip needs to be updated, using: python -m twine upload dist/*</p>
+<p>Madrigal has client API's written in python, Matlab, and IDL. All three have testMadrigal* scripts to run that test all functionality.
+When releasing a new version of any API, edit the file in Subversion OpenMadrigalSVN/trunk/madroot/source/madpy/djangoMad/apps/cedar/templates/madDownload.html with the new release number.
+This madDownload.html needs to be installed in /opt/madrigal3/source/madpy/djangoMad/apps/cedar/templates.  The new source files should be installed on madrigal in $MADROOT/source/madpy/djangoMad/madweb/static/distributionFiles/.</p>
+
+<h4>Updating the Madrigal Python API</h4>
+<p>Pushes to the <a href="https://github.com/MITHaystack/madrigalWeb">madrigalWeb Github repo</a> will trigger automatic publication to PyPI <b>only if the version number in <a href="https://github.com/MITHaystack/madrigalWeb/blob/main/pyproject.toml">pyproject.toml</a> is incremented manually.</b>
+The distribution files will still need to be updated for the madDownload.html page; build with <b>python -m build</b> and copy the resulting .whl and .tar.gz to $MADROOT/source/madpy/djangoMad/madweb/static/distributionFiles/, then edit madDownload.html version numbers as needed.</p>
 
 <h3>Building a new release of Madrigal  </h3>
 <h4>Updating Madrigal derivation models</h4>
