@@ -226,6 +226,7 @@
 8301,aio,Aerospace Nightglow Imager 2,-30.25,-70.73,2.53,James H. Hecht,Andes Lidar Observatory,,,La Serena,Coquimbo,,Chile,,James.H.Hecht@aero.org,13
 8302,jra,Jicamarca SCINDA Scintillation Receiver,-11.95,-76.88,0.531,Keith Groves,Jicamarca Radio Observatory,,,Lima,Lima-13,,Peru,(617) 552-8767,keith.groves@bc.edu,20
 8303,sas,South Pole All Sky Imager,-90,0,2.835,Allan Weatherwax,MIT/Haystack Observatory,Route 40,,Westford,MA,01886,USA,617-715-5584,wxwax@mit.edu,13
+8304,ptg,Pingtung SCINDA Scintillation Receiver,22.05,120.7,0.02353,Keith Groves,,,,Pingtung,,,Taiwan,(617) 552-8767,keith.groves@bc.edu,20
 8305,sps,South Pole Station Searchcoil Magnetometer,-90,0,2.835,Allan Weatherwax,MIT/Haystack Observatory,Route 40,,Westford,MA,01886,USA,617-715-5584,wxwax@mit.edu,14
 8306,mcs,McMurdo Searchcoil Magnetometer,-77.9,166.7,0.01,Allan Weatherwax,MIT/Haystack Observatory,Route 40,,Westford,MA,01886,USA,617-715-5584,wxwax@mit.edu,14
 8308,rsd,Amateur Radio Signal Report,0.0,0.0,0.0,Nathaniel Frissell,University of Scranton,800 Linden St,,Scranton,PA,18510,USA,570-941-7400,nathaniel.frissell@scranton.edu,4
