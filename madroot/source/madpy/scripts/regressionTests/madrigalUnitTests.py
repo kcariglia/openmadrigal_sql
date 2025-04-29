@@ -923,10 +923,10 @@ class TestOpenMadrigal(unittest.TestCase):
         self.assertIn('Millstone', self.openMad.getLatestSubversionVersion('madroot/metadata/siteTab.txt'))
         
     def test_getAllRevisionNumbers(self):
-        self.assertIn('6580', self.openMad.getAllRevisionNumbers('madroot/metadata/siteTab.txt'))
+        self.assertIn('95d7ee6f03d1f43e06bccd0cb4b25dd42241495a', self.openMad.getAllRevisionNumbers('madroot/metadata/siteTab.txt'))
         
     def test_getSubversionVersion(self):
-        self.assertIn('Millstone', self.openMad.getSubversionVersion('madroot/metadata/siteTab.txt', '6580')) 
+        self.assertIn('Millstone', self.openMad.getSubversionVersion('madroot/metadata/siteTab.txt', '95d7ee6f03d1f43e06bccd0cb4b25dd42241495a')) 
         
         
 class TestWeb(unittest.TestCase):
@@ -1120,7 +1120,7 @@ class TestWeb(unittest.TestCase):
         self.assertIn('mlh980120g.002.hdf5', str(self.madWeb.getFileFromExpID(expID)))
         
     def test_getSiteInfo(self):
-        self.assertIn('http://cedar.openmadrigal.org', str(self.madWeb.getSiteInfo()))
+        self.assertIn('https://cedar.openmadrigal.org', str(self.madWeb.getSiteInfo()))
         
     def test_downloadFileAsIs(self):
         madExp = madrigal.metadata.MadrigalExperiment(self.madDB)
