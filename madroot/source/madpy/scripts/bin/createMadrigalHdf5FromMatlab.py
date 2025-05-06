@@ -111,8 +111,8 @@ for recno in recnoArr:
     kindat = int(data[indices[0],2])
     ut1_unix = data[indices[0],3]
     ut2_unix = data[indices[0],4]
-    sDT = datetime.datetime.utcfromtimestamp(ut1_unix)
-    eDT = datetime.datetime.utcfromtimestamp(ut2_unix)
+    sDT = datetime.datetime.fromtimestamp(ut1_unix, datetime.UTC)
+    eDT = datetime.datetime.fromtimestamp(ut2_unix, datetime.UTC)
     
     newRec = madrigal.cedar.MadrigalDataRecord(kinst,
                  kindat,

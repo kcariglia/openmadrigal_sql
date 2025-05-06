@@ -1631,9 +1631,9 @@ class MadrigalDB:
                     relativeName = fullname[relIndex + 1 + (len(self.__madRootDir)):]
                     ts = os.stat(fullname).st_mtime
                     if relative:
-                        retList.append((relativeName, datetime.datetime.utcfromtimestamp(ts)))
+                        retList.append((relativeName, datetime.datetime.fromtimestamp(ts, datetime.UTC)))
                     else:
-                        retList.append((fullname, datetime.datetime.utcfromtimestamp(ts)))
+                        retList.append((fullname, datetime.datetime.fromtimestamp(ts, datetime.UTC)))
                     
         return(retList)
     
@@ -6294,7 +6294,7 @@ class MadrigalMetaFile:
             dataFile = os.path.join(expDir, basename)
             if not os.access(dataFile, os.R_OK):
                 raise IOError('Cannot access %s' % (dataFile))
-            dt = datetime.datetime.utcfromtimestamp(os.path.getmtime(dataFile))
+            dt = datetime.datetime.fromtimestamp(os.path.getmtime(dataFile), datetime.UTC)
             
             
         dateStr = dt.strftime('%Y%m%d')

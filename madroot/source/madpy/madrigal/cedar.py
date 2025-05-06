@@ -166,9 +166,9 @@ def listRecords(hdf5Filename, newFilename=None, addedLinkFormat=None):
             if 'kindat' in parms:
                 this_kindat = kindat[i]
             
-            sDT = datetime.datetime.utcfromtimestamp(this_ut1_unix)
+            sDT = datetime.datetime.fromtimestamp(this_ut1_unix, datetime.UTC)
             sDTStr = sDT.strftime('%Y-%m-%d %H:%M:%S')
-            eDT = datetime.datetime.utcfromtimestamp(this_ut2_unix)
+            eDT = datetime.datetime.fromtimestamp(this_ut2_unix, datetime.UTC)
             eDTStr = eDT.strftime('%Y-%m-%d %H:%M:%S')
             
             data = [index, sDTStr, eDTStr] 
@@ -489,8 +489,8 @@ class MadrigalCedarFile:
             self._nextRecord += 1
             
             firstRow = tableSlice[0]
-            startDT = datetime.datetime.utcfromtimestamp(firstRow['ut1_unix'])
-            stopDT = datetime.datetime.utcfromtimestamp(firstRow['ut2_unix'])
+            startDT = datetime.datetime.fromtimestamp(firstRow['ut1_unix'], datetime.UTC)
+            stopDT = datetime.datetime.fromtimestamp(firstRow['ut2_unix'], datetime.UTC)
             
             if firstRow['kinst'] not in self._kinstList:
                 self._kinstList.append(firstRow['kinst'])
@@ -3926,7 +3926,7 @@ class MadrigalDataRecord:
 
         Outputs: a datetime.datetime object representing the start time of the record
         """
-        return(datetime.datetime.utcfromtimestamp(self._dataset['ut1_unix'][0]))
+        return(datetime.datetime.fromtimestamp(self._dataset['ut1_unix'][0], datetime.UTC))
 
 
     def setStartTimeList(self, sYear, sMonth, sDay, sHour, sMin, sSec, sCentisec=0):
@@ -3988,7 +3988,7 @@ class MadrigalDataRecord:
 
         Outputs: a datetime.datetime object representing the end time of the record
         """
-        return(datetime.datetime.utcfromtimestamp(self._dataset['ut2_unix'][0]))
+        return(datetime.datetime.fromtimestamp(self._dataset['ut2_unix'][0], datetime.UTC))
     
     
     def setEndTimeList(self, eYear, eMonth, eDay, eHour, eMin, eSec, eCentisec=0):

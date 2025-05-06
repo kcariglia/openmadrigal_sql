@@ -249,7 +249,7 @@ class TestMadrigalDB(unittest.TestCase):
         for filename, filetime in fileTimes:
             if os.path.basename(filename) == 'mlh980120g.002.hdf5':
                 ts = os.stat(os.path.join(expDir, 'mlh980120g.002.hdf5')).st_mtime
-                dt =  datetime.datetime.utcfromtimestamp(ts)
+                dt =  datetime.datetime.fromtimestamp(ts, datetime.UTC)
                 self.assertEqual(dt, filetime)
                 found = True
                 break
@@ -1056,7 +1056,7 @@ class TestWeb(unittest.TestCase):
         
         
     def test_getSingleRedirectList(self):
-        self.assertIn('http://cedar.openmadrigal.org/', str(self.madWeb.getSingleRedirectList()))
+        self.assertIn('https://cedar.openmadrigal.org/', str(self.madWeb.getSingleRedirectList()))
         
     def test_getMonths(self):
         self.assertIn('January', str(self.madWeb.getMonths(30, 1998)))

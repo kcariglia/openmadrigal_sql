@@ -104,8 +104,8 @@ def populateCedarWithAscii(cedarObj, textFile, dtype, oneDParms, twoDParms, indP
                 present_row = 0
                 num_rows = lineDict[line_num]
                 # get times
-                sDT = datetime.datetime.utcfromtimestamp(float(items[9]))
-                eDT = datetime.datetime.utcfromtimestamp(float(items[10]))
+                sDT = datetime.datetime.fromtimestamp(float(items[9]), datetime.UTC)
+                eDT = datetime.datetime.fromtimestamp(float(items[10]), datetime.UTC)
                 # create Madrigal record
                 madRec = madrigal.cedar.MadrigalDataRecord(kinst=kinst,
                     kindat=kindat,

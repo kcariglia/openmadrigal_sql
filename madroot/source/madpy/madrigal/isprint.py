@@ -345,9 +345,9 @@ class Isprint:
                                 endDT = filt.rangeList[0][1]
                             
                     if not startDT is None:
-                        startDT = datetime.datetime.utcfromtimestamp(startDT)
+                        startDT = datetime.datetime.fromtimestamp(startDT, datetime.UTC)
                     if not endDT is None:
-                        endDT = datetime.datetime.utcfromtimestamp(endDT)
+                        endDT = datetime.datetime.fromtimestamp(endDT, datetime.UTC)
                     return((startDT, endDT))
             
         return((None, None))

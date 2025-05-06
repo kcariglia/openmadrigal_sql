@@ -27,7 +27,7 @@ for i in range(madExpObj.getExpCount()):
             raise IOError('Registered file %s not found' % (fullpath))
         dt = madFileObj.getFileDatetimeByPosition(j)
         if dt is None:
-            thisDT = datetime.datetime.utcfromtimestamp(os.path.getmtime(fullpath))
+            thisDT = datetime.datetime.fromtimestamp(os.path.getmtime(fullpath), datetime.UTC)
             madFileObj.setFileDatetimeByPosition(j, thisDT)
             modified = True
             

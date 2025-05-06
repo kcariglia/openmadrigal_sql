@@ -2883,7 +2883,7 @@ class MadrigalDerivationMethods:
            Uses the external module aacgmv2
         """
         t = (inputArr[0] + inputArr[1])/2.0
-        dt = datetime.datetime.utcfromtimestamp(t)
+        dt = datetime.datetime.fromtimestamp(t, datetime.UTC)
         if inputArr[4] > 2000.0:
             # beyond model
             outputArr[0:3] = numpy.nan
@@ -2918,7 +2918,7 @@ class MadrigalDerivationMethods:
            
         """
         t = (inputArr[0] + inputArr[1])/2.0
-        dt = datetime.datetime.utcfromtimestamp(t)
+        dt = datetime.datetime.fromtimestamp(t, datetime.UTC)
         try:
             result = aacgmv2.convert([inputArr[2]], [inputArr[3]], [inputArr[4]], dt)
         except:

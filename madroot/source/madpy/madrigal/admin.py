@@ -211,12 +211,12 @@ class MadrigalDBAdmin:
         
         # convert startTime to datetime if needed
         if type(startTime) in (int, int, float):
-            startTime = datetime.datetime.utcfromtimestamp(startTime)
+            startTime = datetime.datetime.fromtimestamp(startTime, datetime.UTC)
 
         # create endTime based on numDays
         if endTime != None:
             if type(endTime) in (int, int, float):
-                endTime = datetime.datetime.utcfromtimestamp(startTime)
+                endTime = datetime.datetime.fromtimestamp(startTime, datetime.UTC)
         else:
             if numDays >= 0:
                 endTime = startTime + datetime.timedelta(numDays) - datetime.timedelta(0,1)
