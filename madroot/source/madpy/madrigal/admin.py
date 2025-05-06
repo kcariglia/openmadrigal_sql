@@ -1601,6 +1601,11 @@ class MadrigalDBAdmin:
             for root, dirs, files in os.walk(thisExpDir):
                          self.__walkExpDir__(metaDict, root, dirs + files)
 
+        # create backup of expTab
+        ret = os.system(f"mv {os.path.join(self.__madDB.getMadroot(), 'metadata/expTab.txt')} {os.path.join(self.__madDB.getMadroot(), 'metadata/expTab_backup.txt')}")
+        if ret != 0:
+            raise OSError("Problem creating backup expTab")
+
         # update expTab.txt
         f = open(os.path.join(self.__madDB.getMadroot(), 'metadata/expTab.txt'), 'w', encoding='utf-8')
         delimiter = ''
@@ -1611,6 +1616,11 @@ class MadrigalDBAdmin:
         madExpObj = madrigal.metadata.MadrigalExperiment(self.__madDB)
         madExpObj.sortByDateSite()
         madExpObj.writeMetadata(os.path.join(self.__madDB.getMadroot(), 'metadata/expTab.txt'))
+
+        # create backup of fileTab
+        ret = os.system(f"mv {os.path.join(self.__madDB.getMadroot(), 'metadata/fileTab.txt')} {os.path.join(self.__madDB.getMadroot(), 'metadata/fileTab_backup.txt')}")
+        if ret != 0:
+            raise OSError("Problem creating backup fileTab")
 
         # update fileTab.txt
         f = open(os.path.join(self.__madDB.getMadroot(), 'metadata/fileTab.txt'), 'w', encoding='utf-8')
@@ -1658,6 +1668,18 @@ class MadrigalDBAdmin:
         f = open(os.path.join(self.__madDB.getMadroot(), 'metadata/fileTab.txt'))
         fileTabAll += f.read()
         f.close()
+
+        # if expTabAll and fileTabAll already exist, create backups of them
+        if os.access(os.path.join(self.__madDB.getMadroot(), 'metadata/expTabAll.txt'), os.R_OK):
+            # create backup of expTabAll
+            ret = os.system(f"mv {os.path.join(self.__madDB.getMadroot(), 'metadata/expTabAll.txt')} {os.path.join(self.__madDB.getMadroot(), 'metadata/expTabAll_backup.txt')}")
+            if ret != 0:
+                raise OSError("Problem creating backup expTabAll")
+        if os.access(os.path.join(self.__madDB.getMadroot(), 'metadata/fileTabAll.txt'), os.R_OK):
+            # create backup of fileTabAll
+            ret = os.system(f"mv {os.path.join(self.__madDB.getMadroot(), 'metadata/fileTabAll.txt')} {os.path.join(self.__madDB.getMadroot(), 'metadata/fileTabAll_backup.txt')}")
+            if ret != 0:
+                raise OSError("Problem creating backup fileTabAll")
 
         # write *All.txt files
         f = open(os.path.join(self.__madDB.getMadroot(), 'metadata/expTabAll.txt'), 'w', encoding='utf-8')
