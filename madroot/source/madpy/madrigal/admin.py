@@ -1604,7 +1604,7 @@ class MadrigalDBAdmin:
         # create backup of expTab
         ret = os.system(f"mv {os.path.join(self.__madDB.getMadroot(), 'metadata/expTab.txt')} {os.path.join(self.__madDB.getMadroot(), 'metadata/expTab_backup.txt')}")
         if ret != 0:
-            raise OSError("Problem creating backup expTab")
+            print("Problem creating backup expTab")
 
         # update expTab.txt
         f = open(os.path.join(self.__madDB.getMadroot(), 'metadata/expTab.txt'), 'w', encoding='utf-8')
@@ -1620,7 +1620,7 @@ class MadrigalDBAdmin:
         # create backup of fileTab
         ret = os.system(f"mv {os.path.join(self.__madDB.getMadroot(), 'metadata/fileTab.txt')} {os.path.join(self.__madDB.getMadroot(), 'metadata/fileTab_backup.txt')}")
         if ret != 0:
-            raise OSError("Problem creating backup fileTab")
+            print("Problem creating backup fileTab")
 
         # update fileTab.txt
         f = open(os.path.join(self.__madDB.getMadroot(), 'metadata/fileTab.txt'), 'w', encoding='utf-8')
@@ -1674,12 +1674,12 @@ class MadrigalDBAdmin:
             # create backup of expTabAll
             ret = os.system(f"mv {os.path.join(self.__madDB.getMadroot(), 'metadata/expTabAll.txt')} {os.path.join(self.__madDB.getMadroot(), 'metadata/expTabAll_backup.txt')}")
             if ret != 0:
-                raise OSError("Problem creating backup expTabAll")
+                print("Problem creating backup expTabAll")
         if os.access(os.path.join(self.__madDB.getMadroot(), 'metadata/fileTabAll.txt'), os.R_OK):
             # create backup of fileTabAll
             ret = os.system(f"mv {os.path.join(self.__madDB.getMadroot(), 'metadata/fileTabAll.txt')} {os.path.join(self.__madDB.getMadroot(), 'metadata/fileTabAll_backup.txt')}")
             if ret != 0:
-                raise OSError("Problem creating backup fileTabAll")
+                print("Problem creating backup fileTabAll")
 
         # write *All.txt files
         f = open(os.path.join(self.__madDB.getMadroot(), 'metadata/expTabAll.txt'), 'w', encoding='utf-8')
@@ -2147,7 +2147,7 @@ class MadrigalNotify:
             
         # set up message
         msg['Subject'] = str(subject)
-        msg['From'] = 'brideout@mit.edu'
+        msg['From'] = self.__emailAddress
         msg['To'] = self.__emailAddress
     
         with smtplib.SMTP(self.__emailServer) as s:
@@ -2172,7 +2172,7 @@ class MadrigalNotify:
             
         # set up message
         msg['Subject'] = str(subject)
-        msg['From'] = 'brideout@mit.edu'
+        msg['From'] = self.__emailAddress
         msg['To'] = emailAddress
     
         with smtplib.SMTP(self.__emailServer) as s:
