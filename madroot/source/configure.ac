@@ -6,7 +6,7 @@
 #  $Id: configure.ac 7655 2024-06-27 20:20:49Z kcariglia $
 
 AC_PREREQ(2.59)
-AC_INIT([Madrigal], [3.2.8], [brideout@mit.edu])
+AC_INIT([Madrigal], [3.2.9], [brideout@mit.edu])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 AM_PROG_AR
 AC_CONFIG_HEADERS([config.h])

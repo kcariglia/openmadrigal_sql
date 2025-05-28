@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #   This script installs the entire Madrigal database.
-#   Use -c to skip conversion from Madrigal 2->3 files
+#   Use -c to convert from Madrigal 2->3 files
 #
 # See the latest documentation at http://madrigal.haystack.mit.edu/madrigal/admin.html
 #   for the latest installation instructions
@@ -67,25 +67,17 @@ then
 fi
 
 # check if should convert to Madrigal3
-convert=1
+convert=0
 if [ $# -gt 0 ]
 then
    for arg in $@
    do
       if [ $arg = "-c" ]
       then
-         convert=0
+         convert=1
       fi
    done
 fi
-
-echo "Testing that all required python modules are already installed in the default python 3"
-$MADROOT/bin/python testRequirements.py
-if [ $? -ne 0 ]
-then
-  exit -1
-fi
-
 
 echo "Installing Madrigal in $MADROOT"
 
@@ -230,6 +222,13 @@ fi
 rm -f -r build
 
 cd ../..
+
+echo "Testing that all required python modules are already installed in the default python 3"
+$MADROOT/bin/python testRequirements.py
+if [ $? -ne 0 ]
+then
+  exit -1
+fi
 
 echo "********** Verifying this site is set to at least 3 in siteTab.txt **********"
 $MADROOT/bin/python source/madpy/scripts/bin/checkSiteIs3.py

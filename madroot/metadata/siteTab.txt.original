@@ -1,9 +1,9 @@
 1,Millstone,millstonehill.haystack.mit.edu,,,madrigal/servlets,Bill Rideout,MIT Haystack Observatory,Route 40,,Westford,MA,01886,USA,1-781-981-5624,brideout@mit.edu,3.2
-2,EISCAT,https://madrigal.eiscat.se,madrigal,madrigal,madrigal/servlets,Ingemar Häggström,EISCAT Scientific Association,Box 812,,Kiruna,,SE-98128,Sweden,+46 98079155,ingemar.haggstrom@eiscat.se,3.2
+2,EISCAT,https://madrigal.eiscat.se,madrigal,madrigal,madrigal/servlets,Thomas Ulich,EISCAT AB,Box 812,,Kiruna,,SE-98128,Sweden,+46 70 2709034,thomas.ulich@eiscat.se,3.2
 3,SRI,https://data.amisr.com,madrigal,madrigal/cgi-bin,/madrigal/servlets,Pablo Reyes,SRI International,333 Ravenswood Avenue,,Menlo Park,CA,94025,USA,+1 650 859 2236,pablo.reyes@sri.com,3.2
 5,Cornell,landau.geo.cornell.edu,madrigal,madrigal,/madrigal/servlets,D.L. Hysell,2108 Snee Hall,Cornell University,,Ithaca,NY,14850,USA,+1 607 255 0630,dlh37@cornell.edu,3.0
 6,JRO,https://www.igp.gob.pe,observatorios/radio-observatorio-jicamarca/madrigal/,,,Juan Carlos Espinoza Guerra,Jicamarca Radio Observatory,Jicamarca,,,Lima,,Peru,511 317 2313,jespinoza@igp.gob.pe,3.2
 8,Beijing,madrigal.iggcas.ac.cn,,,/madrigal/servlets,Baiqi Ning,Institute of Geology and Geophysics,Chinese Academy of Sciences,,,Beijing,,China,,zxk@mail.iggcas.ac.cn;brideout@haystack.mit.edu,3.1
-10,CEDAR,cedar.openmadrigal.org,,,madrigal/servlets,Bill Rideout,MIT Haystack Observatory,Route 40,,Westford,MA,01886,USA,1-781-981-5624,brideout@mit.edu,3.2
+10,CEDAR,https://cedar.openmadrigal.org,,,,Bill Rideout,MIT Haystack Observatory,Route 40,,Westford,MA,01886,USA,1-781-981-5624,haystack-madrigal-admin@mit.edu,3.0
 20,UCalgary,madrigal.phys.ucalgary.ca,,,madrigal/servlets,Darren Chaddock,University of Calgary,2500 University Dr NW,,Calgary,AB,T2N 1N4,Canada,1-403-220-4426,dchaddoc@ucalgary.ca,3.0
 22,IllinoisECE,remote1.ece.illinois.edu,madrigal,madrigal,/madrigal/servlets,Erhan Kudeki,University of Illinois at Urbana-Champaign,306 N Wright St,,Urbana,IL,61820,USA,+1 217 265 0128,erhan@illinois.edu,3.0

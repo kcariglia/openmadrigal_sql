@@ -1748,7 +1748,7 @@ class MadrigalDBAdmin:
 
             if items[1] == 'None':
                 # this metadata file must have been locally editted, print warning
-                print('Metadata file %s has been locally edited - contact the OpenMadrigal administrator at madrigal@haystack.mit.edu to update central metadata' % (metadataFile))
+                print('Metadata file %s has been locally edited - contact the OpenMadrigal administrator at haystack-madrigal-admin@mit.edu to update central metadata' % (metadataFile))
                 continue
 
             # this metadata file needs updating

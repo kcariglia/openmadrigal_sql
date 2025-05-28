@@ -11,7 +11,7 @@ all: distribution
 distribution:
 	@echo "*** Making compressed tar files of madrigal distribution ***"
 	rm -f madrigal.tar.gz
-	cp metadata3/siteTab.txt metadata/siteTab.txt.original
+	cp metadata/siteTab.txt metadata/siteTab.txt.original
 	cp metadata/instTab.txt metadata/instTab.txt.original
 	cp metadata/instType.txt metadata/instType.txt.original
 	cp metadata/typeTab.txt metadata/typeTab.txt.original

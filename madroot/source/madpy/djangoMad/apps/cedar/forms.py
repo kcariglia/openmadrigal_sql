@@ -63,8 +63,7 @@ class AdminLogForm(django.forms.Form):
         sites = list(siteDict.keys())
         sites.sort()
         for site in sites:
-            if site not in (10,): #skip CEDAR site
-                self.siteChoices.append((site, madSiteObj.getSiteName(site)))
+            self.siteChoices.append((site, madSiteObj.getSiteName(site)))
             kinstList = siteDict[site]
             kinstList.sort()
             for kinst in kinstList:

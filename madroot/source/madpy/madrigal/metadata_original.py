@@ -2532,7 +2532,7 @@ class MadrigalSite:
 
     #constants
     __siteMetadataFile  = "siteTab.txt"
-    _defaultVersion = '2.6'
+    _defaultVersion = '3.0'
 
     # column positions
     __siteIDCol         =  0

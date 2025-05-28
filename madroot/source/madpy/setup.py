@@ -87,11 +87,11 @@ def createMetadataPyFile():
 createMetadataPyFile()
 
 setup(name="madrigal",
-        version="3.2.8",
+        version="3.2.9",
         description="Madrigal Python API - now uses python 3",
         author="Bill Rideout",
         author_email="brideout@mit.edu",
-        url="http://www.haystack.mit.edu/~brideout/",
+        url="https://cedar.openmadrigal.org",
         license='MIT',
         py_modules=['madrigal.admin', 'madrigal.cedar', 'madrigal.data', 'madrigal.derivation',
                     'madrigal.isprint', 'madrigal.metadata', 'madrigal.openmadrigal',

@@ -323,6 +323,11 @@ class MadrigalCedarFile:
         
         Returns: void
         """
+
+        if startDatetime:
+            startDatetime = startDatetime.replace(tzinfo=datetime.timezone.utc)
+        if endDatetime:
+            endDatetime = endDatetime.replace(tzinfo=datetime.timezone.utc)
         
         self._privList = []
         self._fullFilename = fullFilename

@@ -1,6 +1,6 @@
 [project]
 name = "madrigal"
-version = "3.2.8"
+version = "3.2.9"
 description = "Madrigal Python API - now uses python 3"
 keywords = ["Madrigal"]
 authors = [
@@ -14,16 +14,22 @@ dependencies = [
     "h5py",
     "scipy",
     "django",
+    "libnetcdf<4.9",
     "netCDF4",
     "matplotlib",
     "setupext",
     "aacgmv2",
     "filelock",
-    "pymap3d"
+    "pymap3d",
+    "sqlparse",
+    "django-bootstrap3",
+    "aacgmv2",
+    "packaging",
+    "madrigalweb"
     ]
 
 [project.urls]
-"Homepage" = "http://cedar.openmadrigal.org"
+"Homepage" = "https://cedar.openmadrigal.org"
 
 [build-system]
 requires = ["setuptools", "wheel", "cython", "numpy"]

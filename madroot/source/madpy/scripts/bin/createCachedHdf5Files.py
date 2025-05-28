@@ -184,7 +184,7 @@ if __name__ == '__main__':
     numCPU = multiprocessing.cpu_count()-2
     quiet = False
     
-    mad3Url = 'http://cedar.openmadrigal.org'
+    mad3Url = 'https://cedar.openmadrigal.org'
     
     try:
         opts, args = getopt.getopt(sys.argv[1:], "h", ["inst=", "path=", "includeNonDefault", "overwrite", "ini=", 
