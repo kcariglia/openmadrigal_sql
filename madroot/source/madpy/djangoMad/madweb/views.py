@@ -2429,75 +2429,80 @@ def isprint_service(request):
         errorMessage = 'File %s greater than 200 MB in size - running dynamic file creation not possible.  Please use  -- download as is -- instead.' % (thisFile)
     if not errorMessage is None:
         return render(request, 'madweb/service.html', {'text': errorMessage})
+    
+    # make sure temporary file and directory are always deleted, even if an exception
+    with tempfile.TemporaryDirectory() as tmpdirname:
                 
-    if not output is None:
-        # we need to write to a download file
-        downloadFile = os.path.join(tempfile.gettempdir(), output)
-        if os.access(downloadFile, os.R_OK):
-            try:
-                os.remove(downloadFile)
-            except:
-                pass
-    try:
-        header = request.GET['header']
-        if header not in ('t', 'f'):
-            raise ValueError('Unknown header value <%s>' % (header))
-    except:
-        header = 'f'
+        if not output is None:
+            # we need to write to a download file
+            downloadFile = os.path.join(tmpdirname, output)
+            if os.access(downloadFile, os.R_OK):
+                try:
+                    os.remove(downloadFile)
+                except:
+                    pass
+        try:
+            header = request.GET['header']
+            if header not in ('t', 'f'):
+                raise ValueError('Unknown header value <%s>' % (header))
+        except:
+            header = 'f'
+            
+        # log data access
+        madWebObj.logDataAccess(thisFile, user_fullname, user_email, user_affiliation)
         
-    # log data access
-    madWebObj.logDataAccess(thisFile, user_fullname, user_email, user_affiliation)
-        
-    # run isprint command
-    cmd = '%s/bin/isprint file=%s ' % (madDB.getMadroot(), thisFile)
-    if not output is None:
-        cmd += 'output=%s ' % (downloadFile)
-    delimiter = ' '
-    cmd += delimiter.join(parms) + ' '
-    filterStr = delimiter.join(filters)
-    cmd += filterStr + ' '
-    if format == 'ascii':
-        cmd += 'summary=f '
-        cmd += 'header=%s ' % (header)
-        
-    if output is None:
-        # text response
-        #result = subprocess.check_output(cmd.split())
-        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-        result,errtext = p.communicate()
-        if p.returncode != 0:
-            result = errtext
-        if type(result) in (bytes, numpy.bytes_):
-            result = result.decode('utf-8')
-        if header == 'f':
-            index = result.find('\n')
-            result = result[index+1:]
-        return render(request, 'madweb/service.html', {'text': result})
-    else:
-        # file download response
-        #subprocess.check_call(cmd.split())
-        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-        result,errtext = p.communicate()
-        if p.returncode != 0:
-            # write the error to result file
-            f = open(downloadFile, 'w')
-            if type(errtext) in (bytes, numpy.bytes_):
-                errtext = errtext.decode('utf-8')
-            f.write(errtext)
-            f.close()
-        
-        f = open(downloadFile, 'rb')
-        filename = os.path.basename(downloadFile)
-        chunk_size = 8192
-        file_type = mimetypes.guess_type(downloadFile)[0]
-        if file_type is None:
-            file_type = 'application/octet-stream'
-        response = StreamingHttpResponse(FileWrapper(f, chunk_size),
-                                         content_type=file_type)
-        response['Content-Length'] = os.path.getsize(downloadFile)    
-        response['Content-Disposition'] = "attachment; filename=%s" % (filename)
-        os.remove(downloadFile)
-        return(response)
+        # make sure tempfile always removed
+            
+        # run isprint command
+        cmd = '%s/bin/isprint file=%s ' % (madDB.getMadroot(), thisFile)
+        if not output is None:
+            cmd += 'output=%s ' % (downloadFile)
+        delimiter = ' '
+        cmd += delimiter.join(parms) + ' '
+        filterStr = delimiter.join(filters)
+        cmd += filterStr + ' '
+        if format == 'ascii':
+            cmd += 'summary=f '
+            cmd += 'header=%s ' % (header)
+            
+        if output is None:
+            # text response
+            #result = subprocess.check_output(cmd.split())
+            p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            result,errtext = p.communicate()
+            if p.returncode != 0:
+                result = errtext
+            if type(result) in (bytes, numpy.bytes_):
+                result = result.decode('utf-8')
+            if header == 'f':
+                index = result.find('\n')
+                result = result[index+1:]
+            return render(request, 'madweb/service.html', {'text': result})
+        else:
+            # file download response
+            #subprocess.check_call(cmd.split())
+            p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            result,errtext = p.communicate()
+            if p.returncode != 0:
+                # write the error to result file
+                f = open(downloadFile, 'w')
+                if type(errtext) in (bytes, numpy.bytes_):
+                    errtext = errtext.decode('utf-8')
+                f.write(errtext)
+                f.close()
+            
+            f = open(downloadFile, 'rb')
+            filename = os.path.basename(downloadFile)
+            chunk_size = 8192
+            file_type = mimetypes.guess_type(downloadFile)[0]
+            if file_type is None:
+                file_type = 'application/octet-stream'
+            response = StreamingHttpResponse(FileWrapper(f, chunk_size),
+                                             content_type=file_type)
+            response['Content-Length'] = os.path.getsize(downloadFile)    
+            response['Content-Disposition'] = "attachment; filename=%s" % (filename)
+            os.remove(downloadFile)
+            return(response)
     
     
 def get_madfile_service(request):
@@ -2550,48 +2555,51 @@ def get_madfile_service(request):
         if not v2:
             # no experiment directory found, invalid file
             return(HttpResponse('<p>fileName {} not allowed<p>').format(fileName))
+        
+    # make sure temporary file and directory are always deleted, even if an exception
+    with tempfile.TemporaryDirectory() as tmpdirname:
     
-    if fileType in (-1, -3):
-        # may need to create temp file
-        filepath, file_extension = os.path.splitext(fileName)
-        basename = os.path.basename(filepath)
-        dirname = os.path.dirname(fileName)
-        if fileType == -1:
-            cachedTxtFile = os.path.join(dirname, 'overview', os.path.basename(fileName) + '.txt.gz')
-            tmpFile = os.path.join(tempfile.gettempdir(), basename + '.txt.gz')
-            if os.access(cachedTxtFile, os.R_OK):
-                shutil.copy(cachedTxtFile, tmpFile)
+        if fileType in (-1, -3):
+            # may need to create temp file
+            filepath, file_extension = os.path.splitext(fileName)
+            basename = os.path.basename(filepath)
+            dirname = os.path.dirname(fileName)
+            if fileType == -1:
+                cachedTxtFile = os.path.join(dirname, 'overview', os.path.basename(fileName) + '.txt.gz')
+                tmpFile = os.path.join(tmpdirname, basename + '.txt.gz')
+                if os.access(cachedTxtFile, os.R_OK):
+                    shutil.copy(cachedTxtFile, tmpFile)
+                else:
+                    tmpFile = os.path.join(tmpdirname, basename + '.txt')
+                    madrigal.cedar.convertToText(fileName, tmpFile)
             else:
-                tmpFile = os.path.join(tempfile.gettempdir(), basename + '.txt')
-                madrigal.cedar.convertToText(fileName, tmpFile)
+                cachedNCFile = os.path.join(dirname, 'overview', os.path.basename(fileName) + '.nc')
+                tmpFile = os.path.join(tmpdirname, basename + '.nc')
+                if os.access(cachedNCFile, os.R_OK):
+                    shutil.copy(cachedNCFile, tmpFile)
+                else:
+                    try:
+                        madrigal.cedar.convertToNetCDF4(fileName, tmpFile)
+                    except IOError:
+                        cedarObj = madrigal.cedar.MadrigalCedarFile(fileName)
+                        cedarObj.write('netCDF4', tmpFile)
+            
         else:
-            cachedNCFile = os.path.join(dirname, 'overview', os.path.basename(fileName) + '.nc')
-            tmpFile = os.path.join(tempfile.gettempdir(), basename + '.nc')
-            if os.access(cachedNCFile, os.R_OK):
-                shutil.copy(cachedNCFile, tmpFile)
-            else:
-                try:
-                    madrigal.cedar.convertToNetCDF4(fileName, tmpFile)
-                except IOError:
-                    cedarObj = madrigal.cedar.MadrigalCedarFile(fileName)
-                    cedarObj.write('netCDF4', tmpFile)
-        
-    else:
-        tmpFile = fileName
-        
-    f = open(tmpFile, 'rb')
-    filename = os.path.basename(tmpFile)
-    chunk_size = 8192
-    file_type = mimetypes.guess_type(tmpFile)[0]
-    if file_type is None:
-        file_type = 'application/octet-stream'
-    response = StreamingHttpResponse(FileWrapper(f, chunk_size),
-                                     content_type=file_type)
-    response['Content-Length'] = os.path.getsize(tmpFile)    
-    response['Content-Disposition'] = "attachment; filename=%s" % (filename)
-    if fileType in (-1, -3):
-        os.remove(tmpFile)
-    return(response)
+            tmpFile = fileName
+            
+        f = open(tmpFile, 'rb')
+        filename = os.path.basename(tmpFile)
+        chunk_size = 8192
+        file_type = mimetypes.guess_type(tmpFile)[0]
+        if file_type is None:
+            file_type = 'application/octet-stream'
+        response = StreamingHttpResponse(FileWrapper(f, chunk_size),
+                                         content_type=file_type)
+        response['Content-Length'] = os.path.getsize(tmpFile)    
+        response['Content-Disposition'] = "attachment; filename=%s" % (filename)
+        if fileType in (-1, -3):
+            os.remove(tmpFile)
+        return(response)
         
   
 def mad_calculator_service(request):
