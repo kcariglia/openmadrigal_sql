@@ -1576,18 +1576,26 @@ class MadrigalDBAdmin:
         #obj = madrigal.metadata.MadrigalInstrumentData(self.__madDB)
         #obj.rebuildInstDataTable()
 
+        # instKindatTab and instParmTab now accounted for by instData, but this is 
+        # probably still buggy
+
+        # will want to dump all tables to text here, use getTableStr (be careful of newlines tho)
+
         print('updateMaster complete...')
 
 
     def __setExpIdsForSite(self, siteID):
         """
-        docs here, FIX ME
+        Reset all experiment IDs (in both expTab and fileTab) for all experiments
+        associated with the given siteID.
         """
         expObj = madrigal.metadata.MadrigalExperiment(self.__madDB)
+        # get all expIDs and SQL-assigned IDs associated with experiments for this site
         idsAndIdxs = expObj.getAllExpIDs(siteID)
         expIDs = [i[0] for i in idsAndIdxs]
         expIdxs = [i[1] for i in idsAndIdxs]
 
+        # these are the indicies of the expIDs list that need fixing
         toFix = numpy.argwhere(numpy.array(expIDs) <= (siteID * 10000000))
 
         if len(toFix) == 0:
@@ -1598,8 +1606,7 @@ class MadrigalDBAdmin:
         
         #print("exps to fix: {}".format(len(toFix)))
         for idx in toFix:
-            index = expIdxs[int(idx)] #why are there two indices????? FIX ME
-            #expPosition = expIdxs[index]
+            index = expIdxs[int(idx)]
             newID = maxId + 1
             maxId = newID
 
@@ -1613,6 +1620,9 @@ class MadrigalDBAdmin:
             #print("files to fix: {}".format(numFiles))
 
             expObj.setExpIdByPosition(index, newID)
+
+            # dont need to reset expIDs for fileObjs because fileTab eid cascades on update
+            
             #[fileObj.setExpIdByPosition(pos, newID) for pos in list(range(numFiles))]
 
         # need to enforce experiment id uniqueness
@@ -1640,9 +1650,6 @@ class MadrigalDBAdmin:
         """__updateGlobalMetadata__ is a private method to update metadata/expTabAll.txt and metadata/fileTabAll.txt
         from the main madrigal server.
         """
-
-        # expTabAll = ''
-        # fileTabAll = ''
         s = datetime.datetime.now()
 
         localSiteID = self.__madDB.getSiteID()
@@ -1709,9 +1716,6 @@ class MadrigalDBAdmin:
             localMetadataFile = os.path.basename(metadataFile)[:-4]
             archivePath = 'madroot/%s' % (metadataFile)
             
-            # f = open(localMetadataFile)
-            # text = f.read().encode('utf-8')
-            # f.close()
             text = self.__madDB.getTableStr(localMetadataFile)
             textMd5 = hashlib.md5(text.encode('utf-8'))
             md5Str = textMd5.hexdigest() # md5 checksum of local metadata file
@@ -1742,11 +1746,13 @@ class MadrigalDBAdmin:
             # this metadata file needs updating
             print('Downloading revised version of metadata file %s from OpenMadrigal' % (metadataFile))
             text = self.__openMad.getLatestSubversionVersion(os.path.join('madroot',metadataFile))
-            siteObj = madrigal.metadata.MadrigalSite(self.__madDB)
-            siteObj.updateSiteTab(text)
-            # f = open(localMetadataFile, 'w', encoding='utf-8')
-            # f.write(text)
-            # f.close()
+            
+            # the way updateSiteTab is currently written doesnt make much sense actually
+            # will want 'update' functions that actually check each of the 3 tables here
+
+            #siteObj = madrigal.metadata.MadrigalSite(self.__madDB)
+            #siteObj.updateSiteTab(text)
+
             
     def _updateInstData(self):
         """_updateInstData updates the summary files instData.txt and instDataPriv.txt based on 
