@@ -1622,7 +1622,7 @@ class MadrigalDBAdmin:
             expObj.setExpIdByPosition(index, newID)
 
             # dont need to reset expIDs for fileObjs because fileTab eid cascades on update
-            
+
             #[fileObj.setExpIdByPosition(pos, newID) for pos in list(range(numFiles))]
 
         # need to enforce experiment id uniqueness
@@ -1746,12 +1746,16 @@ class MadrigalDBAdmin:
             # this metadata file needs updating
             print('Downloading revised version of metadata file %s from OpenMadrigal' % (metadataFile))
             text = self.__openMad.getLatestSubversionVersion(os.path.join('madroot',metadataFile))
-            
-            # the way updateSiteTab is currently written doesnt make much sense actually
-            # will want 'update' functions that actually check each of the 3 tables here
 
-            #siteObj = madrigal.metadata.MadrigalSite(self.__madDB)
-            #siteObj.updateSiteTab(text)
+            if metadataFile == metadataFiles[0]:
+                # update siteTab
+                self.__madSite.updateSiteTab(text)
+            if metadataFile == metadataFiles[1]:
+                # update instTab
+                self.__madInst.updateInstTab(text)
+            if metadataFile == metadataFiles[2]:
+                # update instType
+                self.__madDB.updateInstType(text)
 
             
     def _updateInstData(self):

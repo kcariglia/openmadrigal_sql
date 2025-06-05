@@ -2028,6 +2028,43 @@ class MadrigalDB:
                                           traceback.format_exception(sys.exc_info()[0],
                                                                     sys.exc_info()[1],
                                                                     sys.exc_info()[2]))
+        
+    def updateInstType(self, text):
+        """
+        Check text for updates to instType-- if updates are present, add to metadata.db.
+
+        Note that instType is a "special" table insofar as there is no MadrigalInstrumentCategory class--
+        use MadrigalDB (or directly access metadata.db (not recommended though).)
+
+        Inputs: comma/newline delimited string text as read from any instType.txt file
+        Returns: None
+        """ 
+        qtemplate = "SELECT category FROM instType"
+        updatetemplate = """INSERT INTO instType VALUES(?, ?)"""
+
+        try:
+            self.__initMetaDBConnector()
+            result = self.__cursor.execute(qtemplate)
+            resList = result.fetchall()
+
+            currentCategories = {item[0]:item[0] for item in resList}
+
+            for line in text:
+                line = line.rstrip()
+                line = line.split(',')
+
+                if line[0] not in currentCategories:
+                    self.__cursor.execute(updatetemplate, (line[0], line[1]))
+                    self.__connector.commit()
+
+            self.__closeMetaDBConnector()
+            print("instType updated successfully")
+        except:
+            raise madrigal.admin.MadrigalError("Problem updating instType",
+                                          traceback.format_exception(sys.exc_info()[0],
+                                                                    sys.exc_info()[1],
+                                                                    sys.exc_info()[2]))
+
 
     def __str__(self):
         """ __str__ simply calls toString """
@@ -2662,7 +2699,7 @@ class MadrigalDB:
                     expObj.writeMetadata()
                     
                 except madrigal.admin.MadrigalError as e:
-                    print(e.getExceptionStr()) 
+                    print(e.getExceptionStr())
 
                 
 
@@ -3393,43 +3430,45 @@ class MadrigalSite:
                                                                           sys.exc_info()[1],
                                                                           sys.exc_info()[2]))
         
+        
 
     def updateSiteTab(self, text):
         """
         Updates siteTab with parsed input text, formatted as it would be in siteTab.txt.
-        For use with checkOpenMadrigalMetadata in updateMaster.
+        Generally for use with checkOpenMadrigalMetadata in updateMaster.
 
         Inputs: text - comma/newline delimited site metadata, formatted as it would be in siteTab.txt
         Returns: None
-        """
-        lines = text.split('\n')
-        splitLines = [line.split(',') for line in lines]
-        noVersion = [tuple(line + [2.6]) for line in splitLines if (len(line) == 16)]
-        otherLines = [tuple(line) for line in splitLines if (len(line) == 17)]
-        siteData = noVersion + otherLines
-        self.__addSiteData(siteData)
-
-
-    def __addSiteData(self, siteData):
-        """
-        Helper function to add new site data into siteTab.
-        For use with checkOpenMadrigalMetadata in updateMaster.
-        
-        Inputs: parsed site data as returned from updateSiteTab
-        Returns: None
-        """
-        template = """INSERT INTO siteTab VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+        """ 
+        qtemplate = "SELECT " + self.__siteIDCol + " FROM " + self.__tblName
+        updatetemplate = """INSERT INTO siteTab VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
 
         try:
             self.__initMetaDBConnector()
-            self.__cursor.executemany(template, siteData)
-            self.__connector.commit()
+            result = self.__cursor.execute(qtemplate)
+            resList = result.fetchall()
+
+            currentIDs = {item[0]:item[0] for item in resList}
+
+            for line in text:
+                line = line.rstrip()
+                line = line.split(',')
+
+                if line[0] not in currentIDs:
+                    if len(line) == 16:
+                        # no site version, use default (3.0)
+                        line.append('3.0')
+                    if len(line) == 17:
+                        self.__cursor.execute(updatetemplate, line)
+                        self.__connector.commit()
+
             self.__closeMetaDBConnector()
+            print("siteTab updated successfully")
         except:
-            raise madrigal.admin.MadrigalError("Unable to update siteTab",
-                                               traceback.format_exception(sys.exc_info()[0],
-                                                                          sys.exc_info()[1],
-                                                                          sys.exc_info()[2]))
+            raise madrigal.admin.MadrigalError("Problem updating siteTab",
+                                          traceback.format_exception(sys.exc_info()[0],
+                                                                    sys.exc_info()[1],
+                                                                    sys.exc_info()[2]))
 
 
 
@@ -3973,6 +4012,41 @@ class MadrigalInstrument:
                                                 traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
                                                                         sys.exc_info()[2]))
+        
+
+    def updateInstTab(self, text):
+        """
+        Updates instTab with parsed input text, formatted as it would be in instTab.txt.
+        Generally for use with checkOpenMadrigalMetadata in updateMaster.
+
+        Inputs: text - comma/newline delimited site metadata, formatted as it would be in instTab.txt
+        Returns: None
+        """ 
+        qtemplate = "SELECT " + self.__instKinstCol + " FROM " + self.__tblName
+        updatetemplate = """INSERT INTO instTab VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+
+        try:
+            self.__initMetaDBConnector()
+            result = self.__cursor.execute(qtemplate)
+            resList = result.fetchall()
+
+            currentKinsts = {item[0]:item[0] for item in resList}
+
+            for line in text:
+                line = line.rstrip()
+                line = line.split(',')
+
+                if line[0] not in currentKinsts:
+                    self.__cursor.execute(updatetemplate, line)
+                    self.__connector.commit()
+
+            self.__closeMetaDBConnector()
+            print("instTab updated successfully")
+        except:
+            raise madrigal.admin.MadrigalError("Problem updating siteTab",
+                                          traceback.format_exception(sys.exc_info()[0],
+                                                                    sys.exc_info()[1],
+                                                                    sys.exc_info()[2]))
 
 
     # def getOrderedInstrumentListWithData(self, isTrusted, localOnly=False,
