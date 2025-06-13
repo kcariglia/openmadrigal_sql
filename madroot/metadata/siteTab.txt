@@ -6,4 +6,5 @@
 8,Beijing,madrigal.iggcas.ac.cn,,,/madrigal/servlets,Baiqi Ning,Institute of Geology and Geophysics,Chinese Academy of Sciences,,,Beijing,,China,,zxk@mail.iggcas.ac.cn;brideout@haystack.mit.edu
 20,UCalgary,madrigal.phys.ucalgary.ca,,,madrigal/servlets,Darren Chaddock,University of Calgary,2500 University Dr NW,,Calgary,AB,T2N 1N4,Canada,1-403-220-4426,dchaddoc@ucalgary.ca
 22,IllinoisECE,remote1.ece.illinois.edu,madrigal,madrigal,/madrigal/servlets,Erhan Kudeki,University of Illinois at Urbana-Champaign,306 N Wright St,,Urbana,IL,61820,USA,+1 217 265 0128,erhan@illinois.edu
-10,CEDAR,https://cedar.openmadrigal.org,,,,Bill Rideout,MIT Haystack Observatory,Route 40,,Westford,MA,01886,USA,1-781-981-5624,haystack-madrigal-admin@mit.edu,3.0
+24,IAP,https://madrigal.iap-kborn.de,,,,Jorge L. Chau,IAP Kuehlungsborn,Schlossstr.6,,Kuehlungsborn,,18225,Germany,+49 38293 68 200,chau@iap-kborn.de,3.2
+10,CEDAR,https://cedar.openmadrigal.org,,,,Bill Rideout,MIT Haystack Observatory,Route 40,,Westford,MA,01886,USA,1-781-981-5624,haystack-madrigal-admin@mit.edu,3.2
