@@ -1952,9 +1952,9 @@ class MadrigalDB:
                         expList[i][9],   # security
                         expList[i][10],  # pi
                         expList[i][11]]) # piemail
-                        for i in range(len(expList)) if ((expList[i][1] not in expUrls) and ((expList[i][9] == '0') or (expList[i][9] == '2')))]
+                        for i in range(len(expList)) if ((expList[i][1] not in expUrls) )] # and ((expList[i][9] == '0') or (expList[i][9] == '2'))
 
-        # criteria: url does not already exist and security == 0 | 2
+        # criteria: url does not already exist #and security == 0 | 2
         return(expData)
     
 
@@ -1978,7 +1978,7 @@ class MadrigalDB:
         fileList = otherLines + noAnalyst
 
         # criteria: (fname, eid) does NOT exist, but eid does exist and permission = 0 (public)
-        fileData = [line for line in fileList if (((line[0], int(line[1])) not in fnameEIDCombos) and ((int(line[1]) in eids) and (line[10] == '0')))]
+        fileData = [line for line in fileList if (((line[0], int(line[1])) not in fnameEIDCombos) and ((int(line[1]) in eids)))] #  and (line[10] == '0')
         return(fileData)
     
 
@@ -2039,7 +2039,9 @@ class MadrigalDB:
         Inputs: comma/newline delimited string text as read from any instType.txt file
         Returns: None
         """ 
-        qtemplate = "SELECT category FROM instType"
+        # search by instType description because category int key not guaranteed to be unique
+        # among other madrigal sites
+        qtemplate = "SELECT * FROM instType"
         updatetemplate = """INSERT INTO instType VALUES(?, ?)"""
 
         try:
@@ -2047,15 +2049,18 @@ class MadrigalDB:
             result = self.__cursor.execute(qtemplate)
             resList = result.fetchall()
 
-            currentCategories = {item[0]:item[0] for item in resList}
+            categoryDescs = {item[1]:item[1] for item in resList}
+            maxCatID = numpy.max([item[0] for item in resList])
+            newCatID = maxCatID + 1
 
             for line in text:
                 line = line.rstrip()
                 line = line.split(',')
 
-                if line[0] not in currentCategories:
-                    self.__cursor.execute(updatetemplate, (line[0], line[1]))
+                if line[1] not in categoryDescs:
+                    self.__cursor.execute(updatetemplate, (newCatID, line[1]))
                     self.__connector.commit()
+                    newCatID += 1
 
             self.__closeMetaDBConnector()
             print("instType updated successfully")
@@ -4420,11 +4425,11 @@ class MadrigalInstrumentParameters:
         Exceptions: If unable to write instParmTab.txt file or the instParmLastUpdate.txt file.
         """
         # get full file name
-        filename = self.__madDB.getMetadataDir() + '/instParmTab.txt'
+        # filename = self.__madDB.getMetadataDir() + '/instParmTab.txt'
         
-        # throw an exception if instParmTab.txt file not writable
-        if not os.access(filename, os.W_OK):
-            raise madrigal.admin.MadrigalError('Unable to write: ' + str(filename), None)
+        # # throw an exception if instParmTab.txt file not writable
+        # if not os.access(filename, os.W_OK):
+        #     raise madrigal.admin.MadrigalError('Unable to write: ' + str(filename), None)
         # we should already be connected to metadata.db
 
         # if madroot not set, set it now
@@ -4471,7 +4476,7 @@ class MadrigalInstrumentParameters:
         madParmObj = madrigal.data.MadrigalParameters(self.__madDB)
 
         # create a string to hold all the text for the new file
-        newFileStr = ''
+        # newFileStr = ''
         
         # create a dictionary with all instrument codes as keys
         instObj = madrigal.metadata.MadrigalInstrument(self.__madDB)
@@ -4522,7 +4527,7 @@ class MadrigalInstrumentParameters:
             
             # try to create MadrigalFile object for that file
             try:
-                print('\t\tAdding parameters to instParmTab.txt from ' + str(file))
+                print('\t\tAdding parameters to instParmTab from ' + str(file))
                 madFileObj = madrigal.data.MadrigalFile(file[0], self.__madDB)
                 fileParmList = madFileObj.getMeasuredParmList()
                 # append unique parameters
@@ -4533,7 +4538,6 @@ class MadrigalInstrumentParameters:
             except:
                 continue
 
-        clear = "DELETE FROM " + self.__tblName # be careful, this will delete everything
         template = "INSERT INTO " + self.__tblName + " VALUES(?, ?)"
 
         # now create a new file string from instCodeDict
@@ -4544,7 +4548,6 @@ class MadrigalInstrumentParameters:
         # step through each key
         try:
             self.__initMetaDBConnector()
-            self.__cursor.execute(clear)
             for key in keyList:
                 # sort that instrument's list
                 instParmList = madParmObj.normalizeParmList(instCodeDict[key])
@@ -4555,8 +4558,8 @@ class MadrigalInstrumentParameters:
                     self.__cursor.execute(template, (key, parm))
 
                 # append that instrument's data to newFileStr
-                newFileStr = newFileStr + str(key) + ','
-                newFileStr = newFileStr + delimiter.join(instParmList).lower() + '\n'
+                #newFileStr = newFileStr + str(key) + ','
+                #newFileStr = newFileStr + delimiter.join(instParmList).lower() + '\n'
 
             self.__connector.commit()
             self.__closeMetaDBConnector()
@@ -4566,15 +4569,7 @@ class MadrigalInstrumentParameters:
                                                                         sys.exc_info()[1],
                                                                         sys.exc_info()[2]))
 
-        # if no data found, throw error
-        if len(newFileStr) == 0:
-            raise madrigal.admin.MadrigalError('No data found for: ' + str(filename), None)
-            
 
-        # write new instParmTab.txt
-        newFile = open(filename, 'w')
-        newFile.write(newFileStr)
-        newFile.close
         
     
 class MadrigalKindat:
@@ -4967,8 +4962,8 @@ class MadrigalExperiment:
 
         query = "SELECT " + self.__expIdCol + " FROM " + self.__tblName + " WHERE " + self.__expIdxCol +"={}".format(position)
 
-        if position > self.getExpCount():
-            return(None)
+        # if position > self.getExpCount():
+        #     return(None)
 
         try:
             self.__initMetaDBConnector()
@@ -5218,7 +5213,7 @@ class MadrigalExperiment:
             # if index not set, position should default to 1
             position = 1
 
-        update = ("UPDATE " + self.__tblName + " SET " + self.__expUrlCol + "={} WHERE " + self.__expIdxCol + "={}").format(expUrl, position)
+        update = ("UPDATE " + self.__tblName + " SET " + self.__expUrlCol + "=\"{}\" WHERE " + self.__expIdxCol + "={}").format(expUrl, position)
 
         try:
             self.__initMetaDBConnector()
@@ -5373,7 +5368,7 @@ class MadrigalExperiment:
             # if index not set, position should default to 1
             position = 1
 
-        update = ("UPDATE " + self.__tblName + " SET " + self.__expNameCol + "={} WHERE " + self.__expIdxCol + "={}").format(expName, position)
+        update = ("UPDATE " + self.__tblName + " SET " + self.__expNameCol + "=\"{}\" WHERE " + self.__expIdxCol + "={}").format(expName, position)
 
         try:
             self.__initMetaDBConnector()
@@ -5382,8 +5377,8 @@ class MadrigalExperiment:
             self.__closeMetaDBConnector()
         except:
             raise madrigal.admin.MadrigalError('Error in setExpNameByPosition with args %s: %s' %  \
-                                               (str(position, expName),
-                                                [traceback.format_exc()]))
+                                               (str(position), expName),
+                                                [traceback.format_exc()])
 
 
     def getExpSiteIdByExpId(self, expId):
@@ -6128,7 +6123,7 @@ class MadrigalExperiment:
             # if index not set, position should default to 1
             position = 1
 
-        update = ("UPDATE " + self.__tblName + " SET " + self.__expPICol + "={} WHERE " + self.__expIdxCol + "={}").format(PI, position)
+        update = ("UPDATE " + self.__tblName + " SET " + self.__expPICol + "=\"{}\" WHERE " + self.__expIdxCol + "={}").format(PI, position)
 
         try:
             self.__initMetaDBConnector()
@@ -6137,8 +6132,8 @@ class MadrigalExperiment:
             self.__closeMetaDBConnector()
         except:
             raise madrigal.admin.MadrigalError('Error in setPIByPosition with args %s: %s' %  \
-                                               (str(position, PI),
-                                                [traceback.format_exc()]))
+                                               (str(position), PI),
+                                                [traceback.format_exc()])
                 
     
     def getPIEmailByPosition(self, position = 0):
@@ -6239,7 +6234,7 @@ class MadrigalExperiment:
             # if index not set, position should default to 1
             position = 1
 
-        update = ("UPDATE " + self.__tblName + " SET " + self.__expPIEmailCol + "={} WHERE " + self.__expIdxCol + "={}").format(PIEmail, position)
+        update = ("UPDATE " + self.__tblName + " SET " + self.__expPIEmailCol + "=\"{}\" WHERE " + self.__expIdxCol + "={}").format(PIEmail, position)
 
         try:
             self.__initMetaDBConnector()
@@ -6248,8 +6243,8 @@ class MadrigalExperiment:
             self.__closeMetaDBConnector()
         except:
             raise madrigal.admin.MadrigalError('Error in setPIEmailByPosition with args %s: %s' %  \
-                                               (str(position, PIEmail),
-                                                [traceback.format_exc()]))
+                                               (str(position), PIEmail),
+                                                [traceback.format_exc()])
 
 
     def getExpLinksByExpId(self, expId):
@@ -6407,6 +6402,10 @@ class MadrigalExperiment:
            Inputs - None
            Returns - (int) total number of experiments
         """
+        if self.__index:
+            # this MadrigalExperiment object initialized from single exp
+            return 1
+        
         query = "SELECT COUNT(*) FROM " + self.__tblName
         try:
             self.__initMetaDBConnector()
@@ -6547,7 +6546,7 @@ class MadrigalExperiment:
                                                traceback.format_exception(sys.exc_info()[0],
                                                                           sys.exc_info()[1],
                                                                           sys.exc_info()[2]))
-
+        
 
     def __str__(self):
         """return possibly modified file as a string in same format as writeMetadata
@@ -7397,7 +7396,7 @@ class MadrigalMetaFile:
 
         Exceptions: Thrown if filename not found.
         """
-        update = ("DELETE FROM " + self.__tblName + " WHERE " + self.__fileNameCol + "={}").format(filename)
+        update = ("DELETE FROM " + self.__tblName + " WHERE " + self.__fileNameCol + "=\"{}\"").format(filename)
         
         try:
             self.__initMetaDBConnector()
@@ -7630,7 +7629,7 @@ class MadrigalMetaFile:
         if status.find(',') != -1:
             raise ValueError('status string in fileTab.txt cannot contain a comma: <%s> is illegal' % (status))
 
-        update = ("UPDATE " + self.__tblName + " SET " + self.__fileStatusCol + "={} WHERE " + self.__fileIdxCol + "={}").format(status, position)
+        update = ("UPDATE " + self.__tblName + " SET " + self.__fileStatusCol + "=\"{}\" WHERE " + self.__fileIdxCol + "={}").format(status, position)
         try:
             self.__initMetaDBConnector()
             self.__cursor.execute(update)
@@ -7726,7 +7725,7 @@ class MadrigalMetaFile:
                                                (str(position), analyst),
                                                 [traceback.format_exc()])
 
-        update = ("UPDATE " + self.__tblName + " SET " + self.__fileAnalystCol + "={} WHERE " + self.__fileIdxCol + "={}").format(analyst, position)
+        update = ("UPDATE " + self.__tblName + " SET " + self.__fileAnalystCol + "=\"{}\" WHERE " + self.__fileIdxCol + "={}").format(analyst, position)
         try:
             self.__initMetaDBConnector()
             self.__cursor.execute(update)
@@ -7822,7 +7821,7 @@ class MadrigalMetaFile:
                                                (str(position, analystEmail),
                                                 [traceback.format_exc()]))
 
-        update = ("UPDATE " + self.__tblName + " SET " + self.__fileAnalystEmailCol + "={} WHERE " + self.__fileIdxCol + "={}").format(analystEmail, position)
+        update = ("UPDATE " + self.__tblName + " SET " + self.__fileAnalystEmailCol + "=\"{}\" WHERE " + self.__fileIdxCol + "={}").format(analystEmail, position)
         try:
             self.__initMetaDBConnector()
             self.__cursor.execute(update)
@@ -7830,7 +7829,7 @@ class MadrigalMetaFile:
             self.__closeMetaDBConnector()
 
         except:
-            raise ValueError('setAnalystEmailByPosition called for position %i beyond length %i' % (position, len(self.__fileList)))
+            raise ValueError(f'problem setting analyst email at position {position}')
 
 
 
@@ -8310,6 +8309,10 @@ class MadrigalInstrumentData:
 
         Exceptions: if error in metadata file
         """
+        # NOTE 2 SELF: the way this is currently written may be 
+        # quite inefficient, ideally you would want to cache these 
+        # results somewhere
+
         # if kinstList is just a single integer, convert it into a list
         if type(kinstList) == int:
             kinstList = [kinstList]
@@ -8341,32 +8344,6 @@ class MadrigalInstrumentData:
                                               traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
                                                                         sys.exc_info()[2]))
-        
-        """ retKindatList = []
-        
-        # if kinstList is just a single integer, convert it into a list
-        if type(kinstList) == int:
-            kinstList = [kinstList]
-
-        # loop through instKindatTab.txt
-        for inst in self.__fileList:
-            # find matching kinst
-            try:
-                if (int(inst[self.__instKindatKinstCol]) in kinstList):
-                    if len(inst[self.__instKindatListCol]) == 0:
-                        continue
-                    tempList = inst[self.__instKindatListCol].split()
-                    for parm in tempList:
-                        if not int(parm) in retKindatList:
-                           retKindatList.append(int(parm))
-                
-            except:
-                raise madrigal.admin.MadrigalError('Error in instKindatTab.txt parsing metadata row: ' + str(inst),
-                                                           traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
-
-        return(retKindatList) """
     
     
     
@@ -8382,6 +8359,10 @@ class MadrigalInstrumentData:
 
         Exceptions: if error in metadata file
         """
+        # NOTE 2 SELF: the way this is currently written may be 
+        # quite inefficient, ideally you would want to cache these 
+        # results somewhere
+
         query1 = "SELECT id FROM expTab WHERE kinst={} AND ((sdt LIKE '{}%%%%%%%%%%') OR (edt LIKE '{}%%%%%%%%%%'))"
         query2 = "SELECT kindat FROM fileTab WHERE eid IN {}"
 
@@ -8409,25 +8390,18 @@ class MadrigalInstrumentData:
                                                                         sys.exc_info()[1],
                                                                         sys.exc_info()[2]))
 
-        """ # loop through instKindatTab.txt
-        for inst in self.__fileList:
-            # find matching kinst
-            try:
-                if int(inst[self.__instKindatKinstCol]) != kinst:
-                    continue
-                if int(inst[self.__instKindatYearCol]) != year:
-                    continue
-                return([int(kindat) for kindat in inst[self.__instKindatListCol].split()])
-                
-            except:
-                raise madrigal.admin.MadrigalError('Error in instKindatTab.txt parsing metadata row: ' + str(inst),
-                                                           traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2])) """
     
 
     def rebuildInstDataTable(self):
-        """rebuildInstKindatTable rebuilds the instKindatTab.txt metadata file.
+        """
+        
+        this is extremely broken right now, not used anywhere
+        
+        
+        
+        
+        
+        rebuildInstKindatTable rebuilds the instKindatTab.txt metadata file.
 
         The table instKindatTab.txt is a listing of every kindat found for a given
         instrument for any given year.  Since these files are constantly updated, this table needs to be updated on a regular
@@ -8579,6 +8553,10 @@ class MadrigalInstrumentData:
 
         Exceptions: MadrigalError if any item in row cannot be cast to correct format
         """
+        # NOTE 2 SELF: the way this is currently written may be 
+        # quite inefficient, ideally you would want to cache these 
+        # results somewhere
+
         query = "SELECT kinst FROM expTab"
         if local:
             siteID = self.__madDB.getSiteID()
@@ -8602,30 +8580,6 @@ class MadrigalInstrumentData:
                                                                               sys.exc_info()[2]))
         
             
-        """ localDict = {} # key is category id, value is category desc str.  Will be converted to list before returned
-        
-        for i, data in enumerate(self.__fileList):
-            # find matching  code 
-            try:
-                if local:
-                    if int(data[self._siteIDCol]) != siteID:
-                        continue
-                kinst = int(data[self._kinstCol])
-                categoryID = self._madInstObj.getCategoryId(kinst)
-                if categoryID is None:
-                    continue
-                if categoryID not in list(localDict.keys()):
-                    localDict[categoryID] = self._madInstObj.getCategory(kinst)
-                    
-            except:
-                raise madrigal.admin.MadrigalError('Error in instData.txt parsing metadata row %i: ' % (i) + str(category),
-                                                   traceback.format_exception(sys.exc_info()[0],
-                                                                              sys.exc_info()[1],
-                                                                              sys.exc_info()[2]))
-        categoryIDKeys = list(localDict.keys())
-        categoryIDKeys.sort()
-        retList = [(catID, localDict[catID]) for catID in categoryIDKeys]
-        return(retList) """
         
 
 
@@ -8645,11 +8599,14 @@ class MadrigalInstrumentData:
 
         Exceptions: MadrigalError if any item in row cannot be cast to correct format
         """
+        # NOTE 2 SELF: the way this is currently written may be 
+        # quite inefficient, ideally you would want to cache these 
+        # results somewhere
 
-        # idea: want kinst and sid from expTab
+
+        # want kinst and sid from expTab
         # then want kinst where category = catid from instTab
         # finally get intersecting kinsts
-
 
         siteID = self.__madDB.getSiteID()
 
@@ -8685,37 +8642,6 @@ class MadrigalInstrumentData:
                                                                               sys.exc_info()[2]))
 
             
-        """ localDict = {} # key is kinst, value is tuple if (instrument desc str, siteID).  
-                       #  Will be converted to list before returned
-        
-        for i, data in enumerate(self.__fileList):
-            # find matching  code 
-            try:
-                kinst = int(data[self._kinstCol])
-                thisSiteID = int(data[self._siteIDCol])
-                thisCategoryID = self._madInstObj.getCategoryId(kinst)
-                if thisCategoryID != categoryID and categoryID != 0:
-                    continue
-                if local:
-                    if thisSiteID != siteID:
-                        continue
-
-                if kinst not in list(localDict.keys()):
-                    localDict[kinst] = (self._madInstObj.getInstrumentName(kinst), thisSiteID)
-                else:
-                    if thisSiteID == siteID:
-                        # local data overrides remote
-                        localDict[kinst] = (self._madInstObj.getInstrumentName(kinst), thisSiteID)
-                    
-            except:
-                raise madrigal.admin.MadrigalError('Error in instData.txt parsing metadata row %i: ' % (i) + str(categoryID),
-                                                   traceback.format_exception(sys.exc_info()[0],
-                                                                              sys.exc_info()[1],
-                                                                              sys.exc_info()[2]))
-        kinstKeys = list(localDict.keys())
-        kinstKeys.sort()
-        retList = [(kinst, localDict[kinst][0], localDict[kinst][1]) for kinst in kinstKeys]
-        return(retList) """
     
     
     def getInstrumentYears(self, kinst):
@@ -8731,6 +8657,10 @@ class MadrigalInstrumentData:
 
         Exceptions: MadrigalError if any item in row cannot be cast to correct format
         """
+        # NOTE 2 SELF: the way this is currently written may be 
+        # quite inefficient, ideally you would want to cache these 
+        # results somewhere
+
         query = "SELECT substring(sdt, 0, 5), substring(edt, 0, 5) FROM expTab WHERE kinst={}".format(kinst)
 
         try:
@@ -8753,252 +8683,5 @@ class MadrigalInstrumentData:
                                                    traceback.format_exception(sys.exc_info()[0],
                                                                               sys.exc_info()[1],
                                                                               sys.exc_info()[2]))
-        """ retList = []
-        for i, data in enumerate(self.__fileList):
-            # find matching  code 
-            try:
-                thisKinst = int(data[self._kinstCol])
-                if thisKinst != kinst:
-                    continue
-                yearsStr = data[self._yearsCol]
-
-                retList = [int(year) for year in yearsStr.split()]
-                retList.sort()
-                    
-            except:
-                raise madrigal.admin.MadrigalError('Error in instData.txt parsing metadata row %i: ' % (i) + str(category),
-                                                   traceback.format_exception(sys.exc_info()[0],
-                                                                              sys.exc_info()[1],
-                                                                              sys.exc_info()[2]))
-                
-        if len(retList) == 0:
-            raise madrigal.admin.MadrigalError('No data found for kinst %i' % (kinst), '')
-        
-        return(retList) """
-    
-    
-
-# class MadrigalMetadata:
-#     """MadrigalMetadata is a private class that parses a Madrigal metadata file.
-
-
-#     This private class is used by all classes that need to parse a Madrigal
-#     metadata file.  If the class is called with the name of the metadata file only,
-#     the metadata file is assumed to be at $MAD_ROOT/metadata.  If a full path name is
-#     given that includes a directory separator, then that is used instead.  The getList
-#     method returns a list with one item for each line in the file.  That item for each
-#     line is simply a list of strings found in the line.  The following is an example
-#     metadata file and the list the method getList would return.
-
-#     Metadata file example::
-
-#         Tom, Dick,,Harry
-#         ,,Joe,
-#         Sally, Jane,Joe, Dick
-
-#     The list returned by getList example::
-
-#         [['Tom', 'Dick', '', 'Harry'],
-#         ['', '', 'Joe', ''],
-#         ['Sally', 'Jane', 'Joe', 'Dick']]
-
-        
-#     Non-standard Python modules used:
-#     None
-
-#     MadrigalError exception thrown if:
-
-#         1. Unable to open metadata file.
-	
-#         2. All lines in metadata file do not have same number of items
-
-#     Change history:
-
-#     Written by "Bill Rideout":mailto:wrideout@haystack.mit.edu  Nov. 8, 2001
-
-#     """
-
-#     # constants
-
-#     # file delimiter - presently a comma
-#     __DELIMITER = ','
-    
-
-#     def __init__(self, metadataFileName, madDB=None, allowedLenList=None, key=None):
-#         """__init__ initializes the MadrigalCategoryList by reading from __privateList.
-
-#         Inputs: String metadataFileName - if not a full path, then MadrigalDB.getMetadataDir
-#             is included.
-
-#             Existing MadrigalDB object, by default = None.
-            
-#             allowedLenList - a list of allowed lengths (integers) for data lines.  If None (the default),
-#             then the rule is that all lengths must be the same.
-            
-#             key - which position in the file to use as a key.  Creates a attribute called self._dict,
-#             which is a dictionary with keys = item in key position, value = line index.  Used for
-#             faster lookup by key.  If None (the default), self._dict = None
-        
-#         Returns: void
-
-#         Affects: Initializes private member variable __categoryList.
-
-#         Exceptions: None.
-#         """
-
-#         # get metadata dir
-#         if madDB == None:
-#             self.__madDB = madrigal.metadata.MadrigalDB()
-#         else:
-#             self.__madDB = madDB
-        
-#         # create empty list to hold parsed data
-#         self.__fileList = []
-
-#         # used to check that every line has same number of words if allowedLenList == None
-#         self.__numWords = 0
-#         self._allowedLenList = allowedLenList
-        
-#         if not key is None:
-#             self._dict = {}
-#         else:self._dict = None
-        
-#         # get real filename 
-#         self.__fileName = self.__getFullPath(metadataFileName)
-
-#         # open configuration file
-#         try:
-#             self.__file = open(self.__fileName, "r")
-            
-#         except IOError:
-#             raise madrigal.admin.MadrigalError("Unable to open metadata file " + self.__fileName,
-#                                                        traceback.format_exception(sys.exc_info()[0],
-#                                                                         sys.exc_info()[1],
-#                                                                         sys.exc_info()[2]))
-                                                       
-
-#         # loop over each line in file, creating a list for each
-#         line = self.__file.readline()
-        
-#         count = 0
-#         while (len(line.strip())):
-#             self.__parseLine(line, key, count)
-#             line = self.__file.readline()
-#             count += 1
-
-#         # close metadata file
-#         self.__file.close()
-            
-
-#     def __parseLine(self, line, key=None, count=None):
-#         """__parseLine adds a list of items in line to __fileList.
-
-#         Inputs: 
-#             Line of file to parse (String).
-#             key - position to add key for self._dict, value = line position
-#                 If None (the default), ignore
-#             count - if None, ignore.  Else add to self._dict as value (see key above)
-        
-        
-#         Returns: void
-
-#         Affects: Adds a list of items in line to self.__fileList.
-
-#         Exceptions: None.
-#         """
-#         list = line.split(self.__DELIMITER)
-
-#         # create new list with leading and trailing whitespace stripped
-
-#         strippedList = []
-        
-#         for word in list:
-#             strippedList.append(word.strip())
-
-#         self.__fileList.append(strippedList)
-        
-#         if not self._dict is None:
-#             self._dict[list[key]] = count
-
-#         # check correct number of words
-#         if self._allowedLenList:
-#             if len(strippedList) not in self._allowedLenList:
-#                 raise madrigal.admin.MadrigalError("Wrong number of items found in metadata file " + \
-#                                                    self.__fileName + " at line " + \
-#                                                    str(len(self.__fileList)),
-#                                                    [traceback.format_exc()])
-#         elif self.__numWords == 0:
-#             self.__numWords = len(strippedList)
-            
-#         elif self.__numWords != len(strippedList):
-#             raise madrigal.admin.MadrigalError("Wrong number of items found in metadata file " + \
-#                                                        self.__fileName + " at line " + \
-#                                                        str(len(self.__fileList)),
-#                                                        [traceback.format_exc()])
-
-#     def __getFullPath(self, filename):
-#         """getFullPath returns the full path name of the metafile.
-        
-#         Inputs: filename passed in as argument
-        
-#         Returns: The full path name of the metafile.  If the filename argument already is
-#         a full path, filename is returned unchanged.  If the filename is simply the name
-#         of a metadata file, then $MAD_ROOT/metadata is appended
-
-#         Affects: Nothing
-
-#         Exceptions: None
-#         """
-
-#         if (len(os.path.dirname(filename)) != 0):
-#             return filename
-
-#         fullName = self.__madDB.getMetadataDir() + "/" + filename
-
-#         # normalize in case we run on a system without / as a separator
-
-#         return os.path.normpath(fullName)
-
-
-    
-#     # public methods
-
-#     def getList(self):
-#         """getList returns the list of lists of items in each line in the metafile.
-        
-#         Inputs: None
-        
-#         Returns: The list of lists of items in each line in the metafile.  That is, each
-#         item in the returned list is itself a list, representing a single line in the
-#         metafile. That single line's list is the list of items in that line.
-
-#         Affects: Nothing
-
-#         Exceptions: None
-#         """
-
-#         return(self.__fileList)
-    
-    
-#     def getDict(self):
-#         """getDict returns self_dict, which will be a dict with keys= key column set, value = line number,
-#         of None if no key passed into constructor
-#         """
-#         return(self._dict)
-    
-
-#     def toString(self):
-#         """toString returns a simple string representation of a MadrigalMetadata object.
-
-#         Inputs: None
-        
-#         Returns: String describing a simple representation of a __MadrigalMetadat object.
-
-#         Affects: Nothing
-
-#         Exceptions: None
-#         """
-
-#         return str(self.__fileList)
 
 

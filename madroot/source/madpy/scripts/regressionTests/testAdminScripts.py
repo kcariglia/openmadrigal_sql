@@ -69,7 +69,7 @@ try:
     cmd += ' --fileDesc="This is just a test" '
     cmd += ' --instCode=30 '
     cmd += ' --kindat=3408 '
-    cmd += ' --dirName=BillsTestExp20jan98 '
+    cmd += ' --dirName=20jan98BillsTestExp '
     cmd += ' --experimentsDirNum=2 '
     cmd += ' --PI="Bill Rideout" '
     cmd += ' --PIEmail="brideout@haystack.mit.edu" '
@@ -77,7 +77,6 @@ try:
     cmd += ' --fileAnalystEmail=jdoe@haystack.mit.edu '
     cmd += ' --createCachedText '
     cmd += ' --createCachedNetCDF4 '
-    
     
     print('Command to be tested: <%s>' % (cmd))
     result = os.system(cmd)
@@ -98,7 +97,7 @@ try:
     cmd += ' --fileDescs="Description 1,Description 2" '
     cmd += ' --startTime=08:00:00 '
     cmd += ' --numDays=3 '
-    cmd += ' --dirName=BillsRTTestExp20jan98 '
+    cmd += ' --dirName=20jan98BillsRTTestExp '
     cmd += ' --experimentsDirNum=2 '
     cmd += ' --PI="Bill Rideout" '
     cmd += ' --PIEmail="brideout@haystack.mit.edu" '
@@ -116,8 +115,8 @@ try:
     #### test of changeExpStatus.py ####
     print('Testing changeExpStatus.py ...')
     cmd = os.path.join(binDir, 'changeExpStatus.py')
-    expDir = os.path.join(expBase2, '1998/mlh', 'BillsTestExp20jan98')
-    expBaseDir = os.path.join('experiments2', '1998/mlh', 'BillsTestExp20jan98')
+    expDir = os.path.join(expBase2, '1998/mlh', '20jan98BillsTestExp')
+    expBaseDir = os.path.join('experiments2', '1998/mlh', '20jan98BillsTestExp')
     cmd += ' --expDir=%s ' % (expDir)
     cmd += ' --expName="Bill Rideout World Day modified test experiment" '
     cmd += ' --siteID=%i ' % (madDBObj.getSiteID())
@@ -217,13 +216,13 @@ except:
 
 ### final clean up ###
 try:
-    thisExp = os.path.join(expBase, '1998/mlh', 'BillsTestExp20jan98')
+    thisExp = os.path.join(expBase, '1998/mlh', '20jan98BillsTestExp')
     os.system('rm -rf %s' % (thisExp))
-    thisExp = os.path.join(expBase, '1998/mlh', 'BillsRTTestExp20jan98')
+    thisExp = os.path.join(expBase, '1998/mlh', '20jan98BillsRTTestExp')
     os.system('rm -rf %s' % (thisExp))
-    thisExp = os.path.join(expBase2, '1998/mlh', 'BillsTestExp20jan98')
+    thisExp = os.path.join(expBase2, '1998/mlh', '20jan98BillsTestExp')
     os.system('rm -rf %s' % (thisExp))
-    thisExp = os.path.join(expBase2, '1998/mlh', 'BillsRTTestExp20jan98')
+    thisExp = os.path.join(expBase2, '1998/mlh', '20jan98BillsRTTestExp')
     os.system('rm -rf %s' % (thisExp))
     os.system('rm /tmp/mlh98*')
     madUserObj.unregisterExperiment(email, expBaseDir)
@@ -270,7 +269,7 @@ try:
     cmd += ' --fileDesc="This is just a test" '
     cmd += ' --instCode=30 '
     cmd += ' --kindat=3408 '
-    cmd += ' --dirName=BillsTestExp20jan98 '
+    cmd += ' --dirName=20jan98BillsTestExp '
     cmd += ' --experimentsDirNum=2 '
     cmd += ' --PI="Bill Rideout" '
     cmd += ' --PIEmail="brideout@haystack.mit.edu" '
@@ -299,7 +298,7 @@ try:
     cmd += ' --fileDescs="Description 1,Description 2" '
     cmd += ' --startTime=08:00:00 '
     cmd += ' --numDays=3 '
-    cmd += ' --dirName=BillsRTTestExp20jan98 '
+    cmd += ' --dirName=20jan98BillsRTTestExp '
     cmd += ' --experimentsDirNum=2 '
     cmd += ' --PI="Bill Rideout" '
     cmd += ' --PIEmail="brideout@haystack.mit.edu" '
@@ -317,8 +316,8 @@ try:
     #### test of changeExpStatus.py ####
     print('Testing changeExpStatus.py ...')
     cmd = os.path.join(binDir, 'changeExpStatus.py')
-    expDir = os.path.join(expBase2, '1998/mlh', 'BillsTestExp20jan98')
-    expBaseDir = os.path.join('experiments2', '1998/mlh', 'BillsTestExp20jan98')
+    expDir = os.path.join(expBase2, '1998/mlh', '20jan98BillsTestExp')
+    expBaseDir = os.path.join('experiments2', '1998/mlh', '20jan98BillsTestExp')
     cmd += ' --expDir=%s ' % (expDir)
     cmd += ' --expName="Bill Rideout World Day modified test experiment" '
     cmd += ' --siteID=%i ' % (madDBObj.getSiteID())
@@ -421,14 +420,10 @@ except:
 
 ### final clean up ###
 try:
-    thisExp = os.path.join(expBase, '1998/mlh', 'BillsTestExp20jan98')
-    os.system('rm -rf %s' % (thisExp))
-    thisExp = os.path.join(expBase, '1998/mlh', 'BillsRTTestExp20jan98')
-    os.system('rm -rf %s' % (thisExp))
-    thisExp = os.path.join(expBase2, '1998/mlh', 'BillsTestExp20jan98')
-    os.system('rm -rf %s' % (thisExp))
-    thisExp = os.path.join(expBase2, '1998/mlh', 'BillsRTTestExp20jan98')
-    os.system('rm -rf %s' % (thisExp))
+    thisExp = os.path.join(expBase, '1998/mlh', '20jan98BillsTestExp')
+    os.system('rm -r %s' % (thisExp))
+    thisExp = os.path.join(expBase, '1998/mlh', '20jan98BillsRTTestExp')
+    os.system('rm -r %s' % (thisExp))
     os.system('rm /tmp/mlh98*')
     madUserObj.unregisterExperiment(email, expBaseDir)
 except:

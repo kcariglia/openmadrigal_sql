@@ -373,11 +373,21 @@ class MadrigalDBAdmin:
         if os.access(expDir, os.R_OK):
             raise IOError('Directory %s already exists' % (expDir))
 
+        expDir += "/"
         os.makedirs(expDir)
         os.chmod(expDir, 0o775)
 
+        # if the directory already exists, raise error
+        if not os.access(expDir, os.R_OK):
+            raise IOError('Directory %s not created' % (expDir))
+
+        # set new expID
+        expObj = madrigal.metadata.MadrigalExperiment(self.__madDB)
+        expIDList = expObj.getAllExpIDs(self.__madDB.getSiteID())
+        newID = int(numpy.max([i[0] for i in expIDList])) + 1
+
         # expTab.txt
-        expTabText = '0,' + self.__madDB.getTopLevelUrl()
+        expTabText = f'{newID},' + self.__madDB.getTopLevelUrl()
         if expTabText[-1] != '/':
             expTabText += '/madtoc/'
         else:
@@ -401,16 +411,12 @@ class MadrigalDBAdmin:
                                                                                                      security,
                                                                                                      PI,
                                                                                                      PIEmail)
-
-        # write expTab.txt
-        f = open(os.path.join(expDir, 'expTab.txt'), 'w', encoding='utf-8')
-        f.write(expTabText)
-        f.close()
-        os.chmod(os.path.join(expDir, 'expTab.txt'), 0o664)
+        
+        self.__madDB.addExperimentsMetadata(expTabText)
 
         # fileTab.txt
         # set file times to right now UT
-        nowUT = datetime.datetime.utcnow()
+        nowUT = datetime.datetime.now(tz=datetime.timezone.utc)
         nowDate = nowUT.strftime('%Y%m%d')
         nowTime = nowUT.strftime('%H%M%S')
         fileTabText = ''
@@ -424,15 +430,11 @@ class MadrigalDBAdmin:
                 fileAnalystEmail = ''
             
             fileTabText += rtFilenameList[index]
-            fileTabText += ',0,%i,4,0,0,0,%s,%s,' % (kindatList[index], nowDate, nowTime)
+            fileTabText += ',%i,%i,4,0,0,0,%s,%s,' % (newID, kindatList[index], nowDate, nowTime)
             fileTabText += '%s,%i,%s,%s\n' % (fileDescList[index], permissionList[index],
                                               fileAnalyst, fileAnalystEmail)
-
-        # write fileTab.txt
-        f = open(os.path.join(expDir, 'fileTab.txt'), 'w')
-        f.write(fileTabText)
-        f.close()
-        os.chmod(os.path.join(expDir, 'fileTab.txt'), 0o664)
+            
+        self.__madDB.addFilesMetadata(fileTabText)
 
         # create all writeable directory overview
         os.makedirs(os.path.join(expDir, 'overview'))
@@ -734,11 +736,20 @@ class MadrigalDBAdmin:
         if os.access(expDir, os.R_OK):
             raise IOError('Directory %s already exists' % (expDir))
 
+        expDir += "/"
         os.makedirs(expDir)
         os.chmod(expDir, 0o775)
 
+        if not os.access(expDir, os.R_OK):
+            raise IOError('Directory %s not created' % (expDir))
+
+        # set new expID
+        expObj = madrigal.metadata.MadrigalExperiment(self.__madDB)
+        expIDList = expObj.getAllExpIDs(self.__madDB.getSiteID())
+        newID = int(numpy.max([i[0] for i in expIDList])) + 1
+
         # expTab.txt
-        expTabText = '0,' + self.__madDB.getTopLevelUrl()
+        expTabText = f'{newID},' + self.__madDB.getTopLevelUrl()
         if expTabText[-1] != '/':
             expTabText += '/madtoc/'
         else:
@@ -762,27 +773,20 @@ class MadrigalDBAdmin:
                                                                                                      permission,
                                                                                                      PI, PIEmail)
 
-        # write expTab.txt
-        f = open(os.path.join(expDir, 'expTab.txt'), 'w', encoding='utf-8')
-        f.write(expTabText)
-        f.close()
-        os.chmod(os.path.join(expDir, 'expTab.txt'), 0o664)
+
+        self.__madDB.addExperimentsMetadata(expTabText)
 
         # fileTab.txt
          # set file times to right now UT
-        nowUT = datetime.datetime.utcnow()
+        nowUT = datetime.datetime.now(tz=datetime.timezone.utc)
         nowDate = nowUT.strftime('%Y%m%d')
         nowTime = nowUT.strftime('%H%M%S')
         fileTabText = os.path.basename(madFilename)
-        fileTabText += ',0,%i,%i,0,%i,%i,%s,%s,' % (kindat,category,hasCatalog,hasHeader,nowDate,nowTime)
+        fileTabText += ',%i,%i,%i,0,%i,%i,%s,%s,' % (newID, kindat,category,hasCatalog,hasHeader,nowDate,nowTime)
         fileTabText += '%s,%i,%s,%s\n' % (fileDesc, permission,
                                           fileAnalyst, fileAnalystEmail)
 
-        # write fileTab.txt
-        f = open(os.path.join(expDir, 'fileTab.txt'), 'w', encoding='utf-8')
-        f.write(fileTabText)
-        f.close()
-        os.chmod(os.path.join(expDir, 'fileTab.txt'), 0o664)
+        self.__madDB.addFilesMetadata(fileTabText)
 
         # create all writeable directory overview
         os.makedirs(os.path.join(expDir, 'overview'))
@@ -949,8 +953,7 @@ class MadrigalDBAdmin:
         if PIEmail != None:
             expTabInfo.setPIEmailByPosition(0, PIEmail)
 
-        # everything successfully changed - write new values
-        expTabInfo.writeMetadata()
+        # everything successfully changed
         
             
 
@@ -1056,11 +1059,6 @@ class MadrigalDBAdmin:
         if fileAnalystEmail.find(',') != -1:
             raise ValueError('fileAnalystEmail cannot contain a comma')
         
-
-        # all the arguments check out - add line to fileTab.txt
-        if not os.access(os.path.join(expDir, 'fileTab.txt'), os.R_OK):
-            raise ValueError(' file %s does not yet exist' % (os.path.join(expDir, 'fileTab.txt')))
-
         # check that this is a new filename
         fileTabObj = madrigal.metadata.MadrigalMetaFile(self.__madDB, os.path.join(expDir, 'fileTab.txt'))
         for i in range(fileTabObj.getFileCount()):
@@ -1068,20 +1066,20 @@ class MadrigalDBAdmin:
             if filename == os.path.basename(madFilename):
                 raise ValueError('File %s already exists - must be deleted first' % (filename))
             
+        # find expID, because we assume expDir already exists
+        expObj = madrigal.metadata.MadrigalExperiment(self.__madDB, os.path.join(expDir, "expTab.txt"))
+        expID = expObj.getExpIdByPosition()
+        if not expID:
+            raise ValueError(f"No expID found for expDir {expDir}, unable to add file {madFilename} to this experiment")
 
         # fileTab.txt
-        nowUT = datetime.datetime.utcnow()
+        nowUT = datetime.datetime.now(tz=datetime.timezone.utc)
         nowDate = nowUT.strftime('%Y%m%d')
         nowTime = nowUT.strftime('%H%M%S')
         fileTabText = os.path.basename(madFilename)
-        fileTabText += ',0,%i,%i,0,%i,%i,%s,%s,' % (kindat,category,hasCatalog,hasHeader,nowDate,nowTime)
+        fileTabText += ',%d,%i,%i,0,%i,%i,%s,%s,' % (expID, kindat,category,hasCatalog,hasHeader,nowDate,nowTime)
         fileTabText += '%s,%i,%s,%s\n' % (fileDesc, permission,
-                                          fileAnalyst, fileAnalystEmail)
-
-        # write fileTab.txt
-        f = open(os.path.join(expDir, 'fileTab.txt'), 'a')
-        f.write(fileTabText)
-        f.close()                                                                                                                
+                                          fileAnalyst, fileAnalystEmail)                                                                                       
 
         # cp madFilename to new directory
         shutil.copyfile(madFilename, os.path.join(expDir, os.path.basename(madFilename)))
@@ -1089,6 +1087,7 @@ class MadrigalDBAdmin:
             os.chmod(os.path.join(expDir, os.path.basename(madFilename)), 0o664)
         except:
             pass
+        self.__madDB.addFilesMetadata(fileTabText)   
 
         # populate overview
         overviewFile = os.path.join(os.path.dirname(madFilename), 'overview', os.path.basename(madFilename) + '.summary')
@@ -1118,7 +1117,6 @@ class MadrigalDBAdmin:
 
         # update expTab.txt against all registered files
         self.updateExpTab(expDir)
-        
         
         if notify:
             # get expPath without MAD ROOT
@@ -1210,7 +1208,6 @@ class MadrigalDBAdmin:
                     fileTabInfo.setAnalystByPosition(index, fileAnalyst)
                 if fileAnalystEmail != None:
                     fileTabInfo.setAnalystEmailByPosition(index, fileAnalystEmail)
-                fileTabInfo.writeMetadata()
                 break
 
         if found == False:
@@ -1347,9 +1344,6 @@ class MadrigalDBAdmin:
 
         # delete line from fileTab.txt
         fileTabInfo.deleteRowByFilename(filename)
-
-        # write new version
-        fileTabInfo.writeMetadata()
         
         # state variable to detect deletion of missing file
         was_missing = False
@@ -1386,7 +1380,6 @@ class MadrigalDBAdmin:
         # update expTab.txt against all registered files
         if not was_missing:
             self.updateExpTab(expDir)
-        
         
 
 
@@ -1470,7 +1463,8 @@ class MadrigalDBAdmin:
             thisCategory = fileTabInfo.getCategoryByPosition(index)
             try:
                 fileInfo = madrigal.data.MadrigalFile(os.path.join(expDir, thisMadfilename))
-            except:
+            except Exception as e:
+                print(e)
                 print('WARNING: Problem with expDir=%s and thisMadfilename=%s' % (expDir, thisMadfilename))
                 continue
             thisStartTimeList = fileInfo.getEarliestTime()
@@ -1522,7 +1516,6 @@ class MadrigalDBAdmin:
             expInfo.setExpEndDateTimeByPosition(endTimeDefault)
         else:
             expInfo.setExpEndDateTimeByPosition(endTime)
-        expInfo.writeMetadata()
 
 
     def updateMaster(self, skipGeo=False):
@@ -1564,10 +1557,20 @@ class MadrigalDBAdmin:
         fObj = madrigal.metadata.MadrigalMetaFile(self.__madDB)
         print("total exps: {}   total files: {}".format(eObj.getExpCount(), fObj.getFileCount()))
 
+
+        # for now, i do not create instKindatTab, or instData
+        # the MadrigalInstrumentData class currently reads directly
+        # from metatadata.db and combines the functionality of the two ^^
+        # tables mentioned (may be quite inefficient tho, needs more testing)
+
+
+
+
+
         # instParmTab.txt
-        #print('*** Rebuilding instParmTab.txt ***')
-        #obj = madrigal.metadata.MadrigalInstrumentParameters(self.__madDB)
-        #obj.rebuildInstParmTable()
+        print('*** Rebuilding instParmTab.txt ***')
+        obj = madrigal.metadata.MadrigalInstrumentParameters(self.__madDB)
+        obj.rebuildInstParmTable()
         e = datetime.datetime.now()
         print("updateMaster took {} s".format((e-s).seconds))
         
@@ -1576,7 +1579,7 @@ class MadrigalDBAdmin:
         #obj = madrigal.metadata.MadrigalInstrumentData(self.__madDB)
         #obj.rebuildInstDataTable()
 
-        # instKindatTab and instParmTab now accounted for by instData, but this is 
+        # instKindatTab now accounted for by instData, but this is 
         # probably still buggy
 
         # will want to dump all tables to text here, use getTableStr (be careful of newlines tho)
@@ -1603,6 +1606,12 @@ class MadrigalDBAdmin:
             return
         
         maxId = int(numpy.max(expIDs))
+
+        # special case, first installation when db is empty
+        if maxId == 0:
+            maxId = (siteID * 10000000) + 1
+
+        #print(f"maxid is {maxId}")
         
         #print("exps to fix: {}".format(len(toFix)))
         for idx in toFix:
@@ -1618,8 +1627,13 @@ class MadrigalDBAdmin:
             #numFiles = fileObj.getFileCount()
 
             #print("files to fix: {}".format(numFiles))
+            #curid = expObj.getExpIdByPosition(index)
+            #print("curid is " + str(curid))
 
             expObj.setExpIdByPosition(index, newID)
+
+            #newid = expObj.getExpIdByPosition(index)
+            #print("newid is " + str(newid))
 
             # dont need to reset expIDs for fileObjs because fileTab eid cascades on update
 
@@ -1689,10 +1703,8 @@ class MadrigalDBAdmin:
                 e = datetime.datetime.now()
                 #print("finished resetting expIDs after {} s".format((e-s).seconds))
             except:
-                raise madrigal.admin.MadrigalError("Problem updating global metadata",
-                                              traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+                print(f"Problem updating metadata from site {site[1]}, skipping update")
+                continue
 
 
 
