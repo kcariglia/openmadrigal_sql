@@ -317,6 +317,8 @@ class MadrigalCedarFile:
                     data records from Table Layout
                 self._num2DSplit - Number of arraySplitParms that are 2D
                 self._closed - a boolean used to determine if the file being created was already closed
+                self._useRecno - a state variable used when writing to netCDF4, but repeated times in spite
+                    of Madrigal best practices
                 
                 
             
@@ -362,6 +364,7 @@ class MadrigalCedarFile:
         if createFlag not in (True, False):
             raise ValueError('in MadrigalCedarFile, createFlag must be either True or False')
         self._createFlag = createFlag
+        self._useRecno = False
 
         if createFlag == False:
             if not os.access(fullFilename, os.R_OK):
@@ -650,6 +653,25 @@ class MadrigalCedarFile:
                 f = netCDF4.Dataset(newFilename, 'w', format='NETCDF4')
                 self._writeNetCDF4(f, arraySplittingParms)
                 f.close()
+            except ValueError:  # try using recno instead of ut1_unix as key
+                self._useRecno = True
+                try:
+                    # we need to make sure this file is closed and then deleted if an error
+                    try:
+                        f.close()
+                    except:
+                        pass
+                    f = None # used if next line fails
+                    f = netCDF4.Dataset(newFilename, 'w', format='NETCDF4')
+                    self._writeNetCDF4(f, arraySplittingParms)
+                    f.close()
+                except:
+                    # on any error, close and delete file, then reraise error
+                    if f:
+                        f.close()
+                    if os.access(newFilename, os.R_OK):
+                        os.remove(newFilename)
+                    raise
             except:
                 # on any error, close and delete file, then reraise error
                 if f:
@@ -736,9 +758,20 @@ class MadrigalCedarFile:
                 raise IOError('Cannot dump netCDF4 files with arraySplitParms - write to Hdf5 and then convert')
             if self._format is None:
                 # first write
-                f = netCDF4.Dataset(newFilename, 'w', format='NETCDF4')
-                self._firstDumpNetCDF4(f, parmIndexDict)
-                f.close()
+                try:
+                    f = netCDF4.Dataset(newFilename, 'w', format='NETCDF4')
+                    self._firstDumpNetCDF4(f, parmIndexDict)
+                    f.close()
+                except:
+                    # try replacing ut1_unix with recno
+                    self._useRecno = True
+                    try:
+                        f,close()
+                    except:
+                        pass
+                    f = netCDF4.Dataset(newFilename, 'w', format='NETCDF4')
+                    self._firstDumpNetCDF4(f, parmIndexDict)
+                    f.close()
             else:
                 f = netCDF4.Dataset(newFilename, 'a', format='NETCDF4')
                 self._appendNetCDF4(f, parmIndexDict)
@@ -2143,7 +2176,10 @@ class MadrigalCedarFile:
             uniqueIndValueDict = {}
             for indParm in indParmList:
                 uniqueIndValueDict[indParm] = numpy.unique(tableSubset.table[indParm])
-            unique_times = numpy.unique(tableSubset.table['ut1_unix'])
+            if not self._useRecno:
+                unique_times = numpy.unique(tableSubset.table['ut1_unix'])
+            else:
+                unique_times = numpy.unique(tableSubset.table['recno'])
             group_name = tableSubset.getGroupName()
             if group_name != None:
                 group_name = group_name.strip().replace(' ', '_')
@@ -2152,13 +2188,22 @@ class MadrigalCedarFile:
                 thisGroup = f # no splitting, so no subgroup needed
             # next step - create dimensions
             dims = []
-            thisGroup.createDimension("timestamps", len(unique_times))
-            timeVar = thisGroup.createVariable("timestamps", 'f8', ("timestamps",),
-                                               zlib=True)
-            timeVar.units = 'Unix seconds'
-            timeVar.description = 'Number of seconds since UT midnight 1970-01-01'
-            timeVar[:] = unique_times
-            dims.append("timestamps")
+            if not self._useRecno:
+                thisGroup.createDimension("timestamps", len(unique_times))
+                timeVar = thisGroup.createVariable("timestamps", 'f8', ("timestamps",),
+                                                   zlib=True)
+                timeVar.units = 'Unix seconds'
+                timeVar.description = 'Number of seconds since UT midnight 1970-01-01'
+                timeVar[:] = unique_times
+                dims.append("timestamps")
+            else:
+                thisGroup.createDimension("record_nums", len(unique_times))
+                timeVar = thisGroup.createVariable("record_nums", 'f8', ("record_nums",),
+                                                   zlib=True)
+                timeVar.units = 'N/A'
+                timeVar.description = 'Record number'
+                timeVar[:] = unique_times
+                dims.append("record_nums")
             for indParm in indParmList:
                 thisGroup.createDimension(indParm, len(uniqueIndValueDict[indParm]))
                 if self._madParmObj.isInteger(indParm):
@@ -2174,7 +2219,10 @@ class MadrigalCedarFile:
                 
             # create one and two D parm arrays, set 1D
             twoDVarDict = {} # key = parm name, value = netCDF4 variable
-            for parm in recLayout.dtype.names[len(self.requiredFields):]:
+            name_list = list(recLayout.dtype.names[len(self.requiredFields):])
+            if self._useRecno:
+                name_list.append('ut1_unix')
+            for parm in name_list:
                 if recLayout[parm][0] == 1:
                     dset = tableSubset.table[parm][tableSubset.oneDIndices]
                     if self.parmIsInt(parm):
@@ -2220,7 +2268,10 @@ class MadrigalCedarFile:
             # precalculate the indices
             # time index
             time_indices = numpy.zeros((1, len(tableSubset.table)), int)
-            times = tableSubset.table['ut1_unix']
+            if not self._useRecno:
+                times = tableSubset.table['ut1_unix']
+            else:
+                times = tableSubset.table['recno']
             for i in range(len(unique_times)):
                 t = unique_times[i]
                 indices = numpy.argwhere(times == t)
@@ -2320,16 +2371,31 @@ class MadrigalCedarFile:
         for indParm in indParmList:
             uniqueIndValueDict[indParm] = numpy.array(list(parmIndexDict[indParm].keys()))
         unique_times = numpy.array(list(parmIndexDict['ut1_unix'].keys()))
+        if not self._useRecno:
+            unique_times = numpy.array(list(parmIndexDict['ut1_unix'].keys()))
+        else:
+            unique_times = numpy.array(list(parmIndexDict['recno'].keys()))
         thisGroup = f # no splitting, so no subgroup needed
         # next step - create dimensions
         dims = []
-        thisGroup.createDimension("timestamps", len(unique_times))
-        timeVar = thisGroup.createVariable("timestamps", 'f8', ("timestamps",),
-                                           zlib=True)
-        timeVar.units = 'Unix seconds'
-        timeVar.description = 'Number of seconds since UT midnight 1970-01-01'
-        timeVar[:] = unique_times
-        dims.append("timestamps")
+        
+        if not self._useRecno:
+            thisGroup.createDimension("timestamps", len(unique_times))
+            timeVar = thisGroup.createVariable("timestamps", 'f8', ("timestamps",),
+                                                   zlib=True)
+            timeVar.units = 'Unix seconds'
+            timeVar.description = 'Number of seconds since UT midnight 1970-01-01'
+            timeVar[:] = unique_times
+            dims.append("timestamps")
+        else:
+            thisGroup.createDimension("record_nums", len(unique_times))
+            timeVar = thisGroup.createVariable("record_nums", 'f8', ("record_nums",),
+                                                   zlib=True)
+            timeVar.units = 'N/A'
+            timeVar.description = 'Record number'
+            timeVar[:] = unique_times
+            dims.append("record_nums")
+            
         for indParm in indParmList:
             thisGroup.createDimension(indParm, len(uniqueIndValueDict[indParm]))
             if self._madParmObj.isInteger(indParm):
@@ -2345,7 +2411,10 @@ class MadrigalCedarFile:
             
         # create one and two D parm arrays, set 1D
         twoDVarDict = {} # key = parm name, value = netCDF4 variable
-        for parm in recLayout.dtype.names[len(self.requiredFields):]:
+        name_list = list(recLayout.dtype.names[len(self.requiredFields):])
+        if self._useRecno:
+            name_list.append('ut1_unix')
+        for parm in name_list:
             if recLayout[parm][0] == 1:
                 dset = table[parm][:]
                 if self.parmIsInt(parm):
@@ -2408,7 +2477,7 @@ class MadrigalCedarFile:
         parmIndexDict - is a dictionary with key = timestamps and ind spatial parm names,
             value = dictionary of keys = unique values, value = index of that value. Can only be used when
             arraySplittingParms == []
-        
+
         """
         # create merged datasets table and recLayout
         datasetList = []
@@ -2439,28 +2508,49 @@ class MadrigalCedarFile:
         uniqueIndValueDict = {}
         for indParm in indParmList:
             uniqueIndValueDict[indParm] = numpy.array(list(parmIndexDict[indParm].keys()))
-        unique_times = numpy.array(list(parmIndexDict['ut1_unix'].keys()))
-        thisGroup = f # no splitting, so no subgroup needed
-        # next step - create dimensions
-        dims = []
-        timeVar = thisGroup.variables["timestamps"]
-        dims.append("timestamps")
-        for indParm in indParmList:
-            thisVar = thisGroup.variables[indParm]
-            dims.append(indParm)
+        if not self._useRecno:
+            unique_times = numpy.array(list(parmIndexDict['ut1_unix'].keys()))
+            thisGroup = f # no splitting, so no subgroup needed
+            # next step - create dimensions
+            dims = []
+            timeVar = thisGroup.variables["timestamps"]
+            dims.append("timestamps")
+            for indParm in indParmList:
+                thisVar = thisGroup.variables[indParm]
+                dims.append(indParm)
+        else:
+            unique_times = numpy.array(list(parmIndexDict['recno'].keys()))
+            thisGroup = f # no splitting, so no subgroup needed
+            # next step - create dimensions
+            dims = []
+            timeVar = thisGroup.variables["recno"]
+            dims.append("recno")
+            for indParm in indParmList:
+                thisVar = thisGroup.variables[indParm]
+                dims.append(indParm)
             
         # create one and two D parm arrays, set 1D
         twoDVarDict = {} # key = parm name, value = netCDF4 variable
-        for parm in recLayout.dtype.names[len(self.requiredFields):]:
+        name_list = list(recLayout.dtype.names[len(self.requiredFields):])
+        if self._useRecno:
+            name_list.append('ut1_unix')
+        for parm in name_list:
             if recLayout[parm][0] == 1:
                 dset = table[parm][:]
                 oneDVar = thisGroup.variables[parm]
                 lastTS = 0.0
-                for i, ts in enumerate(table['ut1_unix']):
-                    if ts != lastTS:
-                        # set it
-                        oneDVar[parmIndexDict['ut1_unix'][ts]] = dset[i]
-                        lastTS = ts
+                if not self._useRecno:
+                    for i, ts in enumerate(table['ut1_unix']):
+                        if ts != lastTS:
+                            # set it
+                            oneDVar[parmIndexDict['ut1_unix'][ts]] = dset[i]
+                            lastTS = ts
+                else:
+                    for i, ts in enumerate(table['recno']):
+                        if ts != lastTS:
+                            # set it
+                            oneDVar[parmIndexDict['recno'][ts]] = dset[i]
+                            lastTS = ts
 
             elif recLayout[parm][0] == 2:
                 twoDVarDict[parm] = thisGroup.variables[parm]
@@ -2470,8 +2560,10 @@ class MadrigalCedarFile:
         for parm in recLayout.dtype.names[len(self.requiredFields):]:
             if recLayout[parm][0] == 2:
                 for i in range(len(table)):
-                    parmIndices = [parmIndexDict['ut1_unix'][table['ut1_unix'][i]]] 
-                        
+                    if not self._useRecno:
+                        parmIndices = [parmIndexDict['ut1_unix'][table['ut1_unix'][i]]] 
+                    else:
+                        parmIndices = [parmIndexDict['recno'][table['recno'][i]]] 
                     for indParm in indParmList:
                         item = table[indParm][i]
                         if type(item) in (bytes, numpy.bytes_):
