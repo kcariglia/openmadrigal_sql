@@ -1232,10 +1232,14 @@ class MadrigalDB:
                 if e < (len(expConditions) - 1):
                     expQuery += " AND "
 
-        self.__initMetaDBConnector()
-        res = self.__cursor.execute(expQuery)
-        resList = res.fetchall()
-        self.__closeMetaDBConnector()
+        try:
+            self.__initMetaDBConnector()
+            res = self.__cursor.execute(expQuery)
+            resList = res.fetchall()
+            self.__closeMetaDBConnector()
+        except:
+            self.__closeMetaDBConnector()
+            raise madrigal.admin.MadrigalError("Problem running expQuery in getFileListFromMetadata")
 
         if not resList:
             # didn't find anything
@@ -1277,10 +1281,14 @@ class MadrigalDB:
                 if e < (len(fileConditions) - 1):
                     fileQuery += " AND "
 
-        self.__initMetaDBConnector()
-        res = self.__cursor.execute(fileQuery)
-        resList = res.fetchall()
-        self.__closeMetaDBConnector()
+        try:
+            self.__initMetaDBConnector()
+            res = self.__cursor.execute(fileQuery)
+            resList = res.fetchall()
+            self.__closeMetaDBConnector()
+        except:
+            self.__closeMetaDBConnector()
+            raise madrigal.admin.MadrigalError("Problem running fileQuery in getFileListFromMetadata")
 
         # resList is [(fname, expID)]
 
@@ -1858,6 +1866,7 @@ class MadrigalDB:
             tblText = '\n'.join(textList)
             return(tblText)
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Problem accessing table: {}".format(tblName),
                                               traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
@@ -1883,6 +1892,7 @@ class MadrigalDB:
             urls = {item[0]:item[0] for item in resList}
             return(urls)
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Problem getting expUrls",
                                               traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
@@ -1916,6 +1926,7 @@ class MadrigalDB:
             
             return(combos, eids)
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Problem getting fname + expID combos",
                                               traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
@@ -2000,6 +2011,7 @@ class MadrigalDB:
             self.__connector.commit()
             self.__closeMetaDBConnector()
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Problem adding experiment metadata: {}".format(expData),
                                           traceback.format_exception(sys.exc_info()[0],
                                                                     sys.exc_info()[1],
@@ -2024,6 +2036,7 @@ class MadrigalDB:
             self.__connector.commit()
             self.__closeMetaDBConnector()
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Problem adding file metadata: {}".format(fileData),
                                           traceback.format_exception(sys.exc_info()[0],
                                                                     sys.exc_info()[1],
@@ -2065,6 +2078,7 @@ class MadrigalDB:
             self.__closeMetaDBConnector()
             print("instType updated successfully")
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Problem updating instType",
                                           traceback.format_exception(sys.exc_info()[0],
                                                                     sys.exc_info()[1],
@@ -2856,6 +2870,7 @@ class MadrigalSite:
             return(name)
             
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Name for siteID {} not found".format(siteID), 
                                                 traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
@@ -2890,6 +2905,7 @@ class MadrigalSite:
             return(server)
             
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Server for siteID {} not found".format(siteID), 
                                                 traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
@@ -2924,6 +2940,7 @@ class MadrigalSite:
             return(docroot)
             
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("DocRoot for siteID {} not found".format(siteID), 
                                                 traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
@@ -2964,6 +2981,7 @@ class MadrigalSite:
             return(cgidir)
             
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("CGIDir for siteID {} not found".format(siteID), 
                                                 traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
@@ -2997,6 +3015,7 @@ class MadrigalSite:
             return(cname)
             
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Contact name for siteID {} not found".format(siteID), 
                                                 traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
@@ -3030,6 +3049,7 @@ class MadrigalSite:
             return(cadr1)
             
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Address1 for siteID {} not found".format(siteID), 
                                                 traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
@@ -3063,6 +3083,7 @@ class MadrigalSite:
             return(cadr2)
             
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Address2 for siteID {} not found".format(siteID), 
                                                 traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
@@ -3096,6 +3117,7 @@ class MadrigalSite:
             return(cadr3)
             
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Address3 for siteID {} not found".format(siteID), 
                                                 traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
@@ -3129,6 +3151,7 @@ class MadrigalSite:
             return(ccity)
             
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("City for siteID {} not found".format(siteID), 
                                                 traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
@@ -3162,6 +3185,7 @@ class MadrigalSite:
             return(cstate)
             
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("State for siteID {} not found".format(siteID), 
                                                 traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
@@ -3195,6 +3219,7 @@ class MadrigalSite:
             return(ccode)
             
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Zip code for siteID {} not found".format(siteID), 
                                                 traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
@@ -3228,6 +3253,7 @@ class MadrigalSite:
             return(ccountry)
             
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Country for siteID {} not found".format(siteID), 
                                                 traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
@@ -3261,6 +3287,7 @@ class MadrigalSite:
             return(cphone)
             
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Phone for siteID {} not found".format(siteID), 
                                                 traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
@@ -3296,6 +3323,7 @@ class MadrigalSite:
             return(cemail)
             
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Email for siteID {} not found".format(siteID), 
                                                 traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
@@ -3329,6 +3357,7 @@ class MadrigalSite:
             return(resList)
             
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Error getting site list", 
                                                 traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
@@ -3367,6 +3396,7 @@ class MadrigalSite:
             return(str(version))
             
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Version for siteID {} not found".format(siteID), 
                                                 traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
@@ -3399,6 +3429,7 @@ class MadrigalSite:
             self.__connector.commit()
             self.__closeMetaDBConnector()
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError('Error in setSiteVersionBySiteID with args %s: %s' %  \
                                                (str(siteID, version)),
                                                 [traceback.format_exc()])
@@ -3470,6 +3501,7 @@ class MadrigalSite:
             self.__closeMetaDBConnector()
             print("siteTab updated successfully")
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Problem updating siteTab",
                                           traceback.format_exception(sys.exc_info()[0],
                                                                     sys.exc_info()[1],
@@ -3631,6 +3663,7 @@ class MadrigalInstrument:
             return(name)
             
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Name for kinst {} not found".format(kinst), 
                                                 traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
@@ -3664,6 +3697,7 @@ class MadrigalInstrument:
             return(mnem)
             
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Mnemonic for kinst {} not found".format(kinst), 
                                                 traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
@@ -3697,6 +3731,7 @@ class MadrigalInstrument:
             return(float(lat))
             
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Latitude for kinst {} not found".format(kinst), 
                                                 traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
@@ -3730,6 +3765,7 @@ class MadrigalInstrument:
             return(float(lon))
             
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Longitude for kinst {} not found".format(kinst), 
                                                 traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
@@ -3763,6 +3799,7 @@ class MadrigalInstrument:
             return(float(alt))
             
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Altitude for kinst {} not found".format(kinst), 
                                                 traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
@@ -3798,6 +3835,7 @@ class MadrigalInstrument:
             return(cname)
             
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Contact name for kinst {} not found".format(kinst), 
                                                 traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
@@ -3833,6 +3871,7 @@ class MadrigalInstrument:
             return(cadr1)
             
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Contact address1 for kinst {} not found".format(kinst), 
                                                 traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
@@ -3868,6 +3907,7 @@ class MadrigalInstrument:
             return(cemail)
             
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Contact email for kinst {} not found".format(kinst), 
                                                 traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
@@ -3912,6 +3952,7 @@ class MadrigalInstrument:
             return(desc)
             
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Category for kinst {} not found".format(kinst), 
                                                 traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
@@ -3944,9 +3985,10 @@ class MadrigalInstrument:
 
             # should be exactly one item in resList now
             [[category]] = resList
-            return(str(category))
+            return(int(category))
             
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("CategoryID for kinst {} not found".format(kinst), 
                                                 traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
@@ -3980,6 +4022,7 @@ class MadrigalInstrument:
             return(resList)
             
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Error getting instrument list", 
                                                 traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
@@ -4048,6 +4091,7 @@ class MadrigalInstrument:
             self.__closeMetaDBConnector()
             print("instTab updated successfully")
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Problem updating siteTab",
                                           traceback.format_exception(sys.exc_info()[0],
                                                                     sys.exc_info()[1],
@@ -4381,6 +4425,7 @@ class MadrigalInstrumentParameters:
                 return(retList)
             
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Parameters for kinst {} not found".format(kinst), 
                                                 traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
@@ -4564,6 +4609,7 @@ class MadrigalInstrumentParameters:
             self.__connector.commit()
             self.__closeMetaDBConnector()
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError('Problem rebuilding instParmTab', 
                                                traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
@@ -4720,6 +4766,7 @@ class MadrigalKindat:
             return(desc)
         
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Description for kindat {} not found".format(code), 
                                                 traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
@@ -4753,6 +4800,7 @@ class MadrigalKindat:
             return(resList)
         
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Unable to get kindat list", 
                                                 traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
@@ -4892,6 +4940,7 @@ class MadrigalExperiment:
             [idx] = [item[0] for item in resList if expDir in item[1]]
             self.__index = idx
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Could not find index for expDir: {}".format(dir),
                                               traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
@@ -4974,6 +5023,7 @@ class MadrigalExperiment:
             [[id]] = resList
             return(id)
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("No expID found at position {}".format(position),
                                               traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
@@ -5009,6 +5059,7 @@ class MadrigalExperiment:
             self.__connector.commit()
             self.__closeMetaDBConnector()
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError('Error in setExpIdByPosition with position: {} id: {}'.format(position, expId),
                                                 traceback.format_exception(sys.exc_info()[0],
                                                                            sys.exc_info()[1],
@@ -5046,6 +5097,7 @@ class MadrigalExperiment:
             [[url]] = resList
             return(url)
         except:
+            self.__closeMetaDBConnector()
             return(None)
 
 
@@ -5071,6 +5123,7 @@ class MadrigalExperiment:
             [[url]] = resList
             return(url)
         except:
+            self.__closeMetaDBConnector()
             return(None)
 
     
@@ -5129,6 +5182,7 @@ class MadrigalExperiment:
 
             [[position]] = resList
         except:
+            self.__closeMetaDBConnector()
             return(None)
         return(self.getRealExpUrlByPosition(position))
     
@@ -5187,6 +5241,7 @@ class MadrigalExperiment:
 
             [[position]] = resList
         except:
+            self.__closeMetaDBConnector()
             return(None)
         return(self.getExpPathByPosition(position))
 
@@ -5221,6 +5276,7 @@ class MadrigalExperiment:
             self.__connector.commit()
             self.__closeMetaDBConnector()
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError('Error in setExpUrlByPosition with args %s: %s' %  \
                                                (str(position, expUrl),
                                                 [traceback.format_exc()]))
@@ -5283,6 +5339,7 @@ class MadrigalExperiment:
 
             [[position]] = resList
         except:
+            self.__closeMetaDBConnector()
             return(None)
         return(self.getExpDirByPosition(position))
 
@@ -5319,6 +5376,7 @@ class MadrigalExperiment:
             [[name]] = resList
             return(name)
         except:
+            self.__closeMetaDBConnector()
             return(None)
 
 
@@ -5344,6 +5402,7 @@ class MadrigalExperiment:
             [[name]] = resList
             return(name)
         except:
+            self.__closeMetaDBConnector()
             return(None)
 
 
@@ -5376,6 +5435,7 @@ class MadrigalExperiment:
             self.__connector.commit()
             self.__closeMetaDBConnector()
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError('Error in setExpNameByPosition with args %s: %s' %  \
                                                (str(position), expName),
                                                 [traceback.format_exc()])
@@ -5403,6 +5463,7 @@ class MadrigalExperiment:
             [[site]] = resList
             return(site)
         except:
+            self.__closeMetaDBConnector()
             return(None)
 
 
@@ -5434,6 +5495,7 @@ class MadrigalExperiment:
             [[site]] = resList
             return(site)
         except:
+            self.__closeMetaDBConnector()
             return(None)
 
 
@@ -5466,6 +5528,7 @@ class MadrigalExperiment:
             self.__connector.commit()
             self.__closeMetaDBConnector()
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError('Error in setExpSiteIdByPosition with args %s: %s' %  \
                                                (str(position, expSiteId),
                                                 traceback.format_exception(sys.exc_info()[0],
@@ -5494,22 +5557,22 @@ class MadrigalExperiment:
 
         query = ("SELECT " + self.__expStartDateTimeCol + " FROM " + self.__tblName + " WHERE " + self.__expIdxCol + "={}").format(position)
 
-        if self.getExpCount() >= position:
-            try:
-                self.__initMetaDBConnector()
-                result = self.__cursor.execute(query)
-                resList = result.fetchall()
-                self.__closeMetaDBConnector()
+        try:
+            self.__initMetaDBConnector()
+            result = self.__cursor.execute(query)
+            resList = result.fetchall()
+            self.__closeMetaDBConnector()
 
-                if not resList:
-                    return(None)
-                
-                [[startDTStr]] = resList
-            except:
+            if not resList:
                 return(None)
+                
+            [[startDTStr]] = resList
+        except:
+            self.__closeMetaDBConnector()
+            return(None)
 
-            # create time from year, month, day, hour, min, sec, weekday, julian day, daylight savings
-            startTime =  [int(startDTStr[0:4]),
+        # create time from year, month, day, hour, min, sec, weekday, julian day, daylight savings
+        startTime =  [int(startDTStr[0:4]),
                           int(startDTStr[4:6]),
                           int(startDTStr[6:8]),
                           int(startDTStr[8:10]),
@@ -5519,14 +5582,14 @@ class MadrigalExperiment:
                           0,
                           0]
 
-            # handle hour = 24 case
-            if startTime[3] == 24:
-                startTime[3] = 23
-                startTime[4] = 59
-                startTime[5] = 59
+        # handle hour = 24 case
+        if startTime[3] == 24:
+            startTime[3] = 23
+            startTime[4] = 59
+            startTime[5] = 59
             
-            # we still need day of year
-            utcTime = madrigal.metadata.getMadrigalUTFromDate(startTime[0],
+        # we still need day of year
+        utcTime = madrigal.metadata.getMadrigalUTFromDate(startTime[0],
                                                      startTime[1],
                                                      startTime[2],
                                                      startTime[3],
@@ -5534,15 +5597,12 @@ class MadrigalExperiment:
                                                      startTime[5],
                                                      0)
 
-            utcDate = madrigal._derive.getDateFromUt(utcTime)
+        utcDate = madrigal._derive.getDateFromUt(utcTime)
 
-            startTime[7] = utcDate[7]
+        startTime[7] = utcDate[7]
 
-            # return python time tuple, missing only day of week and DST flag
-            return startTime
-
-        else:
-            return(None)
+        # return python time tuple, missing only day of week and DST flag
+        return startTime
 
 
 
@@ -5567,22 +5627,22 @@ class MadrigalExperiment:
             
         query = ("SELECT " + self.__expEndDateTimeCol + " FROM " + self.__tblName + " WHERE " + self.__expIdxCol + "={}").format(position)
 
-        if self.getExpCount() >= position:
-            try:
-                self.__initMetaDBConnector()
-                result = self.__cursor.execute(query)
-                resList = result.fetchall()
-                self.__closeMetaDBConnector()
+        try:
+            self.__initMetaDBConnector()
+            result = self.__cursor.execute(query)
+            resList = result.fetchall()
+            self.__closeMetaDBConnector()
 
-                if not resList:
-                    return(None)
-                
-                [[endDTStr]] = resList
-            except:
+            if not resList:
                 return(None)
+                
+            [[endDTStr]] = resList
+        except:
+            self.__closeMetaDBConnector()
+            return(None)
 
-            # create time from year, month, day, hour, min, sec, weekday, julian day, daylight savings
-            endTime =  [int(endDTStr[0:4]),
+        # create time from year, month, day, hour, min, sec, weekday, julian day, daylight savings
+        endTime =  [int(endDTStr[0:4]),
                           int(endDTStr[4:6]),
                           int(endDTStr[6:8]),
                           int(endDTStr[8:10]),
@@ -5592,14 +5652,14 @@ class MadrigalExperiment:
                           0,
                           0]
 
-            # handle hour = 24 case
-            if endTime[3] == 24:
-                endTime[3] = 23
-                endTime[4] = 59
-                endTime[5] = 59
+        # handle hour = 24 case
+        if endTime[3] == 24:
+            endTime[3] = 23
+            endTime[4] = 59
+            endTime[5] = 59
             
-            # we still need day of year
-            utcTime = madrigal.metadata.getMadrigalUTFromDate(endTime[0],
+        # we still need day of year
+        utcTime = madrigal.metadata.getMadrigalUTFromDate(endTime[0],
                                                      endTime[1],
                                                      endTime[2],
                                                      endTime[3],
@@ -5607,15 +5667,12 @@ class MadrigalExperiment:
                                                      endTime[5],
                                                      0)
 
-            utcDate = madrigal._derive.getDateFromUt(utcTime)
+        utcDate = madrigal._derive.getDateFromUt(utcTime)
 
-            endTime[7] = utcDate[7]
+        endTime[7] = utcDate[7]
 
-            # return python time tuple, missing only day of week and DST flag
-            return endTime
-
-        else:
-            return(None)
+        # return python time tuple, missing only day of week and DST flag
+        return endTime
 
 
 
@@ -5645,6 +5702,7 @@ class MadrigalExperiment:
                 
             [[startDTStr]] = resList
         except:
+            self.__closeMetaDBConnector()
             return(None)
 
         # create time from year, month, day, hour, min, sec, weekday, julian day, daylight savings
@@ -5708,6 +5766,7 @@ class MadrigalExperiment:
                 
             [[endDTStr]] = resList
         except:
+            self.__closeMetaDBConnector()
             return(None)
 
         # create time from year, month, day, hour, min, sec, weekday, julian day, daylight savings
@@ -5775,6 +5834,7 @@ class MadrigalExperiment:
             self.__connector.commit()
             self.__closeMetaDBConnector()
         except:
+            self.__closeMetaDBConnector()
             return(None)
 
 
@@ -5808,6 +5868,7 @@ class MadrigalExperiment:
             self.__connector.commit()
             self.__closeMetaDBConnector()
         except:
+            self.__closeMetaDBConnector()
             return(None)
 
 
@@ -5831,27 +5892,25 @@ class MadrigalExperiment:
 
         query = ("SELECT " + self.__expKinstCol + " FROM " + self.__tblName + " WHERE " + self.__expIdxCol + "={}").format(position)
 
-        if self.getExpCount() >= position:
+        try:
+            self.__initMetaDBConnector()
+            result = self.__cursor.execute(query)
+            resList = result.fetchall()
+            self.__closeMetaDBConnector()
 
-            try:
-                self.__initMetaDBConnector()
-                result = self.__cursor.execute(query)
-                resList = result.fetchall()
-                self.__closeMetaDBConnector()
-
-                if not resList:
-                    return(None)
+            if not resList:
+                return(None)
                 
-                [[kinst]] = resList
-                return(kinst)
+            [[kinst]] = resList
+            return(kinst)
 
-            except:
-                raise madrigal.admin.MadrigalError('Error getting kinst from metadata row: ' + str(position),
+        except:
+            self.__closeMetaDBConnector()
+            raise madrigal.admin.MadrigalError('Error getting kinst from metadata row: ' + str(position),
                                                    traceback.format_exception(sys.exc_info()[0],
                                                                               sys.exc_info()[1],
                                                                               sys.exc_info()[2]))
-        else:
-            return(None)
+
 
 
     def getKinstByExpId(self, expId):
@@ -5880,6 +5939,7 @@ class MadrigalExperiment:
             return(kinst)
 
         except:
+            self.__closeMetaDBConnector()
             return(None)
 
        
@@ -5913,6 +5973,7 @@ class MadrigalExperiment:
             self.__connector.commit()
             self.__closeMetaDBConnector()
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError('Error in setExpKinstByPosition with args %s: %s' %  \
                                                (str(position, expKinst),
                                                 traceback.format_exception(sys.exc_info()[0],
@@ -5940,24 +6001,22 @@ class MadrigalExperiment:
 
         query = ("SELECT " + self.__expSecurityCol + " FROM " + self.__tblName + " WHERE " + self.__expIdxCol + "={}").format(position)
 
-        if self.getExpCount() >= position:
+        try:
+            self.__initMetaDBConnector()
+            result = self.__cursor.execute(query)
+            resList = result.fetchall()
+            self.__closeMetaDBConnector()
 
-            try:
-                self.__initMetaDBConnector()
-                result = self.__cursor.execute(query)
-                resList = result.fetchall()
-                self.__closeMetaDBConnector()
+            [[security]] = resList
+            return(security)
 
-                [[security]] = resList
-                return(security)
-
-            except:
-                raise madrigal.admin.MadrigalError('Error getting security for metadata row: ' + str(position),
+        except:
+            self.__closeMetaDBConnector()
+            raise madrigal.admin.MadrigalError('Error getting security for metadata row: ' + str(position),
                                                    traceback.format_exception(sys.exc_info()[0],
                                                                               sys.exc_info()[1],
                                                                               sys.exc_info()[2]))
-        else:
-            return(None)
+
 
 
     def getSecurityByExpId(self, expId):
@@ -5983,6 +6042,7 @@ class MadrigalExperiment:
             return(security)
 
         except:
+            self.__closeMetaDBConnector()
             return(None)
 
 
@@ -6016,6 +6076,7 @@ class MadrigalExperiment:
             self.__connector.commit()
             self.__closeMetaDBConnector()
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError('Error in setSecurityByPosition with args %s: %s' %  \
                                                (str(position, securityCode),
                                                 traceback.format_exception(sys.exc_info()[0],
@@ -6046,24 +6107,22 @@ class MadrigalExperiment:
 
         query = ("SELECT " + self.__expPICol + " FROM " + self.__tblName + " WHERE " + self.__expIdxCol + "={}").format(position)
 
-        if self.getExpCount() >= position:
+        try:
+            self.__initMetaDBConnector()
+            result = self.__cursor.execute(query)
+            resList = result.fetchall()
+            self.__closeMetaDBConnector()
 
-            try:
-                self.__initMetaDBConnector()
-                result = self.__cursor.execute(query)
-                resList = result.fetchall()
-                self.__closeMetaDBConnector()
-
-                [[pi]] = resList
-                if len(pi) > 0:
-                    return(pi)
-                else:
-                    return(None)
-
-            except:
+            [[pi]] = resList
+            if len(pi) > 0:
+                return(pi)
+            else:
                 return(None)
-        else:
+
+        except:
+            self.__closeMetaDBConnector()
             return(None)
+        
 
 
     def getPIByExpId(self, expId):
@@ -6096,6 +6155,7 @@ class MadrigalExperiment:
                 return(None)
         
         except:
+            self.__closeMetaDBConnector()
             return(None)
 
 
@@ -6131,6 +6191,7 @@ class MadrigalExperiment:
             self.__connector.commit()
             self.__closeMetaDBConnector()
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError('Error in setPIByPosition with args %s: %s' %  \
                                                (str(position), PI),
                                                 [traceback.format_exc()])
@@ -6159,24 +6220,22 @@ class MadrigalExperiment:
 
         query = ("SELECT " + self.__expPIEmailCol + " FROM " + self.__tblName + " WHERE " + self.__expIdxCol + "={}").format(position)
 
-        if self.getExpCount() >= position:
+        try:
+            self.__initMetaDBConnector()
+            result = self.__cursor.execute(query)
+            resList = result.fetchall()
+            self.__closeMetaDBConnector()
 
-            try:
-                self.__initMetaDBConnector()
-                result = self.__cursor.execute(query)
-                resList = result.fetchall()
-                self.__closeMetaDBConnector()
-
-                [[piEmail]] = resList
-                if len(piEmail) > 0:
-                    return(piEmail)
-                else:
-                    return(None)
-
-            except:
+            [[piEmail]] = resList
+            if len(piEmail) > 0:
+                return(piEmail)
+            else:
                 return(None)
-        else:
+
+        except:
+            self.__closeMetaDBConnector()
             return(None)
+        
 
 
     def getPIEmailByExpId(self, expId):
@@ -6207,6 +6266,7 @@ class MadrigalExperiment:
             else:
                 return(None)
         except:
+            self.__closeMetaDBConnector()
             return(None)
 
 
@@ -6242,6 +6302,7 @@ class MadrigalExperiment:
             self.__connector.commit()
             self.__closeMetaDBConnector()
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError('Error in setPIEmailByPosition with args %s: %s' %  \
                                                (str(position), PIEmail),
                                                 [traceback.format_exc()])
@@ -6278,6 +6339,7 @@ class MadrigalExperiment:
 
             [[position]] = resList
         except:
+            self.__closeMetaDBConnector()
             return(None)
         retList = sorted(self.getExpLinksByPosition(position),
                          key=lambda list_item: os.path.basename(list_item[1]))
@@ -6474,12 +6536,14 @@ class MadrigalExperiment:
             self.__closeMetaDBConnector()
 
             if not resList:
+                self.__closeMetaDBConnector()
                 raise madrigal.admin.MadrigalError("Problem getting expIDs for siteID {}".format(localSiteID), 
                                                 traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
                                                                         sys.exc_info()[2]))
             return(resList)
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Problem getting expIDs for siteID {}".format(localSiteID), 
                                                 traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
@@ -6681,20 +6745,19 @@ class MadrigalMetaFile:
             self.__initMetaDBConnector()
             result = self.__cursor.execute(query)
             resList = result.fetchall()
-            self.__closeMetaDBConnector()
 
             # assumes exactly 1 expDir
             [idx] = [item[0] for item in resList if expDir in item[1]]
 
             # use expID to get indicies for files in this exp
             query1 = ("SELECT " + self.__fileIdxCol + " FROM " + self.__tblName + " WHERE " + self.__fileExpIdCol + "={}").format(idx)
-            self.__initMetaDBConnector()
             result = self.__cursor.execute(query1)
             resList = result.fetchall()
             self.__closeMetaDBConnector()
             self.__indexList = [item[0] for item in resList]
             
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Could not find index for expDir: {}".format(dir),
                                               traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
@@ -6800,6 +6863,7 @@ class MadrigalMetaFile:
             [[fname]] = resList
             return(fname)
         except:
+            self.__closeMetaDBConnector()
             return(None)
 
 
@@ -6832,6 +6896,7 @@ class MadrigalMetaFile:
             return(eid)
 
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError('Problem getting expID for file at position ' + str(position),
                                                traceback.format_exception(sys.exc_info()[0],
                                                                           sys.exc_info()[1],
@@ -6867,6 +6932,7 @@ class MadrigalMetaFile:
             self.__connector.commit()
             self.__closeMetaDBConnector()
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError('Problem setting expID by position: pos %s: id %s' %  \
                                                 (str(position), str(expId)),
                                                  traceback.format_exception(sys.exc_info()[0],
@@ -6902,6 +6968,7 @@ class MadrigalMetaFile:
             return(kindat)
 
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError('Problem getting kindat for position ' + str(position),
                                                    traceback.format_exception(sys.exc_info()[0],
                                                                               sys.exc_info()[1],
@@ -6934,9 +7001,10 @@ class MadrigalMetaFile:
             self.__closeMetaDBConnector()
 
             [[category]] = resList
-            return(category)
+            return(int(category))
 
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError('Problem getting category for position ' + str(position),
                                                    traceback.format_exception(sys.exc_info()[0],
                                                                               sys.exc_info()[1],
@@ -6966,8 +7034,9 @@ class MadrigalMetaFile:
             self.__closeMetaDBConnector()
 
             [[category]] = resList
-            return(category)
+            return(int(category))
         except:
+            self.__closeMetaDBConnector()
             return(None)
 
 
@@ -7003,6 +7072,7 @@ class MadrigalMetaFile:
             else:
                 return True
         except:
+            self.__closeMetaDBConnector()
             return(None)
 
 
@@ -7036,6 +7106,7 @@ class MadrigalMetaFile:
                 return True
 
         except:
+            self.__closeMetaDBConnector()
             return(None)
 
 
@@ -7076,6 +7147,7 @@ class MadrigalMetaFile:
             self.__connector.commit()
             self.__closeMetaDBConnector()
         except:
+            self.__closeMetaDBConnector()
             return(None)
 
 
@@ -7111,6 +7183,7 @@ class MadrigalMetaFile:
             else:
                 return True
         except:
+            self.__closeMetaDBConnector()
             return(None)
 
 
@@ -7143,6 +7216,7 @@ class MadrigalMetaFile:
             else:
                 return True
         except:
+            self.__closeMetaDBConnector()
             return(None)
 
 
@@ -7182,6 +7256,7 @@ class MadrigalMetaFile:
             self.__connector.commit()
             self.__closeMetaDBConnector()
         except:
+            self.__closeMetaDBConnector()
             return(None)
 
 
@@ -7212,6 +7287,7 @@ class MadrigalMetaFile:
             [[status]] = resList
             return(status)
         except:
+            self.__closeMetaDBConnector()
             return(None)
 
 
@@ -7239,6 +7315,7 @@ class MadrigalMetaFile:
             [[status]] = resList
             return(status)
         except:
+            self.__closeMetaDBConnector()
             return(None)
 
 
@@ -7271,6 +7348,7 @@ class MadrigalMetaFile:
             return(int(permission))
 
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError('Error in fileTab.txt parsing metadata row: ' + str(position),
                                                    traceback.format_exception(sys.exc_info()[0],
                                                                               sys.exc_info()[1],
@@ -7304,6 +7382,7 @@ class MadrigalMetaFile:
             [[dateStr, timeStr]] = resList
             return(datetime.datetime.strptime('%s %s' % (dateStr, timeStr), '%Y%m%d %H%M%S'))
         except:
+            self.__closeMetaDBConnector()
             return(None)
 
 
@@ -7331,6 +7410,7 @@ class MadrigalMetaFile:
             [[dateStr, timeStr]] = resList
             return(datetime.datetime.strptime('%s %s' % (dateStr, timeStr), '%Y%m%d %H%M%S'))
         except:
+            self.__closeMetaDBConnector()
             return(None)
 
     
@@ -7374,7 +7454,7 @@ class MadrigalMetaFile:
         try:
             update = ("UPDATE " + self.__tblName + " SET " + self.__fileModDateCol 
                     + "={}, " + self.__fileModTimeCol + "={} WHERE "
-                    + self.__fileIdxCol + "={}").format(dateStr, timeStr)
+                    + self.__fileIdxCol + "={}").format(dateStr, timeStr, position)
 
             self.__initMetaDBConnector()
             self.__cursor.execute(update)
@@ -7382,6 +7462,7 @@ class MadrigalMetaFile:
             self.__closeMetaDBConnector()
 
         except:
+            self.__closeMetaDBConnector()
             raise ValueError('Problem in setFileDatetimeByPosition')
 
 
@@ -7405,6 +7486,7 @@ class MadrigalMetaFile:
             self.__closeMetaDBConnector()
         except:
             # no matches found
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError('Could not delete file ' + filename + ' from ' + self.__filename, None)
 
 
@@ -7433,6 +7515,7 @@ class MadrigalMetaFile:
             [[eid]] = resList
             return(eid)
         except:
+            self.__closeMetaDBConnector()
             return(None)
 
 
@@ -7463,6 +7546,7 @@ class MadrigalMetaFile:
             return(kindat)
         
         except:
+            self.__closeMetaDBConnector()
             return(None)
 
 
@@ -7502,6 +7586,7 @@ class MadrigalMetaFile:
             self.__connector.commit()
             self.__closeMetaDBConnector()
         except:
+            self.__closeMetaDBConnector()
             raise ValueError('Problem with setAccessByPosition')
 
 
@@ -7528,6 +7613,7 @@ class MadrigalMetaFile:
             self.__connector.commit()
             self.__closeMetaDBConnector()
         except:
+            self.__closeMetaDBConnector()
             raise ValueError("Could not update fileTab access")
 
 
@@ -7562,6 +7648,7 @@ class MadrigalMetaFile:
             self.__closeMetaDBConnector()
 
         except:
+            self.__closeMetaDBConnector()
             raise ValueError('Problem with setKindatByPosition')
 
 
@@ -7597,6 +7684,7 @@ class MadrigalMetaFile:
             self.__closeMetaDBConnector()
 
         except:
+            self.__closeMetaDBConnector()
             raise ValueError('setCategoryByPosition called for position %i beyond length %i' % (position, len(self.__fileList)))
 
 
@@ -7637,6 +7725,7 @@ class MadrigalMetaFile:
             self.__closeMetaDBConnector()
 
         except:
+            self.__closeMetaDBConnector()
             raise ValueError('Problem with setStatusByPosition')
 
 
@@ -7668,6 +7757,7 @@ class MadrigalMetaFile:
             [[analyst]] = resList
             return(analyst)
         except:
+            self.__closeMetaDBConnector()
             return(None)
 
 
@@ -7695,6 +7785,7 @@ class MadrigalMetaFile:
             [[analyst]] = resList
             return(analyst)
         except:
+            self.__closeMetaDBConnector()
             return(None)
 
 
@@ -7732,6 +7823,7 @@ class MadrigalMetaFile:
             self.__connector.commit()
             self.__closeMetaDBConnector()
         except:
+            self.__closeMetaDBConnector()
             raise ValueError('Problem with setAnalystByPosition')
 
 
@@ -7764,6 +7856,7 @@ class MadrigalMetaFile:
             [[email]] = resList
             return(email)
         except:
+            self.__closeMetaDBConnector()
             return(None)
 
 
@@ -7791,6 +7884,7 @@ class MadrigalMetaFile:
             [[email]] = resList
             return(email)
         except:
+            self.__closeMetaDBConnector()
             return(None)
 
 
@@ -7829,6 +7923,7 @@ class MadrigalMetaFile:
             self.__closeMetaDBConnector()
 
         except:
+            self.__closeMetaDBConnector()
             raise ValueError(f'problem setting analyst email at position {position}')
 
 
@@ -8146,6 +8241,7 @@ class MadrigalParmCategory:
             [[desc]] = resList
             return(desc)
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError('Problem getting description for category code {}'.format(code),
                                                    traceback.format_exception(sys.exc_info()[0],
                                                                               sys.exc_info()[1],
@@ -8172,9 +8268,10 @@ class MadrigalParmCategory:
             result = self.__cursor.execute(query)
             resList = result.fetchall()
             self.__closeMetaDBConnector()
-
+            resList = [(i[0], int(i[1])) for i in resList]
             return(resList)
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError('Problem getting category list',
                                                    traceback.format_exception(sys.exc_info()[0],
                                                                               sys.exc_info()[1],
@@ -8340,6 +8437,7 @@ class MadrigalInstrumentData:
             return(list(set(resList)))
         
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Problem getting kindat list",
                                               traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
@@ -8385,6 +8483,7 @@ class MadrigalInstrumentData:
             resList = [item[0] for item in resList]
             return(list(set(resList)))
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError('Problem getting kindat list for kinst {} and year {}'.format(kinst, year),
                                                            traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
@@ -8516,6 +8615,7 @@ class MadrigalInstrumentData:
             self.__connector.commit()
             self.__closeMetaDBConnector()
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError('Unable to rebuild instData', None)
         
         # create newFileStr from instCodeDict
@@ -8574,6 +8674,7 @@ class MadrigalInstrumentData:
             catList = [(self._madInstObj.getCategoryId(kinst), self._madInstObj.getCategory(kinst)) for kinst in kinsts]
             return(catList)
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError('Problem getting categories',
                                                    traceback.format_exception(sys.exc_info()[0],
                                                                               sys.exc_info()[1],
@@ -8636,6 +8737,7 @@ class MadrigalInstrumentData:
             
             return(retList)
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError('Problem getting instruments',
                                                    traceback.format_exception(sys.exc_info()[0],
                                                                               sys.exc_info()[1],
@@ -8679,6 +8781,7 @@ class MadrigalInstrumentData:
                                                                               sys.exc_info()[2]))
             return(years)
         except:
+            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError('Problem getting years for kinst %i' % (kinst),
                                                    traceback.format_exception(sys.exc_info()[0],
                                                                               sys.exc_info()[1],
