@@ -2205,13 +2205,16 @@ class MadrigalCedarFile:
                 timeVar[:] = unique_times
                 dims.append("record_nums")
             for indParm in indParmList:
+                this_name = indParm
+                if this_name[0] == '-':
+                    this_name = 'neg' + this_name
                 thisGroup.createDimension(indParm, len(uniqueIndValueDict[indParm]))
                 if self._madParmObj.isInteger(indParm):
-                    thisVar = thisGroup.createVariable(indParm, 'i8', (indParm,), zlib=True)
+                    thisVar = thisGroup.createVariable(this_name, 'i8', (indParm,), zlib=True)
                 elif self._madParmObj.isString(indParm):
-                    thisVar = thisGroup.createVariable(indParm, self.getStringFormat(indParm), (indParm,), zlib=True)
+                    thisVar = thisGroup.createVariable(this_name, self.getStringFormat(indParm), (indParm,), zlib=True)
                 else:
-                    thisVar = thisGroup.createVariable(indParm, 'f8', (indParm,), zlib=True)
+                    thisVar = thisGroup.createVariable(this_name, 'f8', (indParm,), zlib=True)
                 thisVar[:] = uniqueIndValueDict[indParm]
                 thisVar.units = self._madParmObj.getParmUnits(indParm)
                 thisVar.description = self._madParmObj.getSimpleParmDescription(indParm)
@@ -2223,15 +2226,18 @@ class MadrigalCedarFile:
             if self._useRecno:
                 name_list.append('ut1_unix')
             for parm in name_list:
+                this_name = parm
+                if this_name[0] == '-':
+                    this_name = 'neg' + this_name
                 if recLayout[parm][0] == 1:
                     dset = tableSubset.table[parm][tableSubset.oneDIndices]
                     if self.parmIsInt(parm):
-                        oneDVar = thisGroup.createVariable(parm, 'i8', (dims[0],), zlib=True)
+                        oneDVar = thisGroup.createVariable(this_name, 'i8', (dims[0],), zlib=True)
                     elif self.parmIsString(parm):
-                        oneDVar = thisGroup.createVariable(parm, self.getStringFormat(parm), (dims[0],),
+                        oneDVar = thisGroup.createVariable(this_name, self.getStringFormat(parm), (dims[0],),
                                                            zlib=True)
                     else: # float
-                        oneDVar = thisGroup.createVariable(parm, 'f8', (dims[0],), zlib=True)
+                        oneDVar = thisGroup.createVariable(this_name, 'f8', (dims[0],), zlib=True)
                     oneDVar.units = self._madParmObj.getParmUnits(parm)
                     oneDVar.description = self._madParmObj.getSimpleParmDescription(parm)
                     try:
@@ -2240,11 +2246,11 @@ class MadrigalCedarFile:
                         raise ValueError('There may be an issue with array splitting because more records than times')
                 elif recLayout[parm][0] == 2:
                     if self.parmIsInt(parm):
-                        twoDVarDict[parm] = thisGroup.createVariable(parm, 'i8', dims, zlib=True)
+                        twoDVarDict[parm] = thisGroup.createVariable(this_name, 'i8', dims, zlib=True)
                     elif self.parmIsString(parm):
-                        twoDVarDict[parm] = thisGroup.createVariable(parm, self.getStringFormat(parm), dims, zlib=True)
+                        twoDVarDict[parm] = thisGroup.createVariable(this_name, self.getStringFormat(parm), dims, zlib=True)
                     else:
-                        twoDVarDict[parm] = thisGroup.createVariable(parm, 'f8', dims, zlib=True)
+                        twoDVarDict[parm] = thisGroup.createVariable(this_name, 'f8', dims, zlib=True)
                     twoDVarDict[parm].units = self._madParmObj.getParmUnits(parm)
                     twoDVarDict[parm].description = self._madParmObj.getSimpleParmDescription(parm)
                     
@@ -2397,13 +2403,16 @@ class MadrigalCedarFile:
             dims.append("record_nums")
             
         for indParm in indParmList:
+            this_name = indParm
+            if this_name[0] == '-':
+                this_name = 'neg' + this_name
             thisGroup.createDimension(indParm, len(uniqueIndValueDict[indParm]))
             if self._madParmObj.isInteger(indParm):
-                thisVar = thisGroup.createVariable(indParm, 'i8', (indParm,), zlib=False)
+                thisVar = thisGroup.createVariable(this_name, 'i8', (indParm,), zlib=False)
             elif self._madParmObj.isString(indParm):
-                thisVar = thisGroup.createVariable(indParm, self.getStringFormat(indParm), (indParm,), zlib=False)
+                thisVar = thisGroup.createVariable(this_name, self.getStringFormat(indParm), (indParm,), zlib=False)
             else:
-                thisVar = thisGroup.createVariable(indParm, 'f8', (indParm,), zlib=False)
+                thisVar = thisGroup.createVariable(this_name, 'f8', (indParm,), zlib=False)
             thisVar[:] = uniqueIndValueDict[indParm]
             thisVar.units = self._madParmObj.getParmUnits(indParm)
             thisVar.description = self._madParmObj.getSimpleParmDescription(indParm)
@@ -2415,15 +2424,18 @@ class MadrigalCedarFile:
         if self._useRecno:
             name_list.append('ut1_unix')
         for parm in name_list:
+            this_name = parm
+            if this_name[0] == '-':
+                this_name = 'neg' + this_name
             if recLayout[parm][0] == 1:
                 dset = table[parm][:]
                 if self.parmIsInt(parm):
-                    oneDVar = thisGroup.createVariable(parm, 'i8', (dims[0],), zlib=False)
+                    oneDVar = thisGroup.createVariable(this_name, 'i8', (dims[0],), zlib=False)
                 elif self.parmIsString(parm):
-                    oneDVar = thisGroup.createVariable(parm, self.getStringFormat(parm), (dims[0],),
+                    oneDVar = thisGroup.createVariable(this_name, self.getStringFormat(parm), (dims[0],),
                                                        zlib=False)
                 else: # float
-                    oneDVar = thisGroup.createVariable(parm, 'f8', (dims[0],), zlib=False)
+                    oneDVar = thisGroup.createVariable(this_name, 'f8', (dims[0],), zlib=False)
                 oneDVar.units = self._madParmObj.getParmUnits(parm)
                 oneDVar.description = self._madParmObj.getSimpleParmDescription(parm)
                 lastTS = 0.0
@@ -2435,11 +2447,11 @@ class MadrigalCedarFile:
 
             elif recLayout[parm][0] == 2:
                 if self.parmIsInt(parm):
-                    twoDVarDict[parm] = thisGroup.createVariable(parm, 'i8', dims, zlib=False)
+                    twoDVarDict[parm] = thisGroup.createVariable(this_name, 'i8', dims, zlib=False)
                 elif self.parmIsString(parm):
-                    twoDVarDict[parm] = thisGroup.createVariable(parm, self.getStringFormat(parm), dims, zlib=False)
+                    twoDVarDict[parm] = thisGroup.createVariable(this_name, self.getStringFormat(parm), dims, zlib=False)
                 else:
-                    twoDVarDict[parm] = thisGroup.createVariable(parm, 'f8', dims, zlib=False, fill_value=numpy.nan)
+                    twoDVarDict[parm] = thisGroup.createVariable(this_name, 'f8', dims, zlib=False, fill_value=numpy.nan)
                 twoDVarDict[parm].units = self._madParmObj.getParmUnits(parm)
                 twoDVarDict[parm].description = self._madParmObj.getSimpleParmDescription(parm)
                 
@@ -6110,22 +6122,25 @@ class convertToNetCDF4:
             
             # next ind parms, because works well with ncview that way
             for indParm in indParmList:
+                this_name = indParm
+                if this_name[0] == '-':
+                    this_name = 'neg' + this_name
                 if indParm in arraySplittingMnemonics:
                     continue
                 thisGroup.createDimension(indParm, len(hdf5Group[indParm]))
                 if madParmObj.isInteger(indParm):
-                    thisVar = thisGroup.createVariable(indParm, 'i8', (indParm,),
+                    thisVar = thisGroup.createVariable(this_name, 'i8', (indParm,),
                                                        zlib=True)
                     thisVar[:] = hdf5Group[indParm]
                 elif madParmObj.isString(indParm):
                     slen = len(hdf5Group[indParm][0])
                     dtype = 'S%i' % (slen)
-                    thisVar = thisGroup.createVariable(indParm, dtype, (indParm,),
+                    thisVar = thisGroup.createVariable(this_name, dtype, (indParm,),
                                                        zlib=True)
                     for i in range(len(hdf5Group[indParm])):
                         thisVar[i] = str(hdf5Group[indParm][i])
                 else:
-                    thisVar = thisGroup.createVariable(indParm, 'f8', (indParm,),
+                    thisVar = thisGroup.createVariable(this_name, 'f8', (indParm,),
                                                        zlib=True)
                     thisVar[:] = hdf5Group[indParm]
                 thisVar.units = madParmObj.getParmUnits(indParm)
@@ -6137,6 +6152,9 @@ class convertToNetCDF4:
             # get all one d data
             oneDParms = list(hdf5Group['1D Parameters'].keys())
             for oneDParm in oneDParms:
+                this_name = oneDParm
+                if this_name[0] == '-':
+                    this_name = 'neg' + this_name
                 if type(oneDParm) in (numpy.bytes_, bytes):
                     oneDParm = oneDParm.decode('utf8')
                 if oneDParm in indParmList:
@@ -6145,15 +6163,15 @@ class convertToNetCDF4:
                 if oneDParm.find('Data Parameters') != -1:
                     continue
                 if madParmObj.isInteger(oneDParm):
-                    oneDVar = thisGroup.createVariable(oneDParm, 'i8', (dims[0],),
+                    oneDVar = thisGroup.createVariable(this_name, 'i8', (dims[0],),
                                                        zlib=True)
                 elif madParmObj.isString(oneDParm):
                     slen = len(hdf5Group['1D Parameters'][oneDParm][0])
                     dtype = 'S%i' % (slen)
-                    oneDVar = thisGroup.createVariable(oneDParm, dtype, (dims[0],),
+                    oneDVar = thisGroup.createVariable(this_name, dtype, (dims[0],),
                                                        zlib=True)
                 else:
-                    oneDVar = thisGroup.createVariable(oneDParm, 'f8', (dims[0],),
+                    oneDVar = thisGroup.createVariable(this_name, 'f8', (dims[0],),
                                                        zlib=True)
                 oneDVar.units = madParmObj.getParmUnits(oneDParm)
                 oneDVar.description = madParmObj.getSimpleParmDescription(oneDParm)
@@ -6166,6 +6184,9 @@ class convertToNetCDF4:
             # get all two d data
             twoDParms = list(hdf5Group['2D Parameters'].keys())
             for twoDParm in twoDParms:
+                this_name = twoDParm
+                if this_name[0] == '-':
+                    this_name = 'neg' + this_name
                 if type(twoDParm) in (numpy.bytes_, bytes):
                     twoDParm = twoDParm.decode('utf8')
                 if twoDParm.find('Data Parameters') != -1:
@@ -6174,15 +6195,15 @@ class convertToNetCDF4:
                     if twoDParm not in arraySplittingMnemonics:
                         continue
                 if madParmObj.isInteger(twoDParm):
-                    twoDVar = thisGroup.createVariable(twoDParm, 'i8', dims,
+                    twoDVar = thisGroup.createVariable(this_name, 'i8', dims,
                                                        zlib=True)
                 elif madParmObj.isString(twoDParm):
                     slen = len(hdf5Group['2D Parameters'][twoDParm][0])
                     dtype = 'S%i' % (slen)
-                    twoDVar = thisGroup.createVariable(twoDParm, dtype, dims,
+                    twoDVar = thisGroup.createVariable(this_name, dtype, dims,
                                                        zlib=True)
                 else:
-                    twoDVar = thisGroup.createVariable(twoDParm, 'f8', dims,
+                    twoDVar = thisGroup.createVariable(this_name, 'f8', dims,
                                                        zlib=True)
                 twoDVar.units = madParmObj.getParmUnits(twoDParm)
                 twoDVar.description = madParmObj.getSimpleParmDescription(twoDParm)
