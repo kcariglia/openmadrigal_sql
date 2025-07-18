@@ -20,7 +20,7 @@ $Id: configureExperiments.py 7741 2025-01-09 14:46:26Z kcariglia $
 
 import os, os.path, sys
 import re
-
+import numpy
 import madrigal.metadata
 
 import datetime
@@ -32,7 +32,6 @@ print('configureExperiments is converting any experiment from a different' + \
 madDB = madrigal.metadata.MadrigalDB()
 siteId = madDB.getSiteID()
 
-thisId = siteId*10000000
 cgiUrl = madDB.getTopLevelUrl()
 cgiUrlTest = os.path.join(cgiUrl, 'madtoc')
 
@@ -66,6 +65,19 @@ expConvertedNum = 0
 expDirs = madDB.getExperimentDirs() # regex list of all matching expdirs
 allExpUrls = madDB.getExpUrls()
 allExpDirs = []
+
+expObj = madrigal.metadata.MadrigalExperiment(madDB)
+# get all expIDs and SQL-assigned IDs associated with experiments for this site
+idsAndIdxs = expObj.getAllExpIDs(siteId)
+
+if not idsAndIdxs:
+    # special case, first installation when db is empty
+    maxId = (siteId * 10000000) + 1
+else:
+    expIDs = [i[0] for i in idsAndIdxs]
+    maxId = int(numpy.max(expIDs))
+    maxId += 1
+
 
 for dir in expDirs:
     __dirConvStr1 = '/experiments[0-9]*/[0-9][0-9][0-9][0-9]/[a-z][a-z0-9][a-z0-9]/[a-zA-Z0-9\-_]*$'
@@ -123,7 +135,7 @@ if len(dirsneeded) > 0:
             for line in splitList:
                 if len(line) > 1:
                     # reset expID
-                    line[0] = 0 # FIX ME probably (or you could just run updateMaster?????)
+                    line[0] = maxId
                     # reset expUrl
                     line[1] = urltemplate + thisDir[thisDir.find("experiments"):]
                     # reset siteID
@@ -146,13 +158,14 @@ if len(dirsneeded) > 0:
             tList = []
             for line in splitList:
                 if len(line) > 1:
-                    line[1] = 0 # ALSO FIX ME
+                    line[1] = maxId
                     line = [str(i) for i in line]
                     tList.append(','.join(line))
             fText = '\n'.join(tList)
             if not fText.endswith('\n'):
                 fText += '\n'
             fileText += fText
+        maxId += 1
             
     madDB.addExperimentsMetadata(expText)
     madDB.addFilesMetadata(fileText)

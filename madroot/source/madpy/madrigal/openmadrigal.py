@@ -192,9 +192,9 @@ class OpenMadrigal:
         """
         urlStr = self._openMadrigalUrl + 'getOpenMadrigalSharedFiles?filename=%s' % (filename)
         try:
-            file = urllib.request.urlopen(urlStr)
-            fileStr = file.read()
-            return(fileStr.decode('utf8'))
+            with urllib.request.urlopen(urlStr) as file:
+                fileStr = file.read().decode('utf8')
+            return(fileStr)
         
         except:
             return('')
@@ -424,9 +424,8 @@ class OpenMadrigal:
         try:
             urlStr = self._openMadrigalUrl + 'getLatestMetadataVersion?fullPath=%s' % (fullPath)
 
-            f = urllib.request.urlopen(urlStr)
-            fileStr = f.read()
-            f.close()
+            with urllib.request.urlopen(urlStr) as f:
+                fileStr = f.read()
 
             if type(fileStr) == bytes:
                 fileStr = fileStr.decode('utf8')
@@ -454,9 +453,8 @@ class OpenMadrigal:
         try:
             urlStr = self._openMadrigalUrl + 'getAllMetadataVersions?fullPath=%s' % (fullPath)
 
-            f = urllib.request.urlopen(urlStr)
-            fileStr = (f.read()).decode('utf8')
-            f.close()
+            with urllib.request.urlopen(urlStr) as f:
+                fileStr = (f.read()).decode('utf8')
             
             retList = [item.strip() for item in fileStr.split('\n') if len(item.strip()) > 0 ]
             
@@ -511,9 +509,8 @@ class OpenMadrigal:
         try:
             urlStr = self._openMadrigalUrl + 'getMetadataVersion?fullPath=%s&version=%s' % (fullPath, str(revision))
 
-            finalFile = urllib.request.urlopen(urlStr)
-            text = finalFile.read()
-            finalFile.close()
+            with urllib.request.urlopen(urlStr) as finalFile:
+                text = finalFile.read()
             return(text.decode('utf8'))
 
         except:

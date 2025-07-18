@@ -30,6 +30,7 @@ import re
 import random
 import copy
 import glob
+import madrigal.metadata
 import packaging.version
 import sqlite3
 
@@ -1154,12 +1155,16 @@ class MadrigalDB:
         fileConditions = []
 
         if expName:
-            thisCond = "name={}".format(expName)
+            thisCond = "name=\"{}\"".format(expName)
             expConditions.append(thisCond)
 
         if kinstList and (0 not in kinstList):
-            thisCond = "kinst in {}".format(tuple(kinstList))
-            expConditions.append(thisCond)
+            if len(kinstList) == 1:
+                thisCond = "kinst={}".format(kinstList[0])
+                expConditions.append(thisCond)
+            else:
+                thisCond = "kinst in {}".format(tuple(kinstList))
+                expConditions.append(thisCond)
 
         if kindatList and (0 not in kindatList):
             thisCond = "kindat in {}".format(tuple(kindatList))
@@ -1173,6 +1178,8 @@ class MadrigalDB:
             expQuery += ", sdt"
 
         if startDate:
+            startDate = datetime.datetime(startDate[0], startDate[1], startDate[2], startDate[3],
+                                          startDate[4], startDate[5], tzinfo=datetime.timezone.utc)
             sDate = startDate.strftime("%Y%m%d%H%M%S")
             if startDayOfYear:
                 startDayOfYear = datetime.datetime.strptime(startDayOfYear, "%j")
@@ -1187,6 +1194,8 @@ class MadrigalDB:
             expConditions.append(expCond)
             
         if endDate:
+            endDate = datetime.datetime(endDate[0], endDate[1], endDate[2], endDate[3],
+                                        endDate[4], endDate[5], tzinfo=datetime.timezone.utc)
             eDate = endDate.strftime("%Y%m%d%H%M%S")
             if endDayOfYear:
                 endDayOfYear = datetime.datetime.strptime(endDayOfYear, "%j")
@@ -1223,9 +1232,10 @@ class MadrigalDB:
                 thisCond = "category=1"
                 fileConditions.append(thisCond)
 
-        expQuery += " FROM expTab"
+        # make sure to get local experiments only
+        expQuery += " FROM expTab WHERE sid={} ".format(self.getSiteID())
         if expConditions:
-            expQuery += " WHERE "
+            expQuery += " AND "
             for e in range(len(expConditions)):
                 expQuery += expConditions[e]
 
@@ -1239,7 +1249,10 @@ class MadrigalDB:
             self.__closeMetaDBConnector()
         except:
             self.__closeMetaDBConnector()
-            raise madrigal.admin.MadrigalError("Problem running expQuery in getFileListFromMetadata")
+            raise madrigal.admin.MadrigalError("Problem running expQuery in getFileListFromMetadata", 
+                                               traceback.format_exception(sys.exc_info()[0],
+                                                                          sys.exc_info()[1],
+                                                                          sys.exc_info()[2]))
 
         if not resList:
             # didn't find anything
@@ -1270,7 +1283,10 @@ class MadrigalDB:
         # kinst and start time
 
         fileQuery = "SELECT fname, eid FROM fileTab"
-        eidCond = "eid in {}".format(tuple(ids))
+        if len(ids.keys()) > 1:
+            eidCond = "eid in {}".format(tuple(ids.keys()))
+        else:
+            eidCond = "eid={}".format(list(ids.keys())[0])
         fileConditions.append(eidCond)
 
         if fileConditions:
@@ -1288,21 +1304,24 @@ class MadrigalDB:
             self.__closeMetaDBConnector()
         except:
             self.__closeMetaDBConnector()
-            raise madrigal.admin.MadrigalError("Problem running fileQuery in getFileListFromMetadata")
+            raise madrigal.admin.MadrigalError("Problem running fileQuery in getFileListFromMetadata",
+                                               traceback.format_exception(sys.exc_info()[0],
+                                                                          sys.exc_info()[1],
+                                                                          sys.exc_info()[2]))
 
         # resList is [(fname, expID)]
-
+        expObj = MadrigalExperiment(self)
         if not appendKinst and not appendStartTime:
-            finalList = [os.path.realpath(item[0]) for item in resList]
+            finalList = [os.path.join(self.getMadroot(), expObj.getExpDirByExpId(item[1]), os.path.basename(item[0])) for item in resList]
             return(finalList)
         elif appendKinst and not appendStartTime:
-            finalList = [[os.path.realpath(item[0]), kinsts[ids[item[1]]]] for item in resList]
+            finalList = [[os.path.join(self.getMadroot(), expObj.getExpDirByExpId(item[1]), os.path.basename(item[0])), kinsts[ids[item[1]]]] for item in resList]
             return(finalList)
         elif appendStartTime and not appendKinst:
-            finalList = [[os.path.realpath(item[0]), times[ids[item[1]]]] for item in resList]
+            finalList = [[os.path.join(self.getMadroot(), expObj.getExpDirByExpId(item[1]), os.path.basename(item[0])), times[ids[item[1]]]] for item in resList]
             return(finalList)
         else:
-            finalList = [[os.path.realpath(item[0]), kinsts[ids[item[1]]], times[ids[item[1]]]] for item in resList]
+            finalList = [[os.path.join(self.getMadroot(), expObj.getExpDirByExpId(item[1]), os.path.basename(item[0])), kinsts[ids[item[1]]], times[ids[item[1]]]] for item in resList]
             return(finalList)
             
 
@@ -1606,9 +1625,9 @@ class MadrigalDB:
                     relativeName = fullname[relIndex + 1 + (len(self.__madRootDir)):]
                     ts = os.stat(fullname).st_mtime
                     if relative:
-                        retList.append((relativeName, datetime.datetime.utcfromtimestamp(ts)))
+                        retList.append((relativeName, datetime.datetime.fromtimestamp(ts, tz=datetime.timezone.utc)))
                     else:
-                        retList.append((fullname, datetime.datetime.utcfromtimestamp(ts)))
+                        retList.append((fullname, datetime.datetime.fromtimestamp(ts, tz=datetime.timezone.utc)))
                     
         return(retList)
     
@@ -1851,8 +1870,12 @@ class MadrigalDB:
                                               traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
                                                                         sys.exc_info()[2]))
-        
-        query = "SELECT * FROM {}".format(tblName)
+        if "expTab" in tblName:
+            query = "SELECT id, url, name, sid, sdt, edt, kinst, security, pi, piemail FROM {}".format(tblName)
+        elif "fileTab" in tblName:
+            query = "SELECT fname, eid, kindat, category, fsize, catrec, headrec, amoddate, amodtime, status, permission, fanalyst, fanalystemail FROM {}".format(tblName)
+        else:
+            query = "SELECT * FROM {}".format(tblName)
         try:
             self.__initMetaDBConnector()
             result = self.__cursor.execute(query)
@@ -1862,6 +1885,9 @@ class MadrigalDB:
             textList = []
             for line in resList:
                 line = [str(l) for l in line]
+                if "expTab" in tblName:
+                    # separate start/end date/time to remain consistent with old expTab format
+                    line = line[:4] + [line[4][:8], line[4][8:]] + [line[5][:8], line[5][8:]] + line[6:]
                 textList.append(','.join(line))
             tblText = '\n'.join(textList)
             return(tblText)
@@ -2424,23 +2450,26 @@ class MadrigalDB:
         __dirConvStr2 = '/experiments[0-9]*/[0-9][0-9][0-9][0-9]/[a-z][a-z0-9][a-z0-9]/[0-3][0-9][a-z][a-z0-9][a-z0-9][0-9][0-9].?'
 
         # ignore any directory without expTab.txt and fileTab.txt if not includeNonMadrigal
-        if 'expTab.txt' in names:
-            self.__hasExpTab = 1
-        else:
-            self.__hasExpTab = 0
+        # if 'expTab.txt' in names:
+        #     self.__hasExpTab = 1
+        # else:
+        #     self.__hasExpTab = 0
 
-        if 'fileTab.txt' in names:
-            self.__hasFileTab = 1
-        else:
-            self.__hasFileTab = 0
+        # if 'fileTab.txt' in names:
+        #     self.__hasFileTab = 1
+        # else:
+        #     self.__hasFileTab = 0
             
-        if arg[__includeNonMad] == 0:
-            if not self.__hasExpTab or not self.__hasFileTab:
-                return
+        # if arg[__includeNonMad] == 0:
+        #     if not self.__hasExpTab or not self.__hasFileTab:
+        #         return
+
+
+        # NOTE 2 SELF; probably get rid of includeNonMadrigal arg?
 
 
         # apply all filters relating to expTab.txt if self.__hasExpTab
-        if self.__hasExpTab:
+        try:
             
             # get exp metadata
             expMeta = MadrigalExperiment(self, dirname + '/' + 'expTab.txt')
@@ -2576,7 +2605,7 @@ class MadrigalDB:
                     names[:] = []
                     return
 
-        else:
+        except:
             # no expTab.txt - set kinst to None
             expKinst = None
             
@@ -2595,7 +2624,7 @@ class MadrigalDB:
                 return
             
         # experiment is okay, now start looking at individual files
-        if self.__hasFileTab:
+        try:
             fileMeta = MadrigalMetaFile(self, dirname + '/' + 'fileTab.txt')
 
             # get numFiles
@@ -2643,45 +2672,50 @@ class MadrigalDB:
                     arg[__fileList].append((dirname + '/' + filename, expKinst, thisStartTime))
                 fileCount = fileCount + 1
 
+            # what exactly is a non-madrigal file?
+
             # now add all non-madrigal files if includeNonMad
-            if arg[__includeNonMad] == 1:
-                for name in names:
-                    # skip dir names
-                    if os.path.isdir(dirname + '/' + name):
-                        continue
-                    # if its not in fileTab.txt, add it
-                    if fileMeta.getExpIdByFilename(name) == None:
-                        if arg[__appendKinst] == 0 and arg[__appendStartTime] == 0:
-                            # return only file names
-                            arg[__fileList].append(dirname + '/' + name)
-                        elif arg[__appendStartTime] == 0:
-                            # return file name, inst code tuple
-                            arg[__fileList].append((dirname + '/' + name, expKinst))
-                        elif arg[__appendKinst] == 0:
-                            # return file name, start time tuple
-                            arg[__fileList].append((dirname + '/' + name, thisStartTime))
-                        else:
-                            # append both
-                            arg[__fileList].append((dirname + '/' + filename, expKinst, thisStartTime))
+            # if arg[__includeNonMad] == 1:
+            #     for name in names:
+            #         # skip dir names
+            #         if os.path.isdir(dirname + '/' + name):
+            #             continue
+            #         # if its not in fileTab.txt, add it
+            #         if fileMeta.getExpIdByFilename(name) == None:
+            #             if arg[__appendKinst] == 0 and arg[__appendStartTime] == 0:
+            #                 # return only file names
+            #                 arg[__fileList].append(dirname + '/' + name)
+            #             elif arg[__appendStartTime] == 0:
+            #                 # return file name, inst code tuple
+            #                 arg[__fileList].append((dirname + '/' + name, expKinst))
+            #             elif arg[__appendKinst] == 0:
+            #                 # return file name, start time tuple
+            #                 arg[__fileList].append((dirname + '/' + name, thisStartTime))
+            #             else:
+            #                 # append both
+            #                 arg[__fileList].append((dirname + '/' + filename, expKinst, thisStartTime))
 
         # else the file has no fileTab.txt and includeNonMad is true - include all files
-        elif arg[__includeNonMad] == 1:
-            for name in names:
-                # skip dir names
-                if os.path.isdir(dirname + '/' + name):
-                    continue
-                if arg[__appendKinst] == 0 and arg[__appendStartTime] == 0:
-                    # return only file names
-                    arg[__fileList].append(dirname + '/' + name)
-                elif arg[__appendStartTime] == 0:
-                    # return file name, inst code tuple
-                    arg[__fileList].append((dirname + '/' + name, expKinst))
-                elif arg[__appendKinst] == 0:
-                    # return file name, start time tuple
-                    arg[__fileList].append((dirname + '/' + name, thisStartTime))
-                else:
-                    # append both
-                    arg[__fileList].append((dirname + '/' + filename, expKinst, thisStartTime))
+        except madrigal.admin.MadrigalError as e:
+            print(e.getExceptionStr())
+        
+        # arg[__includeNonMad] == 1:
+        #     for name in names:
+        #         # skip dir names
+        #         if os.path.isdir(dirname + '/' + name):
+        #             continue
+        #         if arg[__appendKinst] == 0 and arg[__appendStartTime] == 0:
+        #             # return only file names
+        #             arg[__fileList].append(dirname + '/' + name)
+        #         elif arg[__appendStartTime] == 0:
+        #             # return file name, inst code tuple
+        #             arg[__fileList].append((dirname + '/' + name, expKinst))
+        #         elif arg[__appendKinst] == 0:
+        #             # return file name, start time tuple
+        #             arg[__fileList].append((dirname + '/' + name, thisStartTime))
+        #         else:
+        #             # append both
+        #             arg[__fileList].append((dirname + '/' + filename, expKinst, thisStartTime))
                 
 
     def __setFileAccess(self, arg, dirname, names):
@@ -4488,9 +4522,8 @@ class MadrigalInstrumentParameters:
         if completeRebuildFlag == 0:
             # try to open and read instParmLastUpdate.txt
             try:
-                dateFile = open(self.__madDB.getMetadataDir() + '/instParmLastUpdate.txt', 'r')
-                lastUpdateTime = float(dateFile.read())
-                dateFile.close()
+                with open(self.__madDB.getMetadataDir() + '/instParmLastUpdate.txt', 'r') as dateFile:
+                    lastUpdateTime = float(dateFile.read())
                 
             except:
                 # if failure, set time to 1/1/1970 and set completeRebuildFlag = 1
@@ -4503,14 +4536,14 @@ class MadrigalInstrumentParameters:
         # now write new version of instParmLastUpdate.txt
         # if not writable, exception thrown
         try:
-            dateFile = open(self.__madDB.getMetadataDir() + '/instParmLastUpdate.txt', 'w')
+            with open(self.__madDB.getMetadataDir() + '/instParmLastUpdate.txt', 'w') as dateFile:
+                newUpdateTime = time.time()
+                dateFile.write(str(newUpdateTime))
         except:
             raise madrigal.admin.MadrigalError('Unable to write: ' + \
                                                self.__madDB.getMetadataDir() + '/instParmLastUpdate.txt',
                                                None)
-        newUpdateTime = time.time()
-        dateFile.write(str(newUpdateTime))
-        dateFile.close()
+        
         # finally, make sure new instParmLastUpdate.txt is world-writable
         try:                
             os.chmod(self.__madDB.getMetadataDir() + '/instParmLastUpdate.txt', 0o666)
@@ -4745,7 +4778,7 @@ class MadrigalKindat:
         if kinst:
             kcode = str(kinst) + '_' + str(code)
 
-        query = "SELECT " + self.__typeDescCol + " FROM " + self.__tblName + " WHERE " + self.__typeCodeCol + "={}"
+        query = "SELECT " + self.__typeDescCol + " FROM " + self.__tblName + " WHERE " + self.__typeCodeCol + "=\"{}\""
 
         try:
             self.__initMetaDBConnector()
@@ -4797,6 +4830,8 @@ class MadrigalKindat:
 
             if not resList:
                 return(None)
+            
+            
             return(resList)
         
         except:
@@ -4908,9 +4943,9 @@ class MadrigalExperiment:
         """
         # first check that path to initFile contains expDir
         dir = os.path.dirname(initFile)
-        dirConvStr1 = '/experiments[0-9]*/[0-9][0-9][0-9][0-9]/[a-z][a-z0-9][a-z0-9]/[a-zA-Z0-9\-_]*$'
-        dirConvStr2 = '/experiments[0-9]*/[0-9][0-9][0-9][0-9]/[a-z][a-z0-9][a-z0-9]/[0-3][0-9][a-z][a-z0-9][a-z0-9][0-9][0-9].?'
-        metaMatch = '/metadata'
+        dirConvStr1 = 'experiments[0-9]*/[0-9][0-9][0-9][0-9]/[a-z][a-z0-9][a-z0-9]/[a-zA-Z0-9\-_]*$'
+        dirConvStr2 = 'experiments[0-9]*/[0-9][0-9][0-9][0-9]/[a-z][a-z0-9][a-z0-9]/[0-3][0-9][a-z][a-z0-9][a-z0-9][0-9][0-9].?'
+        metaMatch = 'metadata'
 
         found = re.search(dirConvStr1, dir)
         if not found:
@@ -4925,11 +4960,16 @@ class MadrigalExperiment:
                                                                         sys.exc_info()[1],
                                                                         sys.exc_info()[2]))
         expDir = found.group(0) # should be exactly 1 expDir
+       
+        # make sure to use local experiment if initFile is also local
         if self.__madDB.getMadroot() in initFile:
-            expDir = self.__madDB.getTopLevelUrl() + '/madtoc' + expDir
+            expDir = self.__madDB.getTopLevelUrl() + "/madtoc/" + expDir
+        elif initFile.startswith("/experiments") or initFile.startswith("experiments"):
+            # assume local experiment
+            expDir = self.__madDB.getTopLevelUrl() + "/madtoc/" + expDir
 
         # now match found expDir to expUrl to find the correct index
-        query = "SELECT " + self.__expIdxCol + ", " + self.__expUrlCol + " FROM " + self.__tblName
+        query = "SELECT " + self.__expIdxCol + ", " + self.__expUrlCol + " FROM " + self.__tblName + " WHERE " + self.__expUrlCol + " LIKE \"%{}%\"".format(expDir)
 
         try:
             self.__initMetaDBConnector()
@@ -4941,7 +4981,7 @@ class MadrigalExperiment:
             self.__index = idx
         except:
             self.__closeMetaDBConnector()
-            raise madrigal.admin.MadrigalError("Could not find index for expDir: {}".format(dir),
+            raise madrigal.admin.MadrigalError("Could not find index for expDir: {}".format(expDir),
                                               traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
                                                                         sys.exc_info()[2]))
@@ -5010,9 +5050,6 @@ class MadrigalExperiment:
             position = 1
 
         query = "SELECT " + self.__expIdCol + " FROM " + self.__tblName + " WHERE " + self.__expIdxCol +"={}".format(position)
-
-        # if position > self.getExpCount():
-        #     return(None)
 
         try:
             self.__initMetaDBConnector()
@@ -5084,9 +5121,6 @@ class MadrigalExperiment:
             position = 1
 
         query = ("SELECT " + self.__expUrlCol + " FROM " + self.__tblName + " WHERE " + self.__expIdxCol + "={}").format(position)
-
-        if position > self.getExpCount():
-            return(None)
 
         try:
             self.__initMetaDBConnector()
@@ -5300,21 +5334,17 @@ class MadrigalExperiment:
             # if index not set, position should default to 1
             position = 1
 
-        if self.getExpCount() >= position:
-            url = self.getExpUrlByPosition(position)
-            # find the directory based on url
-            maddir = self.__madDB.getMadroot()
-            index = url.find('/madtoc/')
-            partialExpDir = url[index+8:]
-            # added default experiments if not there already
-            if partialExpDir.find('experiments') == -1:
-                maddir = os.path.join(maddir, 'experiments', url[index+8:])
-            else:
-                maddir = os.path.join(maddir, url[index+8:])
-            return(maddir)
-
+        url = self.getExpUrlByPosition(position)
+        # find the directory based on url
+        maddir = self.__madDB.getMadroot()
+        index = url.find('/madtoc/')
+        partialExpDir = url[index+8:]
+        # added default experiments if not there already
+        if partialExpDir.find('experiments') == -1:
+            maddir = os.path.join(maddir, 'experiments', url[index+8:])
         else:
-            return(None)
+            maddir = os.path.join(maddir, url[index+8:])
+        return(maddir)
 
 
     def getExpDirByExpId(self, expId):
@@ -5363,9 +5393,6 @@ class MadrigalExperiment:
             position = 1
 
         query = ("SELECT " + self.__expNameCol + " FROM " + self.__tblName + " WHERE " + self.__expIdxCol + "={}").format(position)
-
-        if position > self.getExpCount():
-            return(None)
         
         try:
             self.__initMetaDBConnector()
@@ -5602,7 +5629,7 @@ class MadrigalExperiment:
         startTime[7] = utcDate[7]
 
         # return python time tuple, missing only day of week and DST flag
-        return startTime
+        return tuple(startTime)
 
 
 
@@ -5638,6 +5665,7 @@ class MadrigalExperiment:
                 
             [[endDTStr]] = resList
         except:
+            traceback.print_exc()
             self.__closeMetaDBConnector()
             return(None)
 
@@ -5672,7 +5700,7 @@ class MadrigalExperiment:
         endTime[7] = utcDate[7]
 
         # return python time tuple, missing only day of week and DST flag
-        return endTime
+        return tuple(endTime)
 
 
 
@@ -5736,7 +5764,7 @@ class MadrigalExperiment:
         startTime[7] = utcDate[7]
 
         # return python time tuple, missing only day of week and DST flag
-        return startTime
+        return tuple(startTime)
 
 
 
@@ -5800,7 +5828,7 @@ class MadrigalExperiment:
         endTime[7] = utcDate[7]
 
         # return python time tuple, missing only day of week and DST flag
-        return endTime
+        return tuple(endTime)
 
         
 
@@ -6537,10 +6565,8 @@ class MadrigalExperiment:
 
             if not resList:
                 self.__closeMetaDBConnector()
-                raise madrigal.admin.MadrigalError("Problem getting expIDs for siteID {}".format(localSiteID), 
-                                                traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+                return(None)
+            
             return(resList)
         except:
             self.__closeMetaDBConnector()
@@ -6595,14 +6621,43 @@ class MadrigalExperiment:
         Exceptions: If unable to write file
         """
         try:
-            expStr = self.__madDB.getTableStr(self.__tblName)
+            if not self.__index:
+                fStr = self.__madDB.getTableStr(self.__tblName)
 
-            if newFullPath:
-                with open(newFullPath, "w") as f:
-                    f.write(expStr)
+                if newFullPath:
+                    with open(newFullPath, "w") as f:
+                        f.write(fStr)
+                else:
+                    with open(self.__madDB.getMetadataDir() + "/expTab.txt", "w") as f:
+                        f.write(fStr)
             else:
-                with open(self.__madDB.getMetadataDir() + "/expTab.txt", "w") as f:
-                    f.write(expStr)
+                # assume a local metadata obj
+                localQuery = ("SELECT id, url, name, sid, sdt, edt, kinst, security, pi, piemail FROM " + self.__tblName + " WHERE " + self.__expIdxCol + "={}").format(self.__index)
+                expDir = self.getExpDirByExpId(self.getExpIdByPosition())
+
+                try:
+                    self.__initMetaDBConnector()
+                    result = self.__cursor.execute(localQuery)
+                    resList = result.fetchall()
+                    self.__closeMetaDBConnector()
+
+                    textList = []
+                    for line in resList:
+                        line = [str(l) for l in line]
+                        line = line[:4] + [line[4][:8], line[4][8:]] + [line[5][:8], line[5][8:]] + line[6:]
+                        textList.append(','.join(line))
+                    tblText = '\n'.join(textList)
+
+                    with open(os.path.join(expDir, "expTab.txt"), "w") as f:
+                        f.write(tblText)
+
+                except:
+                    self.__closeMetaDBConnector()
+                    raise madrigal.admin.MadrigalError('Problem getting local metadata for exp at {}'.format(expDir),
+                                                    traceback.format_exception(sys.exc_info()[0],
+                                                                                sys.exc_info()[1],
+                                                                                sys.exc_info()[2]))
+
 
         except:
             raise madrigal.admin.MadrigalError("Unable to write metadata file " + \
@@ -6610,6 +6665,82 @@ class MadrigalExperiment:
                                                traceback.format_exception(sys.exc_info()[0],
                                                                           sys.exc_info()[1],
                                                                           sys.exc_info()[2]))
+        
+
+    def validateExp(self):
+        """
+        Validate that this is, in fact, a legitimate experiment. Remove (both content of expDir and from metadata)
+        if not. Assumes that this MadrigalExperiment object is referring to a single experiment, rather 
+        than all experiments.
+
+        Checks the following:
+            - exp dir is accessible
+            - exp dir contains at least one .h5/.hdf5 file
+
+        Used to completely remove experiment from Madrigal, assuming you have manually deleted the 
+        associated experiment files first.
+
+        Returns: True (valid experiment), False (invalid experiment)
+        """
+        if self.__index:
+            position = self.__index
+        else:
+            raise ValueError("Attempting to use validateExp for all Madrigal experiments-- must initialize MadrigalExperiment object from single experiment")
+        
+        thisExpDir = self.getExpDirByPosition(position)
+        todelete = False
+
+        if not os.path.exists(thisExpDir):
+            if os.path.islink(thisExpDir):
+                raise ValueError(f"Broken symlink found for expDir {thisExpDir}")
+            todelete = True
+        else:
+            possibleFiles = []
+            possibleFiles += glob.glob(os.path.join(thisExpDir, "*.h5"))
+            possibleFiles += glob.glob(os.path.join(thisExpDir, "*.hdf5"))
+            if len(possibleFiles) == 0:
+                todelete = True
+
+        if todelete:
+            self.__removeExp()
+            
+            
+
+    def __removeExp(self):
+        """
+        Private function to remove exp from metadata. WARNING: removes all associated files in experiment too.
+
+        Inputs - None
+        Returns - None
+        """
+        if self.__index:
+            position = self.__index
+        else:
+            raise ValueError("Attempting to remove exp without assigned index")
+
+        thisExpName = self.getExpNameByPosition(position)
+        thisExpDate = self.getExpStartDateTimeByPosition(position)
+        thisFileObj = MadrigalMetaFile(self.__madDB, self.getExpDirByPosition() + "/fileTab.txt")
+        count = thisFileObj.getFileCount()
+
+        for i in range(count):
+            thisFileObj.deleteRowByFilename(thisFileObj.getFilenameByPosition(i))
+
+        update = ("DELETE FROM " + self.__tblName + " WHERE " + self.__expIdxCol + "={}").format(position)
+        
+        try:
+            self.__initMetaDBConnector()
+            self.__cursor.execute(update)
+            self.__connector.commit()
+            self.__closeMetaDBConnector()
+            print(f"Successfully removed experiment {thisExpName} starting at {thisExpDate}")
+        except:
+            # no matches found
+            self.__closeMetaDBConnector()
+            raise madrigal.admin.MadrigalError('Could not delete experiment at position ' + str(position), None)
+        
+
+        
         
 
     def __str__(self):
@@ -6721,8 +6852,8 @@ class MadrigalMetaFile:
         """
         # first check that path to initFile contains expDir
         dir = os.path.dirname(initFile)
-        dirConvStr1 = '/experiments[0-9]*/[0-9][0-9][0-9][0-9]/[a-z][a-z0-9][a-z0-9]/[a-zA-Z0-9\-_]*$'
-        dirConvStr2 = '/experiments[0-9]*/[0-9][0-9][0-9][0-9]/[a-z][a-z0-9][a-z0-9]/[0-3][0-9][a-z][a-z0-9][a-z0-9][0-9][0-9].?'
+        dirConvStr1 = 'experiments[0-9]*/[0-9][0-9][0-9][0-9]/[a-z][a-z0-9][a-z0-9]/[a-zA-Z0-9\-_]*$'
+        dirConvStr2 = 'experiments[0-9]*/[0-9][0-9][0-9][0-9]/[a-z][a-z0-9][a-z0-9]/[0-3][0-9][a-z][a-z0-9][a-z0-9][0-9][0-9].?'
 
         found = re.search(dirConvStr1, dir)
         if not found:
@@ -6736,10 +6867,13 @@ class MadrigalMetaFile:
 
         # make sure to use local experiment if initFile is also local
         if self.__madDB.getMadroot() in initFile:
-            expDir = self.__madDB.getTopLevelUrl() + '/madtoc' + expDir
-    
+            expDir = self.__madDB.getTopLevelUrl() + "/madtoc/" + expDir
+        elif initFile.startswith("/experiments") or initFile.startswith("experiments"):
+            # assume local experiment
+            expDir = self.__madDB.getTopLevelUrl() + "/madtoc/" + expDir
+
         # now match found expDir to expUrl to find the correct index
-        query = "SELECT id, url FROM expTab"
+        query = "SELECT id, url FROM expTab WHERE url LIKE \"%{}%\"".format(expDir)
 
         try:
             self.__initMetaDBConnector()
@@ -7025,8 +7159,16 @@ class MadrigalMetaFile:
 
         Exceptions: Thrown if category column cannot be parsed into an integer
         """
+        if self.__indexList:
+            pass
+        else:
+            # we should never delete files based on filename only,
+            # idx must be set
+            raise madrigal.admin.MadrigalError(f"Unable to delete file {filename}, MadrigalMetaFile index not set", None)
+
+        expID = self.getExpIdByPosition()
         filename = os.path.basename(filename)
-        query = ("SELECT " + self.__fileCategoryCol + " FROM " + self.__tblName + " WHERE " + self.__fileNameCol + "={}").format(filename)
+        query = ("SELECT " + self.__fileCategoryCol + " FROM " + self.__tblName + " WHERE " + self.__fileExpIdCol + "={} AND " + self.__fileNameCol + "=\"{}\"").format(expID, filename)
         try:
             self.__initMetaDBConnector()
             result = self.__cursor.execute(query)
@@ -7088,9 +7230,17 @@ class MadrigalMetaFile:
 
         Exceptions: None.
         """
+        if self.__indexList:
+            pass
+        else:
+            # we should never delete files based on filename only,
+            # idx must be set
+            raise madrigal.admin.MadrigalError(f"Unable to delete file {filename}, MadrigalMetaFile index not set", None)
+
+        expID = self.getExpIdByPosition()
 
         filename = os.path.basename(filename)
-        query = ("SELECT " + self.__fileHasCatalogCol + " FROM " + self.__tblName + " WHERE " + self.__fileNameCol + "={}").format(filename)
+        query = ("SELECT " + self.__fileHasCatalogCol + " FROM " + self.__tblName + " WHERE " + self.__fileExpIdCol + "={} AND " + self.__fileNameCol + "=\"{}\"").format(expID, filename)
 
         try:
             self.__initMetaDBConnector()
@@ -7199,9 +7349,17 @@ class MadrigalMetaFile:
 
         Exceptions: None
         """
+        if self.__indexList:
+            pass
+        else:
+            # we should never delete files based on filename only,
+            # idx must be set
+            raise madrigal.admin.MadrigalError(f"Unable to delete file {filename}, MadrigalMetaFile index not set", None)
+
+        expID = self.getExpIdByPosition()
 
         filename = os.path.basename(filename)
-        query = ("SELECT " + self.__fileHasHeaderCol + " FROM " + self.__tblName + " WHERE " + self.__fileNameCol + "={}").format(filename)
+        query = ("SELECT " + self.__fileHasHeaderCol + " FROM " + self.__tblName + " WHERE " + self.__fileExpIdCol + "={} AND " + self.__fileNameCol + "=\"{}\"").format(expID, filename)
 
         try:
             self.__initMetaDBConnector()
@@ -7303,9 +7461,17 @@ class MadrigalMetaFile:
 
         Exceptions: None
         """
+        if self.__indexList:
+            pass
+        else:
+            # we should never delete files based on filename only,
+            # idx must be set
+            raise madrigal.admin.MadrigalError(f"Unable to delete file {filename}, MadrigalMetaFile index not set", None)
+
+        expID = self.getExpIdByPosition()
 
         filename = os.path.basename(filename)
-        query = ("SELECT " + self.__fileStatusCol + " FROM " + self.__tblName + " WHERE " + self.__fileNameCol + "={}").format(filename)
+        query = ("SELECT " + self.__fileStatusCol + " FROM " + self.__tblName + " WHERE " + self.__fileExpIdCol + "={} AND " + self.__fileNameCol + "=\"{}\"").format(expID, filename)
         try:
             self.__initMetaDBConnector()
             result = self.__cursor.execute(query)
@@ -7380,7 +7546,9 @@ class MadrigalMetaFile:
             self.__closeMetaDBConnector()
 
             [[dateStr, timeStr]] = resList
-            return(datetime.datetime.strptime('%s %s' % (dateStr, timeStr), '%Y%m%d %H%M%S'))
+            thisdt = datetime.datetime.strptime('%s %s' % (dateStr, timeStr), '%Y%m%d %H%M%S')
+            thisdt = thisdt.replace(tzinfo=datetime.timezone.utc)
+            return(thisdt)
         except:
             self.__closeMetaDBConnector()
             return(None)
@@ -7398,9 +7566,17 @@ class MadrigalMetaFile:
 
         Exceptions: Thrown if filename not found.
         """
+        if self.__indexList:
+            pass
+        else:
+            # we should never delete files based on filename only,
+            # idx must be set
+            raise madrigal.admin.MadrigalError(f"Unable to delete file {filename}, MadrigalMetaFile index not set", None)
 
-        filename = "'*" + os.path.basename(filename) + "*'"
-        query = ("SELECT " + self.__fileModDateCol + ", " + self.__fileModTimeCol + " FROM " + self.__tblName + " WHERE " + self.__fileNameCol + " GLOB {}").format(filename)
+        expID = self.getExpIdByPosition()
+
+        filename = "*" + os.path.basename(filename) + "*"
+        query = ("SELECT " + self.__fileModDateCol + ", " + self.__fileModTimeCol + " FROM " + self.__tblName + " WHERE " + self.__fileExpIdCol + "={} AND " + self.__fileNameCol + " GLOB \"{}\"").format(expID, filename)
         try:
             self.__initMetaDBConnector()
             result = self.__cursor.execute(query)
@@ -7408,7 +7584,9 @@ class MadrigalMetaFile:
             self.__closeMetaDBConnector()
 
             [[dateStr, timeStr]] = resList
-            return(datetime.datetime.strptime('%s %s' % (dateStr, timeStr), '%Y%m%d %H%M%S'))
+            thisdt = datetime.datetime.strptime('%s %s' % (dateStr, timeStr), '%Y%m%d %H%M%S')
+            thisdt = thisdt.replace(tzinfo=datetime.timezone.utc)
+            return(thisdt)
         except:
             self.__closeMetaDBConnector()
             return(None)
@@ -7445,7 +7623,7 @@ class MadrigalMetaFile:
             dataFile = os.path.join(expDir, basename)
             if not os.access(dataFile, os.R_OK):
                 raise IOError('Cannot access %s' % (dataFile))
-            dt = datetime.datetime.utcfromtimestamp(os.path.getmtime(dataFile))
+            dt = datetime.datetime.fromtimestamp(os.path.getmtime(dataFile), tz=datetime.timezone.utc)
             
             
         dateStr = dt.strftime('%Y%m%d')
@@ -7453,7 +7631,7 @@ class MadrigalMetaFile:
 
         try:
             update = ("UPDATE " + self.__tblName + " SET " + self.__fileModDateCol 
-                    + "={}, " + self.__fileModTimeCol + "={} WHERE "
+                    + "=\"{}\", " + self.__fileModTimeCol + "=\"{}\" WHERE "
                     + self.__fileIdxCol + "={}").format(dateStr, timeStr, position)
 
             self.__initMetaDBConnector()
@@ -7477,13 +7655,22 @@ class MadrigalMetaFile:
 
         Exceptions: Thrown if filename not found.
         """
-        update = ("DELETE FROM " + self.__tblName + " WHERE " + self.__fileNameCol + "=\"{}\"").format(filename)
+        if self.__indexList:
+            pass
+        else:
+            # we should never delete files based on filename only,
+            # idx must be set
+            raise madrigal.admin.MadrigalError(f"Unable to delete file {filename}, MadrigalMetaFile index not set", None)
+
+        expID = self.getExpIdByPosition()
+        update = ("DELETE FROM " + self.__tblName + " WHERE " + self.__fileExpIdCol + "={} AND " + self.__fileNameCol + "=\"{}\"").format(expID, filename)
         
         try:
             self.__initMetaDBConnector()
             self.__cursor.execute(update)
             self.__connector.commit()
             self.__closeMetaDBConnector()
+            print(f"Successfully removed file {filename} from metadata")
         except:
             # no matches found
             self.__closeMetaDBConnector()
@@ -7505,7 +7692,7 @@ class MadrigalMetaFile:
         """
         filename = os.path.basename(filename)
 
-        query = ("SELECT " + self.__fileExpIdCol + " FROM " + self.__tblName + " WHERE " + self.__fileNameCol + "={}").format(filename)
+        query = ("SELECT " + self.__fileExpIdCol + " FROM " + self.__tblName + " WHERE " + self.__fileNameCol + "=\"{}\"").format(filename)
         try:
             self.__initMetaDBConnector()
             result = self.__cursor.execute(query)
@@ -7516,7 +7703,7 @@ class MadrigalMetaFile:
             return(eid)
         except:
             self.__closeMetaDBConnector()
-            return(None)
+            return(self.getExpIdByPosition())
 
 
 
@@ -7533,9 +7720,17 @@ class MadrigalMetaFile:
 
         Exceptions: Thrown if kindat cannot be parsed into an integer
         """
+        if self.__indexList:
+            pass
+        else:
+            # we should never delete files based on filename only,
+            # idx must be set
+            raise madrigal.admin.MadrigalError(f"Unable to delete file {filename}, MadrigalMetaFile index not set", None)
+
+        expID = self.getExpIdByPosition()
         filename = os.path.basename(filename)
 
-        query = ("SELECT " + self.__fileKindatCol + " FROM " + self.__tblName + " WHERE " + self.__fileNameCol + "={}").format(filename)
+        query = ("SELECT " + self.__fileKindatCol + " FROM " + self.__tblName + " WHERE " + self.__fileExpIdCol + "={} AND " + self.__fileNameCol + "=\"{}\"").format(expID, filename)
         try:
             self.__initMetaDBConnector()
             result = self.__cursor.execute(query)
@@ -7602,11 +7797,15 @@ class MadrigalMetaFile:
 
         Exceptions: Thrown if file cannot be written, if accessType is not 0 or 1
         """
+        if not self.__indexList:
+            raise madrigal.admin.MadrigalError('setAccess called with a local MadrigalMetaFile object', None)
         if (accessType != 0 and accessType != 1):
             raise madrigal.admin.MadrigalError('MadrigalMetaFile.setAccess called with arg = ' + \
                                                str(accessType) + ', must be either 0 or 1', None)
+        
+        expID = self.getExpIdByPosition()
 
-        update = ("UPDATE " + self.__tblName + " SET " + self.__fileAccessCol + "={}").format(str(accessType))
+        update = ("UPDATE " + self.__tblName + " SET " + self.__fileAccessCol + "={} WHERE " + self.__fileExpIdCol + "={}").format(str(accessType), expID)
         try:
             self.__initMetaDBConnector()
             self.__cursor.execute(update)
@@ -7775,7 +7974,16 @@ class MadrigalMetaFile:
         """
         filename = os.path.basename(filename)
 
-        query = ("SELECT " + self.__fileAnalystCol + " FROM " + self.__tblName + " WHERE " + self.__fileAnalystCol + "={}").format(filename)
+        if self.__indexList:
+            pass
+        else:
+            # we should never delete files based on filename only,
+            # idx must be set
+            raise madrigal.admin.MadrigalError(f"Unable to delete file {filename}, MadrigalMetaFile index not set", None)
+
+        expID = self.getExpIdByPosition()
+
+        query = ("SELECT " + self.__fileAnalystCol + " FROM " + self.__tblName + " WHERE " + self.__fileExpIdCol + "={} AND " + self.__fileNameCol + "=\"{}\"").format(expID, filename)
         try:
             self.__initMetaDBConnector()
             result = self.__cursor.execute(query)
@@ -7874,7 +8082,16 @@ class MadrigalMetaFile:
         """
         filename = os.path.basename(filename)
 
-        query = ("SELECT " + self.__fileAnalystEmailCol + " FROM " + self.__tblName + " WHERE " + self.__fileNameCol + "={}").format(filename)
+        if self.__indexList:
+            pass
+        else:
+            # we should never delete files based on filename only,
+            # idx must be set
+            raise madrigal.admin.MadrigalError(f"Unable to delete file {filename}, MadrigalMetaFile index not set", None)
+
+        expID = self.getExpIdByPosition()
+
+        query = ("SELECT " + self.__fileAnalystEmailCol + " FROM " + self.__tblName + " WHERE " + self.__fileExpIdCol + "={} AND " + self.__fileNameCol + "=\"{}\"").format(expID, filename)
         try:
             self.__initMetaDBConnector()
             result = self.__cursor.execute(query)
@@ -7963,6 +8180,14 @@ class MadrigalMetaFile:
         # build return String
         retStr = ''
 
+        # get the experiment id - if None, return message to update Metadata
+        expId = self.getExpIdByFilename(filename)
+
+        if expId == None:
+            return '\tMetadata for file ' + str(filename) + \
+                   ' not found.  Please notify Madrigal administrator that metadata ' + \
+                   'needs to be updated.'
+
         # create any needed metadata objects
 
         if madExpObj == None:
@@ -7974,13 +8199,7 @@ class MadrigalMetaFile:
         if madKindatObj == None:
             madKindatObj = MadrigalKindat(self.__madDB)
 
-        # get the experiment id - if None, return message to update Metadata
-        expId = self.getExpIdByFilename(filename)
-
-        if expId == None:
-            return '\tMetadata for file ' + str(filename) + \
-                   ' not found.  Please notify Madrigal administrator that metadata ' + \
-                   'needs to be updated.'
+        
 
         # get the experiment start date - if not found, return message to update Metadata
         starttime = madExpObj.getExpStartDateTimeByExpId(expId)
@@ -8024,11 +8243,7 @@ class MadrigalMetaFile:
         
         Returns permanent URL to file, or None if not found
         """
-        if self.__indexList:
-            position = self.__indexList[position]
-        elif (position == 0):
-            # if indexList not set, position should default to 1
-            position = 1
+        # don't need to reset position here
         
         expId = self.getExpIdByPosition(position)
         if expId is None:
@@ -8101,18 +8316,49 @@ class MadrigalMetaFile:
         Exceptions: If unable to write file
         """
         try:
-            fStr = self.__madDB.getTableStr(self.__tblName)
+            if not self.__indexList:
+                fStr = self.__madDB.getTableStr(self.__tblName)
 
-            if newFullPath:
-                with open(newFullPath, "w") as f:
-                    f.write(fStr)
+                if newFullPath:
+                    with open(newFullPath, "w") as f:
+                        f.write(fStr)
+                else:
+                    with open(self.__madDB.getMetadataDir() + "/fileTab.txt", "w") as f:
+                        f.write(fStr)
             else:
-                with open(self.__madDB.getMetadataDir() + "/fileTab.txt", "w") as f:
-                    f.write(fStr)
+                # assume a local metadata obj
+                if len(self.__indexList) == 1:
+                    localQuery = ("SELECT fname, eid, kindat, category, fsize, catrec, headrec, amoddate, amodtime, status, permission, fanalyst, fanalystemail FROM " + self.__tblName + " WHERE " + self.__fileIdxCol + "={}").format(self.__indexList[0])
+                else:
+                    localQuery = ("SELECT fname, eid, kindat, category, fsize, catrec, headrec, amoddate, amodtime, status, permission, fanalyst, fanalystemail FROM " + self.__tblName + " WHERE " + self.__fileIdxCol + " IN \"{}\"").format(tuple(self.__indexList))
+                expObj = MadrigalExperiment()
+                expDir = expObj.getExpDirByExpId(self.getExpIdByPosition())
+
+                try:
+                    self.__initMetaDBConnector()
+                    result = self.__cursor.execute(localQuery)
+                    resList = result.fetchall()
+                    self.__closeMetaDBConnector()
+
+                    textList = []
+                    for line in resList:
+                        line = [str(l) for l in line]
+                        textList.append(','.join(line))
+                    tblText = '\n'.join(textList)
+
+                    with open(os.path.join(expDir, "fileTab.txt"), "w") as f:
+                        f.write(tblText)
+
+                except:
+                    self.__closeMetaDBConnector()
+                    raise madrigal.admin.MadrigalError('Problem getting local metadata for exp at {}'.format(expDir),
+                                                    traceback.format_exception(sys.exc_info()[0],
+                                                                                sys.exc_info()[1],
+                                                                                sys.exc_info()[2]))
+
 
         except:
-            raise madrigal.admin.MadrigalError("Unable to write metadata file " + \
-                                               str(newFullPath),
+            raise madrigal.admin.MadrigalError('Problem writing local metadata for exp at {}'.format(expDir),
                                                traceback.format_exception(sys.exc_info()[0],
                                                                           sys.exc_info()[1],
                                                                           sys.exc_info()[2]))
@@ -8347,7 +8593,7 @@ class MadrigalInstrumentData:
         #else:
         #    self.__filename = initFile
             
-        if madInstObj is not None:
+        if isinstance(madInstObj, madrigal.metadata.MadrigalInstrument):
             self._madInstObj = madInstObj
         else:
             self._madInstObj = madrigal.metadata.MadrigalInstrument(self.__madDB)
@@ -8408,18 +8654,22 @@ class MadrigalInstrumentData:
         """
         # NOTE 2 SELF: the way this is currently written may be 
         # quite inefficient, ideally you would want to cache these 
-        # results somewhere
+        # results somewhere or something like that
 
-        # if kinstList is just a single integer, convert it into a list
-        if type(kinstList) == int:
-            kinstList = [kinstList]
+        # if kinstList is just a single integer, look for this kinst only
+        if (type(kinstList) == int) or (len(kinstList) == 1):
+            if (len(kinstList) == 1):
+                kinstList = kinstList[0]
+            query1 = "SELECT id FROM expTab WHERE kinst={}".format(kinstList)
+        else:
+            query1 = "SELECT id FROM expTab WHERE kinst IN {}".format(tuple(kinstList))
 
-        query1 = "SELECT id FROM expTab WHERE kinst IN {}"
+
         query2 = "SELECT kindat FROM fileTab WHERE eid IN {}"
 
         try:
             self.__initMetaDBConnector()
-            result = self.__cursor.execute(query1.format(tuple(kinstList)))
+            result = self.__cursor.execute(query1)
             resList = result.fetchall()
 
             if not resList:
@@ -8715,8 +8965,11 @@ class MadrigalInstrumentData:
         if local:
             cond = (" WHERE sid={}").format(siteID)
             query1 += cond
+
+        query2 = "SELECT kinst, name FROM instTab"
         if categoryID != 0:
-            query2 = "SELECT kinst FROM instTab WHERE category={}".format(categoryID)
+            query2 += " WHERE category={}".format(categoryID)
+            
 
         # first get matching kinst list
         try:
@@ -8724,16 +8977,27 @@ class MadrigalInstrumentData:
             result = self.__cursor.execute(query1)
             resList1 = result.fetchall()
 
-            if categoryID != 0:
-                result = self.__cursor.execute(query2)
-                resList2 = result.fetchall()
-                resList2 = {i[0]:i[0] for i in resList2}
+            # key: kinst, value: site id
+            kinstdict = {}
+            for items in resList1:
+                if items[0] not in kinstdict.keys():
+                    kinstdict[items[0]] = []
+                    kinstdict[items[0]].append(items[1])
+                else:
+                    if items[1] not in kinstdict[items[0]]:
+                        kinstdict[items[0]].append(items[1])
+
+            result = self.__cursor.execute(query2)
+            resList2 = result.fetchall()
+            # key: kinst, value: inst name
+            resList2 = {i[0]:i[1] for i in resList2}
             self.__closeMetaDBConnector()
 
-            if categoryID == 0:
-                retList = [(resList1[k][0], self._madInstObj.getInstrumentName(resList1[k][0]), resList1[k][1]) for k in range(len(resList1))]
-            else:
-                retList = [(resList1[k][0], self._madInstObj.getInstrumentName(resList1[k][0]), resList1[k][1]) for k in range(len(resList1)) if resList1[k][0] in resList2]
+            retList = [(kinst, resList2[kinst], kinstdict[kinst]) for kinst in kinstdict.keys()]
+            retList = []
+            for kinst in kinstdict.keys():
+                for site in kinstdict[kinst]:
+                    retList.append((kinst, resList2[kinst], site))
             
             return(retList)
         except:

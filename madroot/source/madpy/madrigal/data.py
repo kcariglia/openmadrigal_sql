@@ -202,9 +202,9 @@ class MadrigalFile:
 
         if validExpDir:
             self._fileMetadata = madrigal.metadata.MadrigalMetaFile(self._madDB, os.path.join(expDir, 'fileTab.txt'))
+            self._fileCategory = self._fileMetadata.getCategoryByFilename(self._filename)
         else:
             self._fileMetadata = madrigal.metadata.MadrigalMetaFile(self._madDB)
-        self._fileCategory = self._fileMetadata.getCategoryByFilename(self._filename)
         
         # read metadata about kindats
         self._madKindatObj = madrigal.metadata.MadrigalKindat(self._madDB)

@@ -23,6 +23,8 @@ import tempfile
 import subprocess
 import tarfile
 import shutil
+import sqlite3
+import sys
 import re
 
 # third party imports
@@ -35,6 +37,8 @@ import madrigal.data
 import madrigal.isprint
 import madrigal.ui.userData
 import madrigal.admin
+
+METADB = "metadata.db"
 
 class MadrigalWeb:
     """MadrigalWeb is the class that produces output for the web.
@@ -98,6 +102,45 @@ class MadrigalWeb:
         # cache Madrigal objects as needed to imprive performance
         self._madExpObjExpID = None # will be set to a MadrigalExperiment object sorted by expId when first needed
         self._madExpObjDate = None # will be set to a MadrigalExperiment object sorted by date when first needed
+
+
+    def __initMetaDBConnector(self):
+        """
+        __initMetaDBConnector initializes the sqlite3 connector to read from the metadata database.
+
+        Inputs: None
+
+        Returns: Void
+
+        Affects: Initializes private class member variables to connect to metadata.db
+        """
+        try:
+            self.__connector = sqlite3.connect(os.path.join(self._madDB.getMetadataDir(), METADB))
+            self.__cursor = self.__connector.cursor()
+        except:  
+            raise madrigal.admin.MadrigalError("Unable to connect to metadata.db",
+                                              traceback.format_exception(sys.exc_info()[0],
+                                                                        sys.exc_info()[1],
+                                                                        sys.exc_info()[2]))
+        
+
+    def __closeMetaDBConnector(self):
+        """
+        __closeMetaDBConnector closes the connection to the sqlite3 database connector.
+
+        Inputs: None
+
+        Returns: Void
+
+        Affects: Closes connection to metadata.db
+        """
+        try:
+            self.__connector.close()
+        except:  
+            raise madrigal.admin.MadrigalError("Problem closing connection to metadata.db",
+                                              traceback.format_exception(sys.exc_info()[0],
+                                                                        sys.exc_info()[1],
+                                                                        sys.exc_info()[2]))
 
 
 
@@ -940,35 +983,41 @@ class MadrigalWeb:
                 so if optimization if False, starts at beginning
         """
         tempDict = {} # dict with key = month number, value = month name
-        sDT = datetime.datetime(year,1,1)
-        eDT = datetime.datetime(year,12,31,23,59,59)
-        madroot = self._madDB.getMadroot()
-        if self._madExpObjDate is None:
-            self._madExpObjDate = madrigal.metadata.MadrigalExperiment(self._madDB)
-        if optimize:
-            startIndex = self._madExpObjDate.getStartPosition(sDT)
+        retList = []
+
+        sDT = datetime.datetime(year,1,1, tzinfo=datetime.timezone.utc)
+        eDT = datetime.datetime(year,12,31,23,59,59, tzinfo=datetime.timezone.utc)
+
+        sDate = sDT.strftime("%Y%m%d%H%M%S")
+        eDate = eDT.strftime("%Y%m%d%H%M%S")
+
+        query = "SELECT sdt, edt FROM expTab WHERE sid={} AND sdt >= {} AND edt <= {}".format(self._madDB.getSiteID(), sDate, eDate)
+
+        if self.isTrusted():
+            query += " AND security in {}".format((0,1,2,3))
         else:
-            startIndex = 0
-        for i in range(startIndex, self._madExpObjDate.getExpCount()):
-            thisKinst = self._madExpObjDate.getKinstByPosition(i)
-            if kinst != thisKinst:
-                continue
-            thisSDTList = self._madExpObjDate.getExpStartDateTimeByPosition(i)
-            thisSDT = datetime.datetime(*thisSDTList[0:6])
-            thisEDTList = self._madExpObjDate.getExpEndDateTimeByPosition(i)
-            thisEDT = datetime.datetime(*thisEDTList[0:6])
-            if thisEDT < sDT:
-                continue
-            if thisSDT > eDT:
-                continue
-            # check for security
-            security = self._madExpObjDate.getSecurityByPosition(i)
-            if not self.isTrusted(): 
-                if security not in (0,2):
-                    continue
-            else:
-                if security not in (0,1,2,3):
-                    continue
+            query += " AND security in {}".format((0,2))
+
+        try:
+            self.__initMetaDBConnector()
+            print(f"query is: {query}")
+            res = self.__cursor.execute(query)
+            resList = res.fetchall()
+            self.__closeMetaDBConnector()
+        except:
+            self.__closeMetaDBConnector()
+            raise madrigal.admin.MadrigalError("Problem getting months in year {} for kinst {}".format(year, kinst), 
+                                               traceback.format_exception(sys.exc_info()[0],
+                                                                          sys.exc_info()[1],
+                                                                          sys.exc_info()[2]))
+        
+        print(resList)
+        for times in resList:
+            thisSDT = datetime.datetime.strptime(times[0], "%Y%m%d%H%M%S")
+            thisEDT = datetime.datetime.strptime(times[1], "%Y%m%d%H%M%S")
+            thisSDT = thisSDT.replace(tzinfo=datetime.timezone.utc)
+            thisEDT = thisEDT.replace(tzinfo=datetime.timezone.utc)
+
             if thisSDT.year == year:
                 startMonth = thisSDT.month
             else:
@@ -1000,37 +1049,46 @@ class MadrigalWeb:
                 so if optimization if False, starts at beginning
         """
         retList = []
-        sDT = datetime.datetime(year,1,1)
-        eDT = datetime.datetime(year,12,31,23,59,59)
-        if self._madExpObjDate is None:
-            self._madExpObjDate = madrigal.metadata.MadrigalExperiment(self._madDB)
-        if optimize:
-            startIndex = self._madExpObjDate.getStartPosition(sDT)
+
+        if month:
+            sDT = datetime.datetime(year,month,1, tzinfo=datetime.timezone.utc)
+            eDT = datetime.datetime(year,month,31,23,59,59, tzinfo=datetime.timezone.utc)
         else:
-            startIndex = 0
-        for i in range(startIndex, self._madExpObjDate.getExpCount()):
-            thisKinst = self._madExpObjDate.getKinstByPosition(i)
-            if kinst != thisKinst:
-                continue
-            thisSDTList = self._madExpObjDate.getExpStartDateTimeByPosition(i)
-            thisSDT = datetime.datetime(*thisSDTList[0:6])
-            thisEDTList = self._madExpObjDate.getExpEndDateTimeByPosition(i)
-            thisEDT = datetime.datetime(*thisEDTList[0:6])
-            if thisEDT < sDT:
-                continue
-            if thisSDT > eDT:
-                continue
-            # check for security
-            security = self._madExpObjDate.getSecurityByPosition(i)
-            if not self.isTrusted():
-                if security not in (0,2):
-                    continue
-            else:
-                if security not in (0,1,2,3):
-                    continue
+            sDT = datetime.datetime(year,1,1, tzinfo=datetime.timezone.utc)
+            eDT = datetime.datetime(year,12,31,23,59,59, tzinfo=datetime.timezone.utc)
+
+        sDate = sDT.strftime("%Y%m%d%H%M%S")
+        eDate = eDT.strftime("%Y%m%d%H%M%S")
+
+        query = "SELECT sdt, edt FROM expTab WHERE sid={} AND sdt >= {} AND edt <= {}".format(self._madDB.getSiteID(), sDate, eDate)
+
+        if self.isTrusted():
+            query += " AND security in {}".format((0,1,2,3))
+        else:
+            query += " AND security in {}".format((0,2))
+
+        try:
+            self.__initMetaDBConnector()
+            res = self.__cursor.execute(query)
+            resList = res.fetchall()
+            self.__closeMetaDBConnector()
+        except:
+            self.__closeMetaDBConnector()
+            raise madrigal.admin.MadrigalError("Problem getting days in year {} for kinst {}".format(year, kinst), 
+                                               traceback.format_exception(sys.exc_info()[0],
+                                                                          sys.exc_info()[1],
+                                                                          sys.exc_info()[2]))
+        
+        print(resList)
+        for times in resList:
+            thisSDT = datetime.datetime.strptime(times[0], "%Y%m%d%H%M%S")
+            thisEDT = datetime.datetime.strptime(times[1], "%Y%m%d%H%M%S")
+            thisSDT = thisSDT.replace(tzinfo=datetime.timezone.utc)
+            thisEDT = thisEDT.replace(tzinfo=datetime.timezone.utc)
+
             # loop over all days
             delta = datetime.timedelta(days=1)
-            loopDT = max(sDT, datetime.datetime(thisSDT.year, thisSDT.month, thisSDT.day))
+            loopDT = max(sDT, datetime.datetime(thisSDT.year, thisSDT.month, thisSDT.day, tzinfo=datetime.timezone.utc))
             while (loopDT <= thisEDT):
                 if loopDT > eDT:
                     break
@@ -1043,8 +1101,7 @@ class MadrigalWeb:
                 thisDate = loopDT.date()
                 if thisDate not in retList:
                     retList.append(thisDate)
-                loopDT += delta
-                
+                loopDT += delta    
                 
         retList.sort()
         return(retList)
@@ -1063,8 +1120,16 @@ class MadrigalWeb:
         """
         retList = []
         madroot = self._madDB.getMadroot()
-        siteId = self._madDB.getSiteID()
+        localSiteId = self._madDB.getSiteID()
         siteObj = madrigal.metadata.MadrigalSite(self._madDB)
+        
+
+
+        expQuery = "SELECT id, url, name, std, edt, kinst, sid FROM expTab"
+
+
+
+
         if localOnly:
             expTabFile = os.path.join(madroot, 'metadata/expTab.txt')
         else:
@@ -2209,6 +2274,9 @@ class MadrigalWeb:
         expDirs = []
         madExpObj = madrigal.metadata.MadrigalExperiment(self._madDB)
         for i in range(madExpObj.getExpCount()):
+            if madExpObj.getExpSiteIdByPosition(i) != self._madDB.getSiteID():
+                # get local exps only
+                continue
             sDTList = madExpObj.getExpStartDateTimeByPosition(i)[:6]
             eDTList = madExpObj.getExpEndDateTimeByPosition(i)[:6]
             sDT = datetime.datetime(*sDTList)

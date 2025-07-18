@@ -2922,9 +2922,8 @@ class madPcolorWedgeKmlScan:
         text = self._createKmlText(dataGen, maxColormap, minColormap, lookLat, lookLon, lookAlt, scanType,
                                    instName, instDesc, instLat, instLon, instAlt, colorMap)
         
-        f = open(fullFilename, 'w')
-        f.write(text)
-        f.close()
+        with open(fullFilename, 'w') as f:
+            f.write(text)
         
         
         
@@ -5102,9 +5101,8 @@ if __name__ == '__main__':
     # test madPcolorScan
 
     # az scan
-    f = open('testFiles/isprint_az_scan.txt')
-    isprintText = f.read()
-    f.close()
+    with open('testFiles/isprint_az_scan.txt') as f:
+        isprintText = f.read()
 
     print('creating az scan at /tmp/isprint_az_scan.png')
     obj = madPcolorScan(isprintText,
@@ -5118,9 +5116,8 @@ if __name__ == '__main__':
                         9,12)
     
     # el scan
-    f = open('testFiles/isprint_el_scan.txt')
-    isprintText = f.read()
-    f.close()
+    with open('testFiles/isprint_el_scan.txt') as f:
+        isprintText = f.read()
     
     print('creating el scan at /tmp/isprint_el_scan.png')
     obj = madPcolorScan(isprintText,
@@ -5155,9 +5152,8 @@ if __name__ == '__main__':
 
     
     
-    f = open('testFiles/isprint_uth_fof2.txt')
-    isprintText = f.read()
-    f.close()
+    with open('testFiles/isprint_uth_fof2.txt') as f:
+        isprintText = f.read()
     
     print('creating scatterplot at /tmp/isprint_fof2.png')
     obj = madScatterPlot(isprintText,
@@ -5169,9 +5165,8 @@ if __name__ == '__main__':
 			useAbsoluteTime = False)
 			
 
-    f = open('testFiles/isprint_nel.txt')
-    isprintText = f.read()
-    f.close()
+    with open('testFiles/isprint_nel.txt') as f:
+        isprintText = f.read()
 
     print('creating pcolor plot at /tmp/isprint_nel.png')
     obj = madPcolorPlot(isprintText,

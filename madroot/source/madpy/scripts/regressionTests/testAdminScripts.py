@@ -229,6 +229,15 @@ try:
 except:
     pass
 
+try:
+    # clean up metadata
+    expObj1 = madrigal.metadata.MadrigalExperiment(madDBObj, os.path.join(expBase2, '1998/mlh', '20jan98BillsRTTestExp') + "/expTab.txt")
+    expObj1.validateExp()
+    expObj2 = madrigal.metadata.MadrigalExperiment(madDBObj, os.path.join(expBase2, '1998/mlh', '20jan98BillsTestExp') + "/expTab.txt")
+    expObj2.validateExp()
+except Exception as e:
+    print(e.with_traceback())
+
 print('For this second pass, user is registered for this instrument, but not the experiment')
 
 try:
@@ -421,13 +430,27 @@ except:
 ### final clean up ###
 try:
     thisExp = os.path.join(expBase, '1998/mlh', '20jan98BillsTestExp')
-    os.system('rm -r %s' % (thisExp))
+    os.system('rm -rf %s' % (thisExp))
     thisExp = os.path.join(expBase, '1998/mlh', '20jan98BillsRTTestExp')
-    os.system('rm -r %s' % (thisExp))
+    os.system('rm -rf %s' % (thisExp))
+    thisExp = os.path.join(expBase2, '1998/mlh', '20jan98BillsTestExp')
+    os.system('rm -rf %s' % (thisExp))
+    thisExp = os.path.join(expBase2, '1998/mlh', '20jan98BillsRTTestExp')
+    os.system('rm -rf %s' % (thisExp))
     os.system('rm /tmp/mlh98*')
     madUserObj.unregisterExperiment(email, expBaseDir)
 except:
     pass
+
+
+try:
+    # clean up metadata
+    expObj1 = madrigal.metadata.MadrigalExperiment(madDBObj, os.path.join(expBase2, '1998/mlh', '20jan98BillsRTTestExp') + "/expTab.txt")
+    expObj1.validateExp()
+    expObj2 = madrigal.metadata.MadrigalExperiment(madDBObj, os.path.join(expBase2, '1998/mlh', '20jan98BillsTestExp') + "/expTab.txt")
+    expObj2.validateExp()
+except Exception as e:
+    print(e.with_traceback())
 
 
 

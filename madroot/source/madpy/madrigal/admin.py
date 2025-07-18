@@ -436,9 +436,19 @@ class MadrigalDBAdmin:
             
         self.__madDB.addFilesMetadata(fileTabText)
 
+        # double check we can access the experiment metadata
+        newMadExp = madrigal.metadata.MadrigalExperiment(self.__madDB, expDir + "/expTab.txt")
+        # double check we can access file metadata
+        newMadFile = madrigal.metadata.MadrigalMetaFile(self.__madDB, expDir + "/fileTab.txt")
+
         # create all writeable directory overview
         os.makedirs(os.path.join(expDir, 'overview'))
         os.chmod(os.path.join(expDir, 'overview'), 0o777)
+
+        # validate exp object, then write new metadata files 
+        newMadExp.validateExp()
+        newMadExp.writeMetadata()
+        newMadFile.writeMetadata()
         
         if notify:
             # get expPath without MAD ROOT
@@ -492,9 +502,9 @@ class MadrigalDBAdmin:
             raise ValueError('Filename %s not found in fileTab.txt' % (rtFilename))
 
         # okay - write it
-        f = open(os.path.join(expDir, rtFilename), 'w', encoding='utf-8')
-        f.write(rtFile)
-        f.close()
+        with open(os.path.join(expDir, rtFilename), 'w', encoding='utf-8') as f:
+            f.write(rtFile)
+            
         os.chmod(os.path.join(expDir, rtFilename), 0o664)
 
 
@@ -605,7 +615,7 @@ class MadrigalDBAdmin:
         elif ext not in ('.hdf5', '.h5', '.hdf5'):
             raise ValueError('called createMadrigalExperiment with non-Hdf5 file <%s> and updateToMad3 False' \
                 % (madFilename))
-                
+        
         fileInfo = madrigal.data.MadrigalFile(madFilename, self.__madDB)
 
         # get startTime
@@ -788,6 +798,11 @@ class MadrigalDBAdmin:
 
         self.__madDB.addFilesMetadata(fileTabText)
 
+        # double check we can access the experiment metadata
+        newMadExp = madrigal.metadata.MadrigalExperiment(self.__madDB, expDir + "/expTab.txt")
+        # double check we can access file metadata
+        newMadFile = madrigal.metadata.MadrigalMetaFile(self.__madDB, expDir + "/fileTab.txt")
+
         # create all writeable directory overview
         os.makedirs(os.path.join(expDir, 'overview'))
         os.chmod(os.path.join(expDir, 'overview'), 0o777)
@@ -808,6 +823,11 @@ class MadrigalDBAdmin:
         else:
             fileInfo = madrigal.data.MadrigalFile(os.path.join(expDir, os.path.basename(madFilename)), self.__madDB,
                                                   acceptOldSummary=acceptOldSummary)
+            
+        # validate exp object, then write new metadata files 
+        newMadExp.validateExp()
+        newMadExp.writeMetadata()
+        newMadFile.writeMetadata()
         
         if createCachedText:
             cachedName = os.path.join(expDir, 'overview', os.path.basename(madFilename) + '.txt')
@@ -953,7 +973,16 @@ class MadrigalDBAdmin:
         if PIEmail != None:
             expTabInfo.setPIEmailByPosition(0, PIEmail)
 
-        # everything successfully changed
+        # everything successfully changed, rewrite txt files
+
+        # double check we can access the experiment metadata
+        newMadExp = madrigal.metadata.MadrigalExperiment(self.__madDB, expDir + "/expTab.txt")
+        # double check we can access file metadata
+        newMadFile = madrigal.metadata.MadrigalMetaFile(self.__madDB, expDir + "/fileTab.txt")
+        # validate exp object, then write new metadata files 
+        newMadExp.validateExp()
+        newMadExp.writeMetadata()
+        newMadFile.writeMetadata()
         
             
 
@@ -1013,7 +1042,7 @@ class MadrigalDBAdmin:
         elif ext not in ('.hdf5', '.h5', '.hdf5'):
             raise ValueError('called addMadrigalFile with non-Hdf5 file <%s> and updateToMad3 False' \
                 % (madFilename))
-                
+        
         fileInfo = madrigal.data.MadrigalFile(madFilename, self.__madDB, acceptOldSummary=acceptOldSummary)
 
         # kindat
@@ -1212,6 +1241,15 @@ class MadrigalDBAdmin:
 
         if found == False:
             raise ValueError('Madrigal file %s not found in %s' % (filename, os.path.join(expDir, 'fileTab.txt')))
+        
+        # double check we can access the experiment metadata
+        newMadExp = madrigal.metadata.MadrigalExperiment(self.__madDB, expDir + "/expTab.txt")
+        # double check we can access file metadata
+        newMadFile = madrigal.metadata.MadrigalMetaFile(self.__madDB, expDir + "/fileTab.txt")
+        # validate exp object, then write new metadata files 
+        newMadExp.validateExp()
+        newMadExp.writeMetadata()
+        newMadFile.writeMetadata()
 
 
     def overwriteMadrigalFile(self,
@@ -1517,6 +1555,12 @@ class MadrigalDBAdmin:
         else:
             expInfo.setExpEndDateTimeByPosition(endTime)
 
+        # validate expInfo
+        expInfo.validateExp()
+        # write new metadata files
+        expInfo.writeMetadata()
+        fileTabInfo.writeMetadata()
+
 
     def updateMaster(self, skipGeo=False):
         """updateMaster is a method to update the local metadata.
@@ -1606,10 +1650,6 @@ class MadrigalDBAdmin:
             return
         
         maxId = int(numpy.max(expIDs))
-
-        # special case, first installation when db is empty
-        if maxId == 0:
-            maxId = (siteID * 10000000) + 1
 
         #print(f"maxid is {maxId}")
         
@@ -1734,9 +1774,8 @@ class MadrigalDBAdmin:
 
             thisUrl = url % (archivePath, md5Str)
 
-            f = urllib.request.urlopen(thisUrl, timeout=200)
-            result = f.read().decode('utf-8')
-            f.close()
+            with urllib.request.urlopen(thisUrl, timeout=200) as f:
+                result = f.read().decode('utf-8')
 
             items = result.split() # first item is latest revision tag, second is matching revision tag
             if len(items) != 2:
