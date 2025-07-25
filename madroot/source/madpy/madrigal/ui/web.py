@@ -100,7 +100,6 @@ class MadrigalWeb:
         self._isTrusted_ = None
         
         # cache Madrigal objects as needed to imprive performance
-        self._madExpObjExpID = None # will be set to a MadrigalExperiment object sorted by expId when first needed
         self._madExpObjDate = None # will be set to a MadrigalExperiment object sorted by date when first needed
 
 
@@ -1000,7 +999,6 @@ class MadrigalWeb:
 
         try:
             self.__initMetaDBConnector()
-            print(f"query is: {query}")
             res = self.__cursor.execute(query)
             resList = res.fetchall()
             self.__closeMetaDBConnector()
@@ -1011,7 +1009,6 @@ class MadrigalWeb:
                                                                           sys.exc_info()[1],
                                                                           sys.exc_info()[2]))
         
-        print(resList)
         for times in resList:
             thisSDT = datetime.datetime.strptime(times[0], "%Y%m%d%H%M%S")
             thisEDT = datetime.datetime.strptime(times[1], "%Y%m%d%H%M%S")
@@ -1079,7 +1076,6 @@ class MadrigalWeb:
                                                                           sys.exc_info()[1],
                                                                           sys.exc_info()[2]))
         
-        print(resList)
         for times in resList:
             thisSDT = datetime.datetime.strptime(times[0], "%Y%m%d%H%M%S")
             thisEDT = datetime.datetime.strptime(times[1], "%Y%m%d%H%M%S")
@@ -1118,56 +1114,106 @@ class MadrigalWeb:
             endDT - end datetime to search
             localOnly - if True, only search locally. If False, search globally
         """
-        retList = []
-        madroot = self._madDB.getMadroot()
         localSiteId = self._madDB.getSiteID()
-        siteObj = madrigal.metadata.MadrigalSite(self._madDB)
-        
 
+        expConditions = []
 
-        expQuery = "SELECT id, url, name, std, edt, kinst, sid FROM expTab"
+        expQuery = "SELECT id, name, sdt, edt, kinst, sid"
 
-
-
+        if kinstList and (0 not in kinstList):
+            if len(kinstList) == 1:
+                thisCond = "kinst={}".format(kinstList[0])
+                expConditions.append(thisCond)
+            else:
+                thisCond = "kinst in {}".format(tuple(kinstList))
+                expConditions.append(thisCond)
 
         if localOnly:
-            expTabFile = os.path.join(madroot, 'metadata/expTab.txt')
+            thisCond = "sid ={}".format(localSiteId)
+            expConditions.append(thisCond)
+
+        if startDT:
+            startDate = startDT.replace(tzinfo=datetime.timezone.utc)
+            sDate = startDate.strftime("%Y%m%d%H%M%S")
+            thisCond = "sdt >= {}".format(sDate)
+            expConditions.append(thisCond)
+
+        if endDT:
+            endDate = endDT.replace(tzinfo=datetime.timezone.utc)
+            eDate = endDate.strftime("%Y%m%d%H%M%S")
+            thisCond = "edt <= {}".format(eDate)
+            expConditions.append(thisCond)
+
+        if not self.isTrusted():
+            # not trusted, security must be in (0, 2)
+            thisCond = "security in (0, 2)"
+            expConditions.append(thisCond)
         else:
-            expTabFile = os.path.join(madroot, 'metadata/expTabAll.txt')
-        madExpObjDate = madrigal.metadata.MadrigalExperiment(self._madDB, expTabFile)
-        startIndex = madExpObjDate.getStartPosition(startDT)
-        for i in range(startIndex, madExpObjDate.getExpCount()):
-            thisKinst = madExpObjDate.getKinstByPosition(i)
-            if thisKinst not in kinstList and 0 not in kinstList:
-                continue
-            thisSDTList = madExpObjDate.getExpStartDateTimeByPosition(i)
-            thisSDT = datetime.datetime(*thisSDTList[0:6])
-            thisEDTList = madExpObjDate.getExpEndDateTimeByPosition(i)
-            thisEDT = datetime.datetime(*thisEDTList[0:6])
-            if thisEDT < startDT:
-                continue
-            if thisSDT > endDT:
-                break
-            # check for security
-            security = madExpObjDate.getSecurityByPosition(i)
-            if not self.isTrusted():
-                if security not in (0,2):
-                    continue
-            else:
-                if security not in (0,1,2,3):
-                    continue
-            thisSiteId = madExpObjDate.getExpSiteIdByPosition(i)
-            if siteId == thisSiteId:
-                isLocal = True
-            else:
-                isLocal = False
-            thisExpId = madExpObjDate.getExpIdByPosition(i)
-            thisExpPath = madExpObjDate.getExpPathByPosition(i)
-            thisExpName = madExpObjDate.getExpNameByPosition(i)
-            if isLocal:
+            # trusted, security must be in (0, 1, 2, 3)
+            thisCond = "security in (0, 1, 2, 3)"
+            expConditions.append(thisCond)
+
+        expQuery += " FROM expTab WHERE "
+        if expConditions:
+            for e in range(len(expConditions)):
+                expQuery += expConditions[e]
+
+                if e < (len(expConditions) - 1):
+                    expQuery += " AND "
+
+        try:
+            self.__initMetaDBConnector()
+            res = self.__cursor.execute(expQuery)
+            resList = res.fetchall()
+            self.__closeMetaDBConnector()
+        except:
+            self.__closeMetaDBConnector()
+            raise madrigal.admin.MadrigalError("Problem running expQuery in getExperimentList", 
+                                               traceback.format_exception(sys.exc_info()[0],
+                                                                          sys.exc_info()[1],
+                                                                          sys.exc_info()[2]))
+
+        if not resList:
+            # didn't find anything
+            return(resList)
+        
+        retList = []
+
+        # resList contains: [(id, name, std, edt, kinst, sid)]
+        # retList should be: [(expId, expUrl, expName, instName, kinst, 
+        # expStartDT, expEndDT, siteId, siteName)]
+        siteObj = madrigal.metadata.MadrigalSite(self._madDB)
+        expObj = madrigal.metadata.MadrigalExperiment(self._madDB)
+
+        for expData in resList:
+            thisExpId = expData[0]
+            thisExpName = expData[1]
+            thisSDT = datetime.datetime(int(expData[2][0:4]),
+                          int(expData[2][4:6]),
+                          int(expData[2][6:8]),
+                          int(expData[2][8:10]),
+                          int(expData[2][10:12]),
+                          int(expData[2][12:14]), tzinfo=datetime.timezone.utc)
+            thisEDT = datetime.datetime(int(expData[3][0:4]),
+                          int(expData[3][4:6]),
+                          int(expData[3][6:8]),
+                          int(expData[3][8:10]),
+                          int(expData[3][10:12]),
+                          int(expData[3][12:14]), tzinfo=datetime.timezone.utc)
+            thisKinst = expData[4]
+            thisSiteId = expData[5]
+
+            thisSiteName = siteObj.getSiteName(thisSiteId)
+            instName = self._instObj.getInstrumentName(thisKinst)
+
+            thisExpPath = expObj.getExpPathByExpId(thisExpId)
+
+            if thisSiteId == localSiteId:
+                # local experiment
                 thisExpUrl = django.urls.reverse('show_experiment') + \
                     '?experiment_list=%i' % (thisExpId)
             elif siteObj.getSiteVersion(thisSiteId) == '2.6':
+                # old madrigal site
                 if siteObj.getSiteServer(thisSiteId).find('http') == -1:
                     thisExpUrl = 'http://' + os.path.join(siteObj.getSiteServer(thisSiteId),
                                               siteObj.getSiteRelativeCGI(thisSiteId),
@@ -1191,14 +1237,12 @@ class MadrigalWeb:
                 if thisSiteUrl[-1] != '/' and thisExpUrl[0] != '/':
                     thisSiteUrl += '/'
                 thisExpUrl = thisSiteUrl + thisExpUrl
-                
-            thisSiteName = siteObj.getSiteName(thisSiteId)
-            instName = self._instObj.getInstrumentName(thisKinst)
+
             
             retList.append((thisExpId, thisExpUrl, thisExpName, instName, thisKinst, 
                             thisSDT.strftime('%Y-%m-%d %H:%M:%S'), thisEDT.strftime('%Y-%m-%d %H:%M:%S'),
                             thisSiteId, thisSiteName))
-                
+        retList.sort(key=lambda x: x[5])        
         return(retList)
     
     
@@ -1215,46 +1259,96 @@ class MadrigalWeb:
                 so if optimization if False, starts at beginning
         """
         retList = []
-        sDT = datetime.datetime(year,month,day)
-        eDT = datetime.datetime(year,month,day,23,59,59)
-        if self._madExpObjDate is None:
-            self._madExpObjDate = madrigal.metadata.MadrigalExperiment(self._madDB)
-        if optimize:
-            startIndex = self._madExpObjDate.getStartPosition(sDT)
+        sDT = datetime.datetime(year, month, day, tzinfo=datetime.timezone.utc)
+        eDT = datetime.datetime(year, month, day, 23, 59, 59, tzinfo=datetime.timezone.utc)
+        localSiteId = self._madDB.getSiteID()
+        localOnly = True # TMP ONLY: hardcoded for now
+
+        expConditions = []
+        expQuery = "SELECT id, name, sdt, edt, pi, piemail"
+
+        # mandatory conditions
+        kinstCond = "kinst = {}".format(kinst)
+        expConditions.append(kinstCond)
+        sDate = sDT.strftime("%Y%m%d%H%M%S")
+        eDate = eDT.strftime("%Y%m%d%H%M%S")
+        startCond = "sdt < {}".format(eDate)
+        endCond = "edt > {}".format(sDate)
+        expConditions.append(startCond)
+        expConditions.append(endCond)
+
+        if localOnly:
+            thisCond = "sid = {}".format(localSiteId)
+            expConditions.append(thisCond)
+
+        if not self.isTrusted():
+            # not trusted, security must be in (0, 2)
+            thisCond = "security in (0, 2)"
+            expConditions.append(thisCond)
         else:
-            startIndex = 0
-        for i in range(startIndex, self._madExpObjDate.getExpCount()):
-            thisKinst = self._madExpObjDate.getKinstByPosition(i)
-            if kinst != thisKinst:
-                continue
-            thisSDTList = self._madExpObjDate.getExpStartDateTimeByPosition(i)
-            thisSDT = datetime.datetime(*thisSDTList[0:6])
-            thisEDTList = self._madExpObjDate.getExpEndDateTimeByPosition(i)
-            thisEDT = datetime.datetime(*thisEDTList[0:6])
-            if thisEDT < sDT:
-                continue
-            if thisSDT > eDT:
-                continue
-            # check for security
-            security = self._madExpObjDate.getSecurityByPosition(i)
-            if not self.isTrusted():
-                if security not in (0,2):
-                    continue
-            else:
-                if security not in (0,1,2,3):
-                    continue
-            thisExpId = self._madExpObjDate.getExpIdByPosition(i)
-            thisExpName = self._madExpObjDate.getExpNameByPosition(i)
-            thisExpDesc = '%s: %s-%s' % (thisExpName, thisSDT.strftime('%Y-%m-%d %H:%M:%S'),
+            # trusted, security must be in (0, 1, 2, 3)
+            thisCond = "security in (0, 1, 2, 3)"
+            expConditions.append(thisCond)
+
+        expQuery += " FROM expTab WHERE "
+        if expConditions:
+            for e in range(len(expConditions)):
+                expQuery += expConditions[e]
+
+                if e < (len(expConditions) - 1):
+                    expQuery += " AND "
+
+        try:
+            self.__initMetaDBConnector()
+            res = self.__cursor.execute(expQuery)
+            resList = res.fetchall()
+            self.__closeMetaDBConnector()
+        except:
+            self.__closeMetaDBConnector()
+            raise madrigal.admin.MadrigalError("Problem running expQuery in getExpsOnDate", 
+                                               traceback.format_exception(sys.exc_info()[0],
+                                                                          sys.exc_info()[1],
+                                                                          sys.exc_info()[2]))
+
+        if not resList:
+            # didn't find anything
+            return(resList)
+        
+        # sort resList by start date
+        resList.sort(key=lambda x: x[2])
+        
+        retList = []
+
+        # resList is [(id, name, sdt, edt, pi, piemail)]
+        # retList should be [(expId, expDesc, expDir, pi_name, pi_email)]
+        madExpObj = madrigal.metadata.MadrigalExperiment(self._madDB)
+        for expData in resList:
+            expID = expData[0]
+            expName = expData[1]
+            thisSDT = datetime.datetime(int(expData[2][0:4]),
+                          int(expData[2][4:6]),
+                          int(expData[2][6:8]),
+                          int(expData[2][8:10]),
+                          int(expData[2][10:12]),
+                          int(expData[2][12:14]), tzinfo=datetime.timezone.utc)
+            thisEDT = datetime.datetime(int(expData[3][0:4]),
+                          int(expData[3][4:6]),
+                          int(expData[3][6:8]),
+                          int(expData[3][8:10]),
+                          int(expData[3][10:12]),
+                          int(expData[3][12:14]), tzinfo=datetime.timezone.utc)
+            thisExpPI = expData[4]
+            thisExpPIEmail = expData[5]
+            
+            thisExpDesc = '%s: %s-%s' % (expName, thisSDT.strftime('%Y-%m-%d %H:%M:%S'),
                                          thisEDT.strftime('%Y-%m-%d %H:%M:%S'))
-            thisExpDir = self._madExpObjDate.getExpDirByPosition(i)
-            thisExpPI = self._madExpObjDate.getPIByPosition(i)
-            thisExpPIEmail = self._madExpObjDate.getPIEmailByPosition(i)
+            thisExpDir = madExpObj.getExpDirByExpId(expID)
+
             if thisExpPI in (None, ''):
                 thisExpPI = self._instObj.getContactName(kinst)
                 thisExpPIEmail = self._instObj.getContactEmail(kinst)
-            retList.append((thisExpId, thisExpDesc, thisExpDir))
-                
+            retList.append((expID, thisExpDesc, thisExpDir, thisExpPI, thisExpPIEmail))
+
         return(retList)
     
     
@@ -1305,21 +1399,20 @@ class MadrigalWeb:
             expID - experimentID (int)
         """
         expID = int(expID)
-        if self._madExpObjExpID is None:
-            self._madExpObjExpID = madrigal.metadata.MadrigalExperiment(self._madDB)
-        kinst = self._madExpObjExpID.getKinstByExpId(expID)
+        madExpObjExpID = madrigal.metadata.MadrigalExperiment(self._madDB)
+        kinst = madExpObjExpID.getKinstByExpId(expID)
         kinstDesc = self._instObj.getInstrumentName(kinst)
-        expPI = self._madExpObjExpID.getPIByExpId(expID)
-        expPIEmail = self._madExpObjExpID.getPIEmailByExpId(expID)
-        expUrl = self._madExpObjExpID.getRealExpUrlByExpId(expID)
+        expPI = madExpObjExpID.getPIByExpId(expID)
+        expPIEmail = madExpObjExpID.getPIEmailByExpId(expID)
+        expUrl = madExpObjExpID.getRealExpUrlByExpId(expID)
         if expPI in (None, ''):
             expPI = self._instObj.getContactName(kinst)
             expPIEmail = self._instObj.getContactEmail(kinst)
-        thisSDTList = self._madExpObjExpID.getExpStartDateTimeByExpId(expID)
+        thisSDTList = madExpObjExpID.getExpStartDateTimeByExpId(expID)
         thisSDT = datetime.datetime(*thisSDTList[0:6])
-        thisEDTList = self._madExpObjExpID.getExpEndDateTimeByExpId(expID)
+        thisEDTList = madExpObjExpID.getExpEndDateTimeByExpId(expID)
         thisEDT = datetime.datetime(*thisEDTList[0:6])
-        thisExpName = self._madExpObjExpID.getExpNameByExpId(expID)
+        thisExpName = madExpObjExpID.getExpNameByExpId(expID)
         thisExpDesc = '%s: %s-%s' % (thisExpName, thisSDT.strftime('%Y-%m-%d %H:%M:%S'),
                                      thisEDT.strftime('%Y-%m-%d %H:%M:%S'))
         
@@ -1376,9 +1469,8 @@ class MadrigalWeb:
         """
         maxSize = 50000000 # 50 MB cutoff
         retList = []
-        if self._madExpObjExpID is None:
-            self._madExpObjExpID = madrigal.metadata.MadrigalExperiment(self._madDB)
-        expDir = self._madExpObjExpID.getExpDirByExpId(expID)
+        madExpObjExpID = madrigal.metadata.MadrigalExperiment(self._madDB)
+        expDir = madExpObjExpID.getExpDirByExpId(expID)
         if expDir is None:
             return([]) # bad expID
         fullname = os.path.join(expDir, basename)
@@ -1407,13 +1499,12 @@ class MadrigalWeb:
         """
         retList = []
         realTimeList = [] # in case no default files
-        if self._madExpObjExpID is None:
-            self._madExpObjExpID = madrigal.metadata.MadrigalExperiment(self._madDB)
-        expDir = self._madExpObjExpID.getExpDirByExpId(expID)
+        madExpObjExpID = madrigal.metadata.MadrigalExperiment(self._madDB)
+        expDir = madExpObjExpID.getExpDirByExpId(expID)
         if expDir is None:
             # no files in this experiment
             return(retList)
-        kinst = self._madExpObjExpID.getKinstByExpId(expID)
+        kinst = madExpObjExpID.getKinstByExpId(expID)
         
         if not os.access(os.path.join(expDir, 'fileTab.txt'), os.R_OK):
             # no files in this experiment
@@ -1486,9 +1577,8 @@ class MadrigalWeb:
         self.cleanStage()
         hdf5Extensions = ('.hdf5', '.h5', '.hdf')
         fileName, fileExtension = os.path.splitext(basename)
-        if self._madExpObjExpID is None:
-            self._madExpObjExpID = madrigal.metadata.MadrigalExperiment(self._madDB)
-        expDir = self._madExpObjExpID.getExpDirByExpId(int(expId))
+        madExpObjExpID = madrigal.metadata.MadrigalExperiment(self._madDB)
+        expDir = madExpObjExpID.getExpDirByExpId(int(expId))
         if expDir is None:
             raise ValueError('No expDir found for exp_id %i' % (int(expId)))
         if fileExtension in hdf5Extensions:
@@ -2224,6 +2314,46 @@ class MadrigalWeb:
                 a list of full paths to the file
             
         """
+        # use input args to format condition strings
+        # for lists: where <column name> in <arg list>
+        # first, get all expIDs necessary
+        # then get files based on expIDs
+
+        expConditions = []
+        fileConditions = []
+
+        expQuery = "SELECT id"
+
+        if expName or excludeExpName:
+            expQuery += ", name"
+
+        if startDate:
+            sDate = startDate.strftime("%Y%m%d%H%M%S")
+            if seasonalStartDate:
+                jDate = seasonalStartDate[:2] + seasonalStartDate[3:]
+                sDate = sDate[:4] + jDate + sDate[8:]
+            thisCond = "sdt >= {}".format(sDate)
+            expConditions.append(thisCond)
+        elif seasonalStartDate:
+            startDayOfYear = seasonalStartDate[:2] + seasonalStartDate[3:]
+            jDate = "____" + startDayOfYear + "______"
+            thisCond = "sdt LIKE {}".format(jDate)
+            expConditions.append(thisCond)
+            
+        if endDate:
+            eDate = endDate.strftime("%Y%m%d%H%M%S")
+            if seasonalEndDate:
+                jDate = seasonalEndDate[:2] + seasonalEndDate[3:]
+                eDate = eDate[:4] + jDate + eDate[8:]
+            thisCond = "edt <= {}".format(eDate)
+            expConditions.append(thisCond)
+        elif seasonalEndDate:
+            endDayOfYear = seasonalEndDate[:2] + seasonalEndDate[3:]
+            jDate = "____" + endDayOfYear + "______"
+            thisCond = "edt LIKE {}".format(jDate)
+            expConditions.append(thisCond)
+
+
         # first find instrument kinst list to search over, if not None
         if not inst is None:
             if type(inst) in (str, int):
@@ -2240,6 +2370,11 @@ class MadrigalWeb:
                     insts += self._searchDictByFnmatch(instDict, item)
             if len(insts) == 0:
                 raise ValueError('No instruments found')
+            if len(insts) == 1:
+                thisCond = "kinst={}".format(insts[0])
+            else:
+                thisCond = "kinst IN {}".format(tuple(insts))
+            expConditions.append(thisCond)
         else:
             insts = None
             
@@ -2259,109 +2394,122 @@ class MadrigalWeb:
                     kindats += self._searchDictByFnmatch(kindatDict, item)
             if len(kindats) == 0:
                 raise ValueError('No kind of data codes found')
+            if len(kindats) == 1:
+                thisCond = "kindat={}".format(kindats[0])
+            else:
+                thisCond = "kindat IN {}".format(tuple(kindats))
+            fileConditions.append(thisCond)
         else:
             kindats = None
         
-        if not seasonalStartDate is None:
-            startMonth = int(seasonalStartDate[:2])
-            startDay = int(seasonalStartDate[-2:])
+        # make sure to get local experiments only
+        expQuery += " FROM expTab WHERE sid={} ".format(self._madDB.getSiteID())
+        if expConditions:
+            expQuery += " AND "
+            for e in range(len(expConditions)):
+                expQuery += expConditions[e]
+
+                if e < (len(expConditions) - 1):
+                    expQuery += " AND "
+
+        try:
+            self.__initMetaDBConnector()
+            res = self.__cursor.execute(expQuery)
+            resList = res.fetchall()
+            self.__closeMetaDBConnector()
+        except:
+            self.__closeMetaDBConnector()
+            raise madrigal.admin.MadrigalError("Problem getting experiments for global_file_search", 
+                                               traceback.format_exception(sys.exc_info()[0],
+                                                                          sys.exc_info()[1],
+                                                                          sys.exc_info()[2]))
+
+        if not resList:
+            # didn't find anything
+            return(resList)
+
+        # resList is either [(expID)] or [(expID, expName)]
+        # we will now reorganize it to just get [expID]
+        expIDList = []
+        if expName or excludeExpName:
+            # if name filters present, rebuild result list of expIDs
+
+            for expData in resList:
+                # exp name filter
+                if not expName is None:
+                    thisExpName = expData[1]
+                    if fnmatch.fnmatch(thisExpName.lower(), expName.lower()):
+                        expIDList.append(expData[0])
+                # exclude exp name filter
+                if not excludeExpName is None:
+                    thisExpName = expData[1]
+                    if not fnmatch.fnmatch(thisExpName.lower(), excludeExpName.lower()):
+                        expIDList.append(expData[0])
+        else:
+            expIDList = [i[0] for i in resList]
             
-        if not seasonalEndDate is None:
-            endMonth = int(seasonalEndDate[:2])
-            endDay = int(seasonalEndDate[-2:])
-            
-        # get list of all experiment expDirs listed
-        expDirs = []
-        madExpObj = madrigal.metadata.MadrigalExperiment(self._madDB)
-        for i in range(madExpObj.getExpCount()):
-            if madExpObj.getExpSiteIdByPosition(i) != self._madDB.getSiteID():
-                # get local exps only
-                continue
-            sDTList = madExpObj.getExpStartDateTimeByPosition(i)[:6]
-            eDTList = madExpObj.getExpEndDateTimeByPosition(i)[:6]
-            sDT = datetime.datetime(*sDTList)
-            eDT = datetime.datetime(*eDTList)
-            if startDate > eDT:
-                continue
-            if endDate < sDT:
-                continue
-            # instrument filter
-            if not insts is None:
-                if madExpObj.getKinstByPosition(i) not in insts:
-                    continue
-            # seasonal start date filter
-            if not seasonalStartDate is None:
-                if sDT.month < startMonth:
-                    continue
-                if sDT.month == startMonth and sDT.day < startDay:
-                    continue
-            # seasonal end date filter
-            if not seasonalEndDate is None:
-                if eDT.month > endMonth:
-                    continue
-                if eDT.month == endMonth and eDT.day > endDay:
-                    continue
-            # exp name filter
-            if not expName is None:
-                thisExpName = madExpObj.getExpNameByPosition(i)
-                if not fnmatch.fnmatch(thisExpName.lower(), expName.lower()):
-                    continue
-            # exclude exp name filter
-            if not excludeExpName is None:
-                thisExpName = madExpObj.getExpNameByPosition(i)
-                if fnmatch.fnmatch(thisExpName.lower(), excludeExpName.lower()):
-                    continue
-            # made it through all filters
-            expDirs.append(madExpObj.getExpDirByPosition(i))
-            
-        # finally, collect all filenames or citable urls that pass the file
-        # level filters
-        retList = []
-        for expDir in expDirs:
-            if not os.access(os.path.join(expDir, 'fileTab.txt'), os.R_OK):
-                continue
-            madFileObj = madrigal.metadata.MadrigalMetaFile(self._madDB,
-                                                            os.path.join(expDir, 'fileTab.txt'))
-            for i in range(madFileObj.getFileCount()):
-                if includeNonDefault:
-                    defaultFound = False
-                    rtList = [] 
-                # kindat
-                if not kindat is None:
-                    if madFileObj.getKindatByPosition(i) not in kindats:
-                        continue
-                # fileDesc
-                if not fileDesc is None:
-                    thisDesc = madFileObj.getStatusByPosition(i)
-                    if not fnmatch.fnmatch(thisDesc.lower(), fileDesc.lower()):
-                        continue
-                # final filter - category
-                category = madFileObj.getCategoryByPosition(i)
-                if not includeNonDefault and category != 1:
-                    continue
-                if includeNonDefault:
-                    if not defaultFound and category == 4:
-                        # add temporarily to rtList
-                        if returnCitation:
-                            rtList.append(madFileObj.getFileDOIUrlByPosition(i))
-                        else:
-                            rtList.append(os.path.join(expDir,
-                                                       madFileObj.getFilenameByPosition(i)))
-                        continue
-                    elif category != 1:
-                        continue
-                # accepted
-                if includeNonDefault:
-                    defaultFound = True
-                if returnCitation:
-                    retList.append(madFileObj.getFileDOIUrlByPosition(i))
-                else:
-                    retList.append(os.path.join(expDir, madFileObj.getFilenameByPosition(i)))
+
+        if not includeNonDefault:
+            thisCond = "category in (1, 4)"
+            fileConditions.append(thisCond)
+        else:
+            thisCond = "category=1"
+            fileConditions.append(thisCond)
+
+        if fileDesc:
+            fileQuery = "SELECT fname, eid, status FROM fileTab"
+        else:
+            fileQuery = "SELECT fname, eid FROM fileTab"
+        if len(expIDList) > 1:
+            eidCond = "eid in {}".format(tuple(expIDList))
+        else:
+            eidCond = "eid={}".format(expIDList[0])
+        fileConditions.append(eidCond)
+
+        if fileConditions:
+            fileQuery += " WHERE "
+            for e in range(len(fileConditions)):
+                fileQuery += fileConditions[e]
+
+                if e < (len(fileConditions) - 1):
+                    fileQuery += " AND "
                     
-            # check for no default file
-            if includeNonDefault:
-                if not defaultFound and len(rtList) > 0:
-                    retList += rtList
+        try:
+            self.__initMetaDBConnector()
+            res = self.__cursor.execute(fileQuery)
+            resList = res.fetchall()
+            self.__closeMetaDBConnector()
+        except:
+            self.__closeMetaDBConnector()
+            raise madrigal.admin.MadrigalError("Problem getting files for global_file_search",
+                                               traceback.format_exception(sys.exc_info()[0],
+                                                                          sys.exc_info()[1],
+                                                                          sys.exc_info()[2]))
+        
+        # resList is now either [(fname, expID, status)] or [(fname, expID)]
+        # last things to do are apply fileDesc filter and possibly get citation
+
+        if fileDesc:
+            # rebuild resList to be [(fname, expID)]
+            newResList = []
+
+            for fileData in resList:
+                thisDesc = fileData[2]
+                if fnmatch.fnmatch(thisDesc.lower(), fileDesc.lower()):
+                    newResList.append((fileData[0], fileData[1]))
+            resList =  newResList
+
+        # resList now guaranteed to be [(fname, expID)]
+        retList = []
+        for fileData in resList:
+            expObj = madrigal.metadata.MadrigalExperiment(self._madDB)
+            expDir = expObj.getExpDirByExpId(fileData[1])
+            fileObj = madrigal.metadata.MadrigalMetaFile(self._madDB, os.path.join(expDir, "fileTab.txt"))
+
+            if returnCitation:
+                retList.append(fileObj.getFileDOIUrlByFilename(fileData[0]))
+            else:
+                retList.append(os.path.join(expDir, fileData[0]))
                     
         return(retList) 
             

@@ -402,11 +402,6 @@ class TestMadrigalInstrument(unittest.TestCase):
         instList = self.madInst.getOrderedInstrumentList()
         self.assertIn(('Millstone Hill IS Radar', 'mlh', 30, 'Incoherent Scatter Radars', 1), instList)
         
-    def test_getOrderedInstrumentListWithData(self):
-        instList = self.madInst.getOrderedInstrumentListWithData(True)
-        expected = {1: 'Incoherent Scatter Radars', 2: 'Geophysical Indices'}
-        self.assertEqual(instList[1], instList[1] | expected)
-        
         
 class TestMadrigalInstrumentParameters(unittest.TestCase):
     """TestMadrigalInstrumentParameters performs unit tests on madrigal.metadata.MadrigalInstrumentParameters
@@ -418,7 +413,6 @@ class TestMadrigalInstrumentParameters(unittest.TestCase):
         
     def test_getParameters(self):
         parms = self.madInstParms.getParameters(30)
-        print(f"parms are: {parms}")
         testParms = ['az1', 'az2', 'el1', 'el2', 'pl', 'sn', 'chisq', 'systmp', 'power', 'tfreq', 'popl', 'dpopl', 'ti', 'dti', 'tr', 'dtr', 'vo']
         for testParm in testParms:
             self.assertTrue((testParm in parms) or (testParm.upper() in parms))
@@ -535,12 +529,11 @@ class TestMadrigalExperiment(unittest.TestCase):
             cmd += ' --createCachedText '
             cmd += ' --createCachedNetCDF4 '
             
-            print('Command to be tested: <%s>' % (cmd))
             result = os.system(cmd)
             if result == 0:
-                print('Test of createExpWithFile.py succeeded.\n')
+                pass
             else:
-                print('Error - regression test aborting...')
+                print('Error - could not create test experiment')
                 raise ValueError('')
             
             # because we just created a new experiment,
@@ -675,12 +668,11 @@ class TestMadrigalMetaFile(unittest.TestCase):
             cmd += ' --createCachedText '
             cmd += ' --createCachedNetCDF4 '
             
-            print('Command to be tested: <%s>' % (cmd))
             result = os.system(cmd)
             if result == 0:
-                print('Test of createExpWithFile.py succeeded.\n')
+                pass
             else:
-                print('Error - regression test aborting...')
+                print('Error - could not create test experiment')
                 raise ValueError('')
             
             # because we just created a new experiment,

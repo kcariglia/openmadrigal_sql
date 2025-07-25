@@ -1191,7 +1191,7 @@ class MadrigalDB:
             startDayOfYear = datetime.datetime.strptime(startDayOfYear, "%j")
             jDate = "____" + startDayOfYear.strftime("%m%d") + "______"
             thisCond = "sdt LIKE {}".format(jDate)
-            expConditions.append(expCond)
+            expConditions.append(thisCond)
             
         if endDate:
             endDate = datetime.datetime(endDate[0], endDate[1], endDate[2], endDate[3],
@@ -1207,7 +1207,7 @@ class MadrigalDB:
             endDayOfYear = datetime.datetime.strptime(endDayOfYear, "%j")
             jDate = "____" + endDayOfYear.strftime("%m%d") + "______"
             thisCond = "edt LIKE {}".format(jDate)
-            expConditions.append(expCond)
+            expConditions.append(thisCond)
 
         match publicAccessOnly:
             case 0:
@@ -1257,6 +1257,8 @@ class MadrigalDB:
         if not resList:
             # didn't find anything
             return(resList)
+        
+        epoch_1950 = datetime.datetime(1950, 1, 1, 0, 0, 0, tzinfo=datetime.timezone.utc)
 
         # ids is dict with key: id, value: index
         # kinsts/times are dicts with key: index, value: kinst/time
@@ -1271,11 +1273,21 @@ class MadrigalDB:
             kinsts = {i:resList[i][1] for i in range(len(resList))}
         elif appendStartTime and not appendKinst:
             # resList contains [expID, sDT]
-            times = {i:resList[i][1] for i in range(len(resList))}
+            times = {i:(datetime.datetime(int(resList[i][1][0:4]),
+                          int(resList[i][1][4:6]),
+                          int(resList[i][1][6:8]),
+                          int(resList[i][1][8:10]),
+                          int(resList[i][1][10:12]),
+                          int(resList[i][1][12:14]), tzinfo=datetime.timezone.utc) - epoch_1950).seconds for i in range(len(resList))}
         else:
             # resList contains [expID, kinst, sDT]
             kinsts = {i:resList[i][1] for i in range(len(resList))}
-            times = {i:resList[i][2] for i in range(len(resList))}
+            times = {i:(datetime.datetime(int(resList[i][2][0:4]),
+                          int(resList[i][2][4:6]),
+                          int(resList[i][2][6:8]),
+                          int(resList[i][2][8:10]),
+                          int(resList[i][2][10:12]),
+                          int(resList[i][2][12:14]), tzinfo=datetime.timezone.utc) - epoch_1950).seconds for i in range(len(resList))}
         
         # dont wanna query fileTab one expID at a time,
         # instead get results for all found expIDs then use
@@ -2741,6 +2753,7 @@ class MadrigalDB:
                 try:
                     fileMetaObj = madrigal.metadata.MadrigalMetaFile(self, dirname + '/' + name)
                     fileMetaObj.setAccess(arg)
+                    fileMetaObj.writeMetadata()
                     
                 except madrigal.admin.MadrigalError as e:
                     print(e.getExceptionStr()) 
@@ -4132,184 +4145,11 @@ class MadrigalInstrument:
                                                                     sys.exc_info()[2]))
 
 
-    # def getOrderedInstrumentListWithData(self, isTrusted, localOnly=False,
-    #                                      localExpObj=None, globalExpObj=None,
-    #                                      allowArchive=False, requireFiles=False,
-    #                                      requireFilesOrPlots=False):
-    #     """getInstrumentList returns information about which instruments have local and global data.
-
-    #     Inputs:
-
-    #             isTrusted - True if client is trusted, False otherwise
-
-    #             localOnly - if False (the default), will return information about both local and global data.
-    #                 If True, then global data ignored.
-
-    #             localExpObj - an MadrigalExperiment object for the local data.  If None (the default),
-    #                 will be created.
-
-    #             globalExpObj - an MadrigalExperiment object for the global data.  If None (the default),
-    #                 will be created if not localOnly.
-
-    #             allowArchive - if True, allow experiments marked as security==2(public arcive), and if
-    #                 isTrusted, allow security==3(private archive)
-                    
-    #             requireFiles - if True, only include experiments with Madrigal data files.  If False
-    #                 (default), not not require that.
-                    
-    #             requireFilesOrPlots - if True, only include experiments with Madrigal data files or plots.  
-    #                 If False (default), not not require that.
-        
-        
-    #     Returns: an ordered tuple of two items:
-    #         1. a list of tuples of (instName, localStartYear, localEndYear, globalStartYear,
-    #            globalEndYear, kinst, categoryId), ordered by by categoryId, then kinst.  If
-    #            localOnly, globalStartYear and globalEndYear = 0.  If not local only, localStartYear
-    #            and localEndYear will be zero if no local data for that instrument.
-    #         2. categoryDict - key = categoryId, value = category Description
-
-    #     Affects: None
-
-    #     Exceptions: MadrigalError if any item in row cannot be cast to correct format
-    #     """
-    #     # ACTUALLY i think you can safely ignore this function
-
-    #     # FIX ME LATER need to edit MadrigalExperiment first
-
-    #     """ if (not localOnly) and (globalExpObj==None):
-    #         globalExpObj = madrigal.metadata.MadrigalExperiment(self.__madDB,
-    #                                                             os.path.join(self.__madDB.getMadroot(),
-    #                                                                          'metadata/expTabAll.txt'))
-            
-    #     if localExpObj == None:
-    #         localExpObj = madrigal.metadata.MadrigalExperiment(self.__madDB) """
-        
-    #     # we should ignore local/global expObjects here, they basically become the same thing anyway
-
-
-    #     expObj = madrigal.metadata.MadrigalExperiment(self.__madDB)
-
-    #     orderInstList = []
-    #     categoryDict = {}
-        
-    #     # next task - create local dict and global dict of key=kinst, value = (startYear, endYear) tuple
-    #     localInstDict = {}
-    #     globalInstDict = {}
-        
-    #     # Skip test experiments
-    #     testExp = ('1998/mlh/20jan98', '1997/aro/06jan97', '1997/lyr/08apr97',
-    #                '1997/son/06jan97', '1995/jro/01feb95', '1998/jro/27apr98')
-        
-    #     for i in range(localExpObj.getExpCount()):
-    #         thisUrl = localExpObj.getExpUrlByPosition(i)
-    #         if thisUrl[-16:] in testExp:
-    #             continue
-    #         thisSecurity = localExpObj.getSecurityByPosition(i)
-    #         if thisSecurity == -1:
-    #             # blocked to all
-    #             continue
-    #         if thisSecurity == 1 and not isTrusted:
-    #             # no access
-    #             continue
-    #         if thisSecurity == 2 and not allowArchive:
-    #             # no access
-    #             continue
-    #         if thisSecurity == 3 and ((not isTrusted) or (not allowArchive)):
-    #             # no access
-    #             continue
-            
-    #         kinst = localExpObj.getKinstByPosition(i)
-    #         startYear = localExpObj.getExpStartDateTimeByPosition(i)[0]
-    #         endYear = localExpObj.getExpEndDateTimeByPosition(i)[0]
-    #         if kinst in localInstDict:
-    #             oldStartYear, oldEndYear = localInstDict[kinst]
-    #             if startYear >= oldStartYear and endYear <= oldEndYear:
-    #                 # no new info
-    #                 continue
-            
-    #         expDir = localExpObj.getExpDirByPosition(i)
-                
-    #         if requireFilesOrPlots:
-    #             links = localExpObj.getExpLinksByPosition(i)
-    #             if len(links) == 0:
-    #                 try:
-    #                     size = os.path.getsize(os.path.join(expDir, 'fileTab.txt'))
-    #                     if size < 3:
-    #                         continue
-    #                 except:
-    #                     continue
-            
-    #         if requireFiles:
-    #             try:
-    #                 size = os.path.getsize(os.path.join(expDir, 'fileTab.txt'))
-    #                 if size < 3:
-    #                     continue
-    #             except:
-    #                 continue
-            
-    #         if kinst in localInstDict:
-    #             localInstDict[kinst] = (min(startYear, oldStartYear), max(endYear, oldEndYear))
-    #         else:
-    #             localInstDict[kinst] = (startYear, endYear)
-
-
-    #     if not localOnly:
-    #         for i in range(globalExpObj.getExpCount()):
-    #             kinst = globalExpObj.getKinstByPosition(i)
-    #             startYear = globalExpObj.getExpStartDateTimeByPosition(i)[0]
-    #             endYear = globalExpObj.getExpEndDateTimeByPosition(i)[0]
-    #             thisUrl = globalExpObj.getExpUrlByPosition(i)
-    #             thisSecurity = globalExpObj.getSecurityByPosition(i)
-    #             thisSite = globalExpObj.getExpSiteIdByPosition(i)
-    #             if thisUrl[-16:] in testExp:
-    #                 continue
-    #             if kinst not in globalInstDict:
-    #                 globalInstDict[kinst] = (startYear, endYear)
-    #                 continue
-    #             oldStartYear, oldEndYear = globalInstDict[kinst]
-    #             if startYear >= oldStartYear and endYear <= oldEndYear:
-    #                 # no new info
-    #                 continue
-    #             if thisSecurity != 0 and self.__madDB.getSiteID() != thisSite:
-    #                 # no search remote sites for non-public experiments allowed
-    #                 continue
-    #             if requireFiles:
-    #                 if globalExpObj.getExpIdByPosition(i) not in expIdList:
-    #                     continue
-    #             globalInstDict[kinst] = (min(startYear, oldStartYear), max(endYear, oldEndYear))
-        
-    #     # populate orderInstList and categoryDict
-    #     instList = self.getOrderedInstrumentList() 
-        
-    #     for inst in instList:
-    #         if not localOnly:
-    #             if inst[2] in globalInstDict:
-    #                 if inst[4] not in categoryDict:
-    #                     categoryDict[inst[4]] = inst[3]
-    #                 globalStartYear, globalEndYear = globalInstDict[inst[2]]
-    #                 try:
-    #                     localStartYear, localEndYear = localInstDict[inst[2]]
-    #                 except KeyError:
-    #                     localStartYear, localEndYear = (0, 0)
-    #                 orderInstList.append((inst[0], localStartYear, localEndYear,
-    #                                            globalStartYear, globalEndYear, inst[2], inst[4]))
-    #         else:
-    #             if inst[2] in localInstDict:
-    #                 if inst[4] not in categoryDict:
-    #                     categoryDict[inst[4]] = inst[3]
-    #                 globalStartYear = 0
-    #                 globalEndYear = 0
-    #                 localStartYear, localEndYear = localInstDict[inst[2]]
-    #                 orderInstList.append((inst[0], localStartYear, localEndYear,
-    #                                            globalStartYear, globalEndYear, inst[2], inst[4]))
-
-    #     return ((orderInstList, categoryDict))
-
-
     def __instrumentSort(self, thisInst):
         """instrumentSort is a private method used to sort tuples of instrument data
         """
         return((thisInst[4], thisInst[2]))
+    
 
 
 class MadrigalInstrumentParameters:
