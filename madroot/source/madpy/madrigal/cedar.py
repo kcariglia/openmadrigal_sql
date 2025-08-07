@@ -2315,12 +2315,13 @@ class MadrigalCedarFile:
             # write the datasets out
             for parm in recLayout.dtype.names[len(self.requiredFields):]:
                 if recLayout[parm][0] == 2:
-                    if len(indParmList) == 1:
-                        twoDVarDict[parm][:,:] = dsetDict[parm]
-                    elif len(indParmList) == 2:
-                        twoDVarDict[parm][:,:,:] = dsetDict[parm]
-                    elif len(indParmList) == 3:
-                        twoDVarDict[parm][:,:,:,:] = dsetDict[parm]
+                    if parm in twoDVarDict:
+                        if len(indParmList) == 1:
+                            twoDVarDict[parm][:,:] = dsetDict[parm]
+                        elif len(indParmList) == 2:
+                            twoDVarDict[parm][:,:,:] = dsetDict[parm]
+                        elif len(indParmList) == 3:
+                            twoDVarDict[parm][:,:,:,:] = dsetDict[parm]
                         
                         
                         
