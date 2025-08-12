@@ -1366,6 +1366,7 @@ class MadrigalCedarFile:
         if len(kindatList) > 1:
             kindatDesc = 'This experiment has %i kinds of data.  They are:' % (len(kindatList))
             for i, kindat in enumerate(kindatList):
+                kindat = int(kindat)
                 thisKindatDesc = self._madKindatObj.getKindatDescription(kindat, inst)
                 if not thisKindatDesc:
                     raise IOError('kindat %i undefined - please add to typeTab.txt' % (kindat))
@@ -1376,7 +1377,7 @@ class MadrigalCedarFile:
                     kindatDesc += ', '
                     kindatListStr += ', '
         else:
-            kindatDesc = self._madKindatObj.getKindatDescription(kindatList[0], inst)
+            kindatDesc = self._madKindatObj.getKindatDescription(int(float(kindatList[0])), inst)
             if not kindatDesc:
                 raise IOError('kindat for %s undefined - please add to typeTab.txt' % (str((kindatList[0], inst))))
             kindatDesc = kindatDesc.strip()

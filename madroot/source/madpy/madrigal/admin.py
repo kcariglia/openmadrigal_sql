@@ -446,7 +446,6 @@ class MadrigalDBAdmin:
         os.chmod(os.path.join(expDir, 'overview'), 0o777)
 
         # validate exp object, then write new metadata files 
-        newMadExp.validateExp()
         newMadExp.writeMetadata()
         newMadFile.writeMetadata()
         
@@ -1617,6 +1616,13 @@ class MadrigalDBAdmin:
         obj.rebuildInstParmTable()
         e = datetime.datetime.now()
         print("updateMaster took {} s".format((e-s).seconds))
+
+        print("*** Validating parmCodes ***")
+        parmsValid = self.__madDB.validateParmCodes()
+        if not parmsValid:
+            print("******* WARNING: parmCodes not valid *******")
+        e = datetime.datetime.now()
+        print("validating parmCodes took {} s".format((e-s).seconds))
         
         # instKindatTab.txt
         #print('*** Rebuilding instKindatTab.txt ***')

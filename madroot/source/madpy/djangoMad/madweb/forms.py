@@ -1356,7 +1356,7 @@ class ListExpForm(django.forms.Form):
             else:
                 localBool = 'true'
             self.categories.append((desc, id, localBool))
-            for kinst, instDesc, siteId in madInstData.getInstruments(id):
+            for kinst, instDesc, siteId in madInstData.getInstruments(categoryID=id):
                 if siteId == madDB.getSiteID():
                     localInst = True
                 else:

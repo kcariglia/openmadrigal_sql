@@ -162,6 +162,29 @@ try:
     else:
         print('Error - regression test aborting...')
         raise ValueError('')
+    
+
+    #### test of addFileToExp.py, realtime exp ####
+    print('Testing addFileToExp.py, realtime exp ...')
+    shutil.copy('/tmp/mlh980120g.002.hdf5', '/tmp/mlh980120g.003.hdf5')
+    cmd = os.path.join(binDir, 'addFileToExp.py')
+    cmd += ' --madFilename=/tmp/mlh980120g.003.hdf5 '
+    cmd += ' --expDir=%s ' % os.path.join(expBase2, '1998/mlh', '20jan98BillsRTTestExp')
+    cmd += ' --permission=0 '
+    cmd += ' --fileDesc="Another test" '
+    cmd += ' --category=2 '
+    cmd += ' --kindat=3408 '
+    cmd += ' --fileAnalyst="Bill Rideout" '
+    cmd += ' --fileAnalystEmail=brideout@haystack.mit.edu '
+    cmd += ' --createCachedText '
+    cmd += ' --createCachedNetCDF4 '
+    print('Command to be tested: <%s>' % (cmd))
+    result = os.system(cmd)
+    if result == 0:
+        print('Test of addFileToExp.py succeeded.\n')
+    else:
+        print('Error - regression test aborting...')
+        raise ValueError('')
 
 
     #### test of updateFileInExp.py ####
@@ -217,13 +240,13 @@ except:
 ### final clean up ###
 try:
     thisExp = os.path.join(expBase, '1998/mlh', '20jan98BillsTestExp')
-    os.system('rm -rf %s' % (thisExp))
+    os.system('rm -r %s' % (thisExp))
     thisExp = os.path.join(expBase, '1998/mlh', '20jan98BillsRTTestExp')
-    os.system('rm -rf %s' % (thisExp))
+    os.system('rm -r %s' % (thisExp))
     thisExp = os.path.join(expBase2, '1998/mlh', '20jan98BillsTestExp')
-    os.system('rm -rf %s' % (thisExp))
+    os.system('rm -r %s' % (thisExp))
     thisExp = os.path.join(expBase2, '1998/mlh', '20jan98BillsRTTestExp')
-    os.system('rm -rf %s' % (thisExp))
+    os.system('rm -r %s' % (thisExp))
     os.system('rm /tmp/mlh98*')
     madUserObj.unregisterExperiment(email, expBaseDir)
 except:
@@ -236,7 +259,8 @@ try:
     expObj2 = madrigal.metadata.MadrigalExperiment(madDBObj, os.path.join(expBase2, '1998/mlh', '20jan98BillsTestExp') + "/expTab.txt")
     expObj2.validateExp()
 except Exception as e:
-    print(e.with_traceback())
+    traceback.print_exc() # testing only
+    pass
 
 print('For this second pass, user is registered for this instrument, but not the experiment')
 
@@ -373,6 +397,29 @@ try:
     else:
         print('Error - regression test aborting...')
         raise ValueError('')
+    
+
+    #### test of addFileToExp.py, realtime exp ####
+    print('Testing addFileToExp.py, realtime exp ...')
+    shutil.copy('/tmp/mlh980120g.002.hdf5', '/tmp/mlh980120g.003.hdf5')
+    cmd = os.path.join(binDir, 'addFileToExp.py')
+    cmd += ' --madFilename=/tmp/mlh980120g.003.hdf5 '
+    cmd += ' --expDir=%s ' % os.path.join(expBase2, '1998/mlh', '20jan98BillsRTTestExp')
+    cmd += ' --permission=0 '
+    cmd += ' --fileDesc="Another test" '
+    cmd += ' --category=2 '
+    cmd += ' --kindat=3408 '
+    cmd += ' --fileAnalyst="Bill Rideout" '
+    cmd += ' --fileAnalystEmail=brideout@haystack.mit.edu '
+    cmd += ' --createCachedText '
+    cmd += ' --createCachedNetCDF4 '
+    print('Command to be tested: <%s>' % (cmd))
+    result = os.system(cmd)
+    if result == 0:
+        print('Test of addFileToExp.py succeeded.\n')
+    else:
+        print('Error - regression test aborting...')
+        raise ValueError('')
 
 
     #### test of updateFileInExp.py ####
@@ -430,13 +477,13 @@ except:
 ### final clean up ###
 try:
     thisExp = os.path.join(expBase, '1998/mlh', '20jan98BillsTestExp')
-    os.system('rm -rf %s' % (thisExp))
+    os.system('rm -r %s' % (thisExp))
     thisExp = os.path.join(expBase, '1998/mlh', '20jan98BillsRTTestExp')
-    os.system('rm -rf %s' % (thisExp))
+    os.system('rm -r %s' % (thisExp))
     thisExp = os.path.join(expBase2, '1998/mlh', '20jan98BillsTestExp')
-    os.system('rm -rf %s' % (thisExp))
+    os.system('rm -r %s' % (thisExp))
     thisExp = os.path.join(expBase2, '1998/mlh', '20jan98BillsRTTestExp')
-    os.system('rm -rf %s' % (thisExp))
+    os.system('rm -r %s' % (thisExp))
     os.system('rm /tmp/mlh98*')
     madUserObj.unregisterExperiment(email, expBaseDir)
 except:
@@ -449,8 +496,8 @@ try:
     expObj1.validateExp()
     expObj2 = madrigal.metadata.MadrigalExperiment(madDBObj, os.path.join(expBase2, '1998/mlh', '20jan98BillsTestExp') + "/expTab.txt")
     expObj2.validateExp()
-except Exception as e:
-    print(e.with_traceback())
+except:
+    traceback.print_exc()
 
 
 

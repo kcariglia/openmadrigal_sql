@@ -1601,6 +1601,10 @@ def get_metadata(request):
         downloadFile = os.path.join(madDB.getMetadataDir(), 
                                     fileDict[form.cleaned_data['fileType']])
         
+        if not os.access(downloadFile, os.R_OK):
+            metadataStr = madDB.getTableStr(fileDict[form.cleaned_data['fileType']][:-4])
+            with open(downloadFile, "w") as w:
+                w.write(metadataStr)
 
         f = open(downloadFile, 'rb')
         filename = os.path.basename(downloadFile)

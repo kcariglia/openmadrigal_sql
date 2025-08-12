@@ -768,8 +768,8 @@ class MadrigalUserData:
         while (not gotLock):
 
             try:
-                with os.open(filename + '.LCK', os.O_RDWR | os.O_CREAT | os.O_EXCL) as file:
-                    gotLock = 1
+                file = os.open(filename + '.LCK', os.O_RDWR | os.O_CREAT | os.O_EXCL)
+                gotLock = 1
 
             except OSError as xxx_todo_changeme:
                 # error 17 is "File exists"

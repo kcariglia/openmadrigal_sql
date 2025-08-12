@@ -2121,6 +2121,52 @@ class MadrigalDB:
                                           traceback.format_exception(sys.exc_info()[0],
                                                                     sys.exc_info()[1],
                                                                     sys.exc_info()[2]))
+        
+
+    def validateParmCodes(self):
+        """
+        Validate parmCodes metadata. 
+        Parameters with code = 0 cannot be stored in a CEDAR file and are intended to be derivable parameters only.
+        Mnemonics already guaranteed to be unique via parmCodes primary key. 
+        All nonzero parameter codes must be unique. 
+
+        Affects: Nothing
+        Returns: Bool (True if valid, False otherwise)
+        """
+        isValid = True
+
+        query = "SELECT code, mnem, category FROM parmCodes"
+
+        try:
+            self.__initMetaDBConnector()
+            res = self.__cursor.execute(query)
+            resList = res.fetchall()
+            self.__closeMetaDBConnector()
+
+            # rearrange results into dict of key: code, value: [(mnem, category)]
+            parmDict = {}
+            for parmData in resList:
+                if parmData[0] in parmDict.keys():
+                    # if this parm code is not 0, then it's a duplicate
+                    if int(parmData[0]) == 0:
+                        # must be derivable or test parm
+                        parmDict[parmData[0]].append((parmData[1], parmData[2]))
+                    else:
+                        # duplicate parm
+                        print(f"Found invalid duplicate parameter code {parmData[0]}")
+                        isValid = False
+                else:
+                    # new parm for parmDict
+                    parmDict[parmData[0]] = []
+
+            return(isValid)
+
+        except:
+            self.__closeMetaDBConnector()
+            raise madrigal.admin.MadrigalError("Unable to validate parmCodes",
+                                          traceback.format_exception(sys.exc_info()[0],
+                                                                sys.exc_info()[1],
+                                                                sys.exc_info()[2]))
 
 
     def __str__(self):
@@ -6548,7 +6594,7 @@ class MadrigalExperiment:
 
     def __removeExp(self):
         """
-        Private function to remove exp from metadata. WARNING: removes all associated files in experiment too.
+        Private function to remove this experiment from metadata. WARNING: removes all associated files in experiment too.
 
         Inputs - None
         Returns - None
@@ -7502,7 +7548,7 @@ class MadrigalMetaFile:
             # idx must be set
             raise madrigal.admin.MadrigalError(f"Unable to delete file {filename}, MadrigalMetaFile index not set", None)
 
-        expID = self.getExpIdByPosition()
+        expID = self.getExpIdByFilename(filename)
         update = ("DELETE FROM " + self.__tblName + " WHERE " + self.__fileExpIdCol + "={} AND " + self.__fileNameCol + "=\"{}\"").format(expID, filename)
         
         try:
@@ -8170,7 +8216,7 @@ class MadrigalMetaFile:
                 if len(self.__indexList) == 1:
                     localQuery = ("SELECT fname, eid, kindat, category, fsize, catrec, headrec, amoddate, amodtime, status, permission, fanalyst, fanalystemail FROM " + self.__tblName + " WHERE " + self.__fileIdxCol + "={}").format(self.__indexList[0])
                 else:
-                    localQuery = ("SELECT fname, eid, kindat, category, fsize, catrec, headrec, amoddate, amodtime, status, permission, fanalyst, fanalystemail FROM " + self.__tblName + " WHERE " + self.__fileIdxCol + " IN \"{}\"").format(tuple(self.__indexList))
+                    localQuery = ("SELECT fname, eid, kindat, category, fsize, catrec, headrec, amoddate, amodtime, status, permission, fanalyst, fanalystemail FROM " + self.__tblName + " WHERE " + self.__fileIdxCol + " IN {}").format(tuple(self.__indexList))
                 expObj = MadrigalExperiment()
                 expDir = expObj.getExpDirByExpId(self.getExpIdByPosition())
 
@@ -8795,6 +8841,10 @@ class MadrigalInstrumentData:
         # results somewhere
 
 
+        # GETTING CATEGORY IS BROKEN
+        # FIX ME    
+
+
         # want kinst and sid from expTab
         # then want kinst where category = catid from instTab
         # finally get intersecting kinsts
@@ -8833,11 +8883,19 @@ class MadrigalInstrumentData:
             resList2 = {i[0]:i[1] for i in resList2}
             self.__closeMetaDBConnector()
 
-            retList = [(kinst, resList2[kinst], kinstdict[kinst]) for kinst in kinstdict.keys()]
+            #print(resList2[30])
+            #print(kinstdict[30])
+            # retList = [(kinst, resList2[kinst], kinstdict[kinst]) for kinst in kinstdict.keys()]
             retList = []
-            for kinst in kinstdict.keys():
-                for site in kinstdict[kinst]:
-                    retList.append((kinst, resList2[kinst], site))
+
+            if categoryID != 0:
+                for kinst in set(kinstdict.keys()).intersection(set(resList2.keys())):
+                    for site in kinstdict[kinst]:
+                        retList.append((kinst, resList2[kinst], site))
+            else:
+                for kinst in kinstdict.keys():
+                    for site in kinstdict[kinst]:
+                        retList.append((kinst, resList2[kinst], site))
             
             return(retList)
         except:

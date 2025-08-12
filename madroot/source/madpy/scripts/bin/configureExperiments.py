@@ -87,7 +87,7 @@ for dir in expDirs:
 
     subdirs = fast_scandir(dir)
     subdirs = [d for d in subdirs if (((pthpattern1.search(d) is not None) or (pthpattern2.search(d) is not None))
-                                       and ('overview' not in d) and ('deprecated' not in d))]
+                                       and ('overview' not in d) and ('deprecated' not in d) and ('plots' not in d))]
     allExpDirs += subdirs
 
 
