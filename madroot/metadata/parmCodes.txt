@@ -1618,7 +1618,7 @@
 4323,Ground to satellite elevation angle,deg,LINK_EL,%4.5f,10,1,0,0
 4324,Geographic latitude of satellite link,deg,LINK_LAT,%4.5f,10,1,0,0
 4325,Geographic longitude of satellite link,deg,LINK_LON,%4.5f,10,1,0,0
-4326,Channel for satellite link,N/A,LINK_CHAN,%i,7,14,0,0
+4326,Channel for satellite link,N/A,LINK_CHAN,%11s,10,14,0,0
 4327,Decorrelation time; channel 1,sec,TAU1,%4.4f,9,0,0,0
 4328,Signal strength; input channel 1,dB,SS1,%4.4f,9,5,0,0
 4329,S4 amplitude scintillation index; channel 2,N/A,S4_SCIN2,%12.5e,14,16,1,0
