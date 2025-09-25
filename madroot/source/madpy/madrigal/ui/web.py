@@ -1689,9 +1689,9 @@ class MadrigalWeb:
         
         madrigal.cedar.listRecords(fullFilename, output, url)
         
-        f = open(output)
-        text = f.read()
-        f.close()
+        with open(output) as f:
+            text = f.read()
+            
         os.remove(output)
         return(text.strip())
         
@@ -2131,7 +2131,7 @@ class MadrigalWeb:
     def global_file_search(self, startDate, endDate, inst=None, kindat=None, 
                            seasonalStartDate=None, seasonalEndDate=None, 
                            includeNonDefault=False, expName=None, excludeExpName=None, 
-                           fileDesc=None, returnCitation=False):
+                           fileDesc=None, returnCitation=False, dateList=None):
         """global_file_search supports commands that search the local madrigal site for files
         
         Used in global_download_service and global_group_id_service
@@ -2157,6 +2157,8 @@ class MadrigalWeb:
                 Default None in no filtering by file name
             returnCitation: if True, return a list of file citations.  If False, default, return
                 a list of full paths to the file
+            dateList: a list of datetimes, to get experiments for 
+                a list of discrete days. Must include startDate and endDate.
             
         """
         # first find instrument kinst list to search over, if not None
@@ -2217,6 +2219,10 @@ class MadrigalWeb:
                 continue
             if endDate < sDT:
                 continue
+            if dateList:
+                if (sDT.date() not in dateList) or (eDT.date() not in dateList):
+                    continue
+
             # instrument filter
             if not insts is None:
                 if madExpObj.getKinstByPosition(i) not in insts:

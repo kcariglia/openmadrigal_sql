@@ -497,6 +497,8 @@ def get_citation_group_with_filters(request):
                 If not set, no excluding experiments by experiment name.
             fileDesc: filter files using input file Description string via fnmatch. 
                 If not set, no filtering by file name
+            dateList: comma separated list of date strings in the form YYYY-MM-DD, to get experiments for \
+                a list of discrete days. Must include startDate and endDate.
     
     Returns a list with all citations in group, one per line
     """
@@ -523,10 +525,15 @@ def get_citation_group_with_filters(request):
     expName = request.GET.get('expName')
     excludeExpName = request.GET.get('excludeExpName')
     fileDesc = request.GET.get('fileDesc')
+    dateList = request.GET.getlist('dateList')
+    if len(dateList) == 0:
+        dateList = None
+    else:
+        dateList = [datetime.datetime.strptime(item, '%Y-%m-%d%z').date() for item in dateList]
     citations = madWebObj.global_file_search(startDate, endDate, inst, kindat, 
                            seasonalStartDate, seasonalEndDate, 
                            includeNonDefault, expName, excludeExpName, 
-                           fileDesc, returnCitation=True)
+                           fileDesc, returnCitation=True, dateList=dateList)
     if len(citations) == 0:
         return render(request, 'service.html', {'text': 'No citations found with given filters - no group citation created'})
     else:
