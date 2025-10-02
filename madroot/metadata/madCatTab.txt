@@ -1,3 +1,4 @@
+-2,Derivable and Test Parameters,-2,-2
 -1,Madrigal Hdf5 Prolog Parameters,-1,-1
 0,Time Related Parameter,1,99
 1,Geographic Coordinate,100,199

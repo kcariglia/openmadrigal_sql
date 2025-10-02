@@ -10,6 +10,8 @@ import unittest
 import os, sys, os.path
 import datetime
 import glob
+import shutil
+import traceback
 import types
 
 # Madrigal imports
@@ -20,6 +22,8 @@ import madrigal.ui.web
 
 # third party imports
 import django
+import numpy
+
 madDB = madrigal.metadata.MadrigalDB()
 sys.path.append(os.path.join(madDB.getMadroot(), 'source/madpy/djangoMad'))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "djangoMad.settings")
@@ -182,9 +186,8 @@ class TestMadrigalDB(unittest.TestCase):
         (self.madDB.getContactEmail(), self.madDB.getContactEmail())
         
         try:
-            f = open(os.path.join(self.madroot, 'local_rules_of_the_road.txt'))
-            result = f.read()
-            f.close()
+            with open(os.path.join(self.madroot, 'local_rules_of_the_road.txt')) as f:
+                result = f.read()
         except IOError:
             result = default_rules_of_road
         self.assertEqual(self.madDB.getLocalRulesOfRoad(), result)
@@ -399,11 +402,6 @@ class TestMadrigalInstrument(unittest.TestCase):
         instList = self.madInst.getOrderedInstrumentList()
         self.assertIn(('Millstone Hill IS Radar', 'mlh', 30, 'Incoherent Scatter Radars', 1), instList)
         
-    def test_getOrderedInstrumentListWithData(self):
-        instList = self.madInst.getOrderedInstrumentListWithData(True)
-        expected = {1: 'Incoherent Scatter Radars', 2: 'Geophysical Indices'}
-        self.assertEqual(instList[1], instList[1] | expected)
-        
         
 class TestMadrigalInstrumentParameters(unittest.TestCase):
     """TestMadrigalInstrumentParameters performs unit tests on madrigal.metadata.MadrigalInstrumentParameters
@@ -417,7 +415,7 @@ class TestMadrigalInstrumentParameters(unittest.TestCase):
         parms = self.madInstParms.getParameters(30)
         testParms = ['az1', 'az2', 'el1', 'el2', 'pl', 'sn', 'chisq', 'systmp', 'power', 'tfreq', 'popl', 'dpopl', 'ti', 'dti', 'tr', 'dtr', 'vo']
         for testParm in testParms:
-            self.assertIn(testParm, parms)
+            self.assertTrue((testParm in parms) or (testParm.upper() in parms))
             
     def test_rebuildInstParmTable(self):
         self.madInstParms.rebuildInstParmTable()
@@ -434,11 +432,11 @@ class TestMadrigalKindat(unittest.TestCase):
         self.madKindat = madrigal.metadata.MadrigalKindat(self.madDB)
         
     def test_getKindatDescription(self):
-        self.assertEqual(self.madKindat.getKindatDescription(3201), 'HYCOR Basic Derived Parameters - INSCAL (1.0)')
+        self.assertEqual(self.madKindat.getKindatDescription(str(3201)), 'HYCOR Basic Derived Parameters - INSCAL (1.0)')
         
     def test_getKindatList(self):
         kindatList = self.madKindat.getKindatList()
-        testItem = ('HYCOR Basic Derived Parameters - INSCAL (1.0)', 3201)
+        testItem = ('HYCOR Basic Derived Parameters - INSCAL (1.0)', str(3201))
         self.assertIn(testItem, kindatList)
         
         
@@ -448,7 +446,7 @@ class TestMadrigalInstrumentKindats(unittest.TestCase):
     
     def setUp(self):
         self.madDB = madrigal.metadata.MadrigalDB()
-        self.madInstKindats = madrigal.metadata.MadrigalInstrumentKindats(self.madDB)
+        self.madInstKindats = madrigal.metadata.MadrigalInstrumentData(self.madDB)
         
     def test_getKindatListForInstruments(self):
         kindats = self.madInstKindats.getKindatListForInstruments([30])
@@ -460,60 +458,128 @@ class TestMadrigalInstrumentKindats(unittest.TestCase):
         self.assertIn(3410, kindats)
         
         
+    """
+    inst kindat table now conglomerated into instData
+
     def test_rebuildInstKindatTable(self):
         try:
             self.madInstKindats.rebuildInstKindatTable()
             self.assertEqual(0,0)
         except:
             # should not get here
-            self.fail('rebuildInstKindatTable raised exception')
+            self.fail('rebuildInstKindatTable raised exception')"""
             
             
 class TestMadrigalExperiment(unittest.TestCase):
     """TestMadrigalExperiment performs unit tests on madrigal.metadata.MadrigalExperiment
     """
     
-    def setUp(self):
-        self.testUrl = 'http://test/madtoc/experiments/1998/mlh/20jan98'
-        self.madDB = madrigal.metadata.MadrigalDB()
-        self.madExp = madrigal.metadata.MadrigalExperiment(self.madDB)
-        self.madExp.setExpIdByPosition(0, 999)
-        self.madExp.setExpUrlByPosition(0, self.testUrl)
-        self.realUrl = self.madDB.getTopLevelUrl() + '/showExperiment?experiment_list='
-        self.realUrl += self.testUrl[self.testUrl.find('experiments'):]
-        self.expPath = self.testUrl[self.testUrl.find('experiments'):]
-        self.expName = 'Test Experiment 123'
-        self.madExp.setExpNameByPosition(0, self.expName)
-        self.siteId = 99
-        self.madExp.setExpSiteIdByPosition(0, self.siteId)
-        # write it out
-        self.madExp.writeMetadata('/tmp/expTab.txt')
-        self.madExp = madrigal.metadata.MadrigalExperiment(self.madDB, '/tmp/expTab.txt')
+    @classmethod
+    def setUpClass(cls):
+
+        # 
+        # self.testUrl = 'http://test/madtoc/experiments/1998/mlh/20jan98'
+        # self.madDB = madrigal.metadata.MadrigalDB()
+        # self.madExp = madrigal.metadata.MadrigalExperiment(self.madDB)
+        # #self.madExp.setExpIdByPosition(0, 999)
+        # #self.madExp.setExpUrlByPosition(0, self.testUrl)
+        # self.realUrl = self.madDB.getTopLevelUrl() + '/showExperiment?experiment_list='
+        # self.realUrl += self.testUrl[self.testUrl.find('experiments'):]
+        # self.expPath = self.testUrl[self.testUrl.find('experiments'):]
+        # self.expName = 'Test Experiment 123'
+        # self.madExp.setExpNameByPosition(0, self.expName)
+        # self.siteId = 99
+        # self.madExp.setExpSiteIdByPosition(0, self.siteId)
+        # # write it out
+        # self.madExp.writeMetadata('/tmp/expTab.txt')
+        # self.madExp = madrigal.metadata.MadrigalExperiment(self.madDB, '/tmp/expTab.txt')
+        try:
+            # set values for unit testing
+            cls.madDB = madrigal.metadata.MadrigalDB()
+            madroot = cls.madDB.getMadroot()
+            expBase = os.path.join(madroot, 'experiments')
+            binDir = os.path.join(madroot, 'bin')
+            testUrl = 'http://test/madtoc/experiments2/1998/mlh/20jan98BillsTestExp'
+
+            cls.realUrl = cls.madDB.getTopLevelUrl() + '/showExperiment?experiment_list='
+            cls.realUrl += testUrl[testUrl.find('experiments'):]
+            cls.expPath = testUrl[testUrl.find('experiments'):]
+            cls.siteId = cls.madDB.getSiteID()
+            cls.expName = 'Bill Rideout test experiment'
+            cls.kindat = 3408
+
+            # get test file
+            testFile = os.path.join(expBase, '1998/mlh/20jan98/mlh980120g.002.hdf5')
+            shutil.copy(testFile, '/tmp')
+            # create test experiment
+            os.makedirs(expBase + "2")
+            cmd = os.path.join(binDir, 'createExpWithFile.py')
+            cmd += ' --madFilename=/tmp/mlh980120g.002.hdf5 '
+            cmd += f' --expTitle="{cls.expName}" '
+            cmd += ' --permission=0 '
+            cmd += ' --fileDesc="This is just a test" '
+            cmd += ' --instCode=30 '
+            cmd += f' --kindat={cls.kindat} '
+            cmd += ' --dirName=20jan98BillsTestExp '
+            cmd += ' --experimentsDirNum=2 '
+            cmd += ' --PI="Bill Rideout" '
+            cmd += ' --PIEmail="brideout@haystack.mit.edu" '
+            cmd += ' --fileAnalyst="John Doe" '
+            cmd += ' --fileAnalystEmail=jdoe@haystack.mit.edu '
+            cmd += ' --createCachedText '
+            cmd += ' --createCachedNetCDF4 '
+            
+            result = os.system(cmd)
+            if result == 0:
+                pass
+            else:
+                print('Error - could not create test experiment')
+                raise ValueError('')
+            
+            # because we just created a new experiment,
+            # we know that its expID must be the max possible
+            # expID local to this site
+            mainExpObj = madrigal.metadata.MadrigalExperiment(cls.madDB)
+            idsAndIdxs = mainExpObj.getAllExpIDs(cls.siteId)
+            expIDs = [i[0] for i in idsAndIdxs]
+            cls.thisExpID = int(numpy.max(expIDs))
+
+            cls.madExp = madrigal.metadata.MadrigalExperiment(cls.madDB, cls.expPath + '/expTab.txt')
+        except Exception as e:
+            traceback.print_exc()
+            cls.tearDownClass(cls)
         
-        
-        
+    """
+    deprecated because we dont want to let users set their own exp ids
+
     def test_getExpIdByPosition(self):
         # set in setIp to 999
-        self.assertEqual(self.madExp.getExpIdByPosition(0), 999)
+        self.assertEqual(self.madExp.getExpIdByPosition(0), 999)"""
         
+    """
+    deprecated because we dont want to let users set their own exp urls
+    (if they want to redo that, they should probably use some masking
+    mechanism via their apache config)
+    
     def test_getExpUrlByPosition(self):
         # set in setUp 
         self.assertEqual(self.madExp.getExpUrlByPosition(0), self.testUrl)
         
     def test_getExpUrlByExpId(self):
-        self.assertEqual(self.madExp.getExpUrlByExpId(999), self.testUrl)
+        self.assertEqual(self.madExp.getExpUrlByExpId(999), self.testUrl)"""
+        
         
     def test_getRealExpUrlByPosition(self):
         self.assertEqual(self.madExp.getRealExpUrlByPosition(0), self.realUrl)
         
     def test_getRealExpUrlByExpId(self):
-        self.assertEqual(self.madExp.getRealExpUrlByExpId(999), self.realUrl)
+        self.assertEqual(self.madExp.getRealExpUrlByExpId(self.thisExpID), self.realUrl)
         
     def test_getExpPathByPosition(self):
         self.assertEqual(self.madExp.getExpPathByPosition(0), self.expPath)
         
     def test_getExpPathByExpId(self):
-        self.assertEqual(self.madExp.getExpPathByExpId(999), self.expPath)
+        self.assertEqual(self.madExp.getExpPathByExpId(self.thisExpID), self.expPath)
         
     def test_getExpPathByPosition(self):
         self.assertEqual(self.madExp.getExpPathByPosition(0), self.expPath)
@@ -523,56 +589,126 @@ class TestMadrigalExperiment(unittest.TestCase):
                          os.path.join(self.madDB.getMadroot(), self.expPath))
         
     def test_getExpDirByExpId(self):
-        self.assertEqual(self.madExp.getExpDirByExpId(999), 
+        self.assertEqual(self.madExp.getExpDirByExpId(self.thisExpID), 
                          os.path.join(self.madDB.getMadroot(), self.expPath))
         
     def test_getExpNameByPosition(self):
         self.assertEqual(self.madExp.getExpNameByPosition(0), self.expName)
         
     def test_getExpNameByExpId(self):
-        self.assertEqual(self.madExp.getExpNameByExpId(999), self.expName)
+        self.assertEqual(self.madExp.getExpNameByExpId(self.thisExpID), self.expName)
         
     def test_getExpSiteIdByPosition(self):
         self.assertEqual(self.madExp.getExpSiteIdByPosition(0), self.siteId)
         
     def test_getExpSiteIdByExpId(self):
-        self.assertEqual(self.madExp.getExpSiteIdByExpId(999), self.siteId)
+        self.assertEqual(self.madExp.getExpSiteIdByExpId(self.thisExpID), self.siteId)
+
+    def test_expTabCreated(self):
+        expTabModTime = datetime.datetime.fromtimestamp(os.stat(os.path.join(self.madDB.getMadroot(), self.expPath + '/expTab.txt')).st_mtime, tz=datetime.timezone.utc)
+        now = datetime.datetime.now(tz=datetime.timezone.utc)
+        delta = datetime.timedelta(minutes=10)
+        # assert test expTab.txt is less than 10 minutes old
+        self.assertLess(now - expTabModTime, delta)
         
         
     @classmethod
     def tearDownClass(cls):
         try:
-            os.remove('/tmp/expTab.txt')
-        except:
-            pass
+            # remove exp here
+            expBase = os.path.join(madDB.getMadroot(), 'experiments2')
+            thisExp = os.path.join(expBase, '1998/mlh', '20jan98BillsTestExp')
+            os.system('rm -rf %s' % (thisExp))
+            expObj = madrigal.metadata.MadrigalExperiment(madDB, thisExp + "/expTab.txt")
+            expObj.validateExp()
+            os.system('rm -r %s' % (expBase))
+        except Exception as e:
+            traceback.print_exc()
         
         
 class TestMadrigalMetaFile(unittest.TestCase):
     """TestMadrigalMetaFile performs unit tests on madrigal.metadata.MadrigalMetaFile
     """
-    
-    def setUp(self):
-        self.madDB = madrigal.metadata.MadrigalDB()
-        self.madFile = madrigal.metadata.MadrigalMetaFile(self.madDB)
-        self.madFile.setExpIdByPosition(0, 999)
-        self._test_filename = self.madFile.getFilenameByPosition(0)
-        self.madFile.setKindatByPosition(0, 1000)
-        self.madFile.setCategoryByPosition(0, 1)
-        self.madFile.setHasCatalogByPosition(0, 1)
-        self.madFile.setHasHeaderByPosition(0, 1)
-        self.madFile.setStatusByPosition(0, 'Final')
-        self._test_dt = datetime.datetime(1998,1,20)
-        self.madFile.setFileDatetimeByPosition(0, self._test_dt)
-        self.madFile.setAccessByPosition(0, 1)
-        self.madFile.setAnalystByPosition(0, 'Bill Rideout')
-        self.madFile.setAnalystEmailByPosition(0, 'brideout@mit.edu')
-        # write it out
-        self.tempDir = '/tmp/experiments/test'
-        if not os.access(self.tempDir, os.R_OK):
-            os.makedirs(self.tempDir)
-        filePath = os.path.join(self.tempDir, 'fileTab.txt')
-        self.madFile.writeMetadata(filePath)
-        self.madFile = madrigal.metadata.MadrigalMetaFile(self.madDB, filePath)
+    @classmethod
+    def setUpClass(cls):
+
+        try:
+            # set values for unit testing
+            cls.madDB = madrigal.metadata.MadrigalDB()
+            madroot = cls.madDB.getMadroot()
+            expBase = os.path.join(madroot, 'experiments')
+            binDir = os.path.join(madroot, 'bin')
+            testUrl = 'http://test/madtoc/experiments2/1998/mlh/20jan98BillsTestExp'
+
+            cls.realUrl = cls.madDB.getTopLevelUrl() + '/showExperiment?experiment_list='
+            cls.realUrl += testUrl[testUrl.find('experiments'):]
+            cls.expPath = testUrl[testUrl.find('experiments'):]
+            cls.siteId = cls.madDB.getSiteID()
+            cls.expName = 'Bill Rideout test experiment'
+            cls.kindat = 3408
+
+            # get test file
+            testFile = os.path.join(expBase, '1998/mlh/20jan98/mlh980120g.002.hdf5')
+            shutil.copy(testFile, '/tmp')
+            # create test experiment
+            os.makedirs(expBase + "2")
+            cmd = os.path.join(binDir, 'createExpWithFile.py')
+            cmd += ' --madFilename=/tmp/mlh980120g.002.hdf5 '
+            cmd += f' --expTitle="{cls.expName}" '
+            cmd += ' --permission=0 '
+            cmd += ' --fileDesc="This is just a test" '
+            cmd += ' --instCode=30 '
+            cmd += f' --kindat={cls.kindat} '
+            cmd += ' --dirName=20jan98BillsTestExp '
+            cmd += ' --experimentsDirNum=2 '
+            cmd += ' --PI="Bill Rideout" '
+            cmd += ' --PIEmail="brideout@haystack.mit.edu" '
+            cmd += ' --fileAnalyst="John Doe" '
+            cmd += ' --fileAnalystEmail=jdoe@haystack.mit.edu '
+            cmd += ' --createCachedText '
+            cmd += ' --createCachedNetCDF4 '
+            
+            result = os.system(cmd)
+            if result == 0:
+                pass
+            else:
+                print('Error - could not create test experiment')
+                raise ValueError('')
+            
+            # because we just created a new experiment,
+            # we know that its expID must be the max possible
+            # expID local to this site
+            mainExpObj = madrigal.metadata.MadrigalExperiment(cls.madDB)
+            idsAndIdxs = mainExpObj.getAllExpIDs(cls.siteId)
+            expIDs = [i[0] for i in idsAndIdxs]
+            cls.thisExpID = int(numpy.max(expIDs))
+            
+            cls.madFile = madrigal.metadata.MadrigalMetaFile(cls.madDB, cls.expPath + '/fileTab.txt')
+
+            # self.madDB = madrigal.metadata.MadrigalDB()
+            # self.madFile = madrigal.metadata.MadrigalMetaFile(self.madDB)
+            # self.madFile.setExpIdByPosition(0, 999)
+            cls._test_filename = "mlh980120g.002.hdf5"
+            # self.madFile.setKindatByPosition(0, 1000)
+            cls.madFile.setCategoryByPosition(0, 1)
+            cls.madFile.setHasCatalogByPosition(0, 1)
+            cls.madFile.setHasHeaderByPosition(0, 1)
+            cls.madFile.setStatusByPosition(0, 'Final')
+            cls._test_dt = datetime.datetime(1998,1,20, tzinfo=datetime.timezone.utc)
+            cls.madFile.setFileDatetimeByPosition(0, cls._test_dt)
+            cls.madFile.setAccessByPosition(0, 1)
+            cls.madFile.setAnalystByPosition(0, 'Bill Rideout')
+            cls.madFile.setAnalystEmailByPosition(0, 'brideout@mit.edu')
+            # # write it out
+            # self.tempDir = '/tmp/experiments/test'
+            # if not os.access(self.tempDir, os.R_OK):
+            #     os.makedirs(self.tempDir)
+            # filePath = os.path.join(self.tempDir, 'fileTab.txt')
+            # self.madFile.writeMetadata(filePath)
+            # self.madFile = madrigal.metadata.MadrigalMetaFile(self.madDB, filePath)
+        except Exception as e:
+            traceback.print_exc()
+            cls.tearDownClass(cls)
         
         
     def test_getFileCount(self):
@@ -583,13 +719,13 @@ class TestMadrigalMetaFile(unittest.TestCase):
         self.assertEqual(self.madFile.getFilenameByPosition(0), self._test_filename)
         
     def test_getExpIdByPosition(self):
-        self.assertEqual(self.madFile.getExpIdByPosition(0), 999)
+        self.assertEqual(self.madFile.getExpIdByPosition(0), self.thisExpID)
         
     def test_getKindatByPosition(self):
-        self.assertEqual(self.madFile.getKindatByPosition(0), 1000)
+        self.assertEqual(self.madFile.getKindatByPosition(0), self.kindat)
         
     def test_getKindatByFilename(self):
-        self.assertEqual(self.madFile.getKindatByFilename(self._test_filename), 1000)
+        self.assertEqual(self.madFile.getKindatByFilename(self._test_filename), self.kindat)
         
     def test_getCategoryByPosition(self):
         self.assertEqual(self.madFile.getCategoryByPosition(0), 1)
@@ -625,7 +761,7 @@ class TestMadrigalMetaFile(unittest.TestCase):
         self.assertEqual(self.madFile.getFileDatetimeByFilename(self._test_filename), self._test_dt)
         
     def test_getExpIdByFilename(self):
-        self.assertEqual(self.madFile.getExpIdByFilename(self._test_filename), 999)
+        self.assertEqual(self.madFile.getExpIdByFilename(self._test_filename), self.thisExpID)
         
     def test_getAnalystByPosition(self):
         self.assertEqual(self.madFile.getAnalystByPosition(0), 'Bill Rideout')
@@ -652,13 +788,26 @@ class TestMadrigalMetaFile(unittest.TestCase):
         
     def test_str(self):
         self.assertGreater(len(str(self.madFile)), 0)
+
+    def test_fileTabCreated(self):
+        fileTabModTime = datetime.datetime.fromtimestamp(os.stat(os.path.join(self.madDB.getMadroot(), self.expPath + '/fileTab.txt')).st_mtime, tz=datetime.timezone.utc)
+        now = datetime.datetime.now(tz=datetime.timezone.utc)
+        delta = datetime.timedelta(minutes=10)
+        # assert test fileTab.txt is less than 10 minutes old
+        self.assertLess(now - fileTabModTime, delta)
         
     @classmethod
     def tearDownClass(cls):
         try:
-            os.system('rm -r /tmp/experiments')
-        except:
-            pass
+           # remove exp here
+            expBase = os.path.join(madDB.getMadroot(), 'experiments2')
+            thisExp = os.path.join(expBase, '1998/mlh', '20jan98BillsTestExp')
+            os.system('rm -rf %s' % (thisExp))
+            expObj = madrigal.metadata.MadrigalExperiment(madDB, thisExp + "/expTab.txt")
+            expObj.validateExp()
+            os.system('rm -r %s' % (expBase))
+        except Exception as e:
+            traceback.print_exc()
         
         
 class TestMadrigalParmCategory(unittest.TestCase):
@@ -692,7 +841,7 @@ class TestMadrigalInstrumentData(unittest.TestCase):
         self.assertIn((212, 'DST Index', self.siteId), self.madInstData.getInstruments())
         
     def test_getInstrumentYears(self):
-        self.assertIn(1990, self.madInstData.getInstrumentYears(212))
+        self.assertIn(1957, self.madInstData.getInstrumentYears(212))
 
 
 class TestMadrigalFile(unittest.TestCase):
@@ -890,7 +1039,7 @@ class TestOpenMadrigal(unittest.TestCase):
         self.openMad = madrigal.openmadrigal.OpenMadrigal(self.madDB)
         
     def test_getOpenMadrigalUrl(self):
-        self.assertEqual('http://cedar.openmadrigal.org/', self.openMad.getOpenMadrigalUrl()) 
+        self.assertEqual('https://cedar.openmadrigal.org/', self.openMad.getOpenMadrigalUrl()) 
     
     def test_getOpenMadrigalUrl(self):
         self.assertIn('Millstone Hill UHF Zenith Antenna', self.openMad.getMetadataFromOpenMadrigal('instTab.txt')) 

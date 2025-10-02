@@ -25,7 +25,9 @@ dependencies = [
     "django-bootstrap3",
     "aacgmv2",
     "packaging",
-    "madrigalweb"
+    "madrigalweb",
+    "pandas",
+    "tables"
     ]
 
 [project.urls]

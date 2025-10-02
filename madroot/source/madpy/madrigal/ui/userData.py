@@ -91,19 +91,18 @@ class MadrigalUserData:
         retDict = {}
 
         try:
-            f = open(filename)
+            with open(filename) as f:
+                lines = f.readlines()
+                for line in lines:
+                    items = line.split()
+                    if len(items) != 2:
+                        continue
+                    try:
+                        retDict[items[0]].append(items[1])
+                    except KeyError:
+                        retDict[items[0]] = [items[1]]
         except IOError:
             return(retDict)
-        
-        lines = f.readlines()
-        for line in lines:
-            items = line.split()
-            if len(items) != 2:
-                continue
-            try:
-                retDict[items[0]].append(items[1])
-            except KeyError:
-                retDict[items[0]] = [items[1]]
                 
         return(retDict)
     
@@ -176,19 +175,17 @@ class MadrigalUserData:
         except KeyError:
             expDict[email] = [experimentString]
         try:
-            f = open(filename, 'w')
+            with open(filename, 'w') as f:
+                keys = list(expDict.keys())
+                keys.sort()
+                for key in keys:
+                    for item in expDict[key]:
+                        f.write('%s %s\n' % (key, item))
+            self._dropLock(filename)
         except:
             self._dropLock(filename)
             raise
         
-        keys = list(expDict.keys())
-        keys.sort()
-        for key in keys:
-            for item in expDict[key]:
-                f.write('%s %s\n' % (key, item))
-        f.close()
-        
-        self._dropLock(filename)
         
         
     def unregisterExperiment(self, email, experimentString):
@@ -226,19 +223,17 @@ class MadrigalUserData:
         regExp.remove(experimentString)
         expDict[email] = regExp
         try:
-            f = open(filename, 'w')
+            with open(filename, 'w') as f:
+                keys = list(expDict.keys())
+                keys.sort()
+                for key in keys:
+                    for item in expDict[key]:
+                        f.write('%s %s\n' % (key, item))
+            self._dropLock(filename)
         except:
             self._dropLock(filename)
             raise
         
-        keys = list(expDict.keys())
-        keys.sort()
-        for key in keys:
-            for item in expDict[key]:
-                f.write('%s %s\n' % (key, item))
-        f.close()
-        
-        self._dropLock(filename)
         
         
         
@@ -256,19 +251,18 @@ class MadrigalUserData:
         retDict = {}
 
         try:
-            f = open(filename)
+            with open(filename) as f:
+                lines = f.readlines()
+                for line in lines:
+                    items = line.split()
+                    if len(items) != 2:
+                        continue
+                    try:
+                        retDict[items[0]].append(int(items[1]))
+                    except KeyError:
+                        retDict[items[0]] = [int(items[1])]
         except IOError:
             return(retDict)
-        
-        lines = f.readlines()
-        for line in lines:
-            items = line.split()
-            if len(items) != 2:
-                continue
-            try:
-                retDict[items[0]].append(int(items[1]))
-            except KeyError:
-                retDict[items[0]] = [int(items[1])]
                 
         return(retDict)
     
@@ -336,19 +330,18 @@ class MadrigalUserData:
         except KeyError:
             instDict[email] = [kinst]
         try:
-            f = open(filename, 'w')
+            with open(filename, 'w') as f:
+                keys = list(instDict.keys())
+                keys.sort()
+                for key in keys:
+                    for item in instDict[key]:
+                        f.write('%s %s\n' % (key, str(item)))
+            self._dropLock(filename)
         except:
             self._dropLock(filename)
             raise
         
-        keys = list(instDict.keys())
-        keys.sort()
-        for key in keys:
-            for item in instDict[key]:
-                f.write('%s %s\n' % (key, str(item)))
-        f.close()
         
-        self._dropLock(filename)
         
         
     def unregisterInstrument(self, email, kinst):
@@ -384,19 +377,17 @@ class MadrigalUserData:
         regInst.remove(kinst)
         instDict[email] = regInst
         try:
-            f = open(filename, 'w')
+            with open(filename, 'w') as f:
+                keys = list(instDict.keys())
+                keys.sort()
+                for key in keys:
+                    for item in instDict[key]:
+                        f.write('%s %s\n' % (key, item))
+            self._dropLock(filename)
         except:
             self._dropLock(filename)
             raise
         
-        keys = list(instDict.keys())
-        keys.sort()
-        for key in keys:
-            for item in instDict[key]:
-                f.write('%s %s\n' % (key, item))
-        f.close()
-        
-        self._dropLock(filename)
         
         
     def getUsersList(self):
@@ -569,20 +560,18 @@ class MadrigalUserData:
         docRoot.appendChild(newUserElem)
 
         #output result
-        outfp = open(filename, 'w')
-        userDoc.writexml(outfp)
-        outfp.write("\n")
-        outfp.close()
+        with open(filename, 'w') as outfp:
+            userDoc.writexml(outfp)
+            outfp.write("\n")
 
         # done with user file - allow access to other writing calls
         self._dropLock(filename)
 
         # create new file <username>.xml
-        outfp = open(self._metaDir + '/' + self._userXMLDir + '/' + username + '.xml', 'w')
-        outfp.write('<?xml version=\'1.0\'?>\n')
-        outfp.write('<userInfo>\n')
-        outfp.write('</userInfo>\n')
-        outfp.close()
+        with open(self._metaDir + '/' + self._userXMLDir + '/' + username + '.xml', 'w') as outfp:
+            outfp.write('<?xml version=\'1.0\'?>\n')
+            outfp.write('<userInfo>\n')
+            outfp.write('</userInfo>\n')
                      
 
         return 1
@@ -642,10 +631,9 @@ class MadrigalUserData:
                 user.replaceChild(newPasswordElem, thisPasswordEl)
 
         #output result
-        outfp = open(self._metaDir + '/' + self._userXMLDir + '/' + self._userXMLFile, 'w')
-        userDoc.writexml(outfp)
-        outfp.write("\n")
-        outfp.close()
+        with open(self._metaDir + '/' + self._userXMLDir + '/' + self._userXMLFile, 'w') as outfp:
+            userDoc.writexml(outfp)
+            outfp.write("\n")
 
         # done with user file - allow access to other writing calls
         self._dropLock(filename)
@@ -781,7 +769,6 @@ class MadrigalUserData:
 
             try:
                 file = os.open(filename + '.LCK', os.O_RDWR | os.O_CREAT | os.O_EXCL)
-                os.close(file)
                 gotLock = 1
 
             except OSError as xxx_todo_changeme:

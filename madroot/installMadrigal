@@ -230,6 +230,15 @@ then
   exit -1
 fi
 
+
+echo "********** createMetadataDB **********"
+$MADROOT/bin/python source/madpy/scripts/bin/createMetadataDB.py
+if [ $? -ne 0 ]
+then
+    exit -1
+fi
+
+
 echo "********** Verifying this site is set to at least 3 in siteTab.txt **********"
 $MADROOT/bin/python source/madpy/scripts/bin/checkSiteIs3.py
 if [ $? -ne 0 ]

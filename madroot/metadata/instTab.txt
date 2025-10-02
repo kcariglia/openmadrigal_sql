@@ -96,7 +96,6 @@
 1793,cms,CONDOR multi-static meteor radar system,0.0,0.0,0.0,Alan Z. Liu,Department of Physical Sciences,Embry-Riddle Aeronautical University,1 Aerospace Boulevard,Daytona Beach,FL,32119,USA,386.226.6538,LIUZ2@erau.edu,7
 1794,mcr,McMurdo Meteor Radar,-77.8297,166.6625,0.24,Scott Palo,Aerospace Engineering and Sciences Department,University of Colorado at Boulder,,Boulder,CO,,USA,303-492-4289,Palo@colorado.edu,7
 1800,nmn,MMARIA Norway Meteor Radar Network,69.07,18.54,0.0,Jorge Chau,Leibniz-Institut für Atmosphärenphysik (IAP),Abteilung Radarsondierungen,Schlossstraße 6,Kühlungsborn,,18225,Germany,,chau@iap-kborn.org,7
-1800,nmn,MMARIA Norway Meteor Radar Network,69.07,18.54,0.0,Ralph Latteck,Leibniz-Institut für Atmosphärenphysik (IAP),Abteilung Radarsondierungen,Schlossstraße 6,Kühlungsborn,,18225,Germany,,latteck@iap-kborn.de,7
 1801,gmn,MMARIA Germany Meteor Radar Network,53.0,13.5,0.0,Toralf Renkwitz,Leibniz-Institut für Atmosphärenphysik (IAP),Abteilung Radarsondierungen,Schlossstraße 6,Kühlungsborn,,18225,Germany,,renkwitz@iap-kborn.de,7
 1802,amn,SIMONe Argentina Meteor Radar Network,69.07,18.54,0.0,Fede Conte,Leibniz-Institut für Atmosphärenphysik (IAP),Abteilung Radarsondierungen,Schlossstraße 6,Kühlungsborn,,18225,Germany,,conte@iap-kborn.de,7
 1803,jmn,SIMONe Jicamarca Meteor Radar Network,-11.949,-76.871,0.0,Jorge Chau,Leibniz-Institut für Atmosphärenphysik (IAP),Abteilung Radarsondierungen,Schlossstraße 6,Kühlungsborn,,18225,Germany,,chau@iap-kborn.de,7

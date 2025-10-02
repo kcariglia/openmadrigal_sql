@@ -419,6 +419,7 @@ source/madpy/scripts/bin/testWebConfig.py
 source/madpy/scripts/bin/checkParmsCodes.py
 source/madpy/scripts/bin/updateMadDerivations.py
 source/madpy/scripts/bin/checkSiteIs3.py
+source/madpy/scripts/bin/createMetadataDB.py
 source/madpy/setup.py
 source/madpy/pyproject.toml
 source/madpy/madrigal/__init__.py

@@ -1145,7 +1145,7 @@ def ftp(request):
     affiliation = urllib.parse.quote_plus(cookieDict['user_affiliation'])
     # create instrument with data list with tuple (instrument_name, kinst)
     madInstDataObj = madrigal.metadata.MadrigalInstrumentData(madDB, isTrusted)
-    madInstList = [(instrument_name, kinst) for kinst, instrument_name, site_id in madInstDataObj.getInstruments(local=True)]
+    madInstList = madInstDataObj.getInstrumentsForFTP()
     return render(request, 'madweb/ftp_instruments.html', {'madInstList': madInstList, 'fullname': fullname,
                                                               'email': email, 'affiliation':affiliation, 'site_name': siteName, 
                                                               'site_list': siteList, 'bg_color': bg_color})
@@ -1601,6 +1601,10 @@ def get_metadata(request):
         downloadFile = os.path.join(madDB.getMetadataDir(), 
                                     fileDict[form.cleaned_data['fileType']])
         
+        if not os.access(downloadFile, os.R_OK):
+            metadataStr = madDB.getTableStr(fileDict[form.cleaned_data['fileType']][:-4])
+            with open(downloadFile, "w") as w:
+                w.write(metadataStr)
 
         f = open(downloadFile, 'rb')
         filename = os.path.basename(downloadFile)

@@ -17,6 +17,7 @@ import itertools
 import math
 import warnings
 import tempfile
+import re
 
 # third party imports
 import numpy
@@ -180,11 +181,30 @@ class MadrigalFile:
 
         # read metadata about files
         expDir = os.path.dirname(initFile)
-        if os.path.exists(os.path.join(expDir, 'fileTab.txt')):
+        # we no longer assume fileTab.txt exists, so we need to check whether this
+        # expDir actually matches the naming convention in order to properly initialize
+        # the MadrigalMetaFile object
+        validExpDir = False
+
+        # first check that path to initFile contains expDir
+        dirConvStr1 = '/experiments[0-9]*/[0-9][0-9][0-9][0-9]/[a-z][a-z0-9][a-z0-9]/[a-zA-Z0-9\-_]*$'
+        dirConvStr2 = '/experiments[0-9]*/[0-9][0-9][0-9][0-9]/[a-z][a-z0-9][a-z0-9]/[0-3][0-9][a-z][a-z0-9][a-z0-9][0-9][0-9].?'
+
+        found = re.search(dirConvStr1, expDir)
+        if not found:
+            found = re.search(dirConvStr2, expDir)
+            if not found:
+                pass
+        
+        if found:
+            validExpDir = True
+            expDir = found.group(0) # should be exactly 1 expDir
+
+        if validExpDir:
             self._fileMetadata = madrigal.metadata.MadrigalMetaFile(self._madDB, os.path.join(expDir, 'fileTab.txt'))
+            self._fileCategory = self._fileMetadata.getCategoryByFilename(self._filename)
         else:
             self._fileMetadata = madrigal.metadata.MadrigalMetaFile(self._madDB)
-        self._fileCategory = self._fileMetadata.getCategoryByFilename(self._filename)
         
         # read metadata about kindats
         self._madKindatObj = madrigal.metadata.MadrigalKindat(self._madDB)

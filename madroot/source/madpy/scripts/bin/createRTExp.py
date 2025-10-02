@@ -309,7 +309,7 @@ if permissions == None:
     for i in range(count):
         permissions.append(0)
 else:
-    tempList = premissions.split(',')
+    tempList = permissions.split(',')
     premissions = []
     if len(tempList) == 1 and count > 1:
         for i in range(count):

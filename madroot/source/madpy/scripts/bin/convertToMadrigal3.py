@@ -11,7 +11,7 @@ Steps:
             removed file.  If that file does not exist (because createCachedHdf5Files.py failed to create it), log that to stdout.
     3. Updates siteTab.txt table to add Madrigal version field to end (3.0)
             
-$Id: convertToMadrigal3.py 7405 2021-12-17 15:59:53Z brideout $
+$Id: convertToMadrigal3.py 7742 2025-01-09 14:51:04Z kcariglia $
 """
 # standard python imports
 import os, os.path, sys
@@ -66,7 +66,8 @@ def convertRecordPlots(plotDir):
                 elif image_ext_type == 'convert':
                     cmd = convertCmdTemplate % (plotFile, target)
                 try:
-                    subprocess.check_call(cmd.split())
+                    #subprocess.check_call(cmd.split())
+                    os.system(cmd)
                 except:
                     print(('cmd <%s> failed' % (cmd)))
                     traceback.print_exc()
@@ -177,8 +178,8 @@ def processExperiment(args):
                     newFilenameDir = os.path.join(expDir, 'plots', filename + '.hdf5')
                     # just to be sure its doesn't exist
                     cmd = 'rm -rf %s' % (newFilenameDir)
-                    subprocess.check_call(cmd.split())
-                    
+                    #subprocess.check_call(cmd.split())
+                    os.system(cmd)
                     shutil.move(oldFilenameDir, newFilenameDir)
             else:
                 if not quiet:
@@ -255,7 +256,8 @@ if __name__ == '__main__':
     cmd = '%s/bin/createCachedHdf5Files.py --includeNonDefault  --mad3 %s --includeGeo %s' % (madDB.getMadroot(), 
                                                                                           skipDownloadStr, numCPUCmd)
     if not skipCache:
-        subprocess.check_call(cmd.split())
+        os.system(cmd)
+        #subprocess.check_call(cmd.split())
     
     m = multiprocessing.Manager()
     problemExpQueue = m.Queue()
@@ -263,7 +265,10 @@ if __name__ == '__main__':
     expsToProcess = [] # argument expDir,  to processExp
     
     madExp = madrigal.metadata.MadrigalExperiment(madDB)
+    siteID = madDB.getSiteID()
     for i in range(madExp.getExpCount()):
+        if (madExp.getExpSiteIdByPosition(i) != siteID):
+            continue
         expDir = madExp.getExpDirByPosition(i)
         try:
             madFile = madrigal.metadata.MadrigalMetaFile(madDB, os.path.join(expDir, 'fileTab.txt'))
@@ -282,7 +287,6 @@ if __name__ == '__main__':
             
     print('Set site version to 3.0 if needed')
     mdSiteObj = madrigal.metadata.MadrigalSite(madDB)
-    siteID = madDB.getSiteID()
     if mdSiteObj.getSiteVersion(siteID) != '3.0':
         mdSiteObj.setSiteVersionBySiteID(siteID, '3.0')
         mdSiteObj.writeMetadata()
