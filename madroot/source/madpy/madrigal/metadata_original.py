@@ -8411,15 +8411,13 @@ class MadrigalParmCategory:
                                                    traceback.format_exception(sys.exc_info()[0],
                                                                               sys.exc_info()[1],
                                                                               sys.exc_info()[2]))    
-    
+        
 
 class MadrigalInstrumentData:
     """MadrigalInstrumentData is an object that provides access to Madrigal instrument data info from the metadata.
 
     This object provides access to all Madrigal kind of data information in the metadata files instData.txt
     and instDataPriv.txt.  Those files summarize years data is available by instrument.
-
-    ^^^^^ this is not true anymore, fix these docs when you verify ui performance is ok
 
     Non-standard Python modules used:
     None
@@ -8437,17 +8435,16 @@ class MadrigalInstrumentData:
     """
 
     #constants
-    _instDataMetadataFile  = METADB
+    _instDataMetadataFile  = "instData.txt"
 
     # column positions
-    _siteIDCol   =  'sid'
-    _kinstCol    =  'kinst'
-    _kindatCol   =  'kindat'
-    _yearsCol    =  'year'
+    _siteIDCol   =  0
+    _kinstCol    =  1
+    _yearsCol    = 2
 
     
 
-    def __init__(self, madDB=None, priv=False, madInstObj=None):
+    def __init__(self, madDB=None, priv=False, initFile=None, madInstObj=None):
         """__init__ initializes MadrigalInstrumentData by reading from instData.txt (or instDataPriv.txt).
 
         Inputs: madDB - Existing MadrigalDB object, by default = None.
@@ -8473,22 +8470,235 @@ class MadrigalInstrumentData:
         else:
             self.__madDB = madDB
             
-        #if priv:
-        #    self._instDataMetadataFile  = "instDataPriv.txt"
-        self.priv = priv
+        if priv:
+            self._instDataMetadataFile  = "instDataPriv.txt"
 
         # get instData metadata file
-        #if (initFile == None):
-        self.__filename = self._instDataMetadataFile
-        #else:
-        #    self.__filename = initFile
+        if (initFile == None):
+            self.__filename = self._instDataMetadataFile
+        else:
+            self.__filename = initFile
             
-        if isinstance(madInstObj, madrigal.metadata.MadrigalInstrument):
+        if madInstObj is not None:
             self._madInstObj = madInstObj
         else:
             self._madInstObj = madrigal.metadata.MadrigalInstrument(self.__madDB)
 
-        #self.__fileList = madrigal.metadata.MadrigalMetadata(self.__filename, self.__madDB).getList()
+        try:
+            self.__fileList = madrigal.metadata.MadrigalMetadata(self.__filename, self.__madDB).getList()
+        except FileNotFoundError:
+            # instData.txt does not exist yet
+            print("instData.txt does not yet exist, please run updateMaster to build instData.txt and instDataPriv.txt")
+
+
+    def getCategories(self, local=False):
+        """getCategories returns the a list of (category id, category desc) tuples.
+
+        Inputs: 
+        
+            local - if False, return all categories for which there is data anywhere in Madrigal.
+                If True, only return local categories.
+        
+        Returns:  a list of (category id, category desc) tuples
+
+        Affects: None
+
+        Exceptions: MadrigalError if any item in row cannot be cast to correct format
+        """
+        if local:
+            siteID = self.__madDB.getSiteID()
+            
+        localDict = {} # key is category id, value is category desc str.  Will be converted to list before returned
+        
+        for i, data in enumerate(self.__fileList):
+            # find matching  code 
+            try:
+                if local:
+                    if int(data[self._siteIDCol]) != siteID:
+                        continue
+                kinst = int(data[self._kinstCol])
+                categoryID = self._madInstObj.getCategoryId(kinst)
+                if categoryID is None:
+                    continue
+                if categoryID not in list(localDict.keys()):
+                    localDict[categoryID] = self._madInstObj.getCategory(kinst)
+                    
+            except:
+                raise madrigal.admin.MadrigalError('Error in instData.txt parsing metadata row %i: ' % (i) + str(category),
+                                                   traceback.format_exception(sys.exc_info()[0],
+                                                                              sys.exc_info()[1],
+                                                                              sys.exc_info()[2]))
+        categoryIDKeys = list(localDict.keys())
+        categoryIDKeys.sort()
+        retList = [(catID, localDict[catID]) for catID in categoryIDKeys]
+        return(retList)
+        
+
+
+    def getInstruments(self, categoryID=0, local=False):
+        """getInstruments returns the a list of (kinst, instrument desc, siteID) tuples.
+
+        Inputs: 
+        
+            categoryID - category id to return instruments with data for. If 0, return all
+            local - if False, return all instruments with that category for which there is data 
+                anywhere in Madrigal. If True, only return local instruments, in which case siteID
+                is always the local siteID.
+        
+        Returns:  a list of (kinst, instrument desc, siteID) tuples
+
+        Affects: None
+
+        Exceptions: MadrigalError if any item in row cannot be cast to correct format
+        """
+        siteID = self.__madDB.getSiteID()
+            
+        localDict = {} # key is kinst, value is tuple if (instrument desc str, siteID).  
+                       #  Will be converted to list before returned
+        
+        for i, data in enumerate(self.__fileList):
+            # find matching  code 
+            try:
+                kinst = int(data[self._kinstCol])
+                thisSiteID = int(data[self._siteIDCol])
+                thisCategoryID = self._madInstObj.getCategoryId(kinst)
+                if thisCategoryID != categoryID and categoryID != 0:
+                    continue
+                if local:
+                    if thisSiteID != siteID:
+                        continue
+
+                if kinst not in list(localDict.keys()):
+                    localDict[kinst] = (self._madInstObj.getInstrumentName(kinst), thisSiteID)
+                else:
+                    if thisSiteID == siteID:
+                        # local data overrides remote
+                        localDict[kinst] = (self._madInstObj.getInstrumentName(kinst), thisSiteID)
+                    
+            except:
+                raise madrigal.admin.MadrigalError('Error in instData.txt parsing metadata row %i: ' % (i) + str(categoryID),
+                                                   traceback.format_exception(sys.exc_info()[0],
+                                                                              sys.exc_info()[1],
+                                                                              sys.exc_info()[2]))
+        kinstKeys = list(localDict.keys())
+        kinstKeys.sort()
+        retList = [(kinst, localDict[kinst][0], localDict[kinst][1]) for kinst in kinstKeys]
+        return(retList)
+    
+    
+    def getInstrumentYears(self, kinst):
+        """getInstrumentYears returns the a list of years (int) for instrument.
+
+        Inputs: 
+        
+            kinst - the instrument id
+        
+        Returns:  an ordered list of years as integers.  If none found, raises error
+
+        Affects: None
+
+        Exceptions: MadrigalError if any item in row cannot be cast to correct format
+        """
+        retList = []
+        for i, data in enumerate(self.__fileList):
+            # find matching  code 
+            try:
+                thisKinst = int(data[self._kinstCol])
+                if thisKinst != kinst:
+                    continue
+                yearsStr = data[self._yearsCol]
+
+                retList = [int(year) for year in yearsStr.split()]
+                retList.sort()
+                    
+            except:
+                raise madrigal.admin.MadrigalError('Error in instData.txt parsing metadata row %i: ' % (i) + str(category),
+                                                   traceback.format_exception(sys.exc_info()[0],
+                                                                              sys.exc_info()[1],
+                                                                              sys.exc_info()[2]))
+                
+        if len(retList) == 0:
+            raise madrigal.admin.MadrigalError('No data found for kinst %i' % (kinst), '')
+        
+        return(retList)
+    
+
+# class MadrigalInstrumentData:
+#     """MadrigalInstrumentData is an object that provides access to Madrigal instrument data info from the metadata.
+
+#     This object provides access to all Madrigal kind of data information in the metadata files instData.txt
+#     and instDataPriv.txt.  Those files summarize years data is available by instrument.
+
+#     ^^^^^ this is not true anymore, fix these docs when you verify ui performance is ok
+
+#     Non-standard Python modules used:
+#     None
+
+#     MadrigalError exception thrown if:
+
+#         1. MadrigalMetadata fails to open or parse metadata file
+        
+#         2. Columns expected to be ints or floats cannot be converted
+
+#     Change history:
+
+#     Written by "Bill Rideout":mailto:wrideout@haystack.mit.edu  Feb. 2, 2015
+
+#     """
+
+#     #constants
+#     _instDataMetadataFile  = METADB
+
+#     # column positions
+#     _siteIDCol   =  'sid'
+#     _kinstCol    =  'kinst'
+#     _kindatCol   =  'kindat'
+#     _yearsCol    =  'year'
+
+    
+
+#     def __init__(self, madDB=None, priv=False, madInstObj=None):
+#         """__init__ initializes MadrigalInstrumentData by reading from instData.txt (or instDataPriv.txt).
+
+#         Inputs: madDB - Existing MadrigalDB object, by default = None.
+
+#                 priv - if True, use instDataPriv.txt instead of instData.txt.  If False (the default),
+#                     use instData.txt.
+                    
+#                 initFile - String representing the full path to the metadata file. Default is None, in
+#                     which case file read depends on priv argument. priv arg ingored if this not None
+                    
+#                 madInstObj - m madrigal.metadata.MadrigalInstrument object.  If None, one is created.
+        
+#         Returns: void
+
+#         Affects: Initializes all the class member variables.
+
+#         Exceptions: MadrigalError thrown  by MadrigalMetadata if file not opened or parsed successfully.
+#         """
+
+#         # get metadata dir
+#         if madDB == None:
+#             self.__madDB = madrigal.metadata.MadrigalDB()
+#         else:
+#             self.__madDB = madDB
+            
+#         #if priv:
+#         #    self._instDataMetadataFile  = "instDataPriv.txt"
+#         self.priv = priv
+
+#         # get instData metadata file
+#         #if (initFile == None):
+#         self.__filename = self._instDataMetadataFile
+#         #else:
+#         #    self.__filename = initFile
+            
+#         if isinstance(madInstObj, madrigal.metadata.MadrigalInstrument):
+#             self._madInstObj = madInstObj
+#         else:
+#             self._madInstObj = madrigal.metadata.MadrigalInstrument(self.__madDB)
+
+#         #self.__fileList = madrigal.metadata.MadrigalMetadata(self.__filename, self.__madDB).getList()
 
 
     def __initMetaDBConnector(self):
@@ -8628,468 +8838,811 @@ class MadrigalInstrumentData:
                                                            traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
                                                                         sys.exc_info()[2]))
+        
+    def _updateInstData(self):
+        """_updateInstData updates the summary files instData.txt and instDataPriv.txt based on 
+        latest version of expTabAll.txt
+        
+        instData.txt and instDataPriv.txt has three comma-delimited columns:
+            1. siteId
+            2. kinst of non-test experiments at that siteID (only if site has most data)
+            3. space separated ordered list of years with data available
+            
+        instDataPriv.txt includes local private data, in addition to public.
+        
+        Note that a kinst will only listed at one site.  If there is local data, it will be listed as
+        local.  If it listed at more than one non-local site, it will be listed at the one with more
+        experiments.
+        """
+        summDict = {} # local dict with keys=siteID, value=dict with key=kinst, value = years with non-test data
+        summDictPriv = {} # same as summDict, but includes local private data
+        kinstDict = {} # local dict with keys = kinst, value = dict with key=siteID, value = number of
+                       # experiments.  Used to print warning if inst at multiple sites and to decide which
+                       # site to incliude
+        madExpObj = madrigal.metadata.MadrigalExperiment(self.__madDB,
+                                                         os.path.join(self.__madDB.getMadroot(),
+                                                                      'metadata/expTabAll.txt'))
+        
+        archive_sites = set([8,10])
+        localSiteID = self.__madDB.getSiteID()
+        for i in range(madExpObj.getExpCount()):
+            siteID = madExpObj.getExpSiteIdByPosition(i)
+            security = madExpObj.getSecurityByPosition(i)
+            url = madExpObj.getExpUrlByPosition(i)
+            # skip test experiments
+            if self.__madDB.isTestExperiment(url, siteID) and security == 0:
+                continue
+            # skip all non-local archived data
+            if siteID != localSiteID and security in (2,3):
+                continue
+            kinst = madExpObj.getKinstByPosition(i)
+            sDTList = madExpObj.getExpStartDateTimeByPosition(i)
+            eDTList = madExpObj.getExpEndDateTimeByPosition(i)
+            # create a year list
+            yearList = list(range(sDTList[0], eDTList[0]+1))
+            # add to summDictPriv if not already there
+            if siteID not in summDictPriv:
+                summDictPriv[siteID] = {}
+            if kinst not in summDictPriv[siteID]:
+                summDictPriv[siteID][kinst] = [] # empty list of years
+            for thisYear in yearList:
+                if thisYear not in summDictPriv[siteID][kinst]:
+                    summDictPriv[siteID][kinst].append(thisYear)
+            # add to summDict if not already there and not private
+            if security in (0,2):
+                if siteID not in summDict:
+                    summDict[siteID] = {}
+                if kinst not in summDict[siteID]:
+                    summDict[siteID][kinst] = [] # empty list of years
+                for thisYear in yearList:
+                    if thisYear not in summDict[siteID][kinst]:
+                        summDict[siteID][kinst].append(thisYear)
+            # add to kinstDict
+            if kinst not in kinstDict:
+                kinstDict[kinst] = {}
+            if siteID not in list(kinstDict[kinst].keys()):
+                kinstDict[kinst][siteID] = 1
+                kinstSet = set(kinstDict[kinst].keys())
+                if len(kinstSet.difference(archive_sites)) > 1:
+                    print(('Note: kinst %i found at multiple non-archive sites: %s' % (kinst, str(kinstSet.difference(archive_sites)))))
+            else:
+                kinstDict[kinst][siteID] += 1
+                
+        # write to output files
+        delimiter = ' '
+        outputNames = ('instData.txt', 'instDataPriv.txt')
+        dictList = (summDict, summDictPriv)
+        for i in range(len(outputNames)):
+            f = open(os.path.join(self.__madDB.getMadroot(), 'metadata', outputNames[i]), 'w', encoding='utf-8')
+            thisDict = dictList[i]
+            siteIDKeys = list(thisDict.keys())
+            siteIDKeys.sort()
+            for siteID in siteIDKeys:
+                kinstKeys = list(thisDict[siteID].keys())
+                kinstKeys.sort()
+                for kinst in kinstKeys:
+                    
+                    # verify this kinst/siteID combination is the desired one
+                    if localSiteID != siteID: 
+                        if localSiteID in list(kinstDict[kinst].keys()):
+                            continue # this is not local site, but local site has data and local site always wins
+                        if len(kinstDict[kinst]) > 1:
+                            accept = True # test whether this non-local site has the most experiments
+                            thisCount = kinstDict[kinst][siteID]
+                            for thisKey in list(kinstDict[kinst].keys()):
+                                if kinstDict[kinst][thisKey] > thisCount:
+                                    accept = False
+                                    break
+                            if not accept:
+                                continue
+                            
+                    # this data is accepted - write it out
+                    yearsList = thisDict[siteID][kinst]
+                    yearsList.sort()
+                    yearsStrList = [str(year) for year in yearsList]
+                    yearsStr = delimiter.join(yearsStrList)
+                    f.write('%i,%i,%s\n' % (siteID, kinst, yearsStr))
+                    
+            f.close()
 
     
 
-    def rebuildInstDataTable(self):
-        """
+    # def rebuildInstDataTable(self):
+    #     """
         
-        lets try something completely different
+    #     lets try something completely different
 
-        InstData is now effectively an array of 3 dictionaries:
+    #     InstData is now effectively an array of 3 dictionaries:
 
-        KinstDict - key: kinst, value: (instDesc, yearList)
-        SiteDict - key: siteID, value: [kinstList]
-        CategoryDict - key: catID, value: [kinstList]
-
-
-        3 dictionaries will be converted to pandas.dataframes, which
-        will be exported to different groups in an hdf5 file
+    #     KinstDict - key: kinst, value: (instDesc, yearList)
+    #     SiteDict - key: siteID, value: [kinstList]
+    #     CategoryDict - key: catID, value: [kinstList]
 
 
+    #     3 dictionaries will be converted to pandas.dataframes, which
+    #     will be exported to different groups in an hdf5 file
 
-        Inputs: None.
+
+
+    #     Inputs: None.
         
-        Returns: None.
+    #     Returns: None.
 
-        Affects: Writes file instKindatTab.txt in metadata directory
+    #     Affects: Writes file instKindatTab.txt in metadata directory
 
-        Exceptions: If unable to write instKindatTab.txt file.
-        """
-        localSite = self.__madDB.getSiteID()
-        expQuery = "SELECT kinst, sid, security, substring(sdt, 0, 5), substring(edt, 0, 5) FROM expTab"
+    #     Exceptions: If unable to write instKindatTab.txt file.
+    #     """
+    #     localSite = self.__madDB.getSiteID()
+    #     expQuery = "SELECT kinst, sid, security, substring(sdt, 0, 5), substring(edt, 0, 5) FROM expTab"
 
-        kinstDict = {}
-        siteDict = {}
-        catDict = {}
-        kinstDict_priv = {}
-        siteDict_priv = {}
-        catDict_priv = {}
+    #     kinstDict = {}
+    #     siteDict = {}
+    #     catDict = {}
+    #     kinstDict_priv = {}
+    #     siteDict_priv = {}
+    #     catDict_priv = {}
 
-        try:
-            self.__initMetaDBConnector()
-            res = self.__cursor.execute(expQuery)
-            resList = res.fetchall()
-            self.__closeMetaDBConnector()
+    #     try:
+    #         self.__initMetaDBConnector()
+    #         res = self.__cursor.execute(expQuery)
+    #         resList = res.fetchall()
+    #         self.__closeMetaDBConnector()
 
-            if not resList:
-                raise("Unable to build instData table")
+    #         if not resList:
+    #             raise("Unable to build instData table")
             
-            # this may take a bit...
-            for expData in resList:
-                thiskinst = int(expData[0])
-                thissite = int(expData[1])
-                security = int(expData[2])
-                syear = int(expData[3])
-                eyear = int(expData[4])
-                thiscategory = self._madInstObj.getCategoryId(thiskinst)
+    #         # this may take a bit...
+    #         for expData in resList:
+    #             thiskinst = int(expData[0])
+    #             thissite = int(expData[1])
+    #             security = int(expData[2])
+    #             syear = int(expData[3])
+    #             eyear = int(expData[4])
+    #             thiscategory = self._madInstObj.getCategoryId(thiskinst)
 
-                # skip all non-local archived data
-                if thissite != localSite and security in (2,3):
-                    continue
+    #             # skip all non-local archived data
+    #             if thissite != localSite and security in (2,3):
+    #                 continue
 
-                if security < 0:
-                    # test exp, skip
-                    continue
+    #             if security < 0:
+    #                 # test exp, skip
+    #                 continue
 
-                if security not in (0, 2):
-                    # private data only
+    #             if security not in (0, 2):
+    #                 # private data only
 
-                    # build kinstDict
-                    if thiskinst not in kinstDict_priv:
-                        kinstDict_priv[thiskinst] = [self._madInstObj.getInstrumentName(thiskinst), []]
-                    kinstDict_priv[thiskinst][1].append(syear)
-                    kinstDict_priv[thiskinst][1].append(eyear)
+    #                 # build kinstDict
+    #                 if thiskinst not in kinstDict_priv:
+    #                     kinstDict_priv[thiskinst] = [self._madInstObj.getInstrumentName(thiskinst), []]
+    #                 kinstDict_priv[thiskinst][1].append(syear)
+    #                 kinstDict_priv[thiskinst][1].append(eyear)
 
-                    # build siteDict
-                    if thissite not in siteDict_priv:
-                        siteDict_priv[thissite] = [[]]
-                    siteDict_priv[thissite][0].append(thiskinst)
+    #                 # build siteDict
+    #                 if thissite not in siteDict_priv:
+    #                     siteDict_priv[thissite] = [[]]
+    #                 siteDict_priv[thissite][0].append(thiskinst)
 
-                    # build catDict
-                    if thiscategory not in catDict_priv:
-                        catDict_priv[thiscategory] = [[]]
-                    catDict_priv[thiscategory][0].append(thiskinst)
-
-
-                else:
-                    # public data, populate all needed dicts
-
-                    # build kinstDict
-                    if thiskinst not in kinstDict:
-                        kinstDict[thiskinst] = [self._madInstObj.getInstrumentName(thiskinst), []]
-                    kinstDict[thiskinst][1].append(syear)
-                    kinstDict[thiskinst][1].append(eyear)
-
-                    if thiskinst not in kinstDict_priv:
-                        kinstDict_priv[thiskinst] = [self._madInstObj.getInstrumentName(thiskinst), []]
-                    kinstDict_priv[thiskinst][1].append(syear)
-                    kinstDict_priv[thiskinst][1].append(eyear)
+    #                 # build catDict
+    #                 if thiscategory not in catDict_priv:
+    #                     catDict_priv[thiscategory] = [[]]
+    #                 catDict_priv[thiscategory][0].append(thiskinst)
 
 
-                    # build siteDict
-                    if thissite not in siteDict:
-                        siteDict[thissite] = [[]]
-                    siteDict[thissite][0].append(thiskinst)
+    #             else:
+    #                 # public data, populate all needed dicts
 
-                    if thissite not in siteDict_priv:
-                        siteDict_priv[thissite] = [[]]
-                    siteDict_priv[thissite][0].append(thiskinst)
+    #                 # build kinstDict
+    #                 if thiskinst not in kinstDict:
+    #                     kinstDict[thiskinst] = [self._madInstObj.getInstrumentName(thiskinst), []]
+    #                 kinstDict[thiskinst][1].append(syear)
+    #                 kinstDict[thiskinst][1].append(eyear)
+
+    #                 if thiskinst not in kinstDict_priv:
+    #                     kinstDict_priv[thiskinst] = [self._madInstObj.getInstrumentName(thiskinst), []]
+    #                 kinstDict_priv[thiskinst][1].append(syear)
+    #                 kinstDict_priv[thiskinst][1].append(eyear)
 
 
-                    # build catDict
-                    if thiscategory not in catDict:
-                        catDict[thiscategory] = [[]]
-                    catDict[thiscategory][0].append(thiskinst)
+    #                 # build siteDict
+    #                 if thissite not in siteDict:
+    #                     siteDict[thissite] = [[]]
+    #                 siteDict[thissite][0].append(thiskinst)
 
-                    if thiscategory not in catDict_priv:
-                        catDict_priv[thiscategory] = [[]]
-                    catDict_priv[thiscategory][0].append(thiskinst)
+    #                 if thissite not in siteDict_priv:
+    #                     siteDict_priv[thissite] = [[]]
+    #                 siteDict_priv[thissite][0].append(thiskinst)
+
+
+    #                 # build catDict
+    #                 if thiscategory not in catDict:
+    #                     catDict[thiscategory] = [[]]
+    #                 catDict[thiscategory][0].append(thiskinst)
+
+    #                 if thiscategory not in catDict_priv:
+    #                     catDict_priv[thiscategory] = [[]]
+    #                 catDict_priv[thiscategory][0].append(thiskinst)
                     
 
-            # remove duplicate years
-            for kinst in kinstDict.keys():
-                kinstDict[kinst][1] = sorted(list(set(kinstDict[kinst][1])))
-            for kinst in kinstDict_priv.keys():
-                kinstDict_priv[kinst][1] = sorted(list(set(kinstDict_priv[kinst][1])))
+    #         # remove duplicate years
+    #         for kinst in kinstDict.keys():
+    #             kinstDict[kinst][1] = sorted(list(set(kinstDict[kinst][1])))
+    #         for kinst in kinstDict_priv.keys():
+    #             kinstDict_priv[kinst][1] = sorted(list(set(kinstDict_priv[kinst][1])))
             
-            # remove duplicate kinsts
-            for siteID in siteDict.keys():
-                siteDict[siteID][0] = list(set(siteDict[siteID][0]))
-            for siteID in siteDict_priv.keys():
-                siteDict_priv[siteID][0] = list(set(siteDict_priv[siteID][0]))
-            for category in catDict.keys():
-                catDict[category][0] = list(set(catDict[category][0]))
-            for category in catDict_priv.keys():
-                catDict_priv[category][0] = list(set(catDict_priv[category][0]))
+    #         # remove duplicate kinsts
+    #         for siteID in siteDict.keys():
+    #             siteDict[siteID][0] = list(set(siteDict[siteID][0]))
+    #         for siteID in siteDict_priv.keys():
+    #             siteDict_priv[siteID][0] = list(set(siteDict_priv[siteID][0]))
+    #         for category in catDict.keys():
+    #             catDict[category][0] = list(set(catDict[category][0]))
+    #         for category in catDict_priv.keys():
+    #             catDict_priv[category][0] = list(set(catDict_priv[category][0]))
 
-            kinstDF = pandas.DataFrame.from_dict(kinstDict)
-            kinstDF_priv = pandas.DataFrame.from_dict(kinstDict_priv)
-            siteDF = pandas.DataFrame.from_dict(siteDict)
-            siteDF_priv = pandas.DataFrame.from_dict(siteDict_priv)
-            catDF = pandas.DataFrame.from_dict(catDict)
-            catDF_priv = pandas.DataFrame.from_dict(catDict_priv)
+    #         kinstDF = pandas.DataFrame.from_dict(kinstDict)
+    #         kinstDF_priv = pandas.DataFrame.from_dict(kinstDict_priv)
+    #         siteDF = pandas.DataFrame.from_dict(siteDict)
+    #         siteDF_priv = pandas.DataFrame.from_dict(siteDict_priv)
+    #         catDF = pandas.DataFrame.from_dict(catDict)
+    #         catDF_priv = pandas.DataFrame.from_dict(catDict_priv)
 
-            instDataFile = os.path.join(self.__madDB.getMetadataDir(), "instData.hdf5")
-            privInstDataFile = os.path.join(self.__madDB.getMetadataDir(), "instDataPriv.hdf5")
+    #         instDataFile = os.path.join(self.__madDB.getMetadataDir(), "instData.hdf5")
+    #         privInstDataFile = os.path.join(self.__madDB.getMetadataDir(), "instDataPriv.hdf5")
 
-            kinstDF.to_hdf(instDataFile, key="kinst")
-            siteDF.to_hdf(instDataFile, key="site")
-            catDF.to_hdf(instDataFile, key="category")
+    #         kinstDF.to_hdf(instDataFile, key="kinst")
+    #         siteDF.to_hdf(instDataFile, key="site")
+    #         catDF.to_hdf(instDataFile, key="category")
 
-            kinstDF_priv.to_hdf(privInstDataFile, key="kinst")
-            siteDF_priv.to_hdf(privInstDataFile, key="site")
-            catDF_priv.to_hdf(privInstDataFile, key="category")
+    #         kinstDF_priv.to_hdf(privInstDataFile, key="kinst")
+    #         siteDF_priv.to_hdf(privInstDataFile, key="site")
+    #         catDF_priv.to_hdf(privInstDataFile, key="category")
 
 
-        except:
-            self.__closeMetaDBConnector()
-            raise madrigal.admin.MadrigalError('Problem rebuilding instData',
-                                                   traceback.format_exception(sys.exc_info()[0],
-                                                                              sys.exc_info()[1],
-                                                                              sys.exc_info()[2]))
+    #     except:
+    #         self.__closeMetaDBConnector()
+    #         raise madrigal.admin.MadrigalError('Problem rebuilding instData',
+    #                                                traceback.format_exception(sys.exc_info()[0],
+    #                                                                           sys.exc_info()[1],
+    #                                                                           sys.exc_info()[2]))
         
 
-    def getInstrumentsForWeb(self):
-        """getInstrumentsForWeb gets all (kinst, siteID) tuples needed
-        for getSingleRedirectList.
+    # def getInstrumentsForWeb(self):
+    #     """getInstrumentsForWeb gets all (kinst, siteID) tuples needed
+    #     for getSingleRedirectList.
 
-        Inputs: None
+    #     Inputs: None
 
-        Returns: list of (kinst, siteID) tuples
+    #     Returns: list of (kinst, siteID) tuples
         
-        """
-        if self.priv:
-            instDataFile = os.path.join(self.__madDB.getMetadataDir(), "instDataPriv.hdf5")
-        else:
-            instDataFile = os.path.join(self.__madDB.getMetadataDir(), "instData.hdf5")
+    #     """
+    #     if self.priv:
+    #         instDataFile = os.path.join(self.__madDB.getMetadataDir(), "instDataPriv.hdf5")
+    #     else:
+    #         instDataFile = os.path.join(self.__madDB.getMetadataDir(), "instData.hdf5")
             
-        siteDF = pandas.read_hdf(instDataFile, key="site")
-        siteDict = siteDF.to_dict()
+    #     siteDF = pandas.read_hdf(instDataFile, key="site")
+    #     siteDict = siteDF.to_dict()
 
-        kinstList = []
+    #     kinstList = []
 
-        for site in siteDict.keys():
-            print(siteDict[site][0])
-            kinstList += [(kinst, site) for kinst in siteDict[site][0]]
+    #     for site in siteDict.keys():
+    #         kinstList += [(kinst, site) for kinst in siteDict[site][0]]
 
-        return(kinstList)
+    #     return(kinstList)
     
 
-    def getInstrumentsForFTP(self):
-        """getInstrumentsForFTP gets all (instDesc, kinst) tuples needed
-        for views.ftp.
+    # def getInstrumentsForFTP(self):
+    #     """getInstrumentsForFTP gets all (instDesc, kinst) tuples needed
+    #     for views.ftp.
 
-        Inputs: None
+    #     Inputs: None
 
-        Returns: list of (instDesc, kinst) tuples
+    #     Returns: list of (instDesc, kinst) tuples
         
-        """
-        if self.priv:
-            instDataFile = os.path.join(self.__madDB.getMetadataDir(), "instDataPriv.hdf5")
-        else:
-            instDataFile = os.path.join(self.__madDB.getMetadataDir(), "instData.hdf5")
+    #     """
+    #     if self.priv:
+    #         instDataFile = os.path.join(self.__madDB.getMetadataDir(), "instDataPriv.hdf5")
+    #     else:
+    #         instDataFile = os.path.join(self.__madDB.getMetadataDir(), "instData.hdf5")
             
-        siteDF = pandas.read_hdf(instDataFile, key="site")
-        kinstDF = pandas.read_hdf(instDataFile, key="kinst")
-        siteDict = siteDF.to_dict()
-        kinstDict = kinstDF.to_dict()
+    #     siteDF = pandas.read_hdf(instDataFile, key="site")
+    #     kinstDF = pandas.read_hdf(instDataFile, key="kinst")
+    #     siteDict = siteDF.to_dict()
+    #     kinstDict = kinstDF.to_dict()
 
-        localSiteID = self.__madDB.getSiteID()
+    #     localSiteID = self.__madDB.getSiteID()
 
-        kinstList = []
+    #     kinstList = []
 
-        for kinst in siteDict[localSiteID][0]:
-            kinstList.append((kinstDict[kinst][0], kinst))
+    #     for kinst in siteDict[localSiteID][0]:
+    #         kinstList.append((kinstDict[kinst][0], kinst))
         
-        return(kinstList)
+    #     return(kinstList)
     
 
-    def getInstrumentsFor(self, categoryID=0, local=False):
-        """
+    # def getInstrumentsFor(self, categoryID=0, local=False):
+    #     """
         
         
-        getInstruments returns a list of (kinst, instrument desc, siteID) tuples.
+    #     getInstruments returns a list of (kinst, instrument desc, siteID) tuples.
 
-        Inputs: 
+    #     Inputs: 
         
-            categoryID - category id to return instruments with data for. If 0, return all
-            local - if False, return all instruments with that category for which there is data 
-                anywhere in Madrigal. If True, only return local instruments, in which case siteID
-                is always the local siteID.
+    #         categoryID - category id to return instruments with data for. If 0, return all
+    #         local - if False, return all instruments with that category for which there is data 
+    #             anywhere in Madrigal. If True, only return local instruments, in which case siteID
+    #             is always the local siteID.
         
-        Returns:  a list of (kinst, instrument desc, siteID) tuples
+    #     Returns:  a list of (kinst, instrument desc, siteID) tuples
 
-        Affects: None
+    #     Affects: None
 
-        Exceptions: MadrigalError if any item in row cannot be cast to correct format
-        """
+    #     Exceptions: MadrigalError if any item in row cannot be cast to correct format
+    #     """
 
-        if self.priv:
-            instDataFile = os.path.join(self.__madDB.getMetadataDir(), "instDataPriv.hdf5")
-        else:
-            instDataFile = os.path.join(self.__madDB.getMetadataDir(), "instData.hdf5")
+    #     if self.priv:
+    #         instDataFile = os.path.join(self.__madDB.getMetadataDir(), "instDataPriv.hdf5")
+    #     else:
+    #         instDataFile = os.path.join(self.__madDB.getMetadataDir(), "instData.hdf5")
             
-        siteDF = pandas.read_hdf(instDataFile, key="site")
-        kinstDF = pandas.read_hdf(instDataFile, key="kinst")
-        categoryDF = pandas.read_hdf(instDataFile, key="category")
-        siteDict = siteDF.to_dict()
-        kinstDict = kinstDF.to_dict()
-        catDict = categoryDF.to_dict()
+    #     siteDF = pandas.read_hdf(instDataFile, key="site")
+    #     kinstDF = pandas.read_hdf(instDataFile, key="kinst")
+    #     categoryDF = pandas.read_hdf(instDataFile, key="category")
+    #     siteDict = siteDF.to_dict()
+    #     kinstDict = kinstDF.to_dict()
+    #     catDict = categoryDF.to_dict()
 
-        localSiteID = self.__madDB.getSiteID()
+    #     localSiteID = self.__madDB.getSiteID()
         
 
 
-    def getCategories(self, local=False):
-        """getCategories returns the a list of (category id, category desc) tuples.
+    # def getCategories(self, local=False):
+    #     """getCategories returns the a list of (category id, category desc) tuples.
 
-        Inputs: 
+    #     Inputs: 
         
-            local - if False, return all categories for which there is data anywhere in Madrigal.
-                If True, only return local categories.
+    #         local - if False, return all categories for which there is data anywhere in Madrigal.
+    #             If True, only return local categories.
         
-        Returns:  a list of (category id, category desc) tuples
+    #     Returns:  a list of (category id, category desc) tuples
 
-        Affects: None
+    #     Affects: None
 
-        Exceptions: MadrigalError if any item in row cannot be cast to correct format
-        """
+    #     Exceptions: MadrigalError if any item in row cannot be cast to correct format
+    #     """
         
-        if local:
+    #     if local:
 
-            if self.priv:
-                instDataFile = os.path.join(self.__madDB.getMetadataDir(), "instDataPriv.hdf5")
-            else:
-                instDataFile = os.path.join(self.__madDB.getMetadataDir(), "instData.hdf5")
+    #         if self.priv:
+    #             instDataFile = os.path.join(self.__madDB.getMetadataDir(), "instDataPriv.hdf5")
+    #         else:
+    #             instDataFile = os.path.join(self.__madDB.getMetadataDir(), "instData.hdf5")
                 
-            siteDF = pandas.read_hdf(instDataFile, key="site")
-            siteDict = siteDF.to_dict()
+    #         siteDF = pandas.read_hdf(instDataFile, key="site")
+    #         siteDict = siteDF.to_dict()
             
-            siteID = self.__madDB.getSiteID()
-            kinstList = siteDict[siteID][0]
-            catList = [(self._madInstObj.getCategoryId(kinst), self._madInstObj.getCategory(kinst)) for kinst in kinstList]
-            return(catList)
+    #         siteID = self.__madDB.getSiteID()
+    #         kinstList = siteDict[siteID][0]
+    #         catList = list(set([(self._madInstObj.getCategoryId(kinst), self._madInstObj.getCategory(kinst)) for kinst in kinstList]))
+    #         return(catList)
 
-        else:
-            query = "SELECT * FROM instType"
+    #     else:
+    #         query = "SELECT * FROM instType"
 
 
-            try:
-                self.__initMetaDBConnector()
-                result = self.__cursor.execute(query)
-                resList = result.fetchall()
-                self.__closeMetaDBConnector()
+    #         try:
+    #             self.__initMetaDBConnector()
+    #             result = self.__cursor.execute(query)
+    #             resList = result.fetchall()
+    #             self.__closeMetaDBConnector()
 
-                return(resList)
-            except:
-                self.__closeMetaDBConnector()
-                raise madrigal.admin.MadrigalError('Problem getting categories',
-                                                    traceback.format_exception(sys.exc_info()[0],
-                                                                                sys.exc_info()[1],
-                                                                                sys.exc_info()[2]))
+    #             return(resList)
+    #         except:
+    #             self.__closeMetaDBConnector()
+    #             raise madrigal.admin.MadrigalError('Problem getting categories',
+    #                                                 traceback.format_exception(sys.exc_info()[0],
+    #                                                                             sys.exc_info()[1],
+    #                                                                             sys.exc_info()[2]))
         
             
         
 
 
-    def getInstruments(self, categoryID=0, local=False):
-        """
+    # def getInstruments(self, categoryID=0, local=False):
+    #     """
         
         
-        getInstruments returns a list of (kinst, instrument desc, siteID) tuples.
+    #     getInstruments returns a list of (kinst, instrument desc, siteID) tuples.
 
-        Inputs: 
+    #     Inputs: 
         
-            categoryID - category id to return instruments with data for. If 0, return all
-            local - if False, return all instruments with that category for which there is data 
-                anywhere in Madrigal. If True, only return local instruments, in which case siteID
-                is always the local siteID.
+    #         categoryID - category id to return instruments with data for. If 0, return all
+    #         local - if False, return all instruments with that category for which there is data 
+    #             anywhere in Madrigal. If True, only return local instruments, in which case siteID
+    #             is always the local siteID.
         
-        Returns:  a list of (kinst, instrument desc, siteID) tuples
+    #     Returns:  a list of (kinst, instrument desc, siteID) tuples
 
-        Affects: None
+    #     Affects: None
 
-        Exceptions: MadrigalError if any item in row cannot be cast to correct format
-        """
+    #     Exceptions: MadrigalError if any item in row cannot be cast to correct format
+    #     """
 
-        if self.priv:
-            instDataFile = os.path.join(self.__madDB.getMetadataDir(), "instDataPriv.hdf5")
-        else:
-            instDataFile = os.path.join(self.__madDB.getMetadataDir(), "instData.hdf5")
+    #     if self.priv:
+    #         instDataFile = os.path.join(self.__madDB.getMetadataDir(), "instDataPriv.hdf5")
+    #     else:
+    #         instDataFile = os.path.join(self.__madDB.getMetadataDir(), "instData.hdf5")
             
-        siteDF = pandas.read_hdf(instDataFile, key="site")
-        kinstDF = pandas.read_hdf(instDataFile, key="kinst")
-        categoryDF = pandas.read_hdf(instDataFile, key="category")
-        siteDict = siteDF.to_dict()
-        kinstDict = kinstDF.to_dict()
-        catDict = categoryDF.to_dict()
+    #     siteDF = pandas.read_hdf(instDataFile, key="site")
+    #     kinstDF = pandas.read_hdf(instDataFile, key="kinst")
+    #     categoryDF = pandas.read_hdf(instDataFile, key="category")
+    #     siteDict = siteDF.to_dict()
+    #     kinstDict = kinstDF.to_dict()
+    #     catDict = categoryDF.to_dict()
 
-        localSiteID = self.__madDB.getSiteID()
+    #     localSiteID = self.__madDB.getSiteID()
 
-        # case 1: categoryID != 0 AND local
-        if (categoryID != 0) and local:
-            kinsts = list(set(siteDict[localSiteID][0] + catDict[categoryID][0]))
-            retList = [(kinst, kinstDict[kinst][0], localSiteID) for kinst in kinsts]
-            return(retList)
+    #     # case 1: categoryID != 0 AND local
+    #     if (categoryID != 0) and local:
+    #         retList = []
+    #         kinsts = siteDict[localSiteID][0]
+    #         try:
+    #             retList = [(kinst, kinstDict[kinst][0], localSiteID) for kinst in kinsts if kinst in catDict[categoryID][0]]
+    #         except KeyError:
+    #             pass
+    #         return(retList)
         
-        # case 2: categoryID != 0 
-        if (categoryID != 0) and (not local):
-            retList = []
-            for site in siteDict.keys():
-                kinsts = list(set(siteDict[site][0] + catDict[categoryID][0]))
-                retList += [(kinst, kinstDict[kinst][0], site) for kinst in kinsts]
-            return(retList)
+    #     # case 2: categoryID != 0 
+    #     if (categoryID != 0) and (not local):
+    #         retList = []
+    #         for site in siteDict.keys():
+    #             kinsts = siteDict[site][0]
+    #             try:
+    #                 retList += [(kinst, kinstDict[kinst][0], site) for kinst in kinsts if kinst in catDict[categoryID][0]]
+    #             except KeyError:
+    #                 pass
+    #         return(retList)
 
-        # case 3: categoryID == 0 AND local
-        if (categoryID == 0) and local:
-            retList = [(kinst, kinstDict[kinst][0], localSiteID) for kinst in siteDict[localSiteID][0]]
-            return(retList)
+    #     # case 3: categoryID == 0 AND local
+    #     if (categoryID == 0) and local:
+    #         retList = [(kinst, kinstDict[kinst][0], localSiteID) for kinst in siteDict[localSiteID][0]]
+    #         return(retList)
 
-        # case 4: categoryID == 0
-        if (categoryID == 0) and (not local):
-            retList = []
-            for site in siteDict.keys():
-                retList += [(kinst, kinstDict[kinst][0], site) for kinst in siteDict[site][0]]
-            return(retList)
-
-
-
-
-
-
-
-        # NOTE 2 SELF: the way this is currently written may be 
-        # quite inefficient, ideally you would want to cache these 
-        # results somewhere
+    #     # case 4: categoryID == 0
+    #     if (categoryID == 0) and (not local):
+    #         # retList = []
+    #         # for site in siteDict.keys():
+    #         #     retList += [(kinst, kinstDict[kinst][0], site) for kinst in siteDict[site][0]]
+    #         # default to cedar site?
+    #         retList = [(kinst, kinstDict[kinst][0], 10) for kinst in siteDict[10][0]]
+    #         return(retList)
 
 
-        # GETTING CATEGORY IS BROKEN
-        # FIX ME    
 
 
-        # want kinst and sid from expTab
-        # then want kinst where category = catid from instTab
-        # finally get intersecting kinsts
 
-        # siteID = self.__madDB.getSiteID()
 
-        # query1 = "SELECT kinst, sid FROM expTab"
-        # if local:
-        #     cond = (" WHERE sid={}").format(siteID)
-        #     query1 += cond
 
-        # query2 = "SELECT kinst, name FROM instTab"
-        # if categoryID != 0:
-        #     query2 += " WHERE category={}".format(categoryID)
+    #     # NOTE 2 SELF: the way this is currently written may be 
+    #     # quite inefficient, ideally you would want to cache these 
+    #     # results somewhere
+
+
+    #     # GETTING CATEGORY IS BROKEN
+    #     # FIX ME    
+
+
+    #     # want kinst and sid from expTab
+    #     # then want kinst where category = catid from instTab
+    #     # finally get intersecting kinsts
+
+    #     # siteID = self.__madDB.getSiteID()
+
+    #     # query1 = "SELECT kinst, sid FROM expTab"
+    #     # if local:
+    #     #     cond = (" WHERE sid={}").format(siteID)
+    #     #     query1 += cond
+
+    #     # query2 = "SELECT kinst, name FROM instTab"
+    #     # if categoryID != 0:
+    #     #     query2 += " WHERE category={}".format(categoryID)
             
 
-        # # first get matching kinst list
-        # try:
-        #     self.__initMetaDBConnector()
-        #     result = self.__cursor.execute(query1)
-        #     resList1 = result.fetchall()
+    #     # # first get matching kinst list
+    #     # try:
+    #     #     self.__initMetaDBConnector()
+    #     #     result = self.__cursor.execute(query1)
+    #     #     resList1 = result.fetchall()
 
-        #     # key: kinst, value: site id
-        #     kinstdict = {}
-        #     for items in resList1:
-        #         if items[0] not in kinstdict.keys():
-        #             kinstdict[items[0]] = []
-        #             kinstdict[items[0]].append(items[1])
-        #         else:
-        #             if items[1] not in kinstdict[items[0]]:
-        #                 kinstdict[items[0]].append(items[1])
+    #     #     # key: kinst, value: site id
+    #     #     kinstdict = {}
+    #     #     for items in resList1:
+    #     #         if items[0] not in kinstdict.keys():
+    #     #             kinstdict[items[0]] = []
+    #     #             kinstdict[items[0]].append(items[1])
+    #     #         else:
+    #     #             if items[1] not in kinstdict[items[0]]:
+    #     #                 kinstdict[items[0]].append(items[1])
 
-        #     result = self.__cursor.execute(query2)
-        #     resList2 = result.fetchall()
-        #     # key: kinst, value: inst name
-        #     resList2 = {i[0]:i[1] for i in resList2}
-        #     self.__closeMetaDBConnector()
+    #     #     result = self.__cursor.execute(query2)
+    #     #     resList2 = result.fetchall()
+    #     #     # key: kinst, value: inst name
+    #     #     resList2 = {i[0]:i[1] for i in resList2}
+    #     #     self.__closeMetaDBConnector()
 
-        #     #print(resList2[30])
-        #     #print(kinstdict[30])
-        #     # retList = [(kinst, resList2[kinst], kinstdict[kinst]) for kinst in kinstdict.keys()]
-        #     retList = []
+    #     #     #print(resList2[30])
+    #     #     #print(kinstdict[30])
+    #     #     # retList = [(kinst, resList2[kinst], kinstdict[kinst]) for kinst in kinstdict.keys()]
+    #     #     retList = []
 
-        #     if categoryID != 0:
-        #         for kinst in set(kinstdict.keys()).intersection(set(resList2.keys())):
-        #             for site in kinstdict[kinst]:
-        #                 retList.append((kinst, resList2[kinst], site))
-        #     else:
-        #         for kinst in kinstdict.keys():
-        #             for site in kinstdict[kinst]:
-        #                 retList.append((kinst, resList2[kinst], site))
+    #     #     if categoryID != 0:
+    #     #         for kinst in set(kinstdict.keys()).intersection(set(resList2.keys())):
+    #     #             for site in kinstdict[kinst]:
+    #     #                 retList.append((kinst, resList2[kinst], site))
+    #     #     else:
+    #     #         for kinst in kinstdict.keys():
+    #     #             for site in kinstdict[kinst]:
+    #     #                 retList.append((kinst, resList2[kinst], site))
             
-        #     return(retList)
-        # except:
-        #     self.__closeMetaDBConnector()
-        #     raise madrigal.admin.MadrigalError('Problem getting instruments',
-        #                                            traceback.format_exception(sys.exc_info()[0],
-        #                                                                       sys.exc_info()[1],
-        #                                                                       sys.exc_info()[2]))
+    #     #     return(retList)
+    #     # except:
+    #     #     self.__closeMetaDBConnector()
+    #     #     raise madrigal.admin.MadrigalError('Problem getting instruments',
+    #     #                                            traceback.format_exception(sys.exc_info()[0],
+    #     #                                                                       sys.exc_info()[1],
+    #     #                                                                       sys.exc_info()[2]))
         
     
-    def getInstrumentYears(self, kinst):
-        """getInstrumentYears returns the a list of years (int) for instrument.
+    # def getInstrumentYears(self, kinst):
+    #     """getInstrumentYears returns the a list of years (int) for instrument.
+
+    #     Inputs: 
+        
+    #         kinst - the instrument id
+        
+    #     Returns:  an ordered list of years as integers.  If none found, raises error
+
+    #     Affects: None
+
+    #     Exceptions: MadrigalError if any item in row cannot be cast to correct format
+    #     """
+    #     if self.priv:
+    #         instDataFile = os.path.join(self.__madDB.getMetadataDir(), "instDataPriv.hdf5")
+    #     else:
+    #         instDataFile = os.path.join(self.__madDB.getMetadataDir(), "instData.hdf5")
+            
+    #     kinstDF = pandas.read_hdf(instDataFile, key="kinst")
+    #     kinstDict = kinstDF.to_dict()
+
+    #     return(kinstDict[kinst][1])
+
+class MadrigalMetadata:
+    """MadrigalMetadata is a private class that parses a Madrigal metadata file.
+
+
+    This private class is used by all classes that need to parse a Madrigal
+    metadata file.  If the class is called with the name of the metadata file only,
+    the metadata file is assumed to be at $MAD_ROOT/metadata.  If a full path name is
+    given that includes a directory separator, then that is used instead.  The getList
+    method returns a list with one item for each line in the file.  That item for each
+    line is simply a list of strings found in the line.  The following is an example
+    metadata file and the list the method getList would return.
+
+    Metadata file example::
+
+        Tom, Dick,,Harry
+        ,,Joe,
+        Sally, Jane,Joe, Dick
+
+    The list returned by getList example::
+
+        [['Tom', 'Dick', '', 'Harry'],
+        ['', '', 'Joe', ''],
+        ['Sally', 'Jane', 'Joe', 'Dick']]
+
+        
+    Non-standard Python modules used:
+    None
+
+    MadrigalError exception thrown if:
+
+        1. Unable to open metadata file.
+	
+        2. All lines in metadata file do not have same number of items
+
+    Change history:
+
+    Written by "Bill Rideout":mailto:wrideout@haystack.mit.edu  Nov. 8, 2001
+
+    """
+
+    # constants
+
+    # file delimiter - presently a comma
+    __DELIMITER = ','
+    
+
+    def __init__(self, metadataFileName, madDB=None, allowedLenList=None, key=None):
+        """__init__ initializes the MadrigalCategoryList by reading from __privateList.
+
+        Inputs: String metadataFileName - if not a full path, then MadrigalDB.getMetadataDir
+            is included.
+
+            Existing MadrigalDB object, by default = None.
+            
+            allowedLenList - a list of allowed lengths (integers) for data lines.  If None (the default),
+            then the rule is that all lengths must be the same.
+            
+            key - which position in the file to use as a key.  Creates a attribute called self._dict,
+            which is a dictionary with keys = item in key position, value = line index.  Used for
+            faster lookup by key.  If None (the default), self._dict = None
+        
+        Returns: void
+
+        Affects: Initializes private member variable __categoryList.
+
+        Exceptions: None.
+        """
+
+        # get metadata dir
+        if madDB == None:
+            self.__madDB = madrigal.metadata.MadrigalDB()
+        else:
+            self.__madDB = madDB
+        
+        # create empty list to hold parsed data
+        self.__fileList = []
+
+        # used to check that every line has same number of words if allowedLenList == None
+        self.__numWords = 0
+        self._allowedLenList = allowedLenList
+        
+        if not key is None:
+            self._dict = {}
+        else:self._dict = None
+        
+        # get real filename 
+        self.__fileName = self.__getFullPath(metadataFileName)
+
+        # open configuration file
+        try:
+            self.__file = open(self.__fileName, "r")
+            
+        except IOError:
+            # do nothing, this class is now only used for instData, and this error will only occur
+            # if we haven't run updateMaster yet
+            raise FileNotFoundError
+            # raise madrigal.admin.MadrigalError("Unable to open metadata file " + self.__fileName,
+            #                                            traceback.format_exception(sys.exc_info()[0],
+            #                                                             sys.exc_info()[1],
+            #                                                             sys.exc_info()[2]))
+                                                       
+
+        # loop over each line in file, creating a list for each
+        line = self.__file.readline()
+        
+        count = 0
+        while (len(line.strip())):
+            self.__parseLine(line, key, count)
+            line = self.__file.readline()
+            count += 1
+
+        # close metadata file
+        self.__file.close()
+            
+
+    def __parseLine(self, line, key=None, count=None):
+        """__parseLine adds a list of items in line to __fileList.
 
         Inputs: 
+            Line of file to parse (String).
+            key - position to add key for self._dict, value = line position
+                If None (the default), ignore
+            count - if None, ignore.  Else add to self._dict as value (see key above)
         
-            kinst - the instrument id
         
-        Returns:  an ordered list of years as integers.  If none found, raises error
+        Returns: void
 
-        Affects: None
+        Affects: Adds a list of items in line to self.__fileList.
 
-        Exceptions: MadrigalError if any item in row cannot be cast to correct format
+        Exceptions: None.
         """
-        if self.priv:
-            instDataFile = os.path.join(self.__madDB.getMetadataDir(), "instDataPriv.hdf5")
-        else:
-            instDataFile = os.path.join(self.__madDB.getMetadataDir(), "instData.hdf5")
-            
-        kinstDF = pandas.read_hdf(instDataFile, key="kinst")
-        kinstDict = kinstDF.to_dict()
+        list = line.split(self.__DELIMITER)
 
-        return(kinstDict[kinst][1])
+        # create new list with leading and trailing whitespace stripped
+
+        strippedList = []
+        
+        for word in list:
+            strippedList.append(word.strip())
+
+        self.__fileList.append(strippedList)
+        
+        if not self._dict is None:
+            self._dict[list[key]] = count
+
+        # check correct number of words
+        if self._allowedLenList:
+            if len(strippedList) not in self._allowedLenList:
+                raise madrigal.admin.MadrigalError("Wrong number of items found in metadata file " + \
+                                                   self.__fileName + " at line " + \
+                                                   str(len(self.__fileList)),
+                                                   [traceback.format_exc()])
+        elif self.__numWords == 0:
+            self.__numWords = len(strippedList)
+            
+        elif self.__numWords != len(strippedList):
+            raise madrigal.admin.MadrigalError("Wrong number of items found in metadata file " + \
+                                                       self.__fileName + " at line " + \
+                                                       str(len(self.__fileList)),
+                                                       [traceback.format_exc()])
+
+    def __getFullPath(self, filename):
+        """getFullPath returns the full path name of the metafile.
+        
+        Inputs: filename passed in as argument
+        
+        Returns: The full path name of the metafile.  If the filename argument already is
+        a full path, filename is returned unchanged.  If the filename is simply the name
+        of a metadata file, then $MAD_ROOT/metadata is appended
+
+        Affects: Nothing
+
+        Exceptions: None
+        """
+
+        if (len(os.path.dirname(filename)) != 0):
+            return filename
+
+        fullName = self.__madDB.getMetadataDir() + "/" + filename
+
+        # normalize in case we run on a system without / as a separator
+
+        return os.path.normpath(fullName)
+
+
+    
+    # public methods
+
+    def getList(self):
+        """getList returns the list of lists of items in each line in the metafile.
+        
+        Inputs: None
+        
+        Returns: The list of lists of items in each line in the metafile.  That is, each
+        item in the returned list is itself a list, representing a single line in the
+        metafile. That single line's list is the list of items in that line.
+
+        Affects: Nothing
+
+        Exceptions: None
+        """
+
+        return(self.__fileList)
+    
+    
+    def getDict(self):
+        """getDict returns self_dict, which will be a dict with keys= key column set, value = line number,
+        of None if no key passed into constructor
+        """
+        return(self._dict)
+    
+
+    def toString(self):
+        """toString returns a simple string representation of a MadrigalMetadata object.
+
+        Inputs: None
+        
+        Returns: String describing a simple representation of a __MadrigalMetadat object.
+
+        Affects: Nothing
+
+        Exceptions: None
+        """
+
+        return str(self.__fileList)
+
+
+
 
 

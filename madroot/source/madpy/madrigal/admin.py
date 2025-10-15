@@ -1619,7 +1619,7 @@ class MadrigalDBAdmin:
         # instKindatTab.txt
         print('*** Rebuilding instData ***')
         obj = madrigal.metadata.MadrigalInstrumentData(self.__madDB)
-        obj.rebuildInstDataTable()
+        obj._updateInstData()#obj.rebuildInstDataTable()
         e = datetime.datetime.now()
         print("rebuilding instData took {} s".format((e-s).seconds))
 

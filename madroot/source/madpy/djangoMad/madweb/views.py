@@ -3414,8 +3414,6 @@ def set_group_id_from_url_list_service(request):
     """
     madDB = madrigal.metadata.MadrigalDB()
     
-    print(request.GET)
-    
     # get required arguments
     urls = request.GET.getlist('url')
     user_fullname = request.GET['user_fullname']

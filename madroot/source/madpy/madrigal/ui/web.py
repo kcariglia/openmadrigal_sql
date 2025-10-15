@@ -955,10 +955,9 @@ class MadrigalWeb:
         
         
         retList = []
-        for kinst, thisSiteID in madInstData.getInstrumentsForWeb():
+        for kinst, desc, thisSiteID in madInstData.getInstruments(categoryID=0, local=False):
             if len(siteDict[thisSiteID]) > 0:
                 if siteDict[thisSiteID].find('=%i') != -1:
-                    print(f"kinst is {kinst}, catid is {self._instObj.getCategoryId(kinst)}")
                     url = siteDict[thisSiteID] % (self._instObj.getCategoryId(kinst), kinst)
                 else:
                     url = siteDict[thisSiteID]
