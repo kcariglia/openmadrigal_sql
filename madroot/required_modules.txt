@@ -14,4 +14,3 @@ sqlparse
 filelock
 packaging
 madrigalWeb
-pandas

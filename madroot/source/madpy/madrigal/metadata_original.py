@@ -2,7 +2,7 @@
 
 """The metadata module provides access to all metadata about one particular madrigal database.
 
-This metadata is presently read from the files in the metadata directory, and from the
+This metadata is presently read from the SQLite metadata database in the metadata directory, and from the
 madrigal.cfg file.  If that file cannot be found, hard-coded values set during installation
 are used instead.  If the madrigal.cfg file is found at the location specified by either
 the madroot enviroment variable or at the hard-coded value of madroot set at installation, then
@@ -10,8 +10,8 @@ the parameters are read from the madrigal.cfg file.  Note that madroot with caps
 once in this file before installation, since it will be automatically replaced, so it is referred
 to by MAD_ROOT or MAD+ROOT.
 
-As of (whenever I finish this), metadata text files are used to populate the metadata.db SQLite
-database. Old metadata text files are kept for posterity and backwards compatibility.
+Experiment and file level metadata text files are used to populate the metadata.db SQLite
+database. All metadata text files are kept for posterity and backwards compatibility.
 
 $Id: metadata_original.py 7740 2025-01-09 14:44:56Z kcariglia $
 """
@@ -38,7 +38,6 @@ import sqlite3
 import filelock
 import h5py
 import numpy
-import pandas
 
 # Madrigal imports
 import madrigal.admin
@@ -335,7 +334,10 @@ class MadrigalDB:
 
         Returns: Void
 
-        Affects: Initializes private class member variables to connect to metadata.db
+        Affects: Initializes private class member variables (__connector and __cursor) to
+        connect to metadata.db
+
+        Exceptions: MadrigalError thrown if unable to connect to metadata.db
         """
         try:
             self.__connector = sqlite3.connect(os.path.join(self.getMetadataDir(), METADB))
@@ -847,9 +849,8 @@ class MadrigalDB:
         localRules = None
 
         try:
-            f = open(os.path.join(self.getMadroot(), 'local_rules_of_the_road.txt'))
-            localRules = f.read()
-            f.close()
+            with open(os.path.join(self.getMadroot(), 'local_rules_of_the_road.txt')) as f:
+                localRules = f.read()
         except:
             pass
 
@@ -1147,7 +1148,7 @@ class MadrigalDB:
         Exceptions: None
         """
 
-        # use input args to format condition strings
+        # use input args to format SQL condition strings
         # for lists: where <column name> in <arg list>
         # first, get all expIDs necessary
         # then get files based on expIDs
@@ -1944,7 +1945,7 @@ class MadrigalDB:
         Returns all filename and experiment ID combinations present in fileTab. Used to check for
         duplicate fileTab entries. Represented as a dictionary {(fname, eid):(fname, eid)} for
         improved search performance. 
-        Also returns dictionary of experiment IDs {eid:eid}.
+        Also returns dictionary of experiment IDs {eid:eid} for indexing.
 
         Inputs: None
         Returns: Dictionary of filename and expID combos, {(fname, eid):(fname, eid)} and dictionary
@@ -2005,6 +2006,7 @@ class MadrigalDB:
                         for i in range(len(expList)) if ((expList[i][1] not in expUrls) )] # and ((expList[i][9] == '0') or (expList[i][9] == '2'))
 
         # criteria: url does not already exist #and security == 0 | 2
+        # security too restrictive? FIX ME
         return(expData)
     
 
@@ -2509,23 +2511,19 @@ class MadrigalDB:
         __dirConvStr2 = '/experiments[0-9]*/[0-9][0-9][0-9][0-9]/[a-z][a-z0-9][a-z0-9]/[0-3][0-9][a-z][a-z0-9][a-z0-9][0-9][0-9].?'
 
         # ignore any directory without expTab.txt and fileTab.txt if not includeNonMadrigal
-        # if 'expTab.txt' in names:
-        #     self.__hasExpTab = 1
-        # else:
-        #     self.__hasExpTab = 0
+        if 'expTab.txt' in names:
+            self.__hasExpTab = 1
+        else:
+            self.__hasExpTab = 0
 
-        # if 'fileTab.txt' in names:
-        #     self.__hasFileTab = 1
-        # else:
-        #     self.__hasFileTab = 0
+        if 'fileTab.txt' in names:
+            self.__hasFileTab = 1
+        else:
+            self.__hasFileTab = 0
             
-        # if arg[__includeNonMad] == 0:
-        #     if not self.__hasExpTab or not self.__hasFileTab:
-        #         return
-
-
-        # NOTE 2 SELF; probably get rid of includeNonMadrigal arg?
-
+        if arg[__includeNonMad] == 0:
+            if not self.__hasExpTab or not self.__hasFileTab:
+                return
 
         # apply all filters relating to expTab.txt if self.__hasExpTab
         try:
@@ -2731,50 +2729,32 @@ class MadrigalDB:
                     arg[__fileList].append((dirname + '/' + filename, expKinst, thisStartTime))
                 fileCount = fileCount + 1
 
-            # what exactly is a non-madrigal file?
+            # what exactly is a non-madrigal file? FIX ME
 
             # now add all non-madrigal files if includeNonMad
-            # if arg[__includeNonMad] == 1:
-            #     for name in names:
-            #         # skip dir names
-            #         if os.path.isdir(dirname + '/' + name):
-            #             continue
-            #         # if its not in fileTab.txt, add it
-            #         if fileMeta.getExpIdByFilename(name) == None:
-            #             if arg[__appendKinst] == 0 and arg[__appendStartTime] == 0:
-            #                 # return only file names
-            #                 arg[__fileList].append(dirname + '/' + name)
-            #             elif arg[__appendStartTime] == 0:
-            #                 # return file name, inst code tuple
-            #                 arg[__fileList].append((dirname + '/' + name, expKinst))
-            #             elif arg[__appendKinst] == 0:
-            #                 # return file name, start time tuple
-            #                 arg[__fileList].append((dirname + '/' + name, thisStartTime))
-            #             else:
-            #                 # append both
-            #                 arg[__fileList].append((dirname + '/' + filename, expKinst, thisStartTime))
+            if arg[__includeNonMad] == 1:
+                for name in names:
+                    # skip dir names
+                    if os.path.isdir(dirname + '/' + name):
+                        continue
+                    # if its not in fileTab.txt, add it
+                    if fileMeta.getExpIdByFilename(name) == None:
+                        if arg[__appendKinst] == 0 and arg[__appendStartTime] == 0:
+                            # return only file names
+                            arg[__fileList].append(dirname + '/' + name)
+                        elif arg[__appendStartTime] == 0:
+                            # return file name, inst code tuple
+                            arg[__fileList].append((dirname + '/' + name, expKinst))
+                        elif arg[__appendKinst] == 0:
+                            # return file name, start time tuple
+                            arg[__fileList].append((dirname + '/' + name, thisStartTime))
+                        else:
+                            # append both
+                            arg[__fileList].append((dirname + '/' + filename, expKinst, thisStartTime))
 
         # else the file has no fileTab.txt and includeNonMad is true - include all files
         except madrigal.admin.MadrigalError as e:
             print(e.getExceptionStr())
-        
-        # arg[__includeNonMad] == 1:
-        #     for name in names:
-        #         # skip dir names
-        #         if os.path.isdir(dirname + '/' + name):
-        #             continue
-        #         if arg[__appendKinst] == 0 and arg[__appendStartTime] == 0:
-        #             # return only file names
-        #             arg[__fileList].append(dirname + '/' + name)
-        #         elif arg[__appendStartTime] == 0:
-        #             # return file name, inst code tuple
-        #             arg[__fileList].append((dirname + '/' + name, expKinst))
-        #         elif arg[__appendKinst] == 0:
-        #             # return file name, start time tuple
-        #             arg[__fileList].append((dirname + '/' + name, thisStartTime))
-        #         else:
-        #             # append both
-        #             arg[__fileList].append((dirname + '/' + filename, expKinst, thisStartTime))
                 
 
     def __setFileAccess(self, arg, dirname, names):
@@ -2906,7 +2886,10 @@ class MadrigalSite:
 
         Returns: Void
 
-        Affects: Initializes private class member variables to connect to metadata.db
+        Affects: Initializes private class member variables (__connector and __cursor) to
+        connect to metadata.db
+
+        Exceptions: MadrigalError thrown if unable to connect to metadata.db
         """
         try:
             self.__connector = sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), self.__filename))
@@ -3045,7 +3028,7 @@ class MadrigalSite:
     def getSiteRelativeCGI(self, siteID):
         """getSiteRelativeCGI returns the relative cgi path (e.g.cgi-bin/madrigal)  that matches siteID argument, or None if not found.
         
-        For Madrigal 3.0 sites and later, this returns getSiteDocRoot, and the cgi field is ignored.
+        For Madrigal 3.0 sites and later, this returns getSiteDocRoot, and the cgi field is ignored. FIX ME
 
         Inputs: siteID integer to get relative cgi path.
         
@@ -3566,6 +3549,7 @@ class MadrigalSite:
         """
         Updates siteTab with parsed input text, formatted as it would be in siteTab.txt.
         Generally for use with checkOpenMadrigalMetadata in updateMaster.
+        FIX ME idk if we need this here
 
         Inputs: text - comma/newline delimited site metadata, formatted as it would be in siteTab.txt
         Returns: None
@@ -3699,7 +3683,10 @@ class MadrigalInstrument:
 
         Returns: Void
 
-        Affects: Initializes private class member variables to connect to metadata.db
+        Affects: Initializes private class member variables (__connector and __cursor) to
+        connect to metadata.db
+
+        Exceptions: MadrigalError thrown if unable to connect to metadata.db
         """
         try:
             self.__connector = sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), self.__filename))
@@ -4277,7 +4264,10 @@ class MadrigalInstrumentParameters:
 
         Returns: Void
 
-        Affects: Initializes private class member variables to connect to metadata.db
+        Affects: Initializes private class member variables (__connector and __cursor) to
+        connect to metadata.db
+
+        Exceptions: MadrigalError thrown if unable to connect to metadata.db
         """
         try:
             self.__connector = sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), self.__filename))
@@ -4397,6 +4387,7 @@ class MadrigalInstrumentParameters:
         # if not os.access(filename, os.W_OK):
         #     raise madrigal.admin.MadrigalError('Unable to write: ' + str(filename), None)
         # we should already be connected to metadata.db
+        # FIX ME double check this when testing
 
         # if madroot not set, set it now
         if os.environ.get('MAD' + 'ROOT') == None:
@@ -4615,7 +4606,10 @@ class MadrigalKindat:
 
         Returns: Void
 
-        Affects: Initializes private class member variables to connect to metadata.db
+        Affects: Initializes private class member variables (__connector and __cursor) to
+        connect to metadata.db
+
+        Exceptions: MadrigalError thrown if unable to connect to metadata.db
         """
         try:
             self.__connector = sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), self.__filename))
@@ -4662,6 +4656,8 @@ class MadrigalKindat:
         Affects: None
 
         Exceptions: MadrigalError if any problems accessing metadata.db.
+
+        FIX ME double check kinst/kindat combinations. can get resList more efficiently
         """
         kcode = None
         if kinst:
@@ -4765,6 +4761,10 @@ class MadrigalExperiment:
 
     Written by "Bill Rideout":mailto:wrideout@haystack.mit.edu  Apr. 17, 2002
 
+    ---- Updates as of SQLMad release ----
+    Update for all ByPosition methods: position args default to 0 but are autoincremented on 
+    the backend to account for sqlite-1-indexing.
+
     """
 
     #constants
@@ -4822,6 +4822,7 @@ class MadrigalExperiment:
         Assumed to be a local experiment.
 
         Inputs: initFile, referring to expTab.txt (doesn't need to exist-- only need expDir from path to this file)
+        FIX ME: do we assume expTab exists? what about nonlocal exps?
 
         Returns: void
 
@@ -4830,7 +4831,7 @@ class MadrigalExperiment:
         Exceptions: MadrigalError thrown if path to initFile contains malformed expDir, or
         if expDir not found
         """
-        # first check that path to initFile contains expDir
+        # first check that path to initFile contains a valid expDir
         dir = os.path.dirname(initFile)
         dirConvStr1 = 'experiments[0-9]*/[0-9][0-9][0-9][0-9]/[a-z][a-z0-9][a-z0-9]/[a-zA-Z0-9\-_]*$'
         dirConvStr2 = 'experiments[0-9]*/[0-9][0-9][0-9][0-9]/[a-z][a-z0-9][a-z0-9]/[0-3][0-9][a-z][a-z0-9][a-z0-9][0-9][0-9].?'
@@ -4924,9 +4925,9 @@ class MadrigalExperiment:
     def getExpIdByPosition(self, position = 0):
         """getExpIdByPosition returns the experiment id of the experiment at given position.
 
-        Inputs: position of experiment in list (first position is zero).  Defaults to first.
+        Inputs: position of experiment in list.  Defaults to first.
         
-        Returns: the experiment id (integer), or None if position >= number of experiments.
+        Returns: the experiment id (integer), or None.
 
         Affects: None
 
@@ -4961,7 +4962,7 @@ class MadrigalExperiment:
 
         Inputs:
 
-            position - position of experiment in list (first position is zero).
+            position - position of experiment in list. 
 
             expId - the new experiment id to use
         
@@ -4995,9 +4996,9 @@ class MadrigalExperiment:
     def getExpUrlByPosition(self, position = 0):
         """getExpUrlByPosition returns the experiment url of the experiment at given position.
 
-        Inputs: position of experiment in list (first position is zero).  Defaults to first.
+        Inputs: position of experiment in list.  Defaults to first.
         
-        Returns: the experiment url, or None if position >= number of experiments.
+        Returns: the experiment url, or None.
 
         Affects: None
 
@@ -5055,9 +5056,9 @@ class MadrigalExperiment:
         
         The url in the metadata may contain /madtoc/ for historical reasons.  This method converts that url to the real one.
 
-        Inputs: position of experiment in list (first position is zero).  Defaults to first.
+        Inputs: position of experiment in list.  Defaults to first.
         
-        Returns: the real experiment url, or None if position >= number of experiments.
+        Returns: the real experiment url, or None.
 
         Affects: None
 
@@ -5115,9 +5116,9 @@ class MadrigalExperiment:
         
         Experiment path is the path to the experiment from the madroot directory, and always begins "experiments"
         
-        Inputs: position of experiment in list (first position is zero).  Defaults to first.
+        Inputs: position of experiment in list.  Defaults to first.
         
-        Returns: the path to the experiment from the madroot directory, or None if position >= number of experiments.
+        Returns: the path to the experiment from the madroot directory, or None.
 
         Affects: None
 
@@ -5174,7 +5175,7 @@ class MadrigalExperiment:
 
         Inputs:
 
-            position - position of experiment in list (first position is zero).
+            position - position of experiment in list.
 
             expUrl - the new experiment url to use
         
@@ -5208,9 +5209,9 @@ class MadrigalExperiment:
     def getExpDirByPosition(self, position = 0):
         """getExpDirByPosition returns the full experiment directory of the experiment at given position.
 
-        Inputs: position of experiment in list (first position is zero).  Defaults to first.
+        Inputs: position of experiment in list.  Defaults to first.
         
-        Returns: the full experiment directory, or None if position >= number of experiments.  Uses
+        Returns: the full experiment directory, or None.  Uses
         experiment url to determine directory.
 
         Affects: None
@@ -5267,9 +5268,9 @@ class MadrigalExperiment:
     def getExpNameByPosition(self, position = 0):
         """getExpNameByPosition returns the experiment name of the experiment at given position.
 
-        Inputs: position of experiment in list (first position is zero).  Defaults to first.
+        Inputs: position of experiment in list.  Defaults to first.
         
-        Returns: the experiment name, or None if position >= number of experiments.
+        Returns: the experiment name, or None.
 
         Affects: None
 
@@ -5327,7 +5328,7 @@ class MadrigalExperiment:
 
         Inputs:
 
-            position - position of experiment in list (first position is zero).
+            position - position of experiment in list.
 
             expName - the new experiment name to use
         
@@ -5386,9 +5387,9 @@ class MadrigalExperiment:
     def getExpSiteIdByPosition(self, position = 0):
         """getExpSiteIdByPosition returns the experiment site id of the experiment at given position.
 
-        Inputs: position of experiment in list (first position is zero).  Defaults to first.
+        Inputs: position of experiment in list.  Defaults to first.
         
-        Returns: the experiment site id (integer), or None if position >= number of experiments.
+        Returns: the experiment site id (integer), or None.
 
         Affects: None
 
@@ -5420,7 +5421,7 @@ class MadrigalExperiment:
 
         Inputs:
 
-            position - position of experiment in list (first position is zero).
+            position - position of experiment in list.
 
             expSiteId - the new experiment site id to use
         
@@ -5455,10 +5456,10 @@ class MadrigalExperiment:
     def getExpStartDateTimeByPosition(self, position = 0):
         """getExpStartDateTimeByPosition returns the starting date/time of the experiment at given position.
 
-        Inputs: position of experiment in list (first position is zero).  Defaults to first.
+        Inputs: position of experiment in list.  Defaults to first.
         
         Returns: the experiment start date/time in the standard python form of 9 item tuple in UTC.  
-        Returns None if position >= number of experiments.  Since mktime does not go before 1970, I use
+        Returns None if experiment not found.  Since mktime does not go before 1970, I use
         date.c methods, and miss only day of week and DST flag
         
         Affects: None
@@ -5525,10 +5526,10 @@ class MadrigalExperiment:
     def getExpEndDateTimeByPosition(self, position = 0):
         """getExpEndDateTimeByPosition returns the ending date/time of the experiment at given position.
 
-        Inputs: position of experiment in list (first position is zero).  Defaults to first.
+        Inputs: position of experiment in list.  Defaults to first.
         
         Returns: the experiment end date/time in the standard python form of 9 item tuple in UTC.  
-        Returns None if position >= number of experiments.  Since mktime does not go before 1970, I use
+        Returns None if experiment not found.  Since mktime does not go before 1970, I use
         date.c methods, and miss only day of week and DST flag
         
         Affects: None
@@ -5728,7 +5729,7 @@ class MadrigalExperiment:
 
             startDateTime - a python datetime object to set the exp start date and time to.
 
-            position - which experiment row to change - defaults to 0
+            position - which experiment position to change 
         
         Returns: None.
         
@@ -5762,7 +5763,7 @@ class MadrigalExperiment:
 
             endDateTime - a python datetime object to set the exp end date and time to.
 
-            position - which experiment row to change - defaults to 0
+            position - which experiment position to change
         
         Returns: None.
         
@@ -5792,10 +5793,10 @@ class MadrigalExperiment:
     def getKinstByPosition(self, position = 0):
         """getKinstByPosition returns the kinst (kind of instrument code) of the experiment at given position.
 
-        Inputs: position of file in list (first position is zero).  Defaults to first.
+        Inputs: position of file in list.  Defaults to first.
         
         Returns: the kinst (instrument code) of the file at given position as an integer.  
-        Returns None if position >= number of files.
+        Returns None if not found.
         
         Affects: None
 
@@ -5865,7 +5866,7 @@ class MadrigalExperiment:
 
         Inputs:
 
-            position - position of experiment in list (first position is zero).
+            position - position of experiment in list.
 
             expKinst - the new experiment kinst to use
         
@@ -5901,10 +5902,10 @@ class MadrigalExperiment:
     def getSecurityByPosition(self, position = 0):
         """getSecurityByPosition returns the security code of the experiment at given position.
 
-        Inputs: position of file in list (first position is zero).  Defaults to first.
+        Inputs: position of file in list.  Defaults to first.
         
         Returns: the security code (integer) of the file at given position as an integer.  
-        Returns None if position >= number of files.
+        Returns None if not found.
         
         Affects: None
 
@@ -5968,7 +5969,7 @@ class MadrigalExperiment:
 
         Inputs:
 
-            position - position of experiment in list (first position is zero).
+            position - position of experiment in list.
 
             securityCode - the new experiment security code (integer) to use
         
@@ -6004,10 +6005,10 @@ class MadrigalExperiment:
     def getPIByPosition(self, position = 0):
         """getPIByPosition returns the principal investigator of the experiment at given position.
 
-        Inputs: position of file in list (first position is zero).  Defaults to first.
+        Inputs: position of file in list.  Defaults to first.
         
         Returns: the principal investigator's name (string) of the file at given position as a string.  
-        Returns None if position >= number of files.  Since not all experiments may have this
+        Returns None if not found.  Since not all experiments may have this
         column, returns None if the column does not exist.
         
         Affects: None
@@ -6081,7 +6082,7 @@ class MadrigalExperiment:
 
         Inputs:
 
-            position - position of experiment in list (first position is zero).
+            position - position of experiment in list.
 
             PI - the new experiment principal investigator's name (string) to use
         
@@ -6117,10 +6118,10 @@ class MadrigalExperiment:
     def getPIEmailByPosition(self, position = 0):
         """getPIEmailByPosition returns the principal investigator email of the experiment at given position.
 
-        Inputs: position of file in list (first position is zero).  Defaults to first.
+        Inputs: position of file in list.  Defaults to first.
         
         Returns: the principal investigator's email (string) of the file at given position as a string.  
-        Returns None if position >= number of files.  Since not all experiments may have this
+        Returns None if not found.  Since not all experiments may have this
         column, returns None if the column does not exist.
         
         Affects: None
@@ -6192,7 +6193,7 @@ class MadrigalExperiment:
 
         Inputs:
 
-            position - position of experiment in list (first position is zero).
+            position - position of experiment in list.
 
             PIEmail - the new experiment principal investigator's email (string) to use
         
@@ -6269,7 +6270,7 @@ class MadrigalExperiment:
 
         Inputs:
 
-            Inputs: position - position of experiment in list (first position is zero).
+            Inputs: position - position of experiment in list.
         
         Returns: a list of (title, url) tuples containing all links for this experiment.
 
@@ -6377,6 +6378,7 @@ class MadrigalExperiment:
 
     def getExpCount(self):
         """getExpCount returns the total number of experiments in metadata.db.
+        If __index is set, this is a single experiment object-- exactly 1 exp.
 
            Inputs - None
            Returns - (int) total number of experiments
@@ -6400,38 +6402,6 @@ class MadrigalExperiment:
                                                 traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
                                                                         sys.exc_info()[2]))
-        
-
-    # REMOVE ME 
-    # def getStartPosition(self, startDT):
-    #     """getStartPosition returns the position of the first experiment with a start datetime after
-    #     endDT after sorting by end time.
-        
-    #         Inputs: startDT - start datetime
-            
-    #         Returns: returns the position of the first experiment with a start datetime after
-    #     startDT.
-    #     """
-    #     self.sortByDateSite() # this should cause an error
-    #     top = len(self.__fileList) - 1
-    #     bottom = 0
-    #     while(top >= bottom):
-    #         if top == bottom:
-    #             return(max(top-1, 0))
-    #         middle = int((top+bottom)/2)
-    #         thisEDTList = self.getExpEndDateTimeByPosition(middle)
-    #         thisEDT = datetime.datetime(*thisEDTList[0:6])
-    #         if thisEDT < startDT:
-    #             bottom = middle + 1
-    #             continue
-    #         if middle == 0:
-    #             return(0)
-    #         prevEDTList = self.getExpEndDateTimeByPosition(middle-1)
-    #         prevEDT = datetime.datetime(*prevEDTList[0:6])
-    #         if prevEDT < startDT:
-    #             return(middle-1)
-    #         else:
-    #             top = middle -1
      
 
     def getAllExpIDs(self, localSiteID):
@@ -6464,36 +6434,6 @@ class MadrigalExperiment:
                                                                         sys.exc_info()[1],
                                                                         sys.exc_info()[2]))
 
-
-
-    # REMOVE ME
-    # def __compareDateSite__(self, first):
-    #     """__compareDateSite__ is a private method to help sort by end date, then start date, and then site.
-
-    #     first - an item from self.__fileList
-        
-    #     returns a tuple of (endDT, startDT, site) to be used for sorting
-    #     """
-    #     endDT = datetime.datetime.strptime(first[self.__expEndDateCol] + first[self.__expEndTimeCol],
-    #                                        '%Y%m%d%H%M%S')
-    #     startDT = datetime.datetime.strptime(first[self.__expStartDateCol] + first[self.__expStartTimeCol],
-    #                                        '%Y%m%d%H%M%S')
-    #     site = first[self.__expSiteIdCol]
-    #     return((endDT, startDT, site))
-    
-
-    # REMOVE ME
-    # def getLine(self, position):
-    #     """getLine returns the line at a given position.  Returns None if position > number of lines.
-
-    #     Inputs:  position - position in file.  First line = 0
-    #     """
-    #     delimiter = ','
-
-    #     if position >= len(self.__fileList):
-    #         return(None)
-
-    #     return(delimiter.join(self.__fileList[position]) + '\n')
   
         
     def writeMetadata(self, newFullPath=None):
@@ -6558,7 +6498,7 @@ class MadrigalExperiment:
 
     def validateExp(self):
         """
-        Validate that this is, in fact, a legitimate experiment. Remove (both content of expDir and from metadata)
+        Validate that this is a legitimate experiment. Remove (both content of expDir and from metadata)
         if not. Assumes that this MadrigalExperiment object is referring to a single experiment, rather 
         than all experiments.
 
@@ -6673,6 +6613,10 @@ class MadrigalMetaFile:
 
     Written by "Bill Rideout":mailto:wrideout@haystack.mit.edu  May. 7, 2002
 
+    ---- Updates as of SQLMad release ----
+    Update for all ByPosition methods: position args default to 0 but are autoincremented on 
+    the backend to account for sqlite-1-indexing.
+
     """
 
     #constants
@@ -6731,6 +6675,7 @@ class MadrigalMetaFile:
         experiment. Index is pulled from expTab entry where url contains expDir (from initFile path).
 
         Inputs: initFile, referring to fileTab.txt (doesn't need to exist-- only need expDir from path to this file)
+        FIX ME do we assume filetab exists?
 
         Returns: void
 
@@ -6795,7 +6740,10 @@ class MadrigalMetaFile:
 
         Returns: Void
 
-        Affects: Initializes private class member variables to connect to metadata.db
+        Affects: Initializes private class member variables (__connector and __cursor) to
+        connect to metadata.db
+
+        Exceptions: MadrigalError thrown if unable to connect to metadata.db
         """
         try:
             self.__connector = sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), self.__filename))
@@ -6861,7 +6809,7 @@ class MadrigalMetaFile:
     def getFilenameByPosition(self, position = 0):
         """getFilenameByPosition returns the filename of the file at given position.
 
-        Inputs: position of file in list (first position is zero).  Defaults to first.
+        Inputs: position of file in list.  Defaults to first.
         
         Returns: the filename of the file at given position as a string.  
         
@@ -6893,7 +6841,7 @@ class MadrigalMetaFile:
     def getExpIdByPosition(self, position = 0):
         """getExpIdByPosition returns the experiment id (integer) of the file at given position.
 
-        Inputs: position of file in list (first position is zero).  Defaults to first.
+        Inputs: position of file in list.  Defaults to first.
         
         Returns: the experiment id (integer) of the file at given position as an integer.  
         
@@ -6931,7 +6879,7 @@ class MadrigalMetaFile:
 
         Inputs:
 
-            position - position of file in list (first position is zero).
+            position - position of file in list.
 
             expId - the new experiment id to use
         
@@ -6966,7 +6914,7 @@ class MadrigalMetaFile:
     def getKindatByPosition(self, position = 0):
         """getKindatByPosition returns the kindat (kind of data code) of the file at given position.
 
-        Inputs: position of file in list (first position is zero).  Defaults to first.
+        Inputs: position of file in list.  Defaults to first.
         
         Returns: the kinst (kind of instrument code) of the file at given position as an integer.  
         
@@ -7001,7 +6949,7 @@ class MadrigalMetaFile:
     def getCategoryByPosition(self, position = 0):
         """getCategoryByPosition returns the category (eg., 1=default, 2=variant, 3=history, 4=real-time) of the file at given position.
 
-        Inputs: position of file in list (first position is zero).  Defaults to first.
+        Inputs: position of file in list.  Defaults to first.
         
         Returns: the category (eg., 1=default, 2=variant, 3=history, 4=real-time) of the file at given position as an integer.  
         
@@ -7074,7 +7022,7 @@ class MadrigalMetaFile:
     def getHasCatalogByPosition(self, position = 0):
         """getHasCatalogByPosition returns True if the file at given position has any catalog records, False otherwise.
 
-        Inputs: position of file in list (first position is zero).  Defaults to first.
+        Inputs: position of file in list.  Defaults to first.
         
         Returns:  True if the file at given position has any catalog records, False otherwise 
         
@@ -7154,7 +7102,7 @@ class MadrigalMetaFile:
 
         Inputs:
 
-            position - position of file in list (first position is zero).
+            position - position of file in list.
 
             hasCatalog - 1 or True for yes, 0 or False for no
         
@@ -7193,7 +7141,7 @@ class MadrigalMetaFile:
     def getHasHeaderByPosition(self, position = 0):
         """getHasHeaderByPosition returns True if the file at given position has any header records, False otherwise.
 
-        Inputs: position of file in list (first position is zero).  Defaults to first.
+        Inputs: position of file in list.  Defaults to first.
         
         Returns:  True if the file at given position has any header records, False otherwise 
         
@@ -7272,7 +7220,7 @@ class MadrigalMetaFile:
 
         Inputs:
 
-            position - position of file in list (first position is zero).
+            position - position of file in list.
 
             hasHeader - 1 or True for yes, 0 or False for no
         
@@ -7310,7 +7258,7 @@ class MadrigalMetaFile:
     def getStatusByPosition(self, position = 0):
         """getStatusByPosition returns the status description of the file at given position.
 
-        Inputs: position of file in list (first position is zero).  Defaults to first.
+        Inputs: position of file in list.  Defaults to first.
         
         Returns: the status description of the file at given position as a string.  
         
@@ -7378,7 +7326,7 @@ class MadrigalMetaFile:
     def getAccessByPosition(self, position = 0):
         """getAccessByPosition returns the access (0=public, 1=private) of the file at given position.
 
-        Inputs: position of file in list (first position is zero).  Defaults to first.
+        Inputs: position of file in list.  Defaults to first.
         
         Returns: the access level (0=public, 1=private) of the file at given position as an integer.  
         
@@ -7413,7 +7361,7 @@ class MadrigalMetaFile:
     def getFileDatetimeByPosition(self, position = 0):
         """getFileDatetimeByPosition returns a datetime of the file at given position, or None if not set.
 
-        Inputs: position of file in list (first position is zero).  Defaults to first.
+        Inputs: position of file in list.  Defaults to first.
         
         Returns: a datetime of the file at given position, or None if not set.  
         
@@ -7486,7 +7434,7 @@ class MadrigalMetaFile:
 
         Inputs:
 
-            position - position of file in list (first position is zero).
+            position - position of file in list.
 
             dt - datetime (UT) of file being added.  If None, use file datetime.
                 Will raise exception if dt is None and fileTab.txt in the metadata
@@ -7639,7 +7587,7 @@ class MadrigalMetaFile:
 
         Inputs:
 
-            position - position of file in list (first position is zero).
+            position - position of file in list.
 
             access - 0 of False for public, 1 or True for private
         
@@ -7710,7 +7658,7 @@ class MadrigalMetaFile:
 
         Inputs:
 
-            position - position of file in list (first position is zero).
+            position - position of file in list.
 
             kindat - integer kindat value
         
@@ -7745,7 +7693,7 @@ class MadrigalMetaFile:
 
         Inputs:
 
-            position - position of file in list (first position is zero).
+            position - position of file in list.
 
             category - 1=default, 2=variant, 3=history, 4=real-time
         
@@ -7781,7 +7729,7 @@ class MadrigalMetaFile:
 
         Inputs:
 
-            position - position of file in list (first position is zero).
+            position - position of file in list.
 
             status - string describing status
         
@@ -7820,7 +7768,7 @@ class MadrigalMetaFile:
     def getAnalystByPosition(self, position = 0):
         """getAnalystByPosition returns file analyst name if there, None otherwise.
 
-        Inputs: position of file in list (first position is zero).  Defaults to first.
+        Inputs: position of file in list.  Defaults to first.
         
         Returns:  file analyst name if there, None otherwise. Since not all files may have this column, 
         returns None if the column does not exist. 
@@ -7891,7 +7839,7 @@ class MadrigalMetaFile:
 
         Inputs:
 
-            position - position of file in list (first position is zero).
+            position - position of file in list.
 
             analyst - name of file analyst
         
@@ -7927,7 +7875,7 @@ class MadrigalMetaFile:
     def getAnalystEmailByPosition(self, position = 0):
         """getAnalystEmailByPosition returns file analyst email if there, None otherwise.
 
-        Inputs: position of file in list (first position is zero).  Defaults to first.
+        Inputs: position of file in list.  Defaults to first.
         
         Returns:  file analyst email if there, None otherwise. Since not all files may have this column, 
         returns None if the column does not exist.  
@@ -7999,7 +7947,7 @@ class MadrigalMetaFile:
 
         Inputs:
 
-            position - position of file in list (first position is zero).
+            position - position of file in list.
 
             analystEmail - email of file analyst
         
@@ -8132,7 +8080,7 @@ class MadrigalMetaFile:
         
         Returns permanent URL to file, or None if not found
         """
-        # don't need to reset position here
+        # don't need to reset position here because we use expID instead
         
         expId = self.getExpIdByPosition(position)
         if expId is None:
@@ -8175,20 +8123,6 @@ class MadrigalMetaFile:
         
         url_template = 'https://w3id.org/cedar?experiment_list=%s&file_list=%s'
         return(url_template % (expDir, filename))
-
-
-    # REMOVE ME
-    # def getLine(self, position):
-    #     """getLine returns the line at a given position.  Returns None if position > number of lines.
-
-    #     Inputs:  position - position in file.  First line = 0
-    #     """
-    #     delimiter = ','
-
-    #     if position >= len(self.__fileList):
-    #         return(None)
-
-    #     return(delimiter.join(self.__fileList[position]) + '\n')
         
 
     def writeMetadata(self, newFullPath=None):
@@ -8320,7 +8254,10 @@ class MadrigalParmCategory:
 
         Returns: Void
 
-        Affects: Initializes private class member variables to connect to metadata.db
+        Affects: Initializes private class member variables (__connector and __cursor) to
+        connect to metadata.db
+
+        Exceptions: MadrigalError thrown if unable to connect to metadata.db
         """
         try:
             self.__connector = sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), self.__filename))
@@ -8441,7 +8378,6 @@ class MadrigalInstrumentData:
     _siteIDCol   =  0
     _kinstCol    =  1
     _yearsCol    = 2
-
     
 
     def __init__(self, madDB=None, priv=False, initFile=None, madInstObj=None):
@@ -8511,7 +8447,7 @@ class MadrigalInstrumentData:
         localDict = {} # key is category id, value is category desc str.  Will be converted to list before returned
         
         for i, data in enumerate(self.__fileList):
-            # find matching  code 
+            # find matching code 
             try:
                 if local:
                     if int(data[self._siteIDCol]) != siteID:
@@ -8524,7 +8460,7 @@ class MadrigalInstrumentData:
                     localDict[categoryID] = self._madInstObj.getCategory(kinst)
                     
             except:
-                raise madrigal.admin.MadrigalError('Error in instData.txt parsing metadata row %i: ' % (i) + str(category),
+                raise madrigal.admin.MadrigalError('Error in instData.txt parsing metadata row %i: ' % (i) + str(categoryID),
                                                    traceback.format_exception(sys.exc_info()[0],
                                                                               sys.exc_info()[1],
                                                                               sys.exc_info()[2]))
@@ -8601,7 +8537,7 @@ class MadrigalInstrumentData:
         """
         retList = []
         for i, data in enumerate(self.__fileList):
-            # find matching  code 
+            # find matching code 
             try:
                 thisKinst = int(data[self._kinstCol])
                 if thisKinst != kinst:
@@ -8612,7 +8548,7 @@ class MadrigalInstrumentData:
                 retList.sort()
                     
             except:
-                raise madrigal.admin.MadrigalError('Error in instData.txt parsing metadata row %i: ' % (i) + str(category),
+                raise madrigal.admin.MadrigalError('Error in instData.txt parsing metadata row %i: ' % (i),
                                                    traceback.format_exception(sys.exc_info()[0],
                                                                               sys.exc_info()[1],
                                                                               sys.exc_info()[2]))
@@ -8621,84 +8557,6 @@ class MadrigalInstrumentData:
             raise madrigal.admin.MadrigalError('No data found for kinst %i' % (kinst), '')
         
         return(retList)
-    
-
-# class MadrigalInstrumentData:
-#     """MadrigalInstrumentData is an object that provides access to Madrigal instrument data info from the metadata.
-
-#     This object provides access to all Madrigal kind of data information in the metadata files instData.txt
-#     and instDataPriv.txt.  Those files summarize years data is available by instrument.
-
-#     ^^^^^ this is not true anymore, fix these docs when you verify ui performance is ok
-
-#     Non-standard Python modules used:
-#     None
-
-#     MadrigalError exception thrown if:
-
-#         1. MadrigalMetadata fails to open or parse metadata file
-        
-#         2. Columns expected to be ints or floats cannot be converted
-
-#     Change history:
-
-#     Written by "Bill Rideout":mailto:wrideout@haystack.mit.edu  Feb. 2, 2015
-
-#     """
-
-#     #constants
-#     _instDataMetadataFile  = METADB
-
-#     # column positions
-#     _siteIDCol   =  'sid'
-#     _kinstCol    =  'kinst'
-#     _kindatCol   =  'kindat'
-#     _yearsCol    =  'year'
-
-    
-
-#     def __init__(self, madDB=None, priv=False, madInstObj=None):
-#         """__init__ initializes MadrigalInstrumentData by reading from instData.txt (or instDataPriv.txt).
-
-#         Inputs: madDB - Existing MadrigalDB object, by default = None.
-
-#                 priv - if True, use instDataPriv.txt instead of instData.txt.  If False (the default),
-#                     use instData.txt.
-                    
-#                 initFile - String representing the full path to the metadata file. Default is None, in
-#                     which case file read depends on priv argument. priv arg ingored if this not None
-                    
-#                 madInstObj - m madrigal.metadata.MadrigalInstrument object.  If None, one is created.
-        
-#         Returns: void
-
-#         Affects: Initializes all the class member variables.
-
-#         Exceptions: MadrigalError thrown  by MadrigalMetadata if file not opened or parsed successfully.
-#         """
-
-#         # get metadata dir
-#         if madDB == None:
-#             self.__madDB = madrigal.metadata.MadrigalDB()
-#         else:
-#             self.__madDB = madDB
-            
-#         #if priv:
-#         #    self._instDataMetadataFile  = "instDataPriv.txt"
-#         self.priv = priv
-
-#         # get instData metadata file
-#         #if (initFile == None):
-#         self.__filename = self._instDataMetadataFile
-#         #else:
-#         #    self.__filename = initFile
-            
-#         if isinstance(madInstObj, madrigal.metadata.MadrigalInstrument):
-#             self._madInstObj = madInstObj
-#         else:
-#             self._madInstObj = madrigal.metadata.MadrigalInstrument(self.__madDB)
-
-#         #self.__fileList = madrigal.metadata.MadrigalMetadata(self.__filename, self.__madDB).getList()
 
 
     def __initMetaDBConnector(self):
@@ -8709,13 +8567,16 @@ class MadrigalInstrumentData:
 
         Returns: Void
 
-        Affects: Initializes private class member variables to connect to metaDB
+        Affects: Initializes private class member variables (__connector and __cursor) to
+        connect to metadata.db
+
+        Exceptions: MadrigalError thrown if unable to connect to metadata.db
         """
         try:
-            self.__connector = sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), self.__filename))
+            self.__connector = sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))
             self.__cursor = self.__connector.cursor()
         except:  
-            raise madrigal.admin.MadrigalError("Unable to connect to metadataDB",
+            raise madrigal.admin.MadrigalError("Unable to connect to metadata.db",
                                               traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
                                                                         sys.exc_info()[2]))
@@ -8752,6 +8613,7 @@ class MadrigalInstrumentData:
 
         Exceptions: if error in metadata file
         """
+        # FIX ME
         # NOTE 2 SELF: the way this is currently written may be 
         # quite inefficient, ideally you would want to cache these 
         # results somewhere or something like that
@@ -8807,11 +8669,12 @@ class MadrigalInstrumentData:
 
         Exceptions: if error in metadata file
         """
+        # FIX ME
         # NOTE 2 SELF: the way this is currently written may be 
         # quite inefficient, ideally you would want to cache these 
         # results somewhere
 
-        query1 = "SELECT id FROM expTab WHERE kinst={} AND ((sdt LIKE '{}%%%%%%%%%%') OR (edt LIKE '{}%%%%%%%%%%'))"
+        query1 = "SELECT id FROM expTab WHERE kinst={} AND ((sdt LIKE \"{}%%%%%%%%%%\") OR (edt LIKE \"{}%%%%%%%%%%\"))"
         query2 = "SELECT kindat FROM fileTab WHERE eid IN {}"
 
         try:
@@ -9418,6 +9281,8 @@ class MadrigalInstrumentData:
 
 class MadrigalMetadata:
     """MadrigalMetadata is a private class that parses a Madrigal metadata file.
+
+    Kept for instData table (for now).
 
 
     This private class is used by all classes that need to parse a Madrigal
