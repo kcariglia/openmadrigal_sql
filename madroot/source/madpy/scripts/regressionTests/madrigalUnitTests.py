@@ -216,21 +216,24 @@ class TestMadrigalDB(unittest.TestCase):
         
     def test_setFileAccess(self):
         expDir = os.path.join(self.madroot, 'experiments/1998/mlh/20jan98')
+        madMetaFile = madrigal.metadata.MadrigalMetaFile(self.madDB, os.path.join(expDir, "fileTab.txt"))
         # set to private
         self.madDB.setFileAccess(expDir, 1)
-        f = open(os.path.join(expDir, 'fileTab.txt'))
-        lines = f.readlines()
-        f.close()
-        items = lines[0].split(',')
-        permission = int(items[10])
+        # f = open(os.path.join(expDir, 'fileTab.txt'))
+        # lines = f.readlines()
+        # f.close()
+        # items = lines[0].split(',')
+        # permission = int(items[10])
+        permission = madMetaFile.getAccessByPosition()
         self.assertEqual(permission, 1)
         # set back to public
         self.madDB.setFileAccess(expDir, 0)
-        f = open(os.path.join(expDir, 'fileTab.txt'))
-        lines = f.readlines()
-        f.close()
-        items = lines[0].split(',')
-        permission = int(items[10])
+        # f = open(os.path.join(expDir, 'fileTab.txt'))
+        # lines = f.readlines()
+        # f.close()
+        # items = lines[0].split(',')
+        # permission = int(items[10])
+        permission = madMetaFile.getAccessByPosition()
         self.assertEqual(permission, 0)
         
     def test_tarExperiments(self):
@@ -1225,7 +1228,7 @@ class TestWeb(unittest.TestCase):
         self.assertIn('mlh980120g.002.hdf5', str(self.madWeb.getFileFromExpDir(expDir, 30)))
         
     def test_getExpInfoFromExpID(self):
-        madExp = madrigal.metadata.MadrigalExperiment(self.madDB)
+        madExp = madrigal.metadata.MadrigalExperiment(self.madDB, os.path.join(self.madDB.getMadroot(), 'experiments/1998/mlh/20jan98/expTab.txt'))
         expID = None
         for i in range(madExp.getExpCount()):
             if madExp.getKinstByPosition(i) != 30:
@@ -1239,7 +1242,7 @@ class TestWeb(unittest.TestCase):
         
     
     def test_getExpIDFromExpPath(self):
-        madExp = madrigal.metadata.MadrigalExperiment(self.madDB)
+        madExp = madrigal.metadata.MadrigalExperiment(self.madDB, os.path.join(self.madDB.getMadroot(), 'experiments/1998/mlh/20jan98/expTab.txt'))
         expID = None
         for i in range(madExp.getExpCount()):
             if madExp.getKinstByPosition(i) != 30:
@@ -1256,7 +1259,7 @@ class TestWeb(unittest.TestCase):
         self.assertIn('World Day - Storm El Scan', str(self.madWeb.getInfoFromFile(filePath)))
         
     def test_getFileFromExpID(self):
-        madExp = madrigal.metadata.MadrigalExperiment(self.madDB)
+        madExp = madrigal.metadata.MadrigalExperiment(self.madDB, os.path.join(self.madDB.getMadroot(), 'experiments/1998/mlh/20jan98/expTab.txt'))
         expID = None
         for i in range(madExp.getExpCount()):
             if madExp.getKinstByPosition(i) != 30:

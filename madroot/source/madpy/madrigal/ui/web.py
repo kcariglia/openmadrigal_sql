@@ -982,19 +982,19 @@ class MadrigalWeb:
         tempDict = {} # dict with key = month number, value = month name
         retList = []
 
-        sDT = datetime.datetime(year,1,1, tzinfo=datetime.timezone.utc)
+        sDT = datetime.datetime(year,1,1,0,0,0, tzinfo=datetime.timezone.utc)
         eDT = datetime.datetime(year,12,31,23,59,59, tzinfo=datetime.timezone.utc)
 
         sDate = sDT.strftime("%Y%m%d%H%M%S")
         eDate = eDT.strftime("%Y%m%d%H%M%S")
 
-        query = "SELECT sdt, edt FROM expTab WHERE sid={} AND sdt >= {} AND edt <= {}".format(self._madDB.getSiteID(), sDate, eDate)
-
+        query = "SELECT sdt, edt FROM expTab WHERE sid={} AND kinst={} AND sdt >= {} AND edt <= {}".format(self._madDB.getSiteID(), kinst, sDate, eDate)
+        
         if self.isTrusted():
             query += " AND security in {}".format((0,1,2,3))
         else:
             query += " AND security in {}".format((0,2))
-
+            
         try:
             self.__initMetaDBConnector()
             res = self.__cursor.execute(query)
@@ -1047,7 +1047,8 @@ class MadrigalWeb:
 
         if month:
             sDT = datetime.datetime(year,month,1, tzinfo=datetime.timezone.utc)
-            eDT = datetime.datetime(year,month,31,23,59,59, tzinfo=datetime.timezone.utc)
+            _, max_day = calendar.monthrange(year, month)
+            eDT = datetime.datetime(year,month,max_day,23,59,59, tzinfo=datetime.timezone.utc)
         else:
             sDT = datetime.datetime(year,1,1, tzinfo=datetime.timezone.utc)
             eDT = datetime.datetime(year,12,31,23,59,59, tzinfo=datetime.timezone.utc)

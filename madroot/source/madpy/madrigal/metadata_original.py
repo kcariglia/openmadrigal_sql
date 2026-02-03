@@ -1554,8 +1554,9 @@ class MadrigalDB:
                     fileNum = fileNum + 1
 
                 # if fileMeta not empty, write it out
-                if fileMeta.getFileCount() > 0:
-                    fileMeta.writeMetadata()
+                # we dont need to do this anymore
+                # if fileMeta.getFileCount() > 0:
+                 #   fileMeta.writeMetadata()
 
                 # else if its empty, simply delete it
                 else:
@@ -2780,7 +2781,7 @@ class MadrigalDB:
                 try:
                     fileMetaObj = madrigal.metadata.MadrigalMetaFile(self, dirname + '/' + name)
                     fileMetaObj.setAccess(arg)
-                    fileMetaObj.writeMetadata()
+                    #fileMetaObj.writeMetadata()
                     
                 except madrigal.admin.MadrigalError as e:
                     print(e.getExceptionStr()) 
@@ -2789,7 +2790,7 @@ class MadrigalDB:
                 try:
                     expObj = madrigal.metadata.MadrigalExperiment(self, dirname + '/' + name)
                     expObj.setSecurityByPosition(0, arg)
-                    expObj.writeMetadata()
+                    #expObj.writeMetadata()
                     
                 except madrigal.admin.MadrigalError as e:
                     print(e.getExceptionStr())
@@ -4834,7 +4835,7 @@ class MadrigalExperiment:
         # first check that path to initFile contains a valid expDir
         dir = os.path.dirname(initFile)
         dirConvStr1 = 'experiments[0-9]*/[0-9][0-9][0-9][0-9]/[a-z][a-z0-9][a-z0-9]/[a-zA-Z0-9\-_]*$'
-        dirConvStr2 = 'experiments[0-9]*/[0-9][0-9][0-9][0-9]/[a-z][a-z0-9][a-z0-9]/[0-3][0-9][a-z][a-z0-9][a-z0-9][0-9][0-9].?'
+        dirConvStr2 = 'experiments[0-9]*/[0-9][0-9][0-9][0-9]/[a-z][a-z0-9][a-z0-9]/[0-3][0-9][a-z][a-z0-9][a-z0-9][0-9][0-9].?$'
         metaMatch = 'metadata'
 
         found = re.search(dirConvStr1, dir)
@@ -4852,14 +4853,20 @@ class MadrigalExperiment:
         expDir = found.group(0) # should be exactly 1 expDir
        
         # make sure to use local experiment if initFile is also local
+        isLocal = False
         if self.__madDB.getMadroot() in initFile:
-            expDir = self.__madDB.getTopLevelUrl() + "/madtoc/" + expDir
+            #expDir = self.__madDB.getTopLevelUrl() + "/madtoc/" + expDir
+            isLocal = True
         elif initFile.startswith("/experiments") or initFile.startswith("experiments"):
             # assume local experiment
-            expDir = self.__madDB.getTopLevelUrl() + "/madtoc/" + expDir
+            #expDir = self.__madDB.getTopLevelUrl() + "/madtoc/" + expDir
+            isLocal = True
 
         # now match found expDir to expUrl to find the correct index
-        query = "SELECT " + self.__expIdxCol + ", " + self.__expUrlCol + " FROM " + self.__tblName + " WHERE " + self.__expUrlCol + " LIKE \"%{}%\"".format(expDir)
+        query = "SELECT " + self.__expIdxCol + ", " + self.__expUrlCol + " FROM " + self.__tblName + " WHERE " + self.__expUrlCol + " LIKE \"%_{}\"".format(expDir)
+
+        if isLocal:
+            query += " AND sid={}".format(self.__madDB.getSiteID())
 
         try:
             self.__initMetaDBConnector()
@@ -6687,7 +6694,7 @@ class MadrigalMetaFile:
         # first check that path to initFile contains expDir
         dir = os.path.dirname(initFile)
         dirConvStr1 = 'experiments[0-9]*/[0-9][0-9][0-9][0-9]/[a-z][a-z0-9][a-z0-9]/[a-zA-Z0-9\-_]*$'
-        dirConvStr2 = 'experiments[0-9]*/[0-9][0-9][0-9][0-9]/[a-z][a-z0-9][a-z0-9]/[0-3][0-9][a-z][a-z0-9][a-z0-9][0-9][0-9].?'
+        dirConvStr2 = 'experiments[0-9]*/[0-9][0-9][0-9][0-9]/[a-z][a-z0-9][a-z0-9]/[0-3][0-9][a-z][a-z0-9][a-z0-9][0-9][0-9].?$'
 
         found = re.search(dirConvStr1, dir)
         if not found:
@@ -6700,14 +6707,20 @@ class MadrigalMetaFile:
         expDir = found.group(0)
 
         # make sure to use local experiment if initFile is also local
+        isLocal = False
         if self.__madDB.getMadroot() in initFile:
-            expDir = self.__madDB.getTopLevelUrl() + "/madtoc/" + expDir
+            #expDir = self.__madDB.getTopLevelUrl() + "/madtoc/" + expDir
+            isLocal = True
         elif initFile.startswith("/experiments") or initFile.startswith("experiments"):
             # assume local experiment
-            expDir = self.__madDB.getTopLevelUrl() + "/madtoc/" + expDir
+            #expDir = self.__madDB.getTopLevelUrl() + "/madtoc/" + expDir
+            isLocal = True
 
         # now match found expDir to expUrl to find the correct index
-        query = "SELECT id, url FROM expTab WHERE url LIKE \"%{}%\"".format(expDir)
+        query = "SELECT id, url FROM expTab WHERE url LIKE \"%_{}\"".format(expDir)
+
+        if isLocal:
+            query += " AND sid={}".format(self.__madDB.getSiteID())
 
         try:
             self.__initMetaDBConnector()

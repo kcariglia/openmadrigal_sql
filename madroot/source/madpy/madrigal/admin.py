@@ -445,7 +445,7 @@ class MadrigalDBAdmin:
         os.makedirs(os.path.join(expDir, 'overview'))
         os.chmod(os.path.join(expDir, 'overview'), 0o777)
 
-        # validate exp object, then write new metadata files 
+        # write new metadata files 
         newMadExp.writeMetadata()
         newMadFile.writeMetadata()
         
@@ -823,8 +823,7 @@ class MadrigalDBAdmin:
             fileInfo = madrigal.data.MadrigalFile(os.path.join(expDir, os.path.basename(madFilename)), self.__madDB,
                                                   acceptOldSummary=acceptOldSummary)
             
-        # validate exp object, then write new metadata files 
-        newMadExp.validateExp()
+        # write new metadata files
         newMadExp.writeMetadata()
         newMadFile.writeMetadata()
         
@@ -978,8 +977,7 @@ class MadrigalDBAdmin:
         newMadExp = madrigal.metadata.MadrigalExperiment(self.__madDB, expDir + "/expTab.txt")
         # double check we can access file metadata
         newMadFile = madrigal.metadata.MadrigalMetaFile(self.__madDB, expDir + "/fileTab.txt")
-        # validate exp object, then write new metadata files 
-        newMadExp.validateExp()
+        # write new metadata files 
         newMadExp.writeMetadata()
         newMadFile.writeMetadata()
         
@@ -1245,8 +1243,7 @@ class MadrigalDBAdmin:
         newMadExp = madrigal.metadata.MadrigalExperiment(self.__madDB, expDir + "/expTab.txt")
         # double check we can access file metadata
         newMadFile = madrigal.metadata.MadrigalMetaFile(self.__madDB, expDir + "/fileTab.txt")
-        # validate exp object, then write new metadata files 
-        newMadExp.validateExp()
+        # write new metadata files 
         newMadExp.writeMetadata()
         newMadFile.writeMetadata()
 
@@ -1554,8 +1551,6 @@ class MadrigalDBAdmin:
         else:
             expInfo.setExpEndDateTimeByPosition(endTime)
 
-        # validate expInfo
-        expInfo.validateExp()
         # write new metadata files
         expInfo.writeMetadata()
         fileTabInfo.writeMetadata()
@@ -1917,177 +1912,177 @@ class MadrigalDBAdmin:
         
                 
 
-    def __walkExpDir__(self, arg, dirname, names):
-        """__walkExpDir__ is a private method called by os.walk.  arg is a dict with keys:
-        1. extText = text of combined expTab.txt to be appended to
-        2. fileText = text of combined fileTab.txt to be appended to
-        3. presentCount = total experiments done so far
-        4. localSiteId = local site id (int)
-        5. expIds =  a list of all expIds found in locals dirs - set earlier
-        6. expIds2 = a list of all expIds used so far in summary expDir.txt
+    # def __walkExpDir__(self, arg, dirname, names):
+    #     """__walkExpDir__ is a private method called by os.walk.  arg is a dict with keys:
+    #     1. extText = text of combined expTab.txt to be appended to
+    #     2. fileText = text of combined fileTab.txt to be appended to
+    #     3. presentCount = total experiments done so far
+    #     4. localSiteId = local site id (int)
+    #     5. expIds =  a list of all expIds found in locals dirs - set earlier
+    #     6. expIds2 = a list of all expIds used so far in summary expDir.txt
         
-        Sets values in arg
-        """
-        if 'expTab.txt' not in names:
-            return
+    #     Sets values in arg
+    #     """
+    #     if 'expTab.txt' not in names:
+    #         return
 
-        # defines allowed experiment directory names
-        dirConvStr1 = '/experiments[0-9]*/[0-9][0-9][0-9][0-9]/[a-z][a-z0-9][a-z0-9]/[^/]*'
+    #     # defines allowed experiment directory names
+    #     dirConvStr1 = '/experiments[0-9]*/[0-9][0-9][0-9][0-9]/[a-z][a-z0-9][a-z0-9]/[^/]*'
 
-        # check that dirname follows rule experiments[0-9]*/YYYY/sss/*
-        madroot = self.__madDB.getMadroot()
-        if madroot[-1] == '/':
-            madroot = madroot[:-1]
-        startIndex = len(madroot)
-        testDir = dirname[startIndex:]
-        if re.match(dirConvStr1, testDir) == None:
-            return
+    #     # check that dirname follows rule experiments[0-9]*/YYYY/sss/*
+    #     madroot = self.__madDB.getMadroot()
+    #     if madroot[-1] == '/':
+    #         madroot = madroot[:-1]
+    #     startIndex = len(madroot)
+    #     testDir = dirname[startIndex:]
+    #     if re.match(dirConvStr1, testDir) == None:
+    #         return
         
-        # make sure we only descend four levels
-        count = 0
-        items = testDir.split('/')
-        for item in items:
-            if len(item) > 0:
-                count += 1
-        if count != 4:
-            return
-        try:
+    #     # make sure we only descend four levels
+    #     count = 0
+    #     items = testDir.split('/')
+    #     for item in items:
+    #         if len(item) > 0:
+    #             count += 1
+    #     if count != 4:
+    #         return
+    #     try:
             
-            expObj = madrigal.metadata.MadrigalExperiment(self.__madDB,
-                                                          os.path.join(dirname, 'expTab.txt'))
+    #         expObj = madrigal.metadata.MadrigalExperiment(self.__madDB,
+    #                                                       os.path.join(dirname, 'expTab.txt'))
     
-            # skip it if security == -1 (ignore flag)
-            if expObj.getSecurityByPosition(0) == -1:
-                return
+    #         # skip it if security == -1 (ignore flag)
+    #         if expObj.getSecurityByPosition(0) == -1:
+    #             return
     
-            # skip if wrong site id
-            if expObj.getExpSiteIdByPosition(0) != arg['localSiteId']:
-                print('Warning: Experiment %s has wrong site id = %s.  This site id = %s' % \
-                      (dirname, str(expObj.getExpSiteIdByPosition(0)), str(arg['localSiteId'])))
-                return
+    #         # skip if wrong site id
+    #         if expObj.getExpSiteIdByPosition(0) != arg['localSiteId']:
+    #             print('Warning: Experiment %s has wrong site id = %s.  This site id = %s' % \
+    #                   (dirname, str(expObj.getExpSiteIdByPosition(0)), str(arg['localSiteId'])))
+    #             return
     
-            # modify experiment id if needed
-            thisExpId = expObj.getExpIdByPosition(0)
-            isNewExpId = False
-            if thisExpId <= self.__madDB.getSiteID() * 10000000 or thisExpId in arg['expIds2']:
-                # find a new unique id
-                maxId1 = numpy.max(numpy.array(arg['expIds']))
-                maxId2 = numpy.max(numpy.array(arg['expIds2']))
-                newExpId = int(max([maxId1,maxId2])) + 1
+    #         # modify experiment id if needed
+    #         thisExpId = expObj.getExpIdByPosition(0)
+    #         isNewExpId = False
+    #         if thisExpId <= self.__madDB.getSiteID() * 10000000 or thisExpId in arg['expIds2']:
+    #             # find a new unique id
+    #             maxId1 = numpy.max(numpy.array(arg['expIds']))
+    #             maxId2 = numpy.max(numpy.array(arg['expIds2']))
+    #             newExpId = int(max([maxId1,maxId2])) + 1
                     
-                expObj.setExpIdByPosition(0, newExpId)
-                arg['expText'].append(str(expObj))
-                # sanity check
-                if newExpId in arg['expIds2']:
-                    raise ValueError('Duplicate id %i' % (newExpId))
-                arg['expIds2'].append(newExpId)
-                expObj.writeMetadata()
-                isNewExpId = True
+    #             expObj.setExpIdByPosition(0, newExpId)
+    #             arg['expText'].append(str(expObj))
+    #             # sanity check
+    #             if newExpId in arg['expIds2']:
+    #                 raise ValueError('Duplicate id %i' % (newExpId))
+    #             arg['expIds2'].append(newExpId)
+    #             expObj.writeMetadata()
+    #             isNewExpId = True
                 
-                print(('Updated metadata in %s' % (str(dirname))))
+    #             print(('Updated metadata in %s' % (str(dirname))))
                 
                 
-            elif thisExpId in arg['expIds2']:
-                raise ValueError('found unexpected duplicate expId %i' % (thisExpId))
+    #         elif thisExpId in arg['expIds2']:
+    #             raise ValueError('found unexpected duplicate expId %i' % (thisExpId))
             
-            else:
-                # normal case - this id already set and not changing
-                arg['expText'].append(str(expObj))
-                # sanity check
-                if thisExpId in arg['expIds2']:
-                    raise ValueError('Duplicate id %i' % (thisExpId))
-                arg['expIds2'].append(thisExpId)
+    #         else:
+    #             # normal case - this id already set and not changing
+    #             arg['expText'].append(str(expObj))
+    #             # sanity check
+    #             if thisExpId in arg['expIds2']:
+    #                 raise ValueError('Duplicate id %i' % (thisExpId))
+    #             arg['expIds2'].append(thisExpId)
             
-            arg['presentCount'] += 1
+    #         arg['presentCount'] += 1
     
-            if 'fileTab.txt' not in names:
-                print('Info: Experiment %s has no fileTab.txt' % (dirname))
-                return
+    #         if 'fileTab.txt' not in names:
+    #             print('Info: Experiment %s has no fileTab.txt' % (dirname))
+    #             return
     
-            fileObj = madrigal.metadata.MadrigalMetaFile(self.__madDB,
-                                                         os.path.join(dirname, 'fileTab.txt'))
+    #         fileObj = madrigal.metadata.MadrigalMetaFile(self.__madDB,
+    #                                                      os.path.join(dirname, 'fileTab.txt'))
     
-            # set expId for all files
-            for i in range(fileObj.getFileCount()):
-                if isNewExpId:
-                    fileObj.setExpIdByPosition(i, newExpId)
-                else:
-                    fileObj.setExpIdByPosition(i, thisExpId)
+    #         # set expId for all files
+    #         for i in range(fileObj.getFileCount()):
+    #             if isNewExpId:
+    #                 fileObj.setExpIdByPosition(i, newExpId)
+    #             else:
+    #                 fileObj.setExpIdByPosition(i, thisExpId)
                 
     
-            arg['fileText'].append(str(fileObj))
+    #         arg['fileText'].append(str(fileObj))
             
-            if isNewExpId:
-                fileObj.writeMetadata()
+    #         if isNewExpId:
+    #             fileObj.writeMetadata()
                 
-            if arg['presentCount'] % 1000 == 0:
-                print(('Done %i out of %i exps' % (arg['presentCount'], arg['totalCount'])))
+    #         if arg['presentCount'] % 1000 == 0:
+    #             print(('Done %i out of %i exps' % (arg['presentCount'], arg['totalCount'])))
             
-        except:
-            print((' *** Exception encounted in experiment directory %s ***' % (dirname)))
-            raise
+    #     except:
+    #         print((' *** Exception encounted in experiment directory %s ***' % (dirname)))
+    #         raise
         
         
-    def __walkExpDirIds__(self, arg, dirname, names):
-        """__walkExpDirIds__ is a private method called by os.walk.  arg is a dict with keys:
-        1. extText = text of combined expTab.txt to be appended to
-        2. fileText = text of combined fileTab.txt to be appended to
-        3. presentCount = total experiments done so far
-        4. localSiteId = local site id (int)
-        5. expIds =  a list of all expIds found in locals dirs - to be set here
-        6. expIds2 = a list of all expIds used so far in summary expDir.txt
+    # def __walkExpDirIds__(self, arg, dirname, names):
+    #     """__walkExpDirIds__ is a private method called by os.walk.  arg is a dict with keys:
+    #     1. extText = text of combined expTab.txt to be appended to
+    #     2. fileText = text of combined fileTab.txt to be appended to
+    #     3. presentCount = total experiments done so far
+    #     4. localSiteId = local site id (int)
+    #     5. expIds =  a list of all expIds found in locals dirs - to be set here
+    #     6. expIds2 = a list of all expIds used so far in summary expDir.txt
         
-        Sets values in arg
-        """
-        if 'expTab.txt' not in names:
-            return
+    #     Sets values in arg
+    #     """
+    #     if 'expTab.txt' not in names:
+    #         return
 
-        # defines allowed experiment directory names
-        dirConvStr1 = '/experiments[0-9]*/[0-9][0-9][0-9][0-9]/[a-z][a-z0-9][a-z0-9]/[^/]*'
+    #     # defines allowed experiment directory names
+    #     dirConvStr1 = '/experiments[0-9]*/[0-9][0-9][0-9][0-9]/[a-z][a-z0-9][a-z0-9]/[^/]*'
 
-        # check that dirname follows rule experiments[0-9]*/YYYY/sss/*
-        madroot = self.__madDB.getMadroot()
-        if madroot[-1] == '/':
-            madroot = madroot[:-1]
-        startIndex = len(madroot)
-        testDir = dirname[startIndex:]
-        if re.match(dirConvStr1, testDir) == None:
-            return
+    #     # check that dirname follows rule experiments[0-9]*/YYYY/sss/*
+    #     madroot = self.__madDB.getMadroot()
+    #     if madroot[-1] == '/':
+    #         madroot = madroot[:-1]
+    #     startIndex = len(madroot)
+    #     testDir = dirname[startIndex:]
+    #     if re.match(dirConvStr1, testDir) == None:
+    #         return
         
-        # make sure we only descend four levels
-        count = 0
-        items = testDir.split('/')
-        for item in items:
-            if len(item) > 0:
-                count += 1
-        if count != 4:
-            return
-        try:
+    #     # make sure we only descend four levels
+    #     count = 0
+    #     items = testDir.split('/')
+    #     for item in items:
+    #         if len(item) > 0:
+    #             count += 1
+    #     if count != 4:
+    #         return
+    #     try:
             
-            expObj = madrigal.metadata.MadrigalExperiment(self.__madDB,
-                                                          os.path.join(dirname, 'expTab.txt'))
+    #         expObj = madrigal.metadata.MadrigalExperiment(self.__madDB,
+    #                                                       os.path.join(dirname, 'expTab.txt'))
     
-            # skip it if security == -1 (ignore flag)
-            if expObj.getSecurityByPosition(0) == -1:
-                return
+    #         # skip it if security == -1 (ignore flag)
+    #         if expObj.getSecurityByPosition(0) == -1:
+    #             return
     
-            # skip if wrong site id
-            if expObj.getExpSiteIdByPosition(0) != arg['localSiteId']:
-                print('Warning: Experiment %s has wrong site id = %i.  This site id = %i' % \
-                      (dirname, expObj.getExpSiteIdByPosition(0), arg['localSiteId']))
-                return
+    #         # skip if wrong site id
+    #         if expObj.getExpSiteIdByPosition(0) != arg['localSiteId']:
+    #             print('Warning: Experiment %s has wrong site id = %i.  This site id = %i' % \
+    #                   (dirname, expObj.getExpSiteIdByPosition(0), arg['localSiteId']))
+    #             return
     
-            # add this id if unique
-            thisExpId = expObj.getExpIdByPosition(0)
-            if int(thisExpId) not in arg['expIds']:
-                arg['expIds'].append(int(thisExpId))
+    #         # add this id if unique
+    #         thisExpId = expObj.getExpIdByPosition(0)
+    #         if int(thisExpId) not in arg['expIds']:
+    #             arg['expIds'].append(int(thisExpId))
                 
-            # increment totalCount
-            arg['totalCount'] += 1
+    #         # increment totalCount
+    #         arg['totalCount'] += 1
             
-        except:
-            print((' *** Exception encounted in experiment directory %s ***' % (dirname)))
-            raise
+    #     except:
+    #         print((' *** Exception encounted in experiment directory %s ***' % (dirname)))
+    #         raise
 
         
         
