@@ -18,12 +18,13 @@ For each non-hidden local experiment, will make the following changes if needed:
 $Id: configureExperiments.py 7741 2025-01-09 14:46:26Z kcariglia $
 """
 
+import datetime
 import os, os.path, sys
 import re
+import traceback
 import numpy
 import madrigal.metadata
 
-import datetime
 s = datetime.datetime.now()
 
 print('configureExperiments is converting any experiment from a different' + \
@@ -115,57 +116,62 @@ if len(dirsneeded) > 0:
     for thisDir in dirsneeded:
         # new experiment (and files) to add
 
-        # check if we need to add test exps
-        if "experiments/1957/dst/01jan57" in thisDir:
-            hasDst = True
-        if "experiments/1950/gpi/01jan50" in thisDir:
-            hasGeo = True
-        if "experiments/1963/imf/27nov63" in thisDir:
-            hasImf = True
+        try:
+            # check if we need to add test exps
+            if "experiments/1957/dst/01jan57" in thisDir:
+                hasDst = True
+            if "experiments/1950/gpi/01jan50" in thisDir:
+                hasGeo = True
+            if "experiments/1963/imf/27nov63" in thisDir:
+                hasImf = True
 
-        with open(os.path.join(thisDir, "expTab.txt"), "r") as f:
-            eText = f.read()
-            if '\n' != eText[-1]:
-                # need newline separator
-                eText += '\n'
-            expLines = eText.split('\n')
-            splitList = [line.split(',') for line in expLines]
-            # must account for local metadata
-            tList = []
-            for line in splitList:
-                if len(line) > 1:
-                    # reset expID
-                    line[0] = maxId
-                    # reset expUrl
-                    line[1] = urltemplate + thisDir[thisDir.find("experiments"):]
-                    # reset siteID
-                    line[3] = siteId
-                    line = [str(i) for i in line]
-                    tList.append(','.join(line))
-            eText = '\n'.join(tList)
-            if not eText.endswith('\n'):
-                eText += '\n'
-            expText += eText
+            with open(os.path.join(thisDir, "expTab.txt"), "r") as f:
+                eText = f.read()
+                if '\n' != eText[-1]:
+                    # need newline separator
+                    eText += '\n'
+                expLines = eText.split('\n')
+                splitList = [line.split(',') for line in expLines]
+                # must account for local metadata
+                tList = []
+                for line in splitList:
+                    if len(line) > 1:
+                        # reset expID
+                        line[0] = maxId
+                        # reset expUrl
+                        line[1] = urltemplate + thisDir[thisDir.find("experiments"):]
+                        # reset siteID
+                        line[3] = siteId
+                        line = [str(i) for i in line]
+                        tList.append(','.join(line))
+                eText = '\n'.join(tList)
+                if not eText.endswith('\n'):
+                    eText += '\n'
+                expText += eText
 
-        with open(os.path.join(thisDir, "fileTab.txt"), "r") as f:
-            fText = f.read()
-            if '\n' != fText[-1]:
-                # need newline separator
-                fText += '\n'
-            fileLines = fText.split('\n')
-            splitList = [line.split(',') for line in fileLines]
-            # must reset expID
-            tList = []
-            for line in splitList:
-                if len(line) > 1:
-                    line[1] = maxId
-                    line = [str(i) for i in line]
-                    tList.append(','.join(line))
-            fText = '\n'.join(tList)
-            if not fText.endswith('\n'):
-                fText += '\n'
-            fileText += fText
-        maxId += 1
+            with open(os.path.join(thisDir, "fileTab.txt"), "r") as f:
+                fText = f.read()
+                if '\n' != fText[-1]:
+                    # need newline separator
+                    fText += '\n'
+                fileLines = fText.split('\n')
+                splitList = [line.split(',') for line in fileLines]
+                # must reset expID
+                tList = []
+                for line in splitList:
+                    if len(line) > 1:
+                        line[1] = maxId
+                        line = [str(i) for i in line]
+                        tList.append(','.join(line))
+                fText = '\n'.join(tList)
+                if not fText.endswith('\n'):
+                    fText += '\n'
+                fileText += fText
+            maxId += 1
+        except:
+            print(f"problematic dir is {thisDir}")
+            traceback.print_exc()
+
             
     madDB.addExperimentsMetadata(expText)
     madDB.addFilesMetadata(fileText)
