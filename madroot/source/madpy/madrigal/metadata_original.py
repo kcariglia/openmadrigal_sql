@@ -1329,7 +1329,15 @@ class MadrigalDB:
             finalList = [os.path.join(self.getMadroot(), expObj.getExpDirByExpId(item[1]), os.path.basename(item[0])) for item in resList]
             return(finalList)
         elif appendKinst and not appendStartTime:
-            finalList = [[os.path.join(self.getMadroot(), expObj.getExpDirByExpId(item[1]), os.path.basename(item[0])), kinsts[ids[item[1]]]] for item in resList]
+            #finalList = [[os.path.join(self.getMadroot(), expObj.getExpDirByExpId(item[1]), os.path.basename(item[0])), kinsts[ids[item[1]]]] for item in resList]
+            # tmp only
+            finalList = []
+            for item in resList:
+                try:
+                    finalList.append([os.path.join(self.getMadroot(), expObj.getExpDirByExpId(item[1]), os.path.basename(item[0])), kinsts[ids[item[1]]]])
+                except:
+                    print(f"problem found with expid {item[1]}. dir is {expObj.getExpDirByExpId(item[1])}")
+                    continue
             return(finalList)
         elif appendStartTime and not appendKinst:
             finalList = [[os.path.join(self.getMadroot(), expObj.getExpDirByExpId(item[1]), os.path.basename(item[0])), times[ids[item[1]]]] for item in resList]
