@@ -115,6 +115,8 @@ if len(dirsneeded) > 0:
     fileText = ""
     for thisDir in dirsneeded:
         # new experiment (and files) to add
+        eText = ""
+        fText = ""
 
         try:
             # check if we need to add test exps
@@ -147,26 +149,32 @@ if len(dirsneeded) > 0:
                 eText = '\n'.join(tList)
                 if not eText.endswith('\n'):
                     eText += '\n'
-                expText += eText
 
             with open(os.path.join(thisDir, "fileTab.txt"), "r") as f:
                 fText = f.read()
-                if '\n' != fText[-1]:
-                    # need newline separator
-                    fText += '\n'
-                fileLines = fText.split('\n')
-                splitList = [line.split(',') for line in fileLines]
-                # must reset expID
-                tList = []
-                for line in splitList:
-                    if len(line) > 1:
-                        line[1] = maxId
-                        line = [str(i) for i in line]
-                        tList.append(','.join(line))
-                fText = '\n'.join(tList)
-                if not fText.endswith('\n'):
-                    fText += '\n'
-                fileText += fText
+                try:
+                    if '\n' != fText[-1]:
+                        # need newline separator
+                        fText += '\n'
+                    fileLines = fText.split('\n')
+                    splitList = [line.split(',') for line in fileLines]
+                    # must reset expID
+                    tList = []
+                    for line in splitList:
+                        if len(line) > 1:
+                            line[1] = maxId
+                            line = [str(i) for i in line]
+                            tList.append(','.join(line))
+                    fText = '\n'.join(tList)
+                    if not fText.endswith('\n'):
+                        fText += '\n'
+                except IndexError:
+                    # there are some blank fileTabs-- handle those here (later)
+                    raise
+
+            # if we get here, then we were able to successfully read data for this expTab + fileTab
+            expText += eText
+            fileText += fText
             maxId += 1
         except:
             print(f"problematic dir is {thisDir}")

@@ -226,7 +226,7 @@ def populateFileTab(cur):
 
 def populateExpTab(cur):
     tblTemplate = """CREATE TABLE expTab (
-        id INTEGER,
+        id INTEGER UNIQUE,
         url TEXT UNIQUE NOT NULL,
         name TEXT NOT NULL,
         sid INTEGER NOT NULL,
