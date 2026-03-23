@@ -4677,18 +4677,17 @@ class MadrigalKindat:
         try:
             self.__initMetaDBConnector()
 
-            result = self.__cursor.execute(query.format(kcode))
+            if kcode:
+                result = self.__cursor.execute(query.format(kcode))
+            else:
+                # try with code instead of kcode
+                result = self.__cursor.execute(query.format(code))
             resList = result.fetchall()
+            self.__closeMetaDBConnector()
 
             if not resList:
-                # try again with code instead of kcode
-                result = self.__cursor.execute(query.format(code))
-                resList = result.fetchall()
-
-                if not resList:
-                    return(None)
+                return(None)
             
-            self.__closeMetaDBConnector()
             [[desc]] = resList
             return(desc)
         
