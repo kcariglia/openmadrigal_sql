@@ -4670,7 +4670,7 @@ class MadrigalKindat:
         """
         kcode = None
         if kinst:
-            kcode = str(kinst) + '_' + str(code)
+            kcode = str(int(kinst)) + '_' + str(int(code))
 
         query = "SELECT " + self.__typeDescCol + " FROM " + self.__tblName + " WHERE " + self.__typeCodeCol + "=\"{}\""
 
@@ -4681,7 +4681,7 @@ class MadrigalKindat:
                 result = self.__cursor.execute(query.format(kcode))
             else:
                 # try with code instead of kcode
-                result = self.__cursor.execute(query.format(code))
+                result = self.__cursor.execute(query.format(str(int(code))))
             resList = result.fetchall()
             self.__closeMetaDBConnector()
 
