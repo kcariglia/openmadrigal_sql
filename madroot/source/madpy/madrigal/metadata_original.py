@@ -4318,6 +4318,7 @@ class MadrigalInstrumentParameters:
 
         Exceptions: if error accessing metadata.db
         """
+        kinst = int(kinst)
         
         try:
             self.__initMetaDBConnector()
