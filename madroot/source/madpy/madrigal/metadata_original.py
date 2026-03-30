@@ -4182,7 +4182,7 @@ class MadrigalInstrument:
             print("instTab updated successfully")
         except:
             self.__closeMetaDBConnector()
-            raise madrigal.admin.MadrigalError("Problem updating siteTab",
+            raise madrigal.admin.MadrigalError("Problem updating instTab",
                                           traceback.format_exception(sys.exc_info()[0],
                                                                     sys.exc_info()[1],
                                                                     sys.exc_info()[2]))
@@ -4515,13 +4515,13 @@ class MadrigalInstrumentParameters:
         delimiter = ' '
         # step through each key
         try:
-            self.__initMetaDBConnector()
             for key in keyList:
                 # sort that instrument's list
                 instParmList = madParmObj.normalizeParmList(instCodeDict[key])
                 # convert from codes to mnemonics
                 instParmList = madParmObj.getParmMnemonicList(instParmList)
 
+                self.__initMetaDBConnector()
                 for parm in instParmList:
                     self.__cursor.execute(template, (key, parm))
 
@@ -4529,8 +4529,8 @@ class MadrigalInstrumentParameters:
                 #newFileStr = newFileStr + str(key) + ','
                 #newFileStr = newFileStr + delimiter.join(instParmList).lower() + '\n'
 
-            self.__connector.commit()
-            self.__closeMetaDBConnector()
+                self.__connector.commit()
+                self.__closeMetaDBConnector()
         except:
             self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError('Problem rebuilding instParmTab', 
