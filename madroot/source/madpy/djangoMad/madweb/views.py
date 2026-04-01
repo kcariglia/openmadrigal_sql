@@ -37,6 +37,8 @@ from wsgiref.util import FileWrapper
 
 # third party imports
 import numpy
+import pandas
+import h5py
 
 
 # madrigal imports
@@ -2269,6 +2271,131 @@ def get_experiment_files_service(request):
     
     
     return render(request, 'madweb/service.html', {'text': django.utils.safestring.mark_safe(retStr)})
+
+
+def get_HAPI_service(request):
+    """
+    Service to generate HAPI 
+    """
+    startDT = datetime.datetime.strptime(request.GET['startDT'], "%Y-%m-%dT%H:%M:%SZ")
+    endDT = datetime.datetime.strptime(request.GET['endDT'], "%Y-%m-%dT%H:%M:%SZ")
+    kinst = int(request.GET['kinst'])
+    kindat = int(request.GET['kindat'])
+    madParms = request.GET.getlist('madParms')
+    
+    # assume no stream/stream flag for now
+    stream = None
+    stream_flag = False
+
+    # create MadrigalDB obj
+    madDBObj = madrigal.metadata.MadrigalDB()
+
+    expFileList = madDBObj.getFileListFromMetadata(kinstList=[kinst],
+                                                kindatList=[kindat],
+                                                startDate=startDT.date,
+                                                endDate=endDT.date
+                                                )
+    
+    datastr = "" # datastr can literally be treated as csv
+    for thisFile in expFileList:
+        data = io.StringIO()
+
+        # do not download file, just read it directly
+        mytempfile = thisFile.name.replace("/opt/openmadrigal/madroot/experiments", "/data/cloud1/geospace/madrigal/experiments")#"hapitemp.hdf5"
+
+        #madDB.downloadFile(thisFile.name, mytempfile, user_fullname, user_email, user_affiliation, format="hdf5")
+        
+        with h5py.File(mytempfile, "r") as f:
+            # what's the biggest piece of this numpy array we can read at a time
+            # if it is too big to read in one go?
+            thisDF = pandas.DataFrame(numpy.array(f["Data/Table Layout"]), columns=madParms)
+            thisDF.to_csv(data)
+            datatoadd = data.getvalue()
+            datatoadd = cleanDataTime(datatoadd, isprint=False) # want to do this in a smarter/more efficient way, FIX ME
+
+            datastr += datatoadd
+
+        if stream_flag:
+            # Write then flush
+            stream.wfile.write(bytes(datastr, "utf-8"))
+            datastr = ""
+
+    # if stream_flag:
+    #     return(datastr, stream)
+    # else:
+    #     return(datastr)
+
+    return render(request, 'madweb/service.html', {'text': django.utils.safestring.mark_safe(datastr)})
+
+
+def cleanDataTime(data, isprint=False):
+    """
+    converts madrigal time parms in data str to isotime, as hapi wants
+    for use with isprint
+    
+    this is really slow but i will optimize later
+    """
+    newdatastr = ""
+    if isprint:
+        for line in data.split('\n'):
+            thisRow = line.split()
+
+            if len(thisRow) < 7:
+                # no data in this row
+                continue
+
+        
+            # get non time data
+            thisRecord = thisRow[7:]
+            utctime = int(math.floor(float(thisRow[6])))
+            utcDT = datetime.datetime.fromtimestamp(utctime, tz=datetime.timezone.utc)
+            thisDT = datetime.datetime(year=int(thisRow[0]),
+                                    month=int(thisRow[1]),
+                                    day=int(thisRow[2]),
+                                    hour=int(thisRow[3]),
+                                    minute=int(thisRow[4]),
+                                    second=int(thisRow[5]),
+                                    tzinfo=datetime.timezone.utc)
+            # ensure dt matches utc timestamp
+            if thisDT != utcDT:
+                raise ValueError(f"mismatched dts {utcDT}, {thisDT}")
+            
+            isoDT = thisDT.strftime("%Y-%m-%dT%H:%M:%SZ")
+            thisLine = isoDT + "," + ",".join(thisRecord) + "\n"
+            newdatastr += thisLine
+    else:
+        firstline = True
+        for line in data.split('\n'):
+
+            if firstline:
+                # first line contains headers we dont want
+                firstline = False
+                continue
+
+            thisRow = line.split(',')
+
+            if len(thisRow) < 7:
+                # no data in this row
+                continue
+            # get non time data
+            thisRecord = thisRow[8:]
+            utctime = int(math.floor(float(thisRow[7])))
+            utcDT = datetime.datetime.fromtimestamp(utctime, tz=datetime.timezone.utc)
+            thisDT = datetime.datetime(year=int(thisRow[1]),
+                                    month=int(thisRow[2]),
+                                    day=int(thisRow[3]),
+                                    hour=int(thisRow[4]),
+                                    minute=int(thisRow[5]),
+                                    second=int(thisRow[6]),
+                                    tzinfo=datetime.timezone.utc)
+            # ensure dt matches utc timestamp
+            if thisDT != utcDT:
+                raise ValueError(f"mismatched dts {utcDT}, {thisDT}")
+            
+            isoDT = thisDT.strftime("%Y-%m-%dT%H:%M:%SZ")
+            thisLine = isoDT + "," + ",".join(thisRecord) + "\n"
+            newdatastr += thisLine
+    return(newdatastr)
 
 
 def get_parameters_service(request):
