@@ -20,6 +20,7 @@ import shutil
 import mimetypes
 import tempfile
 import random
+import math
 
 # django imports
 from django.shortcuts import render, redirect
