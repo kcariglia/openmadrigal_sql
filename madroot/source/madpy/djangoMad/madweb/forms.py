@@ -1385,7 +1385,6 @@ class DownloadAsIsScriptForm(django.forms.Form):
         isTrusted = bool(kwargs['initial']['isTrusted'])
         madInstData = madrigal.metadata.MadrigalInstrumentData(madDB, isTrusted)
         madKindatObj = madrigal.metadata.MadrigalKindat(madDB)
-        madInstKindatObj = madrigal.metadata.MadrigalInstrumentKindats(madDB)
         now = datetime.datetime.now()
         endDateTime = datetime.datetime(now.year, 12, 31, 23, 59, 59)
         kwargs['isGlobal'] = '0'
@@ -1453,7 +1452,7 @@ class DownloadAsIsScriptForm(django.forms.Form):
                     continue
                 yearList = madInstData.getInstrumentYears(kinst)
                 self.instruments.append((instDesc, id, kinst, yearList[0], yearList[-1]))
-                kindatList = madInstKindatObj.getKindatListForInstruments([kinst])
+                kindatList = madInstData.getKindatListForInstruments([kinst])
                 for kindat in kindatList:
                     self.kindats.append((kindat, madKindatObj.getKindatDescription(kindat, kinst),
                                          kinst))
@@ -1476,7 +1475,6 @@ class DownloadAdvancedScriptForm(django.forms.Form):
         isTrusted = bool(kwargs['initial']['isTrusted'])
         madInstData = madrigal.metadata.MadrigalInstrumentData(madDB, isTrusted)
         madKindatObj = madrigal.metadata.MadrigalKindat(madDB)
-        madInstKindatObj = madrigal.metadata.MadrigalInstrumentKindats(madDB)
         now = datetime.datetime.now()
         endDateTime = datetime.datetime(now.year, 12, 31, 23, 59, 59)
         kwargs['isGlobal'] = '0'
@@ -1553,7 +1551,7 @@ class DownloadAdvancedScriptForm(django.forms.Form):
                     continue
                 yearList = madInstData.getInstrumentYears(kinst)
                 self.instruments.append((instDesc, id, kinst, yearList[0], yearList[-1]))
-                kindatList = madInstKindatObj.getKindatListForInstruments([kinst])
+                kindatList = madInstData.getKindatListForInstruments([kinst])
                 for kindat in kindatList:
                     self.kindats.append((kindat, madKindatObj.getKindatDescription(kindat, kinst),
                                          kinst))
