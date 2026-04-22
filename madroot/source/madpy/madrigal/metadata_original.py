@@ -1169,8 +1169,12 @@ class MadrigalDB:
                 expConditions.append(thisCond)
 
         if kindatList and (0 not in kindatList):
-            thisCond = "kindat in {}".format(tuple(kindatList))
-            fileConditions.append(thisCond)
+            if len(kindatList) == 1:
+                thisCond = "kindat={}".format(kindatList[0])
+                fileConditions.append(thisCond)
+            else:
+                thisCond = "kindat in {}".format(tuple(kindatList))
+                fileConditions.append(thisCond)
 
         expQuery = "SELECT id"
         if appendKinst:
