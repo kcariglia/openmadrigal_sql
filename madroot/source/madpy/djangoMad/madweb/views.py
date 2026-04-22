@@ -1149,6 +1149,7 @@ def ftp(request):
     # create instrument with data list with tuple (instrument_name, kinst)
     madInstDataObj = madrigal.metadata.MadrigalInstrumentData(madDB, isTrusted)
     madInstList = madInstDataObj.getInstruments()
+    madInstList = [(inst[1], inst[0]) for inst in madInstList]
     return render(request, 'madweb/ftp_instruments.html', {'madInstList': madInstList, 'fullname': fullname,
                                                               'email': email, 'affiliation':affiliation, 'site_name': siteName, 
                                                               'site_list': siteList, 'bg_color': bg_color})
