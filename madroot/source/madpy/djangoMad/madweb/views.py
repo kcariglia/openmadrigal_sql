@@ -2294,8 +2294,8 @@ def get_HAPI_service(request):
 
     expFileList = madDBObj.getFileListFromMetadata(kinstList=[kinst],
                                                 kindatList=[kindat],
-                                                startDate=startDT.date,
-                                                endDate=endDT.date
+                                                startDate=startDT,
+                                                endDate=endDT
                                                 )
     
     datastr = "" # datastr can literally be treated as csv

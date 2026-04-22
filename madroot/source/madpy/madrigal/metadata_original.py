@@ -1105,10 +1105,10 @@ class MadrigalDB:
             kindatList: a list of kindat (kind of data codes) integers that will be
             accepted.  If None (default) or if list contains 0, all kindat values are accepted.
 
-            startDate: a python date (see time module - actually a tuple of nine integers)
+            startDate: a python datetime
             after which to accept files.  If None (default), do not reject any files.
 
-            endDate: a python date (see time module - actually a tuple of nine integers)
+            endDate: a python datetime
             before which to accept files.  If None (default), do not reject any files.
 
             startDayOfYear: a Julian day number (1-366) after which to accept files from
@@ -1180,8 +1180,8 @@ class MadrigalDB:
             expQuery += ", sdt"
 
         if startDate:
-            startDate = datetime.datetime(startDate[0], startDate[1], startDate[2], startDate[3],
-                                          startDate[4], startDate[5], tzinfo=datetime.timezone.utc)
+            # startDate = datetime.datetime(startDate[0], startDate[1], startDate[2], startDate[3],
+            #                               startDate[4], startDate[5], tzinfo=datetime.timezone.utc)
             sDate = startDate.strftime("%Y%m%d%H%M%S")
             if startDayOfYear:
                 startDayOfYear = datetime.datetime.strptime(startDayOfYear, "%j")
@@ -1196,8 +1196,8 @@ class MadrigalDB:
             expConditions.append(thisCond)
             
         if endDate:
-            endDate = datetime.datetime(endDate[0], endDate[1], endDate[2], endDate[3],
-                                        endDate[4], endDate[5], tzinfo=datetime.timezone.utc)
+            # endDate = datetime.datetime(endDate[0], endDate[1], endDate[2], endDate[3],
+            #                             endDate[4], endDate[5], tzinfo=datetime.timezone.utc)
             eDate = endDate.strftime("%Y%m%d%H%M%S")
             if endDayOfYear:
                 endDayOfYear = datetime.datetime.strptime(endDayOfYear, "%j")
