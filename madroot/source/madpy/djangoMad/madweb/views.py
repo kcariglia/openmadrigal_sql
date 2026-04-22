@@ -2303,7 +2303,7 @@ def get_HAPI_service(request):
         data = io.StringIO()
 
         # do not download file, just read it directly
-        mytempfile = thisFile.name.replace("/opt/openmadrigal/madroot/experiments", "/data/cloud1/geospace/madrigal/experiments")#"hapitemp.hdf5"
+        mytempfile = thisFile.replace("/opt/openmadrigal/madroot/experiments", "/data/cloud1/geospace/madrigal/experiments")#"hapitemp.hdf5"
 
         #madDB.downloadFile(thisFile.name, mytempfile, user_fullname, user_email, user_affiliation, format="hdf5")
         
