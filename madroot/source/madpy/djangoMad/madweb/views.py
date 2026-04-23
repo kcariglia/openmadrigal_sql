@@ -2351,12 +2351,12 @@ def cleanDataTime(data, isprint=False):
             thisRecord = thisRow[7:]
             utctime = int(math.floor(float(thisRow[6])))
             utcDT = datetime.datetime.fromtimestamp(utctime, tz=datetime.timezone.utc)
-            thisDT = datetime.datetime(year=int(thisRow[0]),
-                                    month=int(thisRow[1]),
-                                    day=int(thisRow[2]),
-                                    hour=int(thisRow[3]),
-                                    minute=int(thisRow[4]),
-                                    second=int(thisRow[5]),
+            thisDT = datetime.datetime(year=int(float(thisRow[0])),
+                                    month=int(float(thisRow[1])),
+                                    day=int(float(thisRow[2])),
+                                    hour=int(float(thisRow[3])),
+                                    minute=int(float(thisRow[4])),
+                                    second=int(float(thisRow[5])),
                                     tzinfo=datetime.timezone.utc)
             # ensure dt matches utc timestamp
             if thisDT != utcDT:
