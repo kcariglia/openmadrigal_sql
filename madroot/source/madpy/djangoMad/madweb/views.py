@@ -2277,7 +2277,15 @@ def get_experiment_files_service(request):
 
 def get_HAPI_service(request):
     """
-    Service to generate HAPI 
+    Service to generate HAPI response for Madrigal-HAPI server. 
+    Inputs:
+        request/url - contains arguments:
+        startDT - start datetime (string); YYYY-MM-DDT:HH:MM:SSZ
+        endDT - end datetime (string); YYYY-MM-DDT:HH:MM:SSZ
+        kinst - instrument code (int)
+        kindat - kind of data code (int)
+        madParms - Multiple separately requested parameters.
+    Returns empty string if no data found. Returns comma/newline delimited string of data otherwise.
     """
     startDT = datetime.datetime.strptime(request.GET['startDT'], "%Y-%m-%dT%H:%M:%SZ")
     endDT = datetime.datetime.strptime(request.GET['endDT'], "%Y-%m-%dT%H:%M:%SZ")
@@ -2299,24 +2307,27 @@ def get_HAPI_service(request):
                                                 )
     
     datastr = "" # datastr can literally be treated as csv
+    print(f"kinst: {kinst}   kindat: {kindat}   start: {startDT}   end: {endDT}")
+    #print(f"expFileList: {expFileList}")
     for thisFile in expFileList:
         data = io.StringIO()
 
         # do not download file, just read it directly
-        mytempfile = thisFile.replace("/opt/openmadrigal/madroot/experiments", "/data/cloud1/geospace/madrigal/experiments")#"hapitemp.hdf5"
-
+        mytempfile = thisFile.replace("/opt/openmadrigal_sql/madroot/experiments", "/data/cloud1/geospace/madrigal/experiments")#"hapitemp.hdf5"
+        print(f"file is {mytempfile}")
         availableParms = get_available_parms(mytempfile, madParms)
-
+        print(f"parms are {availableParms}")
         #madDB.downloadFile(thisFile.name, mytempfile, user_fullname, user_email, user_affiliation, format="hdf5")
         
         with h5py.File(mytempfile, "r") as f:
             # what's the biggest piece of this numpy array we can read at a time
             # if it is too big to read in one go?
+            print(f"opened file {mytempfile}")
             thisDF = pandas.DataFrame(numpy.array(f["Data/Table Layout"]), columns=availableParms)
             thisDF.to_csv(data)
             datatoadd = data.getvalue()
-            datatoadd = cleanDataTime(datatoadd, isprint=False) # want to do this in a smarter/more efficient way, FIX ME
-
+            datatoadd = cleanDataTime(datatoadd, availableParms, isprint=False) # want to do this in a smarter/more efficient way, FIX ME
+            #print(f"cleaned data {datatoadd}")
             datastr += datatoadd
 
         if stream_flag:
@@ -2332,12 +2343,16 @@ def get_HAPI_service(request):
     return render(request, 'madweb/service.html', {'text': django.utils.safestring.mark_safe(datastr)})
 
 
-def cleanDataTime(data, isprint=False):
+def cleanDataTime(data, availableParms, isprint=False):
     """
-    converts madrigal time parms in data str to isotime, as hapi wants
-    for use with isprint
+    Converts Madrigal time parameterss in data string to isotime, as HAPI wants.
+    Inputs:
+        data - data string as read from Madrigal HDF5 -> pandas DF -> csv
+        availableParms - available data parameters as returned from get_available_parms()
+
+    Returns cleaned comma/newline delimited data string.
     
-    this is really slow but i will optimize later
+    TODO: optimize 
     """
     newdatastr = ""
     if isprint:
@@ -2364,12 +2379,13 @@ def cleanDataTime(data, isprint=False):
             if thisDT != utcDT:
                 raise ValueError(f"mismatched dts {utcDT}, {thisDT}")
             
-            isoDT = thisDT.strftime("%Y-%m-%dT%H:%M:%SZ")
+            isoDT = thisDT.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
             thisLine = isoDT + "," + ",".join(thisRecord) + "\n"
             newdatastr += thisLine
     else:
         firstline = True
         for line in data.split('\n'):
+            #print(line)
 
             if firstline:
                 # first line contains headers we dont want
@@ -2377,36 +2393,58 @@ def cleanDataTime(data, isprint=False):
                 continue
 
             thisRow = line.split(',')
+            #print(f"len of available parms: {len(availableParms)}, len of this row: {len(thisRow)}")
+            #print(thisRow)
 
             if len(thisRow) < 7:
                 # no data in this row
                 continue
+
+            if len(availableParms) != len(thisRow):
+                # pandas automatically includes row number, double check this is the case
+                if len(thisRow) == (len(availableParms) + 1):
+                    # verified data is valid
+                    thisRow = thisRow[1:]
+                else:
+                    raise ValueError(f"weird parameters found: available {availableParms} vs {thisRow}")
+
             # get non time data
-            thisRecord = thisRow[8:]
-            utctime = int(math.floor(float(thisRow[7])))
+            #print(thisRow)
+            thisRecord = thisRow[7:]
+            utctime = int(math.floor(float(thisRow[6])))
             utcDT = datetime.datetime.fromtimestamp(utctime, tz=datetime.timezone.utc)
-            thisDT = datetime.datetime(year=int(float(thisRow[1])),
-                                    month=int(float(thisRow[2])),
-                                    day=int(float(thisRow[3])),
-                                    hour=int(float(thisRow[4])),
-                                    minute=int(float(thisRow[5])),
-                                    second=int(float(thisRow[6])),
+            thisDT = datetime.datetime(year=int(float(thisRow[0])),
+                                    month=int(float(thisRow[1])),
+                                    day=int(float(thisRow[2])),
+                                    hour=int(float(thisRow[3])),
+                                    minute=int(float(thisRow[4])),
+                                    second=int(float(thisRow[5])),
                                     tzinfo=datetime.timezone.utc)
             # ensure dt matches utc timestamp
             if thisDT != utcDT:
-                raise ValueError(f"mismatched dts {utcDT}, {thisDT}")
+                #print(f"mismatched dts {utcDT}, {thisDT}")
+                continue # TMP ONLY; skip problematic records
             
-            isoDT = thisDT.strftime("%Y-%m-%dT%H:%M:%SZ")
-            thisLine = isoDT + "," + ",".join(thisRecord) + "\n"
+            isoDT = thisDT.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
+
+            if len(thisRow) == 7:
+                # only time was requested
+                thisLine = isoDT + "\n"
+            else:
+                thisLine = isoDT + "," + ",".join(thisRecord) + "\n"
+            
             newdatastr += thisLine
     return(newdatastr)
 
 
 def get_available_parms(fname, requestedParms):
     """
-    get available parms by filename. 
+    Get available parameters by filename. 
+    Inputs:
+        fname - requested filename
+        requestedParms - requested data parameters
 
-    return intersection(available, requested)
+    return alphabetized intersection(available, requested)
     """
     madDB = madrigal.metadata.MadrigalDB()
     madInstObj = madrigal.metadata.MadrigalInstrument(madDB)
@@ -2414,9 +2452,12 @@ def get_available_parms(fname, requestedParms):
     madhapi_hdf_catalog = os.path.join(madDB.getMetadataDir(), "madhapi.hdf5")
     filesDF = pandas.read_hdf(madhapi_hdf_catalog, key="files")
     filesDict = filesDF.to_dict() # fname: startDT, endDT, parmList
-    availableParms = set(filesDict[fname][2]).intersection(set(requestedParms))
+    standardTimeParms = ['year', 'month', 'day', 'hour', 'min', 'sec', 'ut1_unix']
+    availableParms = set([parm.lower() for parm in filesDict[fname][2]])
 
-    return(list(availableParms))
+    availableParms = availableParms.intersection(set(requestedParms))
+
+    return(standardTimeParms + sorted(list(availableParms)))
 
 
 def get_parameters_service(request):
