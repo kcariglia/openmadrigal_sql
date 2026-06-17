@@ -2289,6 +2289,10 @@ def get_HAPI_service(request):
     """
     startDT = datetime.datetime.strptime(request.GET['startDT'], "%Y-%m-%dT%H:%M:%SZ")
     endDT = datetime.datetime.strptime(request.GET['endDT'], "%Y-%m-%dT%H:%M:%SZ")
+    startTimestamp = startDT.timestamp()
+    endTimestamp = endDT.timestamp() - 1
+    madStartDT = datetime.datetime(year=startDT.year, month=startDT.month, day=startDT.day, hour=0, minute=0, second=0)
+    madEndDT = datetime.datetime(year=endDT.year, month=endDT.month, day=endDT.day+1, hour=0, minute=0, second=0)
     kinst = int(request.GET['kinst'])
     kindat = int(request.GET['kindat'])
     madParms = request.GET.getlist('madParms')
@@ -2299,16 +2303,14 @@ def get_HAPI_service(request):
 
     # create MadrigalDB obj
     madDBObj = madrigal.metadata.MadrigalDB()
-
+    # madrigal query parameters should be inclusive of HAPI requested times
     expFileList = madDBObj.getFileListFromMetadata(kinstList=[kinst],
                                                 kindatList=[kindat],
-                                                startDate=startDT,
-                                                endDate=endDT
+                                                startDate=madStartDT,
+                                                endDate=madEndDT
                                                 )
     
     datastr = "" # datastr can literally be treated as csv
-    print(f"kinst: {kinst}   kindat: {kindat}   start: {startDT}   end: {endDT}")
-    #print(f"expFileList: {expFileList}")
     for thisFile in expFileList:
         data = io.StringIO()
 
@@ -2324,6 +2326,8 @@ def get_HAPI_service(request):
             # if it is too big to read in one go?
             print(f"opened file {mytempfile}")
             thisDF = pandas.DataFrame(numpy.array(f["Data/Table Layout"]), columns=availableParms)
+            # filter date to HAPI request time range
+            thisDF = thisDF[(thisDF['ut1_unix'] >= startTimestamp) & (thisDF['ut1_unix'] <= endTimestamp)].copy()
             thisDF.to_csv(data)
             datatoadd = data.getvalue()
             datatoadd = cleanDataTime(datatoadd, availableParms, isprint=False) # want to do this in a smarter/more efficient way, FIX ME
