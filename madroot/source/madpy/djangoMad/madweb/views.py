@@ -2033,10 +2033,10 @@ def get_experiments_service(request):
 
     # create MadrigalInstrument obj to convert kinst to instrument names
     madInstObj = madrigal.metadata.MadrigalInstrument(madDBObj)
-
+    
     # create MadrigalSite obj to convert site id to site name
     madSiteObj = madrigal.metadata.MadrigalSite(madDBObj)
-    
+        
     madWebObj = madrigal.ui.web.MadrigalWeb(madDBObj, request)
     trusted = madWebObj.isTrusted()
 
@@ -2062,72 +2062,65 @@ def get_experiments_service(request):
     else:
         endTimeFilter = None
 
-    # create MadrigalExperiments for local or all files
-    if local == 1:
-        madExpObj = madrigal.metadata.MadrigalExperiment(madDBObj)
-    else:
-        # use file expTabAll.txt to get all experiments
-        filename = madDBObj.getMadroot()
-        if filename[-1] != '/':
-            filename += '/'
-        filename += 'metadata/expTabAll.txt'
-        madExpObj = madrigal.metadata.MadrigalExperiment(madDBObj, filename)
-        
-    madExpObj.sortByDateSite()
+    # get experiment list from metadata
+    expList = madDBObj.getExpList(kinstList=codeList,
+                                  startDate=datetime.datetime(year=startyear,
+                                                              month=startmonth,
+                                                              day=startday,
+                                                              hour=starthour,
+                                                              minute=startmin,
+                                                              second=startsec),
+                                endDate=datetime.datetime(year=endyear,
+                                                          month=endmonth,
+                                                          day=endday,
+                                                          hour=endhour,
+                                                          minute=endmin,
+                                                          second=endsec))
 
-    # loop through the data
-    if not startTimeFilter is None:
-        position = madExpObj.getStartPosition(startTimeFilter)
-    else:
-        position = 0
-    while(True):
-        thisId = madExpObj.getExpIdByPosition(position)
-        # check for end
-        if thisId == None:
-            break
-        thisUrl = madExpObj.getExpUrlByPosition(position)
-        thisName = madExpObj.getExpNameByPosition(position)
-        thisSiteId = madExpObj.getExpSiteIdByPosition(position)
-        thisSiteName = madSiteObj.getSiteName(thisSiteId)
-        thisInstCode = madExpObj.getKinstByPosition(position)
-        thisInstName =madInstObj.getInstrumentName(thisInstCode)
-        thisStart = madExpObj.getExpStartDateTimeByPosition(position)
-        thisEnd = madExpObj.getExpEndDateTimeByPosition(position)
-        thisSecurity = madExpObj.getSecurityByPosition(position)
+
+    for thisExpDir in expList:
+        thisExpObj = madrigal.metadata.MadrigalExperiment(madDBObj, 
+                                                          os.path.join(thisExpDir, "expTab.txt"))
+
+        thisId = thisExpObj.getExpIdByPosition()
+        thisUrl = thisExpObj.getExpUrlByPosition()
+        thisName = thisExpObj.getExpNameByPosition()
+        thisSiteId = thisExpObj.getExpSiteIdByPosition()
+        thisSiteName = thisExpObj.getSiteName()
+        thisInstCode = thisExpObj.getKinstByPosition()
+        thisInstName = thisExpObj.getInstrumentName()
+        thisStart = thisExpObj.getExpStartDateTimeByPosition()
+        thisEnd = thisExpObj.getExpEndDateTimeByPosition()
+        thisSecurity = thisExpObj.getSecurityByPosition()
         if thisSiteId == localSiteId:
             thisLocal = 1
         else:
             thisLocal = 0
-        thisPI = madExpObj.getPIByPosition(position)
+        thisPI = thisExpObj.getPIByPosition()
         if thisPI in (None, ''):
             thisPI = madInstObj.getContactName(thisInstCode)
-        thisPIEmail = madExpObj.getPIEmailByPosition(position)
+        thisPIEmail = thisExpObj.getPIEmailByPosition()
         if thisPIEmail in (None, ''):
             thisPIEmail = madInstObj.getContactEmail(thisInstCode)
-        expDir = madExpObj.getExpDirByPosition(position)
-            
-        position += 1
+        expDir = thisExpObj.getExpDirByPosition()
 
-        # some experiments set the end of the day to 24:00:00 - not
-        # technically correct - reset to 23:59:59
-        
         if (thisStart[3] == 24 and thisStart[4] == 0 and thisStart[5] == 0):
             thisStart[3] = 23
             thisStart[4] = 59
             thisStart[5] = 59
-
+        
         if (thisEnd[3] == 24 and thisEnd[4] == 0 and thisEnd[5] == 0):
             thisEnd[3] = 23
             thisEnd[4] = 59
             thisEnd[5] = 59
-        
+                
         # apply filters
-        
+                
         # first apply instrument code filter
         if codeList[0] != 0:
             if thisInstCode not in codeList:
                 continue
-
+        
         # apply starttime and endtime filters
         thisStartTime = datetime.datetime(thisStart[0],
                                           thisStart[1],
@@ -2135,30 +2128,30 @@ def get_experiments_service(request):
                                           thisStart[3],
                                           thisStart[4],
                                           thisStart[5])
-
+        
         thisEndTime = datetime.datetime(thisEnd[0],
                                         thisEnd[1],
                                         thisEnd[2],
                                         thisEnd[3],
                                         thisEnd[4],
                                         thisEnd[5])
-        
+                
         if startTimeFilter != None:
             if thisEndTime < startTimeFilter:
                 continue
-
+        
         if endTimeFilter != None:
             if thisStartTime > endTimeFilter:
                 continue
-
+        
         # apply local filer
         if local == 1 and thisLocal == 0:
             continue
-
+        
         # apply security filter
         if trusted == 0 and thisSecurity not in (0,2):
             continue
-        
+                
         # create exp timestamp
         if local == 1:
             thisUTTimestamp = int(os.stat(expDir).st_mtime + time.timezone)
@@ -2167,30 +2160,31 @@ def get_experiments_service(request):
 
         # add this experiment
         retStr += '%i,%s,%s,%i,%s,%i,%s,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i,%s,%s,%i,%i\n' % \
-                (thisId,
-                thisUrl,
-                thisName,
-                thisSiteId,
-                thisSiteName,
-                thisInstCode,
-                thisInstName,
-                thisStart[0],
-                thisStart[1],
-                thisStart[2],
-                thisStart[3],
-                thisStart[4],
-                thisStart[5],
-                thisEnd[0],
-                thisEnd[1],
-                thisEnd[2],
-                thisEnd[3],
-                thisEnd[4],
-                thisEnd[5],
-                thisLocal,
-                str(thisPI),
-                str(thisPIEmail),
-                thisUTTimestamp,
-                thisSecurity)
+                        (thisId,
+                        thisUrl,
+                        thisName,
+                        thisSiteId,
+                        thisSiteName,
+                        thisInstCode,
+                        thisInstName,
+                        thisStart[0],
+                        thisStart[1],
+                        thisStart[2],
+                        thisStart[3],
+                        thisStart[4],
+                        thisStart[5],
+                        thisEnd[0],
+                        thisEnd[1],
+                        thisEnd[2],
+                        thisEnd[3],
+                        thisEnd[4],
+                        thisEnd[5],
+                        thisLocal,
+                        str(thisPI),
+                        str(thisPIEmail),
+                        thisUTTimestamp,
+                        thisSecurity)
+
                 
     return render(request, 'madweb/service.html', {'text': retStr})
 
@@ -2228,6 +2222,9 @@ def get_experiment_files_service(request):
 
     # create MadrigalExperiments object to get full file name
     madExpObj = madrigal.metadata.MadrigalExperiment(madDBObj)
+    thisExpDir = madExpObj.getExpDirByExpId(id)
+    expPath = madExpObj.getExpDirByExpId(id)
+    kinst = madExpObj.getKinstByExpId(id)
 
     # create Madrigal Kindat to get Kindat descriptions
     madKindatObj = madrigal.metadata.MadrigalKindat(madDBObj)
@@ -2237,39 +2234,34 @@ def get_experiment_files_service(request):
 
         
     retStr = ''
-    thisUrl = madExpObj.getExpUrlByExpId(id)
-    if thisUrl is None:
-        raise IOError('No such id: %i' % (id))
-    expPath = madExpObj.getExpDirByExpId(id)
-    kinst = madExpObj.getKinstByExpId(id)
-    if os.access(os.path.join(expPath, 'fileTab.txt'), os.R_OK):
-        madFileObj = madrigal.metadata.MadrigalMetaFile(madDBObj, os.path.join(expPath, 'fileTab.txt'))
-        for i in range(madFileObj.getFileCount()):
-            basename = madFileObj.getFilenameByPosition(i)
-            name = os.path.join(expPath, basename)
-            base_filename, file_extension = os.path.splitext(name)
-            if file_extension not in ('.hdf5', '.hdf', '.h5'):
-                continue
-            kindat = madFileObj.getKindatByPosition(i)
-            kindatdesc = madKindatObj.getKindatDescription(kindat, kinst)
-            category = madFileObj.getCategoryByPosition(i)
-            status = madFileObj.getStatusByPosition(i)
-            permission = madFileObj.getAccessByPosition(i)
-            doi = madFileObj.getFileDOIUrlByPosition(i)
-    
-            # skip private files if not trusted
-            if trusted == 0 and int(permission) != 0:
-                continue
-                
-            retStr += '%s,%i,%s,%i,%s,%i,%s\n' % \
-                   (name,
-                    kindat,
-                    kindatdesc,
-                    category,
-                    status,
-                    permission,
-                    doi)
-        
+
+    madFileObj = madrigal.metadata.MadrigalMetaFile(madDBObj, os.path.join(thisExpDir, "fileTab.txt"))
+
+    for i in range(madFileObj.getFileCount()):
+        basename = madFileObj.getFilenameByPosition(i)
+        name = os.path.join(expPath, basename)
+        base_filename, file_extension = os.path.splitext(name)
+        if file_extension not in ('.hdf5', '.hdf', '.h5'):
+            continue
+        kindat = madFileObj.getKindatByPosition(i)
+        kindatdesc = madKindatObj.getKindatDescription(kindat, kinst)
+        category = madFileObj.getCategoryByPosition(i)
+        status = madFileObj.getStatusByPosition(i)
+        permission = madFileObj.getAccessByPosition(i)
+        doi = madFileObj.getFileDOIUrlByPosition(i)
+            
+        # skip private files if not trusted
+        if trusted == 0 and int(permission) != 0:
+            continue
+                        
+        retStr += '%s,%i,%s,%i,%s,%i,%s\n' % \
+                           (name,
+                            kindat,
+                            kindatdesc,
+                            category,
+                            status,
+                            permission,
+                            doi)
     
     
     return render(request, 'madweb/service.html', {'text': django.utils.safestring.mark_safe(retStr)})
@@ -2292,7 +2284,7 @@ def get_HAPI_service(request):
     startTimestamp = startDT.timestamp()
     endTimestamp = endDT.timestamp() - 1
     madStartDT = datetime.datetime(year=startDT.year, month=startDT.month, day=startDT.day, hour=0, minute=0, second=0)
-    madEndDT = datetime.datetime(year=endDT.year, month=endDT.month, day=endDT.day+1, hour=0, minute=0, second=0)
+    madEndDT = datetime.datetime(year=(endDT+datetime.timedelta(days=1)).year, month=(endDT+datetime.timedelta(days=1)).month, day=(endDT+datetime.timedelta(days=1)).day, hour=0, minute=0, second=0)
     kinst = int(request.GET['kinst'])
     kindat = int(request.GET['kindat'])
     madParms = request.GET.getlist('madParms')
