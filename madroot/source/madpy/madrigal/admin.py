@@ -1377,7 +1377,7 @@ class MadrigalDBAdmin:
         filename = os.path.basename(madFilename)
 
         # delete line from fileTab.txt
-        fileTabInfo.deleteRowByFilename(filename)
+        fileTabInfo.deleteRowByFilename(madFilename)
         
         # state variable to detect deletion of missing file
         was_missing = False
@@ -1585,10 +1585,10 @@ class MadrigalDBAdmin:
         self.__updateGlobalMetadata__()
         e = datetime.datetime.now()
         print("global meta took {} s".format((e-s).seconds))
-        print('*** Checking OpenMadrigal for any metadata updates ***')
-        self.__checkOpenMadrigalMetadata__()
-        e = datetime.datetime.now()
-        print("openmad meta took {} s".format((e-s).seconds))
+        #print('*** Checking OpenMadrigal for any metadata updates ***')
+        #self.__checkOpenMadrigalMetadata__()
+        #e = datetime.datetime.now()
+        #print("openmad meta took {} s".format((e-s).seconds))
 
         #tmp only, need to double check total # exps and files
         eObj = madrigal.metadata.MadrigalExperiment(self.__madDB)
@@ -1618,8 +1618,7 @@ class MadrigalDBAdmin:
         e = datetime.datetime.now()
         print("rebuilding instData took {} s".format((e-s).seconds))
 
-        # instKindatTab now accounted for by instData, but this is 
-        # probably still buggy
+        # instKindatTab now accounted for by instData
 
         # will probably want to dump all tables to text here, use getTableStr (be careful of newlines tho)
 

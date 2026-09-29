@@ -2036,6 +2036,7 @@ def get_experiments_service(request):
     
     # create MadrigalSite obj to convert site id to site name
     madSiteObj = madrigal.metadata.MadrigalSite(madDBObj)
+    thisSiteName = madSiteObj.getSiteName(localSiteId)
         
     madWebObj = madrigal.ui.web.MadrigalWeb(madDBObj, request)
     trusted = madWebObj.isTrusted()
@@ -2063,7 +2064,7 @@ def get_experiments_service(request):
         endTimeFilter = None
 
     # get experiment list from metadata
-    expList = madDBObj.getExpList(kinstList=codeList,
+    expList = madDBObj.getExpListFromMetadata(kinstList=codeList,
                                   startDate=datetime.datetime(year=startyear,
                                                               month=startmonth,
                                                               day=startday,
@@ -2086,9 +2087,8 @@ def get_experiments_service(request):
         thisUrl = thisExpObj.getExpUrlByPosition()
         thisName = thisExpObj.getExpNameByPosition()
         thisSiteId = thisExpObj.getExpSiteIdByPosition()
-        thisSiteName = thisExpObj.getSiteName()
         thisInstCode = thisExpObj.getKinstByPosition()
-        thisInstName = thisExpObj.getInstrumentName()
+        thisInstName = madInstObj.getInstrumentName(thisInstCode)
         thisStart = thisExpObj.getExpStartDateTimeByPosition()
         thisEnd = thisExpObj.getExpEndDateTimeByPosition()
         thisSecurity = thisExpObj.getSecurityByPosition()
@@ -2307,23 +2307,18 @@ def get_HAPI_service(request):
         data = io.StringIO()
 
         # do not download file, just read it directly
-        mytempfile = thisFile.replace("/opt/openmadrigal_sql/madroot/experiments", "/data/cloud1/geospace/madrigal/experiments")#"hapitemp.hdf5"
-        print(f"file is {mytempfile}")
+        mytempfile = thisFile.replace("/opt/openmadrigal_sql/madroot/experiments", "/data/cloud1/geospace/madrigal/experiments")
         availableParms = get_available_parms(mytempfile, madParms)
-        print(f"parms are {availableParms}")
-        #madDB.downloadFile(thisFile.name, mytempfile, user_fullname, user_email, user_affiliation, format="hdf5")
         
         with h5py.File(mytempfile, "r") as f:
             # what's the biggest piece of this numpy array we can read at a time
             # if it is too big to read in one go?
-            print(f"opened file {mytempfile}")
             thisDF = pandas.DataFrame(numpy.array(f["Data/Table Layout"]), columns=availableParms)
             # filter date to HAPI request time range
             thisDF = thisDF[(thisDF['ut1_unix'] >= startTimestamp) & (thisDF['ut1_unix'] <= endTimestamp)].copy()
             thisDF.to_csv(data)
             datatoadd = data.getvalue()
             datatoadd = cleanDataTime(datatoadd, availableParms, isprint=False) # want to do this in a smarter/more efficient way, FIX ME
-            #print(f"cleaned data {datatoadd}")
             datastr += datatoadd
 
         if stream_flag:
@@ -2447,13 +2442,13 @@ def get_available_parms(fname, requestedParms):
     madKindatObj = madrigal.metadata.MadrigalKindat(madDB)
     madhapi_hdf_catalog = os.path.join(madDB.getMetadataDir(), "madhapi.hdf5")
     filesDF = pandas.read_hdf(madhapi_hdf_catalog, key="files")
-    filesDict = filesDF.to_dict() # fname: startDT, endDT, parmList
+    #filesDict = filesDF.to_dict() # fname: startDT, endDT, parmList
+    fileIdx = filesDF["file"].eq(fname).idxmax()
     standardTimeParms = ['year', 'month', 'day', 'hour', 'min', 'sec', 'ut1_unix']
-    availableParms = set([parm.lower() for parm in filesDict[fname][2]])
-
-    availableParms = availableParms.intersection(set(requestedParms))
-
-    return(standardTimeParms + sorted(list(availableParms)))
+    availableParms = str(filesDF["parms"][fileIdx])[1:-1].replace("'", "").split(",")
+    availableParms = set([parm.replace(" ", "") for parm in availableParms])
+    finalParms = availableParms.intersection(set(requestedParms))
+    return(standardTimeParms + sorted(list(finalParms)))
 
 
 def get_parameters_service(request):

@@ -230,8 +230,8 @@ def populateExpTab(cur):
         url TEXT UNIQUE NOT NULL,
         name TEXT NOT NULL,
         sid INTEGER NOT NULL,
-        sdt TEXT NOT NULL,
-        edt TEXT NOT NULL,
+        sdt REAL NOT NULL,
+        edt REAL NOT NULL,
         kinst INTEGER NOT NULL,
         security INTEGER NOT NULL,
         pi TEXT,
@@ -259,10 +259,21 @@ def populateExpTab(cur):
         otherLines = [line for line in splitList if (len(line) == 12)]
         expList = otherLines + noPiLines
         expData = [tuple([line[0], line[1], line[2], line[3],
-                        line[4] + f'{line[5]:>06}', line[6] + f'{line[7]:>06}',
+                        timeStrToTimestamp(line[4] + f'{line[5]:>06}'), timeStrToTimestamp(line[6] + f'{line[7]:>06}'),
                         line[8], line[9], line[10], line[11]]) for line in expList if ((len(line) > 1))]
         
         cur.executemany(template, expData)
+
+
+def timeStrToTimestamp(timestr):
+    try:
+        dt = datetime.datetime.strptime(timestr, "%Y%m%d%H%M%S")
+        dt = dt.replace(tzinfo=datetime.timezone.utc)
+        return(dt.timestamp())
+    except:
+        print(f"Weird time string found: {timestr}")
+        raise
+
 
 
 if __name__ == "__main__":

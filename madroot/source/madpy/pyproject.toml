@@ -26,7 +26,9 @@ dependencies = [
     "aacgmv2",
     "packaging",
     "madrigalweb",
-    "py-purecrypt"
+    "py-purecrypt",
+    "pandas",
+    "tables"
     ]
 
 [project.urls]

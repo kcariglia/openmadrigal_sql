@@ -204,14 +204,14 @@ class TestMadrigalDB(unittest.TestCase):
         
     def test_getFileList(self):
         result = os.path.join(self.madroot, 'experiments/1998/mlh/20jan98/mlh980120g.002.hdf5')
-        files = self.madDB.getFileList(kinstList=[30], kindatList=[3408,3410], startDate=[1998,1,20,0,0,0,0,0,0], 
-                                       endDate=[1998,1,21,23,59,59,0,0,0], includeNonDefault=1)
+        files = self.madDB.getFileList(kinstList=[30], kindatList=[3408,3410], startDate=datetime.datetime(1998,1,20,0,0,0,), 
+                                       endDate=datetime.datetime(1998,1,21,23,59,59), includeNonDefault=1)
         self.assertIn(result, files)
         
     def test_getFileListFromMetadata(self):
         result = os.path.join(self.madroot, 'experiments/1998/mlh/20jan98/mlh980120g.002.hdf5')
-        files = self.madDB.getFileListFromMetadata(kinstList=[30], kindatList=[3408, 3410], startDate=[1998,1,20,0,0,0,0,0,0], 
-                                                   endDate=[1998,1,21,23,59,59,0,0,0], includeNonDefault=1)
+        files = self.madDB.getFileListFromMetadata(kinstList=[30], kindatList=[3408, 3410], startDate=datetime.datetime(1998,1,20,0,0,0), 
+                                                   endDate=datetime.datetime(1998,1,21,23,59,59), includeNonDefault=1)
         self.assertIn(result, files)
         
     def test_setFileAccess(self):
@@ -219,20 +219,10 @@ class TestMadrigalDB(unittest.TestCase):
         madMetaFile = madrigal.metadata.MadrigalMetaFile(self.madDB, os.path.join(expDir, "fileTab.txt"))
         # set to private
         self.madDB.setFileAccess(expDir, 1)
-        # f = open(os.path.join(expDir, 'fileTab.txt'))
-        # lines = f.readlines()
-        # f.close()
-        # items = lines[0].split(',')
-        # permission = int(items[10])
         permission = madMetaFile.getAccessByPosition()
         self.assertEqual(permission, 1)
         # set back to public
         self.madDB.setFileAccess(expDir, 0)
-        # f = open(os.path.join(expDir, 'fileTab.txt'))
-        # lines = f.readlines()
-        # f.close()
-        # items = lines[0].split(',')
-        # permission = int(items[10])
         permission = madMetaFile.getAccessByPosition()
         self.assertEqual(permission, 0)
         
@@ -691,7 +681,7 @@ class TestMadrigalMetaFile(unittest.TestCase):
             # self.madDB = madrigal.metadata.MadrigalDB()
             # self.madFile = madrigal.metadata.MadrigalMetaFile(self.madDB)
             # self.madFile.setExpIdByPosition(0, 999)
-            cls._test_filename = "mlh980120g.002.hdf5"
+            cls._test_filename = cls.expPath + "/mlh980120g.002.hdf5"
             # self.madFile.setKindatByPosition(0, 1000)
             cls.madFile.setCategoryByPosition(0, 1)
             cls.madFile.setHasCatalogByPosition(0, 1)
@@ -719,7 +709,7 @@ class TestMadrigalMetaFile(unittest.TestCase):
         
     def test_getFilenameByPosition(self):
         self.assertIsNotNone(self._test_filename)
-        self.assertEqual(self.madFile.getFilenameByPosition(0), self._test_filename)
+        self.assertEqual(self.madFile.getFilenameByPosition(0), os.path.basename(self._test_filename))
         
     def test_getExpIdByPosition(self):
         self.assertEqual(self.madFile.getExpIdByPosition(0), self.thisExpID)

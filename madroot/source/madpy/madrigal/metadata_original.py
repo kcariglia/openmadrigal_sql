@@ -33,6 +33,8 @@ import glob
 import madrigal.metadata
 import packaging.version
 import sqlite3
+from contextlib import closing
+import json
 
 # third party imports
 import filelock
@@ -325,47 +327,6 @@ class MadrigalDB:
 
         # end __init__
 
-
-    def __initMetaDBConnector(self):
-        """
-        __initMetaDBConnector initializes the sqlite3 connector to read from the metadata database.
-
-        Inputs: None
-
-        Returns: Void
-
-        Affects: Initializes private class member variables (__connector and __cursor) to
-        connect to metadata.db
-
-        Exceptions: MadrigalError thrown if unable to connect to metadata.db
-        """
-        try:
-            self.__connector = sqlite3.connect(os.path.join(self.getMetadataDir(), METADB))
-            self.__cursor = self.__connector.cursor()
-        except:  
-            raise madrigal.admin.MadrigalError("Unable to connect to metadata.db",
-                                              traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
-        
-
-    def __closeMetaDBConnector(self):
-        """
-        __closeMetaDBConnector closes the connection to the sqlite3 database connector.
-
-        Inputs: None
-
-        Returns: Void
-
-        Affects: Closes connection to metadata.db
-        """
-        try:
-            self.__connector.close()
-        except:  
-            raise madrigal.admin.MadrigalError("Problem closing connection to metadata.db",
-                                              traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
 
     def __readConfFile(self):
         """__readConfFile is a private helper function that reads information from the parsed config file.
@@ -951,7 +912,114 @@ class MadrigalDB:
                           enforcePathConvention), root, dirs + files)
 
         return expList
-    
+
+
+    def getExpListFromMetadata(self,
+                               expName = None,
+                               kinstList = None,
+                               startDate = None,
+                               endDate = None,
+                               startDayOfYear = None,
+                               endDayOfYear = None,
+                               publicAccessOnly = 3):
+        """
+        Returns: a list of full experiment directory names that match the search arguments
+        """
+        # use input args to format SQL condition strings
+        # for lists: where <column name> in <arg list>
+        
+        expConditions = []
+        
+        if expName:
+            thisCond = "name=\"{}\"".format(expName)
+            expConditions.append(thisCond)
+        
+        if kinstList and (0 not in kinstList):
+            if len(kinstList) == 1:
+                thisCond = "kinst={}".format(kinstList[0])
+                expConditions.append(thisCond)
+            else:
+                thisCond = "kinst in {}".format(tuple(kinstList))
+                expConditions.append(thisCond)
+        
+        if startDate:
+            sDate = startDate.replace(tzinfo=datetime.timezone.utc)
+            sDate = sDate.timestamp()
+            thisCond = "sdt >= {}".format(sDate)
+            expConditions.append(thisCond)
+
+        if startDayOfYear:
+            thisCond = "strftime('%j, sdt, 'unixepoch') >= '{}'".format(startDayOfYear)
+            expConditions.append(thisCond)
+
+        if endDate:
+            eDate = eDate.replace(tzinfo=datetime.timezone.utc)
+            eDate = eDate.timestamp()
+            thisCond = "edt >= {}".format(eDate)
+            expConditions.append(thisCond)
+        
+        if endDayOfYear:
+            thisCond = "strftime('%j', edt, 'unixepoch') >= '{}'".format(endDayOfYear)
+            expConditions.append(thisCond)
+
+        
+        match publicAccessOnly:
+            case 0:
+                thisCond = "security in (0, 1)"
+                expConditions.append(thisCond)
+            case 1:
+                expCond = "security=0"
+                expConditions.append(expCond)
+            case 2:
+                expCond = "security in (0, 2)"
+                expConditions.append(expCond)
+        
+        # make sure to get local experiments only
+        expQuery = "SELECT url"
+        expQuery += " FROM expTab WHERE sid={} ".format(self.getSiteID())
+        if expConditions:
+            expQuery += " AND "
+            for e in range(len(expConditions)):
+                expQuery += expConditions[e]
+        
+                if e < (len(expConditions) - 1):
+                    expQuery += " AND "
+        
+        try:
+            with closing(sqlite3.connect(os.path.join(self.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(expQuery)
+                    resList = res.fetchall()
+        except:
+            raise madrigal.admin.MadrigalError("Problem running expQuery in getExpListFromMetadata", 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
+        
+        if not resList:
+            # didn't find anything
+            return(resList)
+        resList = [i[0] for i in resList]
+
+        dirConvStr1 = 'experiments[0-9]*/[0-9][0-9][0-9][0-9]/[a-z][a-z0-9][a-z0-9]/[a-zA-Z0-9\-_]*$'
+        dirConvStr2 = 'experiments[0-9]*/[0-9][0-9][0-9][0-9]/[a-z][a-z0-9][a-z0-9]/[0-3][0-9][a-z][a-z0-9][a-z0-9][0-9][0-9].?$'
+
+        finalExpList = []
+        for thisExpDir in resList:
+            found = re.search(dirConvStr1, thisExpDir)
+            if not found:
+                found = re.search(dirConvStr2, thisExpDir)
+                if not found:
+                    # should never get here
+                    raise madrigal.admin.MadrigalError("Malformed expDir found: {}".format(thisExpDir),
+                                                       traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
+            expDir = os.path.join(self.getMadroot(), found.group(0))
+            print(f"expDir is {expDir}") # tmp only
+            finalExpList.append(expDir)
+        return(finalExpList)
         
 
     def getFileList(self,
@@ -1184,35 +1252,23 @@ class MadrigalDB:
             expQuery += ", sdt"
 
         if startDate:
-            # startDate = datetime.datetime(startDate[0], startDate[1], startDate[2], startDate[3],
-            #                               startDate[4], startDate[5], tzinfo=datetime.timezone.utc)
-            sDate = startDate.strftime("%Y%m%d%H%M%S")
-            if startDayOfYear:
-                startDayOfYear = datetime.datetime.strptime(startDayOfYear, "%j")
-                jDate = startDayOfYear.strftime("%m%d")
-                sDate = sDate[:4] + jDate + sDate[8:]
+            sDate = startDate.replace(tzinfo=datetime.timezone.utc)
+            sDate = sDate.timestamp()
             thisCond = "sdt >= {}".format(sDate)
             expConditions.append(thisCond)
-        elif startDayOfYear:
-            startDayOfYear = datetime.datetime.strptime(startDayOfYear, "%j")
-            jDate = "____" + startDayOfYear.strftime("%m%d") + "______"
-            thisCond = "sdt LIKE {}".format(jDate)
+        
+        if startDayOfYear:
+            thisCond = "strftime('%j', sdt, 'unixepoch') >= '{}'".format(startDayOfYear)
             expConditions.append(thisCond)
-            
+        
         if endDate:
-            # endDate = datetime.datetime(endDate[0], endDate[1], endDate[2], endDate[3],
-            #                             endDate[4], endDate[5], tzinfo=datetime.timezone.utc)
-            eDate = endDate.strftime("%Y%m%d%H%M%S")
-            if endDayOfYear:
-                endDayOfYear = datetime.datetime.strptime(endDayOfYear, "%j")
-                jDate = endDayOfYear.strftime("%m%d")
-                eDate = eDate[:4] + jDate + eDate[8:]
+            eDate = endDate.replace(tzinfo=datetime.timezone.utc)
+            eDate = eDate.timestamp()
             thisCond = "edt <= {}".format(eDate)
             expConditions.append(thisCond)
-        elif endDayOfYear:
-            endDayOfYear = datetime.datetime.strptime(endDayOfYear, "%j")
-            jDate = "____" + endDayOfYear.strftime("%m%d") + "______"
-            thisCond = "edt LIKE {}".format(jDate)
+                
+        if endDayOfYear:
+            thisCond = "strftime('%j', edt, 'unixepoch') <= '{}'".format(endDayOfYear)
             expConditions.append(thisCond)
 
         match publicAccessOnly:
@@ -1249,16 +1305,16 @@ class MadrigalDB:
                     expQuery += " AND "
 
         try:
-            self.__initMetaDBConnector()
-            res = self.__cursor.execute(expQuery)
-            resList = res.fetchall()
-            self.__closeMetaDBConnector()
+            with closing(sqlite3.connect(os.path.join(self.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(expQuery)
+                    resList = res.fetchall()
         except:
-            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Problem running expQuery in getFileListFromMetadata", 
-                                               traceback.format_exception(sys.exc_info()[0],
-                                                                          sys.exc_info()[1],
-                                                                          sys.exc_info()[2]))
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
         if not resList:
             # didn't find anything
@@ -1316,16 +1372,16 @@ class MadrigalDB:
                     fileQuery += " AND "
 
         try:
-            self.__initMetaDBConnector()
-            res = self.__cursor.execute(fileQuery)
-            resList = res.fetchall()
-            self.__closeMetaDBConnector()
+            with closing(sqlite3.connect(os.path.join(self.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(fileQuery)
+                    resList = res.fetchall()
         except:
-            self.__closeMetaDBConnector()
-            raise madrigal.admin.MadrigalError("Problem running fileQuery in getFileListFromMetadata",
-                                               traceback.format_exception(sys.exc_info()[0],
-                                                                          sys.exc_info()[1],
-                                                                          sys.exc_info()[2]))
+            raise madrigal.admin.MadrigalError("Problem running fileQuery in getFileListFromMetadata", 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                    sys.exc_info()[1],
+                                                                                    sys.exc_info()[2]))
 
         # resList is [(fname, expID)]
         expObj = MadrigalExperiment(self)
@@ -1532,9 +1588,10 @@ class MadrigalDB:
             for filename in relTarFileList:
                 if os.path.basename(filename) != 'fileTab.txt':
                     continue
+                origExpDir = os.path.dirname(filename)
 
                 # create a MadrigalMetaFile object 
-                fileMeta = MadrigalMetaFile(self, tempDir + '/' + filename)
+                fileMeta = MadrigalMetaFile(self, origExpDir + '/' + filename)
 
                 # loop through each file name to see if its in tarFileList:
                 fileNum = 0
@@ -1567,8 +1624,8 @@ class MadrigalDB:
 
                 # if fileMeta not empty, write it out
                 # we dont need to do this anymore
-                # if fileMeta.getFileCount() > 0:
-                 #   fileMeta.writeMetadata()
+                if fileMeta.getFileCount() > 0:
+                   fileMeta.writeMetadata()
 
                 # else if its empty, simply delete it
                 else:
@@ -1903,27 +1960,26 @@ class MadrigalDB:
             query = "SELECT fname, eid, kindat, category, fsize, catrec, headrec, amoddate, amodtime, status, permission, fanalyst, fanalystemail FROM {}".format(tblName)
         else:
             query = "SELECT * FROM {}".format(tblName)
-        try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
 
+
+        try:
+            with closing(sqlite3.connect(os.path.join(self.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             textList = []
             for line in resList:
                 line = [str(l) for l in line]
-                if "expTab" in tblName:
-                    # separate start/end date/time to remain consistent with old expTab format
-                    line = line[:4] + [line[4][:8], line[4][8:]] + [line[5][:8], line[5][8:]] + line[6:]
                 textList.append(','.join(line))
             tblText = '\n'.join(textList)
             return(tblText)
         except:
-            self.__closeMetaDBConnector()
-            raise madrigal.admin.MadrigalError("Problem accessing table: {}".format(tblName),
-                                              traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+            raise madrigal.admin.MadrigalError("Problem accessing table: {}".format(tblName), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
+
         
 
     def getExpUrls(self):
@@ -1937,19 +1993,18 @@ class MadrigalDB:
         query = "SELECT url FROM expTab"
 
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-
+            with closing(sqlite3.connect(os.path.join(self.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             urls = {item[0]:item[0] for item in resList}
             return(urls)
         except:
-            self.__closeMetaDBConnector()
-            raise madrigal.admin.MadrigalError("Problem getting expUrls",
-                                              traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+            raise madrigal.admin.MadrigalError("Problem getting expUrls", 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
         
 
     def __getFnameEIDCombos(self):
@@ -1968,22 +2023,21 @@ class MadrigalDB:
         equery = "SELECT id FROM expTab"
 
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            combos = {i:i for i in resList}
-            result = self.__cursor.execute(equery)
-            resList = result.fetchall()
-            eids = {i[0]:i[0] for i in resList}
-            self.__closeMetaDBConnector()
-            
+            with closing(sqlite3.connect(os.path.join(self.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
+                    combos = {i:i for i in resList}
+                    res = cur.execute(equery)
+                    resList = res.fetchall()
+                    eids = {i[0]:i[0] for i in resList}
             return(combos, eids)
         except:
-            self.__closeMetaDBConnector()
-            raise madrigal.admin.MadrigalError("Problem getting fname + expID combos",
-                                              traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+            raise madrigal.admin.MadrigalError("Problem getting fname + expID combos", 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
         
 
     def __cleanExpText(self, expText):
@@ -1998,6 +2052,14 @@ class MadrigalDB:
         Inputs: comma/newline delimited string read from any expTab.txt file
         Returns: list of tuples containing experiment data
         """
+        def timeStrToTimestamp(timestr):
+            try:
+                dt = datetime.datetime.strptime(timestr, "%Y%m%d%H%M%S")
+                dt = dt.replace(tzinfo=datetime.timezone.utc)
+                return(dt.timestamp())
+            except:
+                print(f"Weird time string found: {timestr}")
+                raise
         expUrls = self.getExpUrls()
         expLines = expText.split('\n')
         splitList = [line.split(',') for line in expLines]
@@ -2010,8 +2072,8 @@ class MadrigalDB:
                         expList[i][1],   # url
                         expList[i][2],   # ename
                         expList[i][3],   # site id
-                        expList[i][4] + f'{expList[i][5]:>06}', # start dt
-                        expList[i][6] + f'{expList[i][7]:>06}', # end dt
+                        timeStrToTimestamp(expList[i][4] + f'{expList[i][5]:>06}'), # start dt
+                        timeStrToTimestamp(expList[i][6] + f'{expList[i][7]:>06}'), # end dt
                         expList[i][8],   # kinst
                         expList[i][9],   # security
                         expList[i][10],  # pi
@@ -2060,16 +2122,16 @@ class MadrigalDB:
         template = """INSERT INTO expTab('id', 'url', 'name', 'sid', 'sdt', 'edt', 'kinst', 'security', 'pi', 'piemail') VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
 
         try:
-            self.__initMetaDBConnector()
-            self.__cursor.executemany(template, expData)
-            self.__connector.commit()
-            self.__closeMetaDBConnector()
+            with closing(sqlite3.connect(os.path.join(self.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    cur.executemany(template, expData)
+                    con.commit()
         except:
-            self.__closeMetaDBConnector()
-            raise madrigal.admin.MadrigalError("Problem adding experiment metadata: {}".format(expData),
-                                          traceback.format_exception(sys.exc_info()[0],
-                                                                    sys.exc_info()[1],
-                                                                    sys.exc_info()[2]))
+            raise madrigal.admin.MadrigalError("Problem adding experiment metadata: {}".format(expData), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
             
         
     def addFilesMetadata(self, fileText):
@@ -2083,18 +2145,19 @@ class MadrigalDB:
         if not fileData:
             return
         template = """INSERT INTO fileTab(fname, eid, kindat, category, fsize, catrec, headrec, amoddate, amodtime, status, permission, fanalyst, fanalystemail) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
-            
+
         try:
-            self.__initMetaDBConnector()
-            self.__cursor.executemany(template, fileData)
-            self.__connector.commit()
-            self.__closeMetaDBConnector()
+            with closing(sqlite3.connect(os.path.join(self.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    cur.executemany(template, fileData)
+                    con.commit()
         except:
-            self.__closeMetaDBConnector()
-            raise madrigal.admin.MadrigalError("Problem adding file metadata: {}".format(fileData),
-                                          traceback.format_exception(sys.exc_info()[0],
-                                                                    sys.exc_info()[1],
-                                                                    sys.exc_info()[2]))
+            raise madrigal.admin.MadrigalError("Problem adding file metadata: {}".format(fileData), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
+        
         
     def updateInstType(self, text):
         """
@@ -2112,31 +2175,30 @@ class MadrigalDB:
         updatetemplate = """INSERT INTO instType VALUES(?, ?)"""
 
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(qtemplate)
-            resList = result.fetchall()
+            with closing(sqlite3.connect(os.path.join(self.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(qtemplate)
+                    resList = res.fetchall()
 
-            categoryDescs = {item[1]:item[1] for item in resList}
-            maxCatID = numpy.max([item[0] for item in resList])
-            newCatID = maxCatID + 1
-
-            for line in text:
-                line = line.rstrip()
-                line = line.split(',')
-
-                if line[1] not in categoryDescs:
-                    self.__cursor.execute(updatetemplate, (newCatID, line[1]))
-                    self.__connector.commit()
-                    newCatID += 1
-
-            self.__closeMetaDBConnector()
+                    categoryDescs = {item[1]:item[1] for item in resList}
+                    maxCatID = numpy.max([item[0] for item in resList])
+                    newCatID = maxCatID + 1
+                    
+                    for line in text:
+                        line = line.rstrip()
+                        line = line.split(',')
+                    
+                        if line[1] not in categoryDescs:
+                            cur.execute(updatetemplate, (newCatID, line[1]))
+                            con.commit()
+                            newCatID += 1
             print("instType updated successfully")
         except:
-            self.__closeMetaDBConnector()
-            raise madrigal.admin.MadrigalError("Problem updating instType",
-                                          traceback.format_exception(sys.exc_info()[0],
-                                                                    sys.exc_info()[1],
-                                                                    sys.exc_info()[2]))
+            raise madrigal.admin.MadrigalError("Problem updating instType", 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
         
 
     def validateParmCodes(self):
@@ -2153,11 +2215,13 @@ class MadrigalDB:
 
         query = "SELECT code, mnem, category FROM parmCodes"
 
+
         try:
-            self.__initMetaDBConnector()
-            res = self.__cursor.execute(query)
-            resList = res.fetchall()
-            self.__closeMetaDBConnector()
+            with closing(sqlite3.connect(os.path.join(self.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
 
             # rearrange results into dict of key: code, value: [(mnem, category)]
             parmDict = {}
@@ -2174,15 +2238,13 @@ class MadrigalDB:
                 else:
                     # new parm for parmDict
                     parmDict[parmData[0]] = []
-
+            
             return(isValid)
-
         except:
-            self.__closeMetaDBConnector()
-            raise madrigal.admin.MadrigalError("Unable to validate parmCodes",
-                                          traceback.format_exception(sys.exc_info()[0],
-                                                                sys.exc_info()[1],
-                                                                sys.exc_info()[2]))
+            raise madrigal.admin.MadrigalError("Unable to validate parmCodes", 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def __str__(self):
@@ -2891,48 +2953,6 @@ class MadrigalSite:
         self.__filename = self.__siteMetadataFile
 
 
-    def __initMetaDBConnector(self):
-        """
-        __initMetaDBConnector initializes the sqlite3 connector to read from the metadata database.
-
-        Inputs: None
-
-        Returns: Void
-
-        Affects: Initializes private class member variables (__connector and __cursor) to
-        connect to metadata.db
-
-        Exceptions: MadrigalError thrown if unable to connect to metadata.db
-        """
-        try:
-            self.__connector = sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), self.__filename))
-            self.__cursor = self.__connector.cursor()
-        except:  
-            raise madrigal.admin.MadrigalError("Unable to connect to metadata.db",
-                                              traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
-        
-
-    def __closeMetaDBConnector(self):
-        """
-        __closeMetaDBConnector closes the connection to the sqlite3 database connector.
-
-        Inputs: None
-
-        Returns: Void
-
-        Affects: Closes connection to metadata.db
-        """
-        try:
-            self.__connector.close()
-        except:  
-            raise madrigal.admin.MadrigalError("Problem closing connection to metadata.db",
-                                              traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
-
-
     def getSiteName(self, siteID):
         """getSiteName returns the site name that matches siteID argument, or None if not found.
 
@@ -2945,26 +2965,24 @@ class MadrigalSite:
         Exceptions: MadrigalError if any problems accessing metadata.db
         """
         query = "SELECT " + self.__siteNameCol + " FROM " + self.__tblName + " WHERE " + self.__siteIDCol + "={}".format(siteID)
-        
+
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-            
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             if not resList:
                 return(None)
-
+            
             # should be exactly one item in resList now
             [[name]] = resList
             return(name)
-            
         except:
-            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Name for siteID {} not found".format(siteID), 
-                                                traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
 
@@ -2980,26 +2998,24 @@ class MadrigalSite:
         Exceptions: MadrigalError if any problems accessing metadata.db
         """
         query = "SELECT " + self.__madServerCol + " FROM " + self.__tblName + " WHERE " + self.__siteIDCol + "={}".format(siteID)
-        
+
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-            
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             if not resList:
                 return(None)
-
+            
             # should be exactly one item in resList now
             [[server]] = resList
             return(server)
-            
         except:
-            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Server for siteID {} not found".format(siteID), 
-                                                traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
 
@@ -3015,26 +3031,24 @@ class MadrigalSite:
         Exceptions: MadrigalError if any problems accessing metadata.db
         """
         query = "SELECT " + self.__madDocRootCol + " FROM " + self.__tblName + " WHERE " + self.__siteIDCol + "={}".format(siteID)
-        
+
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-            
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             if not resList:
                 return(None)
-
+                    
             # should be exactly one item in resList now
             [[docroot]] = resList
             return(docroot)
-            
         except:
-            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("DocRoot for siteID {} not found".format(siteID), 
-                                                traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                    sys.exc_info()[1],
+                                                                                    sys.exc_info()[2]))
 
 
 
@@ -3056,26 +3070,24 @@ class MadrigalSite:
             return(self.getSiteDocRoot(siteID))
         
         query = "SELECT " + self.__madCGICol + " FROM " + self.__tblName + " WHERE " + self.__siteIDCol + "={}".format(siteID)
-        
+
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-            
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             if not resList:
                 return(None)
-
+                            
             # should be exactly one item in resList now
             [[cgidir]] = resList
             return(cgidir)
-            
         except:
-            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("CGIDir for siteID {} not found".format(siteID), 
-                                                traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                    sys.exc_info()[1],
+                                                                                    sys.exc_info()[2]))
     
     
     def getSiteContactName(self, siteID):
@@ -3090,26 +3102,24 @@ class MadrigalSite:
         Exceptions: MadrigalError if any problems accessing metadata.db
         """
         query = "SELECT " + self.__contactNameCol + " FROM " + self.__tblName + " WHERE " + self.__siteIDCol + "={}".format(siteID)
-        
+
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-            
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             if not resList:
                 return(None)
-
+                                    
             # should be exactly one item in resList now
             [[cname]] = resList
             return(cname)
-            
         except:
-            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Contact name for siteID {} not found".format(siteID), 
-                                                traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                    sys.exc_info()[1],
+                                                                                    sys.exc_info()[2]))
     
     
     def getSiteAddress1(self, siteID):
@@ -3124,26 +3134,24 @@ class MadrigalSite:
         Exceptions: MadrigalError if any problems accessing metadata.db
         """
         query = "SELECT " + self.__contactAddr1Col + " FROM " + self.__tblName + " WHERE " + self.__siteIDCol + "={}".format(siteID)
-        
+
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-            
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             if not resList:
                 return(None)
-
+                                    
             # should be exactly one item in resList now
             [[cadr1]] = resList
             return(cadr1)
-            
         except:
-            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Address1 for siteID {} not found".format(siteID), 
-                                                traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                    sys.exc_info()[1],
+                                                                                    sys.exc_info()[2]))
 
     
     def getSiteAddress2(self, siteID):
@@ -3158,26 +3166,24 @@ class MadrigalSite:
         Exceptions: MadrigalError if any problems accessing metadata.db
         """
         query = "SELECT " + self.__contactAddr2Col + " FROM " + self.__tblName + " WHERE " + self.__siteIDCol + "={}".format(siteID)
-        
+
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-            
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             if not resList:
                 return(None)
-
+                                    
             # should be exactly one item in resList now
             [[cadr2]] = resList
             return(cadr2)
-            
         except:
-            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Address2 for siteID {} not found".format(siteID), 
-                                                traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                    sys.exc_info()[1],
+                                                                                    sys.exc_info()[2]))
     
 
     def getSiteAddress3(self, siteID):
@@ -3192,26 +3198,24 @@ class MadrigalSite:
         Exceptions: MadrigalError if any problems accessing metadata.db
         """
         query = "SELECT " + self.__contactAddr3Col + " FROM " + self.__tblName + " WHERE " + self.__siteIDCol + "={}".format(siteID)
-        
+
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-            
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             if not resList:
                 return(None)
-
+                                    
             # should be exactly one item in resList now
             [[cadr3]] = resList
             return(cadr3)
-            
         except:
-            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Address3 for siteID {} not found".format(siteID), 
-                                                traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                    sys.exc_info()[1],
+                                                                                    sys.exc_info()[2]))
     
 
     def getSiteCity(self, siteID):
@@ -3226,26 +3230,24 @@ class MadrigalSite:
         Exceptions: MadrigalError if any problems accessing metadata.db
         """
         query = "SELECT " + self.__contactCityCol + " FROM " + self.__tblName + " WHERE " + self.__siteIDCol + "={}".format(siteID)
-        
+
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-            
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             if not resList:
                 return(None)
-
+                                    
             # should be exactly one item in resList now
             [[ccity]] = resList
             return(ccity)
-            
         except:
-            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("City for siteID {} not found".format(siteID), 
-                                                traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                    sys.exc_info()[1],
+                                                                                    sys.exc_info()[2]))
     
 
     def getSiteState(self, siteID):
@@ -3260,26 +3262,24 @@ class MadrigalSite:
         Exceptions: MadrigalError if any problems accessing metadata.db
         """
         query = "SELECT " + self.__contactStateCol + " FROM " + self.__tblName + " WHERE " + self.__siteIDCol + "={}".format(siteID)
-        
+
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-            
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             if not resList:
                 return(None)
-
+                                    
             # should be exactly one item in resList now
             [[cstate]] = resList
             return(cstate)
-            
         except:
-            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("State for siteID {} not found".format(siteID), 
-                                                traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                    sys.exc_info()[1],
+                                                                                    sys.exc_info()[2]))
     
 
     def getSitePostalCode(self, siteID):
@@ -3294,26 +3294,24 @@ class MadrigalSite:
         Exceptions: MadrigalError if any problems accessing metadata.db
         """
         query = "SELECT " + self.__contactZipCol + " FROM " + self.__tblName + " WHERE " + self.__siteIDCol + "={}".format(siteID)
-        
+
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-            
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             if not resList:
                 return(None)
-
+                                    
             # should be exactly one item in resList now
             [[ccode]] = resList
             return(ccode)
-            
         except:
-            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Zip code for siteID {} not found".format(siteID), 
-                                                traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                    sys.exc_info()[1],
+                                                                                    sys.exc_info()[2]))
     
 
     def getSiteCountry(self, siteID):
@@ -3328,26 +3326,24 @@ class MadrigalSite:
         Exceptions: MadrigalError if any problems accessing metadata.db
         """
         query = "SELECT " + self.__contactCountryCol + " FROM " + self.__tblName + " WHERE " + self.__siteIDCol + "={}".format(siteID)
-        
+
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-            
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             if not resList:
                 return(None)
-
+                                    
             # should be exactly one item in resList now
             [[ccountry]] = resList
             return(ccountry)
-            
         except:
-            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Country for siteID {} not found".format(siteID), 
-                                                traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                    sys.exc_info()[1],
+                                                                                    sys.exc_info()[2]))
     
 
     def getSiteTelephone(self, siteID):
@@ -3362,26 +3358,24 @@ class MadrigalSite:
         Exceptions: MadrigalError if any problems accessing metadata.db
         """
         query = "SELECT " + self.__contactPhoneCol + " FROM " + self.__tblName + " WHERE " + self.__siteIDCol + "={}".format(siteID)
-        
+
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-            
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             if not resList:
                 return(None)
-
+                                    
             # should be exactly one item in resList now
             [[cphone]] = resList
             return(cphone)
-            
         except:
-            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Phone for siteID {} not found".format(siteID), 
-                                                traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                    sys.exc_info()[1],
+                                                                                    sys.exc_info()[2]))
     
 
     def getSiteEmail(self, siteID):
@@ -3398,26 +3392,24 @@ class MadrigalSite:
         Exceptions: MadrigalError if any problems accessing metadata.db
         """
         query = "SELECT " + self.__contactEmailCol + " FROM " + self.__tblName + " WHERE " + self.__siteIDCol + "={}".format(siteID)
-        
+
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-            
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             if not resList:
                 return(None)
-
+                                    
             # should be exactly one item in resList now
             [[cemail]] = resList
             return(cemail)
-            
         except:
-            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Email for siteID {} not found".format(siteID), 
-                                                traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                    sys.exc_info()[1],
+                                                                                    sys.exc_info()[2]))
 
 
     def getSiteList(self):
@@ -3434,24 +3426,22 @@ class MadrigalSite:
         Exceptions: MadrigalError if any problems accessing metadata.db
         """
         query = "SELECT " + self.__siteIDCol + ", " + self.__siteNameCol + " FROM " + self.__tblName
-        
-        try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-            
-            if not resList:
-                return(None)
 
+        try:
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
+
+            if not resList:
+                return(None)   
             return(resList)
-            
         except:
-            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Error getting site list", 
-                                                traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                    sys.exc_info()[1],
+                                                                                    sys.exc_info()[2]))
     
     
     def getSiteVersion(self, siteID):
@@ -3469,28 +3459,24 @@ class MadrigalSite:
         query = "SELECT " + self.__siteVersionCol + " FROM " + self.__tblName + " WHERE " + self.__siteIDCol + "={}".format(siteID)
         
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-            
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             if not resList:
                 return(None)
-
+                                    
             # should be exactly one item in resList now
             [[version]] = resList
-
             if not version:
                 return(None)
-            
             return(str(version))
-            
         except:
-            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Version for siteID {} not found".format(siteID), 
-                                                traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                    sys.exc_info()[1],
+                                                                                    sys.exc_info()[2]))
     
     
     def setSiteVersionBySiteID(self, siteID, version):
@@ -3514,15 +3500,16 @@ class MadrigalSite:
         update = ("UPDATE " + self.__tblName + " SET " + self.__siteVersionCol + "={} WHERE " + self.__siteIDCol + "={}").format(version, siteID)
 
         try:
-            self.__initMetaDBConnector()
-            self.__cursor.execute(update)
-            self.__connector.commit()
-            self.__closeMetaDBConnector()
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    cur.execute(update)
+                    con.commit()
         except:
-            self.__closeMetaDBConnector()
-            raise madrigal.admin.MadrigalError('Error in setSiteVersionBySiteID with args %s: %s' %  \
-                                               (str(siteID, version)),
-                                                [traceback.format_exc()])
+            raise madrigal.admin.MadrigalError('Error in setSiteVersionBySiteID with args {}: {}'.format(siteID, version), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
                 
                 
     def writeMetadata(self, newFullPath=None):
@@ -3571,32 +3558,31 @@ class MadrigalSite:
         updatetemplate = """INSERT INTO siteTab VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
 
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(qtemplate)
-            resList = result.fetchall()
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(qtemplate)
+                    resList = res.fetchall()
 
-            currentIDs = {item[0]:item[0] for item in resList}
-
-            for line in text:
-                line = line.rstrip()
-                line = line.split(',')
-
-                if line[0] not in currentIDs:
-                    if len(line) == 16:
-                        # no site version, use default (3.0)
-                        line.append('3.0')
-                    if len(line) == 17:
-                        self.__cursor.execute(updatetemplate, line)
-                        self.__connector.commit()
-
-            self.__closeMetaDBConnector()
+                    currentIDs = {item[0]:item[0] for item in resList}
+                    
+                    for line in text:
+                        line = line.rstrip()
+                        line = line.split(',')
+                    
+                        if line[0] not in currentIDs:
+                            if len(line) == 16:
+                                # no site version, use default (3.0)
+                                line.append('3.0')
+                            if len(line) == 17:
+                                cur.execute(updatetemplate, line)
+                                con.commit()
             print("siteTab updated successfully")
         except:
-            self.__closeMetaDBConnector()
-            raise madrigal.admin.MadrigalError("Problem updating siteTab",
-                                          traceback.format_exception(sys.exc_info()[0],
-                                                                    sys.exc_info()[1],
-                                                                    sys.exc_info()[2]))
+            raise madrigal.admin.MadrigalError("Problem updating siteTab", 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
 
@@ -3688,48 +3674,6 @@ class MadrigalInstrument:
         self.__filename = self.__instMetadataFile
 
 
-    def __initMetaDBConnector(self):
-        """
-        __initMetaDBConnector initializes the sqlite3 connector to read from the metadata database.
-
-        Inputs: None
-
-        Returns: Void
-
-        Affects: Initializes private class member variables (__connector and __cursor) to
-        connect to metadata.db
-
-        Exceptions: MadrigalError thrown if unable to connect to metadata.db
-        """
-        try:
-            self.__connector = sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), self.__filename))
-            self.__cursor = self.__connector.cursor()
-        except:  
-            raise madrigal.admin.MadrigalError("Unable to connect to metadata.db",
-                                              traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
-        
-
-    def __closeMetaDBConnector(self):
-        """
-        __closeMetaDBConnector closes the connection to the sqlite3 database connector.
-
-        Inputs: None
-
-        Returns: Void
-
-        Affects: Closes connection to metadata.db
-        """
-        try:
-            self.__connector.close()
-        except:  
-            raise madrigal.admin.MadrigalError("Problem closing connection to metadata.db",
-                                              traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
-
-
     def getInstrumentName(self, kinst):
         """getInstrumentName returns the instrument name that matches kinst argument, or None if not found.
 
@@ -3744,24 +3688,23 @@ class MadrigalInstrument:
         query = "SELECT " + self.__instNameCol + " FROM " + self.__tblName + " WHERE " + self.__instKinstCol + "={}".format(kinst)
         
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-            
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
+
             if not resList:
                 return(None)
-
+                    
             # should be exactly one item in resList now
             [[name]] = resList
             return(name)
-            
         except:
-            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Name for kinst {} not found".format(kinst), 
-                                                traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def getInstrumentMnemonic(self, kinst):
@@ -3776,26 +3719,25 @@ class MadrigalInstrument:
         Exceptions: MadrigalError if any problems accessing metadata.db
         """
         query = "SELECT " + self.__instMnemonicCol + " FROM " + self.__tblName + " WHERE " + self.__instKinstCol + "={}".format(kinst)
-        
+
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-            
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
+        
             if not resList:
                 return(None)
-
+                            
             # should be exactly one item in resList now
             [[mnem]] = resList
             return(mnem)
-            
         except:
-            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Mnemonic for kinst {} not found".format(kinst), 
-                                                traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                    sys.exc_info()[1],
+                                                                                    sys.exc_info()[2]))
 
 
     def getLatitude(self, kinst):
@@ -3810,26 +3752,25 @@ class MadrigalInstrument:
         Exceptions: MadrigalError if any problems accessing metadata.db
         """
         query = "SELECT " + self.__latitudeCol + " FROM " + self.__tblName + " WHERE " + self.__instKinstCol + "={}".format(kinst)
-        
+
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-            
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
+        
             if not resList:
                 return(None)
-
+                            
             # should be exactly one item in resList now
             [[lat]] = resList
-            return(float(lat))
-            
+            return(lat)
         except:
-            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Latitude for kinst {} not found".format(kinst), 
-                                                traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                    sys.exc_info()[1],
+                                                                                    sys.exc_info()[2]))
 
 
     def getLongitude(self, kinst):
@@ -3844,26 +3785,25 @@ class MadrigalInstrument:
         Exceptions: MadrigalError if any problems accessing metadata.db
         """
         query = "SELECT " + self.__longitudeCol + " FROM " + self.__tblName + " WHERE " + self.__instKinstCol + "={}".format(kinst)
-        
+
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-            
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
+
             if not resList:
                 return(None)
-
+                    
             # should be exactly one item in resList now
             [[lon]] = resList
-            return(float(lon))
-            
+            return(lon)
         except:
-            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Longitude for kinst {} not found".format(kinst), 
-                                                traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 	
 	
     def getAltitude(self, kinst):
@@ -3880,24 +3820,23 @@ class MadrigalInstrument:
         query = "SELECT " + self.__altitudeCol + " FROM " + self.__tblName + " WHERE " + self.__instKinstCol + "={}".format(kinst)
         
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-            
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
+
             if not resList:
                 return(None)
-
+                    
             # should be exactly one item in resList now
             [[alt]] = resList
-            return(float(alt))
-            
+            return(alt)
         except:
-            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Altitude for kinst {} not found".format(kinst), 
-                                                traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
     
     
     def getContactName(self, kinst):
@@ -3914,26 +3853,25 @@ class MadrigalInstrument:
         This method added in Madrigal 2.6
         """
         query = "SELECT " + self.__contactNameCol + " FROM " + self.__tblName + " WHERE " + self.__instKinstCol + "={}".format(kinst)
-        
+
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-            
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
+
             if not resList:
                 return(None)
-
+                    
             # should be exactly one item in resList now
             [[cname]] = resList
             return(cname)
-            
         except:
-            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Contact name for kinst {} not found".format(kinst), 
-                                                traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
     
     
     def getContactAddress1(self, kinst):
@@ -3950,26 +3888,25 @@ class MadrigalInstrument:
         This method added in Madrigal 3
         """
         query = "SELECT " + self.__contactAddr1Col + " FROM " + self.__tblName + " WHERE " + self.__instKinstCol + "={}".format(kinst)
-        
+
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-            
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
+
             if not resList:
                 return(None)
-
+                    
             # should be exactly one item in resList now
             [[cadr1]] = resList
             return(cadr1)
-            
         except:
-            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Contact address1 for kinst {} not found".format(kinst), 
-                                                traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
     
     
     def getContactEmail(self, kinst):
@@ -3986,26 +3923,25 @@ class MadrigalInstrument:
         This method added in Madrigal 2.6
         """
         query = "SELECT " + self.__contactEmailCol + " FROM " + self.__tblName + " WHERE " + self.__instKinstCol + "={}".format(kinst)
-        
+
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-            
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
+
             if not resList:
                 return(None)
-
+                    
             # should be exactly one item in resList now
             [[cemail]] = resList
             return(cemail)
-            
         except:
-            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Contact email for kinst {} not found".format(kinst), 
-                                                traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def getCategory(self, kinst):
@@ -4022,35 +3958,31 @@ class MadrigalInstrument:
         Exceptions: MadrigalError if any problems accessing metadata.db
         """
         query1 = "SELECT " + self.__categoryCol + " FROM " + self.__tblName + " WHERE " + self.__instKinstCol + "={}".format(kinst)
-        
+
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query1)
-            resList = result.fetchall()
-            
-            if not resList:
-                return(None)
-
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query1)
+                    resList = res.fetchall()
+                    
+                    # should be exactly one item in resList now
+                    [[categoryID]] = resList
+                    
+                    query2 = "SELECT " + self.__descCol + " FROM " + self.__tbl2Name + " WHERE " + self.__categoryCol + "={}".format(categoryID)
+                    
+                    result = cur.execute(query2)
+                    resList = result.fetchall()
+                    
             # should be exactly one item in resList now
-            [[categoryID]] = resList
-
-            query2 = "SELECT " + self.__descCol + " FROM " + self.__tbl2Name + " WHERE " + self.__categoryCol + "={}".format(categoryID)
-
-            result = self.__cursor.execute(query2)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-            
-            if not resList:
-                return(None)
             [[desc]] = resList
             return(desc)
-            
         except:
-            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Category for kinst {} not found".format(kinst), 
-                                                traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
+        
 
 
     def getCategoryId(self, kinst):
@@ -4067,26 +3999,22 @@ class MadrigalInstrument:
         Exceptions: MadrigalError if any problems accessing metadata.db
         """
         query = "SELECT " + self.__categoryCol + " FROM " + self.__tblName + " WHERE " + self.__instKinstCol + "={}".format(kinst)
-        
-        try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-            
-            if not resList:
-                return(None)
 
+        try:
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
+                    
             # should be exactly one item in resList now
             [[category]] = resList
             return(int(category))
-            
         except:
-            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("CategoryID for kinst {} not found".format(kinst), 
-                                                traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def getInstrumentList(self):
@@ -4103,24 +4031,23 @@ class MadrigalInstrument:
         Exceptions: MadrigalError if any problems accessing metadata.db
         """
         query = "SELECT " + self.__instNameCol + ", " + self.__instMnemonicCol + ", " + self.__instKinstCol + " FROM " + self.__tblName
-        
+
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-            
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
+
             if not resList:
                 return(None)
-
+                    
             return(resList)
-            
         except:
-            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Error getting instrument list", 
-                                                traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def getOrderedInstrumentList(self):
@@ -4168,28 +4095,27 @@ class MadrigalInstrument:
         updatetemplate = """INSERT INTO instTab VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
 
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(qtemplate)
-            resList = result.fetchall()
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(qtemplate)
+                    resList = res.fetchall()
 
-            currentKinsts = {item[0]:item[0] for item in resList}
-
-            for line in text:
-                line = line.rstrip()
-                line = line.split(',')
-
-                if line[0] not in currentKinsts:
-                    self.__cursor.execute(updatetemplate, line)
-                    self.__connector.commit()
-
-            self.__closeMetaDBConnector()
+                    currentKinsts = {item[0]:item[0] for item in resList}
+                    
+                    for line in text:
+                        line = line.rstrip()
+                        line = line.split(',')
+                    
+                        if line[0] not in currentKinsts:
+                            cur.execute(updatetemplate, line)
+                            con.commit()
             print("instTab updated successfully")
         except:
-            self.__closeMetaDBConnector()
-            raise madrigal.admin.MadrigalError("Problem updating instTab",
-                                          traceback.format_exception(sys.exc_info()[0],
-                                                                    sys.exc_info()[1],
-                                                                    sys.exc_info()[2]))
+            raise madrigal.admin.MadrigalError("Problem updating instTab", 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def __instrumentSort(self, thisInst):
@@ -4268,48 +4194,6 @@ class MadrigalInstrumentParameters:
         # get instrument parameter metadata file
         self.__filename = self.__instParmMetadataFile
 
-
-    def __initMetaDBConnector(self):
-        """
-        __initMetaDBConnector initializes the sqlite3 connector to read from the metadata database.
-
-        Inputs: None
-
-        Returns: Void
-
-        Affects: Initializes private class member variables (__connector and __cursor) to
-        connect to metadata.db
-
-        Exceptions: MadrigalError thrown if unable to connect to metadata.db
-        """
-        try:
-            self.__connector = sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), self.__filename))
-            self.__cursor = self.__connector.cursor()
-        except:  
-            raise madrigal.admin.MadrigalError("Unable to connect to metadata.db",
-                                              traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
-        
-
-    def __closeMetaDBConnector(self):
-        """
-        __closeMetaDBConnector closes the connection to the sqlite3 database connector.
-
-        Inputs: None
-
-        Returns: Void
-
-        Affects: Closes connection to metadata.db
-        """
-        try:
-            self.__connector.close()
-        except:  
-            raise madrigal.admin.MadrigalError("Problem closing connection to metadata.db",
-                                              traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
-
         
     def getParameters(self, kinst):
         """getParameters returns a list of parameters in mnemonic form (strings or unknown integers as strings) that matches kinst argument, or None if not found or blank.
@@ -4323,38 +4207,36 @@ class MadrigalInstrumentParameters:
         Exceptions: if error accessing metadata.db
         """
         kinst = int(kinst)
-        
+
         try:
-            self.__initMetaDBConnector()
-            if kinst != 0:
-                query = "SELECT " + self.__instParmListCol + " FROM " + self.__tblName + " WHERE " + self.__instParmKinstCol + "={}".format(kinst)
-                result = self.__cursor.execute(query)
-                resList = result.fetchall()
-                self.__closeMetaDBConnector()
-                
-                if not resList:
-                    return(None)
-
-                retList = [item[0] for item in resList]
-                return(retList)
-            else:
-                query = "SELECT " + self.__instParmListCol + " FROM " + self.__tblName
-                result = self.__cursor.execute(query)
-                resList = result.fetchall()
-                self.__closeMetaDBConnector()
-                
-                if not resList:
-                    return(None)
-
-                retList = list(numpy.unique([item[0] for item in resList]))
-                return(retList)
-            
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    if kinst != 0:
+                        query = "SELECT " + self.__instParmListCol + " FROM " + self.__tblName + " WHERE " + self.__instParmKinstCol + "={}".format(kinst)
+                        result = cur.execute(query)
+                        resList = result.fetchall()
+                                        
+                        if not resList:
+                            return(None)
+                        
+                        retList = [item[0] for item in resList]
+                        return(retList)
+                    else:
+                        query = "SELECT " + self.__instParmListCol + " FROM " + self.__tblName
+                        result = cur.execute(query)
+                        resList = result.fetchall()
+                                        
+                        if not resList:
+                            return(None)
+                        
+                        retList = list(numpy.unique([item[0] for item in resList]))
+                        return(retList)
         except:
-            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Parameters for kinst {} not found".format(kinst), 
-                                                traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def rebuildInstParmTable(self, completeRebuildFlag = 0):
@@ -4525,16 +4407,16 @@ class MadrigalInstrumentParameters:
                 # convert from codes to mnemonics
                 instParmList = madParmObj.getParmMnemonicList(instParmList)
 
-                self.__initMetaDBConnector()
-                for parm in instParmList:
-                    self.__cursor.execute(template, (key, parm))
+                with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                    with con:
+                        cur = con.cursor()
+                        for parm in instParmList:
+                            cur.execute(template, (key, parm))
+                        con.commit()
 
                 # append that instrument's data to newFileStr
                 #newFileStr = newFileStr + str(key) + ','
                 #newFileStr = newFileStr + delimiter.join(instParmList).lower() + '\n'
-
-                self.__connector.commit()
-                self.__closeMetaDBConnector()
         except:
             self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError('Problem rebuilding instParmTab', 
@@ -4612,48 +4494,6 @@ class MadrigalKindat:
         self.__filename = self.__typeMetadataFile
 
 
-    def __initMetaDBConnector(self):
-        """
-        __initMetaDBConnector initializes the sqlite3 connector to read from the metadata database.
-
-        Inputs: None
-
-        Returns: Void
-
-        Affects: Initializes private class member variables (__connector and __cursor) to
-        connect to metadata.db
-
-        Exceptions: MadrigalError thrown if unable to connect to metadata.db
-        """
-        try:
-            self.__connector = sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), self.__filename))
-            self.__cursor = self.__connector.cursor()
-        except:  
-            raise madrigal.admin.MadrigalError("Unable to connect to metadata.db",
-                                              traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
-        
-
-    def __closeMetaDBConnector(self):
-        """
-        __closeMetaDBConnector closes the connection to the sqlite3 database connector.
-
-        Inputs: None
-
-        Returns: Void
-
-        Affects: Closes connection to metadata.db
-        """
-        try:
-            self.__connector.close()
-        except:  
-            raise madrigal.admin.MadrigalError("Problem closing connection to metadata.db",
-                                              traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
-
-
     def getKindatDescription(self, code, kinst=None):
         """getKindatDescription returns the kindat description that matches code argument, or None if not found.
 
@@ -4680,28 +4520,27 @@ class MadrigalKindat:
         query = "SELECT " + self.__typeDescCol + " FROM " + self.__tblName + " WHERE " + self.__typeCodeCol + "=\"{}\""
 
         try:
-            self.__initMetaDBConnector()
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
 
-            if kcode:
-                result = self.__cursor.execute(query.format(kcode))
-            else:
-                # try with code instead of kcode
-                result = self.__cursor.execute(query.format(str(int(code))))
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-
-            if not resList:
-                return(None)
-            
+                    if kcode:
+                        res = cur.execute(query.format(kcode))
+                        resList = res.fetchall()
+                        if not resList:
+                            res = cur.execute(query.format(code))
+                            resList = res.fetchall()
+                    else:
+                        res = cur.execute(query.format(code))
+                        resList = res.fetchall()
+                        
             [[desc]] = resList
             return(desc)
-        
         except:
-            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Description for kindat {} not found".format(code), 
-                                                traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def getKindatList(self):
@@ -4721,23 +4560,20 @@ class MadrigalKindat:
         query = "SELECT " + self.__typeDescCol + ", " + self.__typeCodeCol + " FROM " + self.__tblName
 
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             if not resList:
-                return(None)
-            
-            
+                return(None) 
+                        
             return(resList)
-        
         except:
-            self.__closeMetaDBConnector()
-            raise madrigal.admin.MadrigalError("Unable to get kindat list", 
-                                                traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+            raise madrigal.admin.MadrigalError("Problem getting kindat list", 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
     
 class MadrigalExperiment:
@@ -4881,64 +4717,18 @@ class MadrigalExperiment:
             query += " AND sid={}".format(self.__madDB.getSiteID())
 
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             [idx] = [item[0] for item in resList if expDir in item[1]]
             self.__index = idx
         except:
-            self.__closeMetaDBConnector()
-            raise madrigal.admin.MadrigalError("Could not find index for expDir: {}".format(expDir),
-                                              traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
-
-
-
-    def __initMetaDBConnector(self):
-        """
-        __initMetaDBConnector initializes the sqlite3 connector to read from the metadata database.
-
-        Inputs: None
-
-        Returns: Void
-
-        Affects: Initializes private class member variables (__connector and __cursor) to
-        connect to metadata.db
-
-        Exceptions: MadrigalError thrown if unable to connect to metadata.db
-        """
-        try:
-            self.__connector = sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), self.__filename))
-            self.__cursor = self.__connector.cursor()
-        except:  
-            raise madrigal.admin.MadrigalError("Unable to connect to metadata.db",
-                                              traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
-        
-
-    def __closeMetaDBConnector(self):
-        """
-        __closeMetaDBConnector closes the connection to the sqlite3 database connector.
-
-        Inputs: None
-
-        Returns: Void
-
-        Affects: Closes connection to metadata.db
-
-        Exceptions: MadrigalError thrown if unable to disconnect from metadata.db
-        """
-        try:
-            self.__connector.close()
-        except:  
-            raise madrigal.admin.MadrigalError("Problem closing connection to metadata.db",
-                                              traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+            raise madrigal.admin.MadrigalError("Could not find index for expDir: {}".format(expDir), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def getExpIdByPosition(self, position = 0):
@@ -4961,19 +4751,18 @@ class MadrigalExperiment:
         query = "SELECT " + self.__expIdCol + " FROM " + self.__tblName + " WHERE " + self.__expIdxCol +"={}".format(position)
 
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             [[id]] = resList
             return(id)
         except:
-            self.__closeMetaDBConnector()
-            raise madrigal.admin.MadrigalError("No expID found at position {}".format(position),
-                                              traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+            raise madrigal.admin.MadrigalError("No expID found at position {}".format(position), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def setExpIdByPosition(self, position, expId):
@@ -5000,16 +4789,16 @@ class MadrigalExperiment:
         update = ("UPDATE " + self.__tblName + " SET " + self.__expIdCol + "={} WHERE " + self.__expIdxCol + "={}").format(expId, position)
 
         try:
-            self.__initMetaDBConnector()
-            self.__cursor.execute(update)
-            self.__connector.commit()
-            self.__closeMetaDBConnector()
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    cur.execute(update)
+                    con.commit()
         except:
-            self.__closeMetaDBConnector()
-            raise madrigal.admin.MadrigalError('Error in setExpIdByPosition with position: {} id: {}'.format(position, expId),
-                                                traceback.format_exception(sys.exc_info()[0],
-                                                                           sys.exc_info()[1],
-                                                                           sys.exc_info()[2]))
+            raise madrigal.admin.MadrigalError("Error in setExpIdByPostion with position: {} ID: {}".format(position, expId), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def getExpUrlByPosition(self, position = 0):
@@ -5032,16 +4821,18 @@ class MadrigalExperiment:
         query = ("SELECT " + self.__expUrlCol + " FROM " + self.__tblName + " WHERE " + self.__expIdxCol + "={}").format(position)
 
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             [[url]] = resList
             return(url)
         except:
-            self.__closeMetaDBConnector()
-            return(None)
+            raise madrigal.admin.MadrigalError("No url found at position {}".format(position), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def getExpUrlByExpId(self, expId):
@@ -5058,16 +4849,18 @@ class MadrigalExperiment:
         query = ("SELECT " + self.__expUrlCol + " FROM " + self.__tblName + " WHERE " + self.__expIdCol + "={}").format(expId)
 
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             [[url]] = resList
             return(url)
         except:
-            self.__closeMetaDBConnector()
-            return(None)
+            raise madrigal.admin.MadrigalError("No url found with ID {}".format(expId), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
     
     def getRealExpUrlByPosition(self, position = 0):
@@ -5118,16 +4911,18 @@ class MadrigalExperiment:
         query = ("SELECT " + self.__expIdxCol + " FROM " + self.__tblName + " WHERE " + self.__expIdCol + "={}").format(expId)
 
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             [[position]] = resList
+            return(self.getRealExpUrlByPosition(position))
         except:
-            self.__closeMetaDBConnector()
-            return(None)
-        return(self.getRealExpUrlByPosition(position))
+            raise madrigal.admin.MadrigalError("No url found for expID {}".format(expId), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
     
     
     def getExpPathByPosition(self, position = 0):
@@ -5177,16 +4972,18 @@ class MadrigalExperiment:
         query = ("SELECT " + self.__expIdxCol + " FROM " + self.__tblName + " WHERE " + self.__expIdCol + "={}").format(expId)
 
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             [[position]] = resList
+            return(self.getExpPathByPosition(position))
         except:
-            self.__closeMetaDBConnector()
-            return(None)
-        return(self.getExpPathByPosition(position))
+            raise madrigal.admin.MadrigalError("No path found with ID {}".format(expId), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def setExpUrlByPosition(self, position, expUrl):
@@ -5214,15 +5011,16 @@ class MadrigalExperiment:
         update = ("UPDATE " + self.__tblName + " SET " + self.__expUrlCol + "=\"{}\" WHERE " + self.__expIdxCol + "={}").format(expUrl, position)
 
         try:
-            self.__initMetaDBConnector()
-            self.__cursor.execute(update)
-            self.__connector.commit()
-            self.__closeMetaDBConnector()
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    cur.execute(update)
+                    con.commit()
         except:
-            self.__closeMetaDBConnector()
-            raise madrigal.admin.MadrigalError('Error in setExpUrlByPosition with args %s: %s' %  \
-                                               (str(position, expUrl),
-                                                [traceback.format_exc()]))
+            raise madrigal.admin.MadrigalError("Problem setting url {} at position {}".format(expUrl, position), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
     
 
     def getExpDirByPosition(self, position = 0):
@@ -5271,17 +5069,18 @@ class MadrigalExperiment:
         query = ("SELECT " + self.__expIdxCol + " FROM " + self.__tblName + " WHERE " + self.__expIdCol + "={}").format(expId)
 
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             [[position]] = resList
+            return(self.getExpDirByPosition(position))
         except:
-            self.__closeMetaDBConnector()
-            return(None)
-        return(self.getExpDirByPosition(position))
-
+            raise madrigal.admin.MadrigalError("No expDir found with ID {}".format(expId), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
         
     def getExpNameByPosition(self, position = 0):
@@ -5302,19 +5101,21 @@ class MadrigalExperiment:
             position = 1
 
         query = ("SELECT " + self.__expNameCol + " FROM " + self.__tblName + " WHERE " + self.__expIdxCol + "={}").format(position)
-        
-        try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
 
+        try:
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             [[name]] = resList
             return(name)
         except:
-            self.__closeMetaDBConnector()
-            return(None)
-
+            raise madrigal.admin.MadrigalError("No name found at position {}".format(position), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
+        
 
     def getExpNameByExpId(self, expId):
         """getExpNameByExpId returns the experiment name for a given experiment id.
@@ -5328,18 +5129,20 @@ class MadrigalExperiment:
         Exceptions: None
         """
         query = ("SELECT " + self.__expNameCol + " FROM " + self.__tblName + " WHERE " + self.__expIdCol + "={}").format(expId)
-        
-        try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
 
+        try:
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             [[name]] = resList
             return(name)
         except:
-            self.__closeMetaDBConnector()
-            return(None)
+            raise madrigal.admin.MadrigalError("No name found with ID {}".format(expId), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def setExpNameByPosition(self, position, expName):
@@ -5366,15 +5169,16 @@ class MadrigalExperiment:
         update = ("UPDATE " + self.__tblName + " SET " + self.__expNameCol + "=\"{}\" WHERE " + self.__expIdxCol + "={}").format(expName, position)
 
         try:
-            self.__initMetaDBConnector()
-            self.__cursor.execute(update)
-            self.__connector.commit()
-            self.__closeMetaDBConnector()
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    cur.execute(update)
+                    con.commit()
         except:
-            self.__closeMetaDBConnector()
-            raise madrigal.admin.MadrigalError('Error in setExpNameByPosition with args %s: %s' %  \
-                                               (str(position), expName),
-                                                [traceback.format_exc()])
+            raise madrigal.admin.MadrigalError("Error in setExpNameByPosition with args {} {}".format(position, expName), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def getExpSiteIdByExpId(self, expId):
@@ -5391,16 +5195,18 @@ class MadrigalExperiment:
         query = ("SELECT " + self.__expSiteIdCol + " FROM " + self.__tblName + " WHERE " + self.__expIdCol + "={}").format(expId)
 
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             [[site]] = resList
             return(site)
         except:
-            self.__closeMetaDBConnector()
-            return(None)
+            raise madrigal.admin.MadrigalError("No site found for ID {}".format(expId), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def getExpSiteIdByPosition(self, position = 0):
@@ -5423,17 +5229,19 @@ class MadrigalExperiment:
         query = ("SELECT " + self.__expSiteIdCol + " FROM " + self.__tblName + " WHERE " + self.__expIdxCol + "={}").format(position)
 
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             [[site]] = resList
             return(site)
         except:
-            self.__closeMetaDBConnector()
-            return(None)
-
+            raise madrigal.admin.MadrigalError("No site found for position {}".format(position), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
+        
 
     def setExpSiteIdByPosition(self, position, expSiteId):
         """setExpSiteIdByPosition sets the experiment site id of the experiment at given position.
@@ -5459,17 +5267,16 @@ class MadrigalExperiment:
         update = ("UPDATE " + self.__tblName + " SET " + self.__expSiteIdCol + "={} WHERE " + self.__expIdxCol + "={}").format(expSiteId, position)
 
         try:
-            self.__initMetaDBConnector()
-            self.__cursor.execute(update)
-            self.__connector.commit()
-            self.__closeMetaDBConnector()
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    cur.execute(update)
+                    con.commit()
         except:
-            self.__closeMetaDBConnector()
-            raise madrigal.admin.MadrigalError('Error in setExpSiteIdByPosition with args %s: %s' %  \
-                                               (str(position, expSiteId),
-                                                traceback.format_exception(sys.exc_info()[0],
-                                                                           sys.exc_info()[1],
-                                                                           sys.exc_info()[2])))
+            raise madrigal.admin.MadrigalError("Error in setExpSiteIdByPosition with args {} {}".format(position, expSiteId), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def getExpStartDateTimeByPosition(self, position = 0):
@@ -5494,20 +5301,22 @@ class MadrigalExperiment:
         query = ("SELECT " + self.__expStartDateTimeCol + " FROM " + self.__tblName + " WHERE " + self.__expIdxCol + "={}").format(position)
 
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             if not resList:
                 return(None)
-                
-            [[startDTStr]] = resList
+            [[startDT]] = resList
         except:
-            self.__closeMetaDBConnector()
-            return(None)
+            raise madrigal.admin.MadrigalError("No start time found at position {}".format(position), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
         # create time from year, month, day, hour, min, sec, weekday, julian day, daylight savings
+        startDTStr = datetime.datetime.fromtimestamp(startDT, tz=datetime.timezone.utc).strftime("%Y%m%d%H%M%S")
         startTime =  [int(startDTStr[0:4]),
                           int(startDTStr[4:6]),
                           int(startDTStr[6:8]),
@@ -5564,21 +5373,22 @@ class MadrigalExperiment:
         query = ("SELECT " + self.__expEndDateTimeCol + " FROM " + self.__tblName + " WHERE " + self.__expIdxCol + "={}").format(position)
 
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             if not resList:
                 return(None)
-                
-            [[endDTStr]] = resList
+            [[endDT]] = resList
         except:
-            traceback.print_exc()
-            self.__closeMetaDBConnector()
-            return(None)
+            raise madrigal.admin.MadrigalError("No end time found at position {}".format(position), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
         # create time from year, month, day, hour, min, sec, weekday, julian day, daylight savings
+        endDTStr = datetime.datetime.fromtimestamp(endDT, tz=datetime.timezone.utc).strftime("%Y%m%d%H%M%S")
         endTime =  [int(endDTStr[0:4]),
                           int(endDTStr[4:6]),
                           int(endDTStr[6:8]),
@@ -5629,20 +5439,22 @@ class MadrigalExperiment:
         query = ("SELECT " + self.__expStartDateTimeCol + " FROM " + self.__tblName + " WHERE " + self.__expIdCol + "={}").format(expId)
 
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             if not resList:
                 return(None)
-                
-            [[startDTStr]] = resList
+            [[startDT]] = resList
         except:
-            self.__closeMetaDBConnector()
-            return(None)
+            raise madrigal.admin.MadrigalError("No start time found for ID {}".format(expId), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
         # create time from year, month, day, hour, min, sec, weekday, julian day, daylight savings
+        startDTStr = datetime.datetime.fromtimestamp(startDT, tz=datetime.timezone.utc).strftime("%Y%m%d%H%M%S")
         startTime =  [int(startDTStr[0:4]),
                           int(startDTStr[4:6]),
                           int(startDTStr[6:8]),
@@ -5693,20 +5505,22 @@ class MadrigalExperiment:
         query = ("SELECT " + self.__expEndDateTimeCol + " FROM " + self.__tblName + " WHERE " + self.__expIdCol + "={}").format(expId)
 
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             if not resList:
                 return(None)
-                
-            [[endDTStr]] = resList
+            [[endDT]] = resList
         except:
-            self.__closeMetaDBConnector()
-            return(None)
+            raise madrigal.admin.MadrigalError("No end time found for ID {}".format(expId), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
         # create time from year, month, day, hour, min, sec, weekday, julian day, daylight savings
+        endDTStr = datetime.datetime.fromtimestamp(endDT, tz=datetime.timezone.utc).strftime("%Y%m%d%H%M%S")
         endTime =  [int(endDTStr[0:4]),
                           int(endDTStr[4:6]),
                           int(endDTStr[6:8]),
@@ -5762,17 +5576,20 @@ class MadrigalExperiment:
             # if index not set, position should default to 1
             position = 1
 
-        updatedSDTStr = startDateTime.strftime("%Y%m%d%H%M%S")
+        updatedSDTStr = startDateTime.timestamp()
         update = ("UPDATE " + self.__tblName + " SET " + self.__expStartDateTimeCol + "={} WHERE " + self.__expIdxCol + "={}").format(updatedSDTStr, position)
 
         try:
-            self.__initMetaDBConnector()
-            self.__cursor.execute(update)
-            self.__connector.commit()
-            self.__closeMetaDBConnector()
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    cur.execute(update)
+                    con.commit()
         except:
-            self.__closeMetaDBConnector()
-            return(None)
+            raise madrigal.admin.MadrigalError("Problem setting start time {} at position {}".format(startDateTime, position), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def setExpEndDateTimeByPosition(self, endDateTime, position = 0):
@@ -5796,17 +5613,20 @@ class MadrigalExperiment:
             # if index not set, position should default to 1
             position = 1
 
-        updatedEDTStr = endDateTime.strftime("%Y%m%d%H%M%S")
+        updatedEDTStr = endDateTime.timestamp()
         update = ("UPDATE " + self.__tblName + " SET " + self.__expEndDateTimeCol + "={} WHERE " + self.__expIdxCol + "={}").format(updatedEDTStr, position)
 
         try:
-            self.__initMetaDBConnector()
-            self.__cursor.execute(update)
-            self.__connector.commit()
-            self.__closeMetaDBConnector()
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    cur.execute(update)
+                    con.commit()
         except:
-            self.__closeMetaDBConnector()
-            return(None)
+            raise madrigal.admin.MadrigalError("Problem setting end time {} at position {}".format(endDateTime, position), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def getKinstByPosition(self, position = 0):
@@ -5830,23 +5650,21 @@ class MadrigalExperiment:
         query = ("SELECT " + self.__expKinstCol + " FROM " + self.__tblName + " WHERE " + self.__expIdxCol + "={}").format(position)
 
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             if not resList:
                 return(None)
-                
+                            
             [[kinst]] = resList
             return(kinst)
-
         except:
-            self.__closeMetaDBConnector()
-            raise madrigal.admin.MadrigalError('Error getting kinst from metadata row: ' + str(position),
-                                                   traceback.format_exception(sys.exc_info()[0],
-                                                                              sys.exc_info()[1],
-                                                                              sys.exc_info()[2]))
+            raise madrigal.admin.MadrigalError("Problem getting kinst at position {}".format(position), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
 
@@ -5864,20 +5682,21 @@ class MadrigalExperiment:
         query = ("SELECT " + self.__expKinstCol + " FROM " + self.__tblName + " WHERE " + self.__expIdCol + "={}").format(expId)
 
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             if not resList:
                 return(None)
-                
+                            
             [[kinst]] = resList
             return(kinst)
-
         except:
-            self.__closeMetaDBConnector()
-            return(None)
+            raise madrigal.admin.MadrigalError("Problem getting kinst with ID {}".format(expId), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
        
     def setExpKinstByPosition(self, position, expKinst):
@@ -5905,17 +5724,16 @@ class MadrigalExperiment:
         update = ("UPDATE " + self.__tblName + " SET " + self.__expKinstCol + "={} WHERE " + self.__expIdxCol + "={}").format(expKinst, position)
 
         try:
-            self.__initMetaDBConnector()
-            self.__cursor.execute(update)
-            self.__connector.commit()
-            self.__closeMetaDBConnector()
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    cur.execute(update)
+                    con.commit()
         except:
-            self.__closeMetaDBConnector()
-            raise madrigal.admin.MadrigalError('Error in setExpKinstByPosition with args %s: %s' %  \
-                                               (str(position, expKinst),
-                                                traceback.format_exception(sys.exc_info()[0],
-                                                                           sys.exc_info()[1],
-                                                                           sys.exc_info()[2])))
+            raise madrigal.admin.MadrigalError("Problem setting kinst {} at position {}".format(expKinst, position), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def getSecurityByPosition(self, position = 0):
@@ -5939,20 +5757,19 @@ class MadrigalExperiment:
         query = ("SELECT " + self.__expSecurityCol + " FROM " + self.__tblName + " WHERE " + self.__expIdxCol + "={}").format(position)
 
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
+                            
             [[security]] = resList
             return(security)
-
         except:
-            self.__closeMetaDBConnector()
-            raise madrigal.admin.MadrigalError('Error getting security for metadata row: ' + str(position),
-                                                   traceback.format_exception(sys.exc_info()[0],
-                                                                              sys.exc_info()[1],
-                                                                              sys.exc_info()[2]))
+            raise madrigal.admin.MadrigalError("Problem getting security code at position {}".format(position), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
 
@@ -5970,17 +5787,19 @@ class MadrigalExperiment:
         query = ("SELECT " + self.__expSecurityCol + " FROM " + self.__tblName + " WHERE " + self.__expIdCol + "={}").format(expId)
 
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
+                            
             [[security]] = resList
             return(security)
-
         except:
-            self.__closeMetaDBConnector()
-            return(None)
+            raise madrigal.admin.MadrigalError("Problem getting security code from ID {}".format(expId), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def setSecurityByPosition(self, position, securityCode):
@@ -6008,17 +5827,16 @@ class MadrigalExperiment:
         update = ("UPDATE " + self.__tblName + " SET " + self.__expSecurityCol + "={} WHERE " + self.__expIdxCol + "={}").format(securityCode, position)
 
         try:
-            self.__initMetaDBConnector()
-            self.__cursor.execute(update)
-            self.__connector.commit()
-            self.__closeMetaDBConnector()
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    cur.execute(update)
+                    con.commit()
         except:
-            self.__closeMetaDBConnector()
-            raise madrigal.admin.MadrigalError('Error in setSecurityByPosition with args %s: %s' %  \
-                                               (str(position, securityCode),
-                                                traceback.format_exception(sys.exc_info()[0],
-                                                                           sys.exc_info()[1],
-                                                                           sys.exc_info()[2])))
+            raise madrigal.admin.MadrigalError("Problem setting security code at position {}".format(position), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
             
             
     def getPIByPosition(self, position = 0):
@@ -6045,20 +5863,21 @@ class MadrigalExperiment:
         query = ("SELECT " + self.__expPICol + " FROM " + self.__tblName + " WHERE " + self.__expIdxCol + "={}").format(position)
 
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             [[pi]] = resList
             if len(pi) > 0:
                 return(pi)
             else:
                 return(None)
-
         except:
-            self.__closeMetaDBConnector()
-            return(None)
+            raise madrigal.admin.MadrigalError("Problem getting PI at position {}".format(position), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
         
 
 
@@ -6079,21 +5898,21 @@ class MadrigalExperiment:
         query = ("SELECT " + self.__expPICol + " FROM " + self.__tblName + " WHERE " + self.__expIdCol + "={}").format(expId)
 
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             [[pi]] = resList
-            
             if len(pi) > 0:
-                    return(pi)
+                return(pi)
             else:
                 return(None)
-        
         except:
-            self.__closeMetaDBConnector()
-            return(None)
+            raise madrigal.admin.MadrigalError("Problem getting PI from expID {}".format(expId), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def setPIByPosition(self, position, PI):
@@ -6123,15 +5942,16 @@ class MadrigalExperiment:
         update = ("UPDATE " + self.__tblName + " SET " + self.__expPICol + "=\"{}\" WHERE " + self.__expIdxCol + "={}").format(PI, position)
 
         try:
-            self.__initMetaDBConnector()
-            self.__cursor.execute(update)
-            self.__connector.commit()
-            self.__closeMetaDBConnector()
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    cur.execute(update)
+                    con.commit()
         except:
-            self.__closeMetaDBConnector()
-            raise madrigal.admin.MadrigalError('Error in setPIByPosition with args %s: %s' %  \
-                                               (str(position), PI),
-                                                [traceback.format_exc()])
+            raise madrigal.admin.MadrigalError("Problem setting PI at position {}".format(position), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
                 
     
     def getPIEmailByPosition(self, position = 0):
@@ -6158,20 +5978,21 @@ class MadrigalExperiment:
         query = ("SELECT " + self.__expPIEmailCol + " FROM " + self.__tblName + " WHERE " + self.__expIdxCol + "={}").format(position)
 
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             [[piEmail]] = resList
             if len(piEmail) > 0:
                 return(piEmail)
             else:
                 return(None)
-
         except:
-            self.__closeMetaDBConnector()
-            return(None)
+            raise madrigal.admin.MadrigalError("Problem getting PI email at position {}".format(position), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
         
 
 
@@ -6192,19 +6013,21 @@ class MadrigalExperiment:
         query = ("SELECT " + self.__expPIEmailCol + " FROM " + self.__tblName + " WHERE " + self.__expIdCol + "={}").format(expId)
 
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             [[piEmail]] = resList
             if len(piEmail) > 0:
                 return(piEmail)
             else:
                 return(None)
         except:
-            self.__closeMetaDBConnector()
-            return(None)
+            raise madrigal.admin.MadrigalError("Problem getting PI from ID {}".format(expId), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def setPIEmailByPosition(self, position, PIEmail):
@@ -6234,15 +6057,16 @@ class MadrigalExperiment:
         update = ("UPDATE " + self.__tblName + " SET " + self.__expPIEmailCol + "=\"{}\" WHERE " + self.__expIdxCol + "={}").format(PIEmail, position)
 
         try:
-            self.__initMetaDBConnector()
-            self.__cursor.execute(update)
-            self.__connector.commit()
-            self.__closeMetaDBConnector()
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    cur.execute(update)
+                    con.commit()
         except:
-            self.__closeMetaDBConnector()
-            raise madrigal.admin.MadrigalError('Error in setPIEmailByPosition with args %s: %s' %  \
-                                               (str(position), PIEmail),
-                                                [traceback.format_exc()])
+            raise madrigal.admin.MadrigalError("Problem setting PI email at position {}".format(position), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def getExpLinksByExpId(self, expId):
@@ -6269,18 +6093,19 @@ class MadrigalExperiment:
         query = ("SELECT " + self.__expIdxCol + " FROM " + self.__tblName + " WHERE " + self.__expIdCol + "={}").format(expId)
 
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             [[position]] = resList
+            return(sorted(self.getExpLinksByPosition(position),
+                         key=lambda list_item: os.path.basename(list_item[1])))
         except:
-            self.__closeMetaDBConnector()
-            return(None)
-        retList = sorted(self.getExpLinksByPosition(position),
-                         key=lambda list_item: os.path.basename(list_item[1]))
-        return(retList)
+            raise madrigal.admin.MadrigalError("Problem getting expLinks from ID {}".format(expId), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
         
         
     
@@ -6407,20 +6232,22 @@ class MadrigalExperiment:
             return 1
         
         query = "SELECT COUNT(*) FROM " + self.__tblName
-        try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
 
+        try:
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             if not resList:
                 return(None)
             [[numExps]] = resList
             return(numExps)
         except:
             raise madrigal.admin.MadrigalError("Problem getting experiment count", 
-                                                traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
      
 
     def getAllExpIDs(self, localSiteID):
@@ -6434,24 +6261,21 @@ class MadrigalExperiment:
         query = ("SELECT " + self.__expIdCol + ", " + self.__expIdxCol
                  + " FROM " + self.__tblName + " WHERE " + self.__expSecurityCol
                 + " IN (0, 1, 2, 3) AND " + self.__expSiteIdCol + "={}").format(localSiteID)
-        
-        try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
 
+        try:
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             if not resList:
-                self.__closeMetaDBConnector()
                 return(None)
-            
             return(resList)
         except:
-            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Problem getting expIDs for siteID {}".format(localSiteID), 
-                                                traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
   
         
@@ -6484,10 +6308,11 @@ class MadrigalExperiment:
                 expDir = self.getExpDirByExpId(self.getExpIdByPosition())
 
                 try:
-                    self.__initMetaDBConnector()
-                    result = self.__cursor.execute(localQuery)
-                    resList = result.fetchall()
-                    self.__closeMetaDBConnector()
+                    with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                        with con:
+                            cur = con.cursor()
+                            res = cur.execute(localQuery)
+                            resList = res.fetchall()
 
                     textList = []
                     for line in resList:
@@ -6495,18 +6320,14 @@ class MadrigalExperiment:
                         line = line[:4] + [line[4][:8], line[4][8:]] + [line[5][:8], line[5][8:]] + line[6:]
                         textList.append(','.join(line))
                     tblText = '\n'.join(textList)
-
+                    
                     with open(os.path.join(expDir, "expTab.txt"), "w") as f:
                         f.write(tblText)
-
                 except:
-                    self.__closeMetaDBConnector()
-                    raise madrigal.admin.MadrigalError('Problem getting local metadata for exp at {}'.format(expDir),
+                    raise madrigal.admin.MadrigalError("Problem getting local metadata for exp at {}".format(expDir), 
                                                     traceback.format_exception(sys.exc_info()[0],
-                                                                                sys.exc_info()[1],
-                                                                                sys.exc_info()[2]))
-
-
+                                                                                          sys.exc_info()[1],
+                                                                                          sys.exc_info()[2]))
         except:
             raise madrigal.admin.MadrigalError("Unable to write metadata file " + \
                                                str(newFullPath),
@@ -6575,20 +6396,19 @@ class MadrigalExperiment:
             thisFileObj.deleteRowByFilename(thisFileObj.getFilenameByPosition(i))
 
         update = ("DELETE FROM " + self.__tblName + " WHERE " + self.__expIdxCol + "={}").format(position)
-        
-        try:
-            self.__initMetaDBConnector()
-            self.__cursor.execute(update)
-            self.__connector.commit()
-            self.__closeMetaDBConnector()
-            print(f"Successfully removed experiment {thisExpName} starting at {thisExpDate}")
-        except:
-            # no matches found
-            self.__closeMetaDBConnector()
-            raise madrigal.admin.MadrigalError('Could not delete experiment at position ' + str(position), None)
-        
 
-        
+        try:
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    cur.execute(update)
+                    con.commit()
+                    print(f"Successfully removed experiment {thisExpName} starting at {thisExpDate}")
+        except:
+            raise madrigal.admin.MadrigalError("Unable to delete experiment at position {}".format(position), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
         
 
     def __str__(self):
@@ -6735,68 +6555,26 @@ class MadrigalMetaFile:
             query += " AND sid={}".format(self.__madDB.getSiteID())
 
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
 
-            # assumes exactly 1 expDir
-            [idx] = [item[0] for item in resList if expDir in item[1]]
-
-            # use expID to get indicies for files in this exp
-            query1 = ("SELECT " + self.__fileIdxCol + " FROM " + self.__tblName + " WHERE " + self.__fileExpIdCol + "={}").format(idx)
-            result = self.__cursor.execute(query1)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
+                    # assumes exactly 1 expDir
+                    [idx] = [item[0] for item in resList if expDir in item[1]]
+                    
+                    # use expID to get indicies for files in this exp
+                    query1 = ("SELECT " + self.__fileIdxCol + " FROM " + self.__tblName + " WHERE " + self.__fileExpIdCol + "={}").format(idx)
+                    result = cur.execute(query1)
+                    resList = result.fetchall()
             self.__indexList = [item[0] for item in resList]
-            
+            self.__expID = idx
         except:
-            self.__closeMetaDBConnector()
-            raise madrigal.admin.MadrigalError("Could not find index for expDir: {}".format(dir),
-                                              traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
-
-
-    def __initMetaDBConnector(self):
-        """
-        __initMetaDBConnector initializes the sqlite3 connector to read from the metadata database.
-
-        Inputs: None
-
-        Returns: Void
-
-        Affects: Initializes private class member variables (__connector and __cursor) to
-        connect to metadata.db
-
-        Exceptions: MadrigalError thrown if unable to connect to metadata.db
-        """
-        try:
-            self.__connector = sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), self.__filename))
-            self.__cursor = self.__connector.cursor()
-        except:  
-            raise madrigal.admin.MadrigalError("Unable to connect to metadata.db",
-                                              traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
-        
-
-    def __closeMetaDBConnector(self):
-        """
-        __closeMetaDBConnector closes the connection to the sqlite3 database connector.
-
-        Inputs: None
-
-        Returns: Void
-
-        Affects: Closes connection to metadata.db
-        """
-        try:
-            self.__connector.close()
-        except:  
-            raise madrigal.admin.MadrigalError("Problem closing connection to metadata.db",
-                                              traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+            raise madrigal.admin.MadrigalError("Could not find index for expDir {}".format(dir), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def getFileCount(self):
@@ -6815,20 +6593,22 @@ class MadrigalMetaFile:
             return(len(self.__indexList))
         
         query = "SELECT COUNT(*) FROM " + self.__tblName
-        try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
 
+        try:
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             if not resList:
                 return(None)
             [[numFiles]] = resList
             return(numFiles)
         except:
             raise madrigal.admin.MadrigalError("Problem getting file count", 
-                                                traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def getFilenameByPosition(self, position = 0):
@@ -6851,16 +6631,18 @@ class MadrigalMetaFile:
         query = ("SELECT " + self.__fileNameCol + " FROM " + self.__tblName + " WHERE " + self.__fileIdxCol + "={}").format(position)
 
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             [[fname]] = resList
             return(fname)
         except:
-            self.__closeMetaDBConnector()
-            return(None)
+            raise madrigal.admin.MadrigalError("Problem getting file name at position {}".format(position), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def getExpIdByPosition(self, position = 0):
@@ -6881,22 +6663,45 @@ class MadrigalMetaFile:
             position = 1
 
         query = ("SELECT " + self.__fileExpIdCol + " FROM " + self.__tblName + " WHERE " + self.__fileIdxCol + "={}").format(position)
-        
-        try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
 
+        try:
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             [[eid]] = resList
             return(eid)
-
         except:
-            self.__closeMetaDBConnector()
-            raise madrigal.admin.MadrigalError('Problem getting expID for file at position ' + str(position),
-                                               traceback.format_exception(sys.exc_info()[0],
-                                                                          sys.exc_info()[1],
-                                                                          sys.exc_info()[2]))
+            raise madrigal.admin.MadrigalError("Problem getting expID for file at postion {}".format(position), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
+
+        
+    def getExpIdByFilename(self, filename):
+            """getExpIdByFilename returns the experiment id (integer) of the given filename.
+    
+            Inputs: 
+            
+            Returns: the experiment id (integer) of the file at given position as an integer.  
+            
+            Affects: None
+    
+            Exceptions: Thrown if kinst exp id cannot be parsed into an integer
+            """
+            try:
+                if self.__indexList:
+                    return(self.__expID)
+                else:
+                    # idx must be set
+                    self.__setIdxFromInit(filename)
+                    return(self.__expID)
+            except:
+                raise madrigal.admin.MadrigalError("Problem getting expID for file {}".format(filename), 
+                                                traceback.format_exception(sys.exc_info()[0],
+                                                                                      sys.exc_info()[1],
+                                                                                      sys.exc_info()[2]))
 
 
     def setExpIdByPosition(self, position, expId):
@@ -6923,17 +6728,16 @@ class MadrigalMetaFile:
         update = ("UPDATE " + self.__tblName + " SET " + self.__fileExpIdCol + "={} WHERE " + self.__fileIdxCol + "={}").format(expId, position)
 
         try:
-            self.__initMetaDBConnector()
-            self.__cursor.execute(update)
-            self.__connector.commit()
-            self.__closeMetaDBConnector()
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    cur.execute(update)
+                    con.commit()
         except:
-            self.__closeMetaDBConnector()
-            raise madrigal.admin.MadrigalError('Problem setting expID by position: pos %s: id %s' %  \
-                                                (str(position), str(expId)),
-                                                 traceback.format_exception(sys.exc_info()[0],
-                                                                            sys.exc_info()[1],
-                                                                            sys.exc_info()[2]))
+            raise madrigal.admin.MadrigalError("Problem setting expID {} at position {}".format(expId, position), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def getKindatByPosition(self, position = 0):
@@ -6954,21 +6758,20 @@ class MadrigalMetaFile:
             position = 1
 
         query = ("SELECT " + self.__fileKindatCol + " FROM " + self.__tblName + " WHERE " + self.__fileIdxCol + "={}").format(position)
-        try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
 
+        try:
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             [[kindat]] = resList
             return(kindat)
-
         except:
-            self.__closeMetaDBConnector()
-            raise madrigal.admin.MadrigalError('Problem getting kindat for position ' + str(position),
-                                                   traceback.format_exception(sys.exc_info()[0],
-                                                                              sys.exc_info()[1],
-                                                                              sys.exc_info()[2]))
+            raise madrigal.admin.MadrigalError("Problem getting kindat at position {}".format(position), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def getCategoryByPosition(self, position = 0):
@@ -6989,22 +6792,20 @@ class MadrigalMetaFile:
             position = 1
 
         query = ("SELECT " + self.__fileCategoryCol + " FROM " + self.__tblName + " WHERE " + self.__fileIdxCol + "={}").format(position)
-        
-        try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
 
+        try:
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             [[category]] = resList
             return(int(category))
-
         except:
-            self.__closeMetaDBConnector()
-            raise madrigal.admin.MadrigalError('Problem getting category for position ' + str(position),
-                                                   traceback.format_exception(sys.exc_info()[0],
-                                                                              sys.exc_info()[1],
-                                                                              sys.exc_info()[2]))
+            raise madrigal.admin.MadrigalError("Problem getting category for position {}".format(position), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def getCategoryByFilename(self, filename):
@@ -7024,24 +6825,26 @@ class MadrigalMetaFile:
         if self.__indexList:
             pass
         else:
-            # we should never delete files based on filename only,
             # idx must be set
-            raise madrigal.admin.MadrigalError(f"Unable to delete file {filename}, MadrigalMetaFile index not set", None)
+            self.__setIdxFromInit(filename)
 
-        expID = self.getExpIdByPosition()
+        expID = self.__expID
         filename = os.path.basename(filename)
         query = ("SELECT " + self.__fileCategoryCol + " FROM " + self.__tblName + " WHERE " + self.__fileExpIdCol + "={} AND " + self.__fileNameCol + "=\"{}\"").format(expID, filename)
-        try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
 
+        try:
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             [[category]] = resList
             return(int(category))
         except:
-            self.__closeMetaDBConnector()
-            return(None)
+            raise madrigal.admin.MadrigalError("Problem getting category for file {}".format(filename), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def getHasCatalogByPosition(self, position = 0):
@@ -7064,20 +6867,21 @@ class MadrigalMetaFile:
         query = ("SELECT " + self.__fileHasCatalogCol + " FROM " + self.__tblName + " WHERE " + self.__fileIdxCol + "={}").format(position)
         
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             [[catrec]] = resList
-
             if int(catrec) == 0:
-                return False
+                return(False)
             else:
-                return True
+                return(True)
         except:
-            self.__closeMetaDBConnector()
-            return(None)
+            raise madrigal.admin.MadrigalError("Problem getting catalog for position {}".format(position), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def getHasCatalogByFilename(self,filename):
@@ -7095,31 +6899,30 @@ class MadrigalMetaFile:
         if self.__indexList:
             pass
         else:
-            # we should never delete files based on filename only,
             # idx must be set
-            raise madrigal.admin.MadrigalError(f"Unable to delete file {filename}, MadrigalMetaFile index not set", None)
+            self.__setIdxFromInit(filename)
 
-        expID = self.getExpIdByPosition()
+        expID = self.__expID
 
         filename = os.path.basename(filename)
         query = ("SELECT " + self.__fileHasCatalogCol + " FROM " + self.__tblName + " WHERE " + self.__fileExpIdCol + "={} AND " + self.__fileNameCol + "=\"{}\"").format(expID, filename)
 
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             [[catrec]] = resList
-
             if int(catrec) == 0:
-                    return False
+                return(False)
             else:
-                return True
-
+                return(True)
         except:
-            self.__closeMetaDBConnector()
-            return(None)
+            raise madrigal.admin.MadrigalError("Problem getting category for file {}".format(filename), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def setHasCatalogByPosition(self, position, hasCatalog):
@@ -7154,13 +6957,16 @@ class MadrigalMetaFile:
         update = ("UPDATE " + self.__tblName + " SET " + self.__fileHasCatalogCol + "={} WHERE " + self.__fileIdxCol + "={}").format(hasCatalog, position)
 
         try:
-            self.__initMetaDBConnector()
-            self.__cursor.execute(update)
-            self.__connector.commit()
-            self.__closeMetaDBConnector()
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    cur.execute(update)
+                    con.commit()
         except:
-            self.__closeMetaDBConnector()
-            return(None)
+            raise madrigal.admin.MadrigalError("Problem setting category for position {}".format(position), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def getHasHeaderByPosition(self, position = 0):
@@ -7183,20 +6989,21 @@ class MadrigalMetaFile:
         query = ("SELECT " + self.__fileHasHeaderCol + " FROM " + self.__tblName + " WHERE " + self.__fileIdxCol + "={}").format(position)
 
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             [[headrec]] = resList
-
             if int(headrec) == 0:
-                return False
+                return(False)
             else:
-                return True
+                return(True)
         except:
-            self.__closeMetaDBConnector()
-            return(None)
+            raise madrigal.admin.MadrigalError("Problem getting category for position {}".format(position), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def getHasHeaderByFilename(self,filename):
@@ -7214,30 +7021,30 @@ class MadrigalMetaFile:
         if self.__indexList:
             pass
         else:
-            # we should never delete files based on filename only,
             # idx must be set
-            raise madrigal.admin.MadrigalError(f"Unable to delete file {filename}, MadrigalMetaFile index not set", None)
+            self.__setIdxFromInit(filename)
 
-        expID = self.getExpIdByPosition()
+        expID = self.__expID
 
         filename = os.path.basename(filename)
         query = ("SELECT " + self.__fileHasHeaderCol + " FROM " + self.__tblName + " WHERE " + self.__fileExpIdCol + "={} AND " + self.__fileNameCol + "=\"{}\"").format(expID, filename)
 
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             [[headrec]] = resList
-
             if int(headrec) == 0:
-                return False
+                return(False)
             else:
-                return True
+                return(True)
         except:
-            self.__closeMetaDBConnector()
-            return(None)
+            raise madrigal.admin.MadrigalError("Problem getting category for file {}".format(filename), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def setHasHeaderByPosition(self, position, hasHeader):
@@ -7270,14 +7077,18 @@ class MadrigalMetaFile:
             hasHeader = '0'
 
         update = ("UPDATE " + self.__tblName + " SET " + self.__fileHasHeaderCol + "={} WHERE " + self.__fileIdxCol + "={}").format(hasHeader, position)
+
         try:
-            self.__initMetaDBConnector()
-            self.__cursor.execute(update)
-            self.__connector.commit()
-            self.__closeMetaDBConnector()
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    cur.execute(update)
+                    con.commit()
         except:
-            self.__closeMetaDBConnector()
-            return(None)
+            raise madrigal.admin.MadrigalError("Problem setting header for position {}".format(position), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def getStatusByPosition(self, position = 0):
@@ -7298,17 +7109,20 @@ class MadrigalMetaFile:
             position = 1
 
         query = ("SELECT " + self.__fileStatusCol + " FROM " + self.__tblName + " WHERE " + self.__fileIdxCol + "={}").format(position)
-        try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
 
+        try:
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             [[status]] = resList
             return(status)
         except:
-            self.__closeMetaDBConnector()
-            return(None)
+            raise madrigal.admin.MadrigalError("Problem getting status for position {}".format(position), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def getStatusByFilename(self,filename):
@@ -7326,25 +7140,27 @@ class MadrigalMetaFile:
         if self.__indexList:
             pass
         else:
-            # we should never delete files based on filename only,
             # idx must be set
-            raise madrigal.admin.MadrigalError(f"Unable to delete file {filename}, MadrigalMetaFile index not set", None)
+            self.__setIdxFromInit(filename)
 
-        expID = self.getExpIdByPosition()
+        expID = self.__expID
 
         filename = os.path.basename(filename)
         query = ("SELECT " + self.__fileStatusCol + " FROM " + self.__tblName + " WHERE " + self.__fileExpIdCol + "={} AND " + self.__fileNameCol + "=\"{}\"").format(expID, filename)
-        try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
 
+        try:
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             [[status]] = resList
             return(status)
         except:
-            self.__closeMetaDBConnector()
-            return(None)
+            raise madrigal.admin.MadrigalError("Problem getting status for file {}".format(filename), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
 
@@ -7366,21 +7182,20 @@ class MadrigalMetaFile:
             position = 1
 
         query = ("SELECT " + self.__fileAccessCol + " FROM " + self.__tblName + " WHERE " + self.__fileIdxCol + "={}").format(position)
+        
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             [[permission]] = resList
             return(int(permission))
-
         except:
-            self.__closeMetaDBConnector()
-            raise madrigal.admin.MadrigalError('Error in fileTab.txt parsing metadata row: ' + str(position),
-                                                   traceback.format_exception(sys.exc_info()[0],
-                                                                              sys.exc_info()[1],
-                                                                              sys.exc_info()[2]))
+            raise madrigal.admin.MadrigalError("Problem getting permission for position {}".format(position), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
         
         
     def getFileDatetimeByPosition(self, position = 0):
@@ -7401,19 +7216,22 @@ class MadrigalMetaFile:
             position = 1
 
         query = ("SELECT " + self.__fileModDateCol + ", " + self.__fileModTimeCol + " FROM " + self.__tblName + " WHERE " + self.__fileIdxCol + "={}").format(position)
-        try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
 
+        try:
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             [[dateStr, timeStr]] = resList
             thisdt = datetime.datetime.strptime('%s %s' % (dateStr, timeStr), '%Y%m%d %H%M%S')
             thisdt = thisdt.replace(tzinfo=datetime.timezone.utc)
             return(thisdt)
         except:
-            self.__closeMetaDBConnector()
-            return(None)
+            raise madrigal.admin.MadrigalError("Problem getting datetime for position {}".format(position), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def getFileDatetimeByFilename(self,filename):
@@ -7431,27 +7249,29 @@ class MadrigalMetaFile:
         if self.__indexList:
             pass
         else:
-            # we should never delete files based on filename only,
             # idx must be set
-            raise madrigal.admin.MadrigalError(f"Unable to delete file {filename}, MadrigalMetaFile index not set", None)
+            self.__setIdxFromInit(filename)
 
-        expID = self.getExpIdByPosition()
+        expID = self.__expID
 
         filename = "*" + os.path.basename(filename) + "*"
         query = ("SELECT " + self.__fileModDateCol + ", " + self.__fileModTimeCol + " FROM " + self.__tblName + " WHERE " + self.__fileExpIdCol + "={} AND " + self.__fileNameCol + " GLOB \"{}\"").format(expID, filename)
-        try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
 
+        try:
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             [[dateStr, timeStr]] = resList
             thisdt = datetime.datetime.strptime('%s %s' % (dateStr, timeStr), '%Y%m%d %H%M%S')
             thisdt = thisdt.replace(tzinfo=datetime.timezone.utc)
             return(thisdt)
         except:
-            self.__closeMetaDBConnector()
-            return(None)
+            raise madrigal.admin.MadrigalError("Problem getting datetime for file {}".format(filename), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
     
     def setFileDatetimeByPosition(self, position, dt):
@@ -7491,19 +7311,21 @@ class MadrigalMetaFile:
         dateStr = dt.strftime('%Y%m%d')
         timeStr = dt.strftime('%H%M%S')
 
+        update = ("UPDATE " + self.__tblName + " SET " + self.__fileModDateCol 
+                            + "=\"{}\", " + self.__fileModTimeCol + "=\"{}\" WHERE "
+                            + self.__fileIdxCol + "={}").format(dateStr, timeStr, position)
+
         try:
-            update = ("UPDATE " + self.__tblName + " SET " + self.__fileModDateCol 
-                    + "=\"{}\", " + self.__fileModTimeCol + "=\"{}\" WHERE "
-                    + self.__fileIdxCol + "={}").format(dateStr, timeStr, position)
-
-            self.__initMetaDBConnector()
-            self.__cursor.execute(update)
-            self.__connector.commit()
-            self.__closeMetaDBConnector()
-
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    cur.execute(update)
+                    con.commit()
         except:
-            self.__closeMetaDBConnector()
-            raise ValueError('Problem in setFileDatetimeByPosition')
+            raise madrigal.admin.MadrigalError("Problem setting datetime for position {}".format(position), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def deleteRowByFilename(self, filename):
@@ -7520,23 +7342,25 @@ class MadrigalMetaFile:
         if self.__indexList:
             pass
         else:
-            # we should never delete files based on filename only,
             # idx must be set
-            raise madrigal.admin.MadrigalError(f"Unable to delete file {filename}, MadrigalMetaFile index not set", None)
+            self.__setIdxFromInit(filename)
 
-        expID = self.getExpIdByFilename(filename)
+        expID = self.__expID
+        filename = os.path.basename(filename)
         update = ("DELETE FROM " + self.__tblName + " WHERE " + self.__fileExpIdCol + "={} AND " + self.__fileNameCol + "=\"{}\"").format(expID, filename)
-        
+
         try:
-            self.__initMetaDBConnector()
-            self.__cursor.execute(update)
-            self.__connector.commit()
-            self.__closeMetaDBConnector()
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    cur.execute(update)
+                    con.commit()
             print(f"Successfully removed file {filename} from metadata")
         except:
-            # no matches found
-            self.__closeMetaDBConnector()
-            raise madrigal.admin.MadrigalError('Could not delete file ' + filename + ' from ' + self.__filename, None)
+            raise madrigal.admin.MadrigalError("Could not delete file {}".format(filename), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def getExpIdByFilename(self, filename):
@@ -7552,20 +7376,34 @@ class MadrigalMetaFile:
 
         Exceptions: Thrown if exp id cannot be parsed into an integer
         """
-        filename = os.path.basename(filename)
+        if self.__indexList:
+            pass
+        else:
+            # idx must be set
+            self.__setIdxFromInit(filename)
 
-        query = ("SELECT " + self.__fileExpIdCol + " FROM " + self.__tblName + " WHERE " + self.__fileNameCol + "=\"{}\"").format(filename)
-        try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
+        expID = self.__expID
+        if not expID:
+            filename = os.path.basename(filename)
+            print(f"filename is {filename}")
 
-            [[eid]] = resList
-            return(eid)
-        except:
-            self.__closeMetaDBConnector()
-            return(self.getExpIdByPosition())
+            query = ("SELECT " + self.__fileExpIdCol + " FROM " + self.__tblName + " WHERE " + self.__fileNameCol + "=\"{}\"").format(filename)
+
+            try:
+                with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                    with con:
+                        cur = con.cursor()
+                        res = cur.execute(query)
+                        resList = res.fetchall()
+                [[eid]] = resList
+                return(eid)
+            except:
+                raise madrigal.admin.MadrigalError("Problem getting expID for file {}".format(filename), 
+                                                traceback.format_exception(sys.exc_info()[0],
+                                                                                    sys.exc_info()[1],
+                                                                                    sys.exc_info()[2]))
+        else:
+            return(expID)
 
 
 
@@ -7585,26 +7423,27 @@ class MadrigalMetaFile:
         if self.__indexList:
             pass
         else:
-            # we should never delete files based on filename only,
             # idx must be set
-            raise madrigal.admin.MadrigalError(f"Unable to delete file {filename}, MadrigalMetaFile index not set", None)
+            self.__setIdxFromInit(filename)
 
-        expID = self.getExpIdByPosition()
+        expID = self.__expID
         filename = os.path.basename(filename)
 
         query = ("SELECT " + self.__fileKindatCol + " FROM " + self.__tblName + " WHERE " + self.__fileExpIdCol + "={} AND " + self.__fileNameCol + "=\"{}\"").format(expID, filename)
-        try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
 
+        try:
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             [[kindat]] = resList
             return(kindat)
-        
         except:
-            self.__closeMetaDBConnector()
-            return(None)
+            raise madrigal.admin.MadrigalError("Problem getting kindat for file {}".format(filename), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def setAccessByPosition(self, position, access):
@@ -7637,14 +7476,18 @@ class MadrigalMetaFile:
             access = '0'
 
         update = ("UPDATE " + self.__tblName + " SET " + self.__fileAccessCol + "={} WHERE " + self.__fileIdxCol + "={}").format(access, position)
+
         try:
-            self.__initMetaDBConnector()
-            self.__cursor.execute(update)
-            self.__connector.commit()
-            self.__closeMetaDBConnector()
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    cur.execute(update)
+                    con.commit()
         except:
-            self.__closeMetaDBConnector()
-            raise ValueError('Problem with setAccessByPosition')
+            raise madrigal.admin.MadrigalError("Problem setting access for position {}".format(position), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def setAccess(self, accessType):
@@ -7665,17 +7508,21 @@ class MadrigalMetaFile:
             raise madrigal.admin.MadrigalError('MadrigalMetaFile.setAccess called with arg = ' + \
                                                str(accessType) + ', must be either 0 or 1', None)
         
-        expID = self.getExpIdByPosition()
+        expID = self.__expID
 
         update = ("UPDATE " + self.__tblName + " SET " + self.__fileAccessCol + "={} WHERE " + self.__fileExpIdCol + "={}").format(str(accessType), expID)
+
         try:
-            self.__initMetaDBConnector()
-            self.__cursor.execute(update)
-            self.__connector.commit()
-            self.__closeMetaDBConnector()
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    cur.execute(update)
+                    con.commit()
         except:
-            self.__closeMetaDBConnector()
-            raise ValueError("Could not update fileTab access")
+            raise madrigal.admin.MadrigalError("Problem setting accessType {}".format(accessType), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def setKindatByPosition(self, position, kindat):
@@ -7702,15 +7549,18 @@ class MadrigalMetaFile:
             position = 1
         
         update = ("UPDATE " + self.__tblName + " SET " + self.__fileKindatCol + "={} WHERE " + self.__fileIdxCol + "={}").format(kindat, position)
-        try:
-            self.__initMetaDBConnector()
-            self.__cursor.execute(update)
-            self.__connector.commit()
-            self.__closeMetaDBConnector()
 
+        try:
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    cur.execute(update)
+                    con.commit()
         except:
-            self.__closeMetaDBConnector()
-            raise ValueError('Problem with setKindatByPosition')
+            raise madrigal.admin.MadrigalError("Problem setting kindat {} for position {}".format(kindat, position), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def setCategoryByPosition(self, position, category):
@@ -7738,15 +7588,18 @@ class MadrigalMetaFile:
             raise ValueError('Illegal value for category in setCategoryByPosition: %s' % (str(category)))
 
         update = ("UPDATE " + self.__tblName + " SET " + self.__fileCategoryCol + "={} WHERE " + self.__fileIdxCol + "={}").format(category, position)
-        try:
-            self.__initMetaDBConnector()
-            self.__cursor.execute(update)
-            self.__connector.commit()
-            self.__closeMetaDBConnector()
 
+        try:
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    cur.execute(update)
+                    con.commit()
         except:
-            self.__closeMetaDBConnector()
-            raise ValueError('setCategoryByPosition called for position %i beyond length %i' % (position, len(self.__fileList)))
+            raise madrigal.admin.MadrigalError("Problem setting category {} for position {}".format(category, position), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def setStatusByPosition(self, position, status):
@@ -7779,15 +7632,18 @@ class MadrigalMetaFile:
             raise ValueError('status string in fileTab.txt cannot contain a comma: <%s> is illegal' % (status))
 
         update = ("UPDATE " + self.__tblName + " SET " + self.__fileStatusCol + "=\"{}\" WHERE " + self.__fileIdxCol + "={}").format(status, position)
-        try:
-            self.__initMetaDBConnector()
-            self.__cursor.execute(update)
-            self.__connector.commit()
-            self.__closeMetaDBConnector()
 
+        try:
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    cur.execute(update)
+                    con.commit()
         except:
-            self.__closeMetaDBConnector()
-            raise ValueError('Problem with setStatusByPosition')
+            raise madrigal.admin.MadrigalError("Problem setting status {} for position {}".format(status, position), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def getAnalystByPosition(self, position = 0):
@@ -7809,17 +7665,20 @@ class MadrigalMetaFile:
             position = 1
 
         query = ("SELECT " + self.__fileAnalystCol + " FROM " + self.__tblName + " WHERE " + self.__fileIdxCol + "={}").format(position)
-        try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
 
+        try:
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             [[analyst]] = resList
             return(analyst)
         except:
-            self.__closeMetaDBConnector()
-            return(None)
+            raise madrigal.admin.MadrigalError("Problem getting analyst for position {}".format(position), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def getAnalystByFilename(self, filename):
@@ -7834,29 +7693,31 @@ class MadrigalMetaFile:
 
         Exceptions: None
         """
-        filename = os.path.basename(filename)
 
         if self.__indexList:
             pass
         else:
-            # we should never delete files based on filename only,
             # idx must be set
-            raise madrigal.admin.MadrigalError(f"Unable to delete file {filename}, MadrigalMetaFile index not set", None)
+            self.__setIdxFromInit(filename)
 
-        expID = self.getExpIdByPosition()
+        expID = self.__expID
+        filename = os.path.basename(filename)
 
         query = ("SELECT " + self.__fileAnalystCol + " FROM " + self.__tblName + " WHERE " + self.__fileExpIdCol + "={} AND " + self.__fileNameCol + "=\"{}\"").format(expID, filename)
-        try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
 
+        try:
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             [[analyst]] = resList
             return(analyst)
         except:
-            self.__closeMetaDBConnector()
-            return(None)
+            raise madrigal.admin.MadrigalError("Problem getting analyst for file {}".format(filename), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def setAnalystByPosition(self, position, analyst):
@@ -7887,14 +7748,18 @@ class MadrigalMetaFile:
                                                 [traceback.format_exc()])
 
         update = ("UPDATE " + self.__tblName + " SET " + self.__fileAnalystCol + "=\"{}\" WHERE " + self.__fileIdxCol + "={}").format(analyst, position)
+
         try:
-            self.__initMetaDBConnector()
-            self.__cursor.execute(update)
-            self.__connector.commit()
-            self.__closeMetaDBConnector()
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    cur.execute(update)
+                    con.commit()
         except:
-            self.__closeMetaDBConnector()
-            raise ValueError('Problem with setAnalystByPosition')
+            raise madrigal.admin.MadrigalError("Problem setting analyst for position {}".format(position), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def getAnalystEmailByPosition(self, position = 0):
@@ -7918,16 +7783,18 @@ class MadrigalMetaFile:
         query = ("SELECT " + self.__fileAnalystEmailCol + " FROM " + self.__tblName + " WHERE " + self.__fileIdxCol + "={}").format(position)
 
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             [[email]] = resList
             return(email)
         except:
-            self.__closeMetaDBConnector()
-            return(None)
+            raise madrigal.admin.MadrigalError("Problem setting datetime for position {}".format(position), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def getAnalystEmailByFilename(self, filename):
@@ -7942,29 +7809,30 @@ class MadrigalMetaFile:
 
         Exceptions: None
         """
-        filename = os.path.basename(filename)
-
         if self.__indexList:
             pass
         else:
-            # we should never delete files based on filename only,
             # idx must be set
-            raise madrigal.admin.MadrigalError(f"Unable to delete file {filename}, MadrigalMetaFile index not set", None)
+            self.__setIdxFromInit(filename)
+        filename = os.path.basename(filename)
 
-        expID = self.getExpIdByPosition()
+        expID = self.__expID
 
         query = ("SELECT " + self.__fileAnalystEmailCol + " FROM " + self.__tblName + " WHERE " + self.__fileExpIdCol + "={} AND " + self.__fileNameCol + "=\"{}\"").format(expID, filename)
-        try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
 
+        try:
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             [[email]] = resList
             return(email)
         except:
-            self.__closeMetaDBConnector()
-            return(None)
+            raise madrigal.admin.MadrigalError("Problem getting analyst email for file {}".format(filename), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def setAnalystEmailByPosition(self, position, analystEmail):
@@ -7995,15 +7863,18 @@ class MadrigalMetaFile:
                                                 [traceback.format_exc()]))
 
         update = ("UPDATE " + self.__tblName + " SET " + self.__fileAnalystEmailCol + "=\"{}\" WHERE " + self.__fileIdxCol + "={}").format(analystEmail, position)
-        try:
-            self.__initMetaDBConnector()
-            self.__cursor.execute(update)
-            self.__connector.commit()
-            self.__closeMetaDBConnector()
 
+        try:
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    cur.execute(update)
+                    con.commit()
         except:
-            self.__closeMetaDBConnector()
-            raise ValueError(f'problem setting analyst email at position {position}')
+            raise madrigal.admin.MadrigalError("Problem setting analyst email {} for position {}".format(analystEmail, position), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
 
@@ -8134,7 +8005,13 @@ class MadrigalMetaFile:
         
         Returns permanent URL to file, or None if not found
         """
-        expId = self.getExpIdByFilename(filename)
+        if self.__indexList:
+            pass
+        else:
+            # idx must be set
+            self.__setIdxFromInit(filename)
+        expId = self.__expID
+        filename = os.path.basename(filename)
         if expId is None:
             return(None)
         # need a MadrigalExperiment object
@@ -8183,26 +8060,24 @@ class MadrigalMetaFile:
                 expDir = expObj.getExpDirByExpId(self.getExpIdByPosition())
 
                 try:
-                    self.__initMetaDBConnector()
-                    result = self.__cursor.execute(localQuery)
-                    resList = result.fetchall()
-                    self.__closeMetaDBConnector()
-
+                    with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                        with con:
+                            cur = con.cursor()
+                            res = cur.execute(localQuery)
+                            resList = res.fetchall()
                     textList = []
                     for line in resList:
                         line = [str(l) for l in line]
                         textList.append(','.join(line))
                     tblText = '\n'.join(textList)
-
+                    
                     with open(os.path.join(expDir, "fileTab.txt"), "w") as f:
                         f.write(tblText)
-
                 except:
-                    self.__closeMetaDBConnector()
-                    raise madrigal.admin.MadrigalError('Problem getting local metadata for exp at {}'.format(expDir),
+                    raise madrigal.admin.MadrigalError("Problem getting local metadata for expDir {}".format(expDir), 
                                                     traceback.format_exception(sys.exc_info()[0],
-                                                                                sys.exc_info()[1],
-                                                                                sys.exc_info()[2]))
+                                                                                        sys.exc_info()[1],
+                                                                                        sys.exc_info()[2]))
 
 
         except:
@@ -8271,48 +8146,6 @@ class MadrigalParmCategory:
         self.__filename = self._categoryMetadataFile
 
 
-    def __initMetaDBConnector(self):
-        """
-        __initMetaDBConnector initializes the sqlite3 connector to read from the metadata database.
-
-        Inputs: None
-
-        Returns: Void
-
-        Affects: Initializes private class member variables (__connector and __cursor) to
-        connect to metadata.db
-
-        Exceptions: MadrigalError thrown if unable to connect to metadata.db
-        """
-        try:
-            self.__connector = sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), self.__filename))
-            self.__cursor = self.__connector.cursor()
-        except:  
-            raise madrigal.admin.MadrigalError("Unable to connect to metadata.db",
-                                              traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
-        
-
-    def __closeMetaDBConnector(self):
-        """
-        __closeMetaDBConnector closes the connection to the sqlite3 database connector.
-
-        Inputs: None
-
-        Returns: Void
-
-        Affects: Closes connection to metadata.db
-        """
-        try:
-            self.__connector.close()
-        except:  
-            raise madrigal.admin.MadrigalError("Problem closing connection to metadata.db",
-                                              traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
-
-
     def getCategoryDesc(self, code):
         """getCategoryDesc returns the category description that matches code argument, or None if not found.
 
@@ -8330,19 +8163,18 @@ class MadrigalParmCategory:
         query = ("SELECT " + self._categoryDescCol + " FROM " + self.__tblName + " WHERE " + self._categoryCodeCol + "={}").format(code)
 
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             [[desc]] = resList
             return(desc)
         except:
-            self.__closeMetaDBConnector()
-            raise madrigal.admin.MadrigalError('Problem getting description for category code {}'.format(code),
-                                                   traceback.format_exception(sys.exc_info()[0],
-                                                                              sys.exc_info()[1],
-                                                                              sys.exc_info()[2]))
+            raise madrigal.admin.MadrigalError("Problem getting description for category {}".format(code), 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
 
     def getCategoryList(self):
@@ -8361,18 +8193,18 @@ class MadrigalParmCategory:
         query = "SELECT " + self._categoryDescCol + ", " + self._categoryCodeCol + " FROM " + self.__tblName
 
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query)
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
             resList = [(i[0], int(i[1])) for i in resList]
             return(resList)
         except:
-            self.__closeMetaDBConnector()
-            raise madrigal.admin.MadrigalError('Problem getting category list',
-                                                   traceback.format_exception(sys.exc_info()[0],
-                                                                              sys.exc_info()[1],
-                                                                              sys.exc_info()[2]))    
+            raise madrigal.admin.MadrigalError("Problem getting category list", 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
         
 
 class MadrigalInstrumentData:
@@ -8397,7 +8229,7 @@ class MadrigalInstrumentData:
     """
 
     #constants
-    _instDataMetadataFile  = "instData.txt"
+    _instDataMetadataFile  = "instData.json"
 
     # column positions
     _siteIDCol   =  0
@@ -8432,7 +8264,9 @@ class MadrigalInstrumentData:
             self.__madDB = madDB
             
         if priv:
-            self._instDataMetadataFile  = "instDataPriv.txt"
+            self._instDataMetadataFile  = "instDataPriv.json"
+        else:
+            self._instDataMetadataFile  = "instData.json"
 
         # get instData metadata file
         if (initFile == None):
@@ -8444,12 +8278,6 @@ class MadrigalInstrumentData:
             self._madInstObj = madInstObj
         else:
             self._madInstObj = madrigal.metadata.MadrigalInstrument(self.__madDB)
-
-        try:
-            self.__fileList = madrigal.metadata.MadrigalMetadata(self.__filename, self.__madDB).getList()
-        except FileNotFoundError:
-            # instData.txt does not exist yet
-            print("instData.txt does not yet exist, please run updateMaster to build instData.txt and instDataPriv.txt")
 
 
     def getCategories(self, local=False):
@@ -8466,8 +8294,23 @@ class MadrigalInstrumentData:
 
         Exceptions: MadrigalError if any item in row cannot be cast to correct format
         """
+        with open(os.path.join(self.__madDB.getMetadataDir(), self._instDataMetadataFile), "r") as f:
+            instData = json.load(f)
         if local:
-            siteID = self.__madDB.getSiteID()
+            siteID = str(self.__madDB.getSiteID())
+            kinsts = instData[siteID].keys()
+            categories = [(self._madInstObj.getCategoryId(kinst), self._madInstObj.getCategory(kinst)) for kinst in kinsts]
+            return(list(set(categories)))
+        else:
+            categories = []
+            for site in instData.keys():
+                if site is None:
+                    continue
+                for kinst in instData[site].keys():
+                    if kinst is None:
+                        continue
+                    categories.append((self._madInstObj.getCategoryId(kinst), self._madInstObj.getCategory(kinst)))
+            return(list(set(categories)))
             
         localDict = {} # key is category id, value is category desc str.  Will be converted to list before returned
         
@@ -8512,35 +8355,32 @@ class MadrigalInstrumentData:
 
         Exceptions: MadrigalError if any item in row cannot be cast to correct format
         """
-        siteID = self.__madDB.getSiteID()
+        siteID = str(self.__madDB.getSiteID())
+        with open(os.path.join(self.__madDB.getMetadataDir(), self._instDataMetadataFile), "r") as f:
+            instData = json.load(f)
+
             
         localDict = {} # key is kinst, value is tuple if (instrument desc str, siteID).  
                        #  Will be converted to list before returned
-        
-        for i, data in enumerate(self.__fileList):
-            # find matching  code 
-            try:
-                kinst = int(data[self._kinstCol])
-                thisSiteID = int(data[self._siteIDCol])
+
+        for site in instData.keys():
+            for kinst in instData[site].keys():
                 thisCategoryID = self._madInstObj.getCategoryId(kinst)
                 if thisCategoryID != categoryID and categoryID != 0:
                     continue
                 if local:
-                    if thisSiteID != siteID:
+                    if site != siteID:
                         continue
 
+                kinst = int(kinst)
+                
                 if kinst not in list(localDict.keys()):
-                    localDict[kinst] = (self._madInstObj.getInstrumentName(kinst), thisSiteID)
+                    localDict[kinst] = (self._madInstObj.getInstrumentName(kinst), int(site))
                 else:
-                    if thisSiteID == siteID:
+                    if site == siteID:
                         # local data overrides remote
-                        localDict[kinst] = (self._madInstObj.getInstrumentName(kinst), thisSiteID)
+                        localDict[kinst] = (self._madInstObj.getInstrumentName(kinst), int(site))
                     
-            except:
-                raise madrigal.admin.MadrigalError('Error in instData.txt parsing metadata row %i: ' % (i) + str(categoryID),
-                                                   traceback.format_exception(sys.exc_info()[0],
-                                                                              sys.exc_info()[1],
-                                                                              sys.exc_info()[2]))
         kinstKeys = list(localDict.keys())
         kinstKeys.sort()
         retList = [(kinst, localDict[kinst][0], localDict[kinst][1]) for kinst in kinstKeys]
@@ -8560,70 +8400,24 @@ class MadrigalInstrumentData:
 
         Exceptions: MadrigalError if any item in row cannot be cast to correct format
         """
-        retList = []
-        for i, data in enumerate(self.__fileList):
-            # find matching code 
-            try:
-                thisKinst = int(data[self._kinstCol])
-                if thisKinst != kinst:
-                    continue
-                yearsStr = data[self._yearsCol]
+        siteID = self.__madDB.getSiteID()
+        siteID = str(siteID)
+        kinst = str(kinst)
+        with open(os.path.join(self.__madDB.getMetadataDir(), self._instDataMetadataFile), "r") as f:
+            instData = json.load(f)
 
-                retList = [int(year) for year in yearsStr.split()]
-                retList.sort()
-                    
-            except:
-                raise madrigal.admin.MadrigalError('Error in instData.txt parsing metadata row %i: ' % (i),
-                                                   traceback.format_exception(sys.exc_info()[0],
-                                                                              sys.exc_info()[1],
-                                                                              sys.exc_info()[2]))
-                
-        if len(retList) == 0:
-            raise madrigal.admin.MadrigalError('No data found for kinst %i' % (kinst), '')
-        
-        return(retList)
+        # always try local first 
+        if kinst in instData[siteID].keys():
+            return(instData[siteID][kinst])
+        else:
+            # this inst isn't at local site, look for it
+            for site in instData.keys():
+                if kinst in instData[site]:
+                    # found it
+                    return(instData[site][kinst])
 
-
-    def __initMetaDBConnector(self):
-        """
-        __initMetaDBConnector initializes the sqlite3 connector to read from the metadata database.
-
-        Inputs: None
-
-        Returns: Void
-
-        Affects: Initializes private class member variables (__connector and __cursor) to
-        connect to metadata.db
-
-        Exceptions: MadrigalError thrown if unable to connect to metadata.db
-        """
-        try:
-            self.__connector = sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))
-            self.__cursor = self.__connector.cursor()
-        except:  
-            raise madrigal.admin.MadrigalError("Unable to connect to metadata.db",
-                                              traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
-        
-
-    def __closeMetaDBConnector(self):
-        """
-        __closeMetaDBConnector closes the connection to the sqlite3 database connector.
-
-        Inputs: None
-
-        Returns: Void
-
-        Affects: Closes connection 
-        """
-        try:
-            self.__connector.close()
-        except:  
-            raise madrigal.admin.MadrigalError("Problem closing connection to metadataDB",
-                                              traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+        # shouldn't get here
+        raise madrigal.admin.MadrigalError('No data found for kinst %i' % (kinst), '')
 
 
     def getKindatListForInstruments(self, kinstList):
@@ -8655,30 +8449,27 @@ class MadrigalInstrumentData:
         query2 = "SELECT kindat FROM fileTab WHERE eid IN {}"
 
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query1)
-            resList = result.fetchall()
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query1)
+                    resList = res.fetchall()
 
-            if not resList:
-                return(None)
-
-            resList = [item[0] for item in resList]
-            result = self.__cursor.execute(query2.format(tuple(resList)))
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-
-            if not resList:
-                return(None)
-            
-            resList = [item[0] for item in resList]
-            return(list(set(resList)))
-        
+                    if not resList:
+                        return(None)
+                    resList = [item[0] for item in resList]
+                    result = cur.execute(query2.format(tuple(resList)))
+                    resList = result.fetchall()
+                    if not resList:
+                        return(None)
+                                
+                    resList = [item[0] for item in resList]
+                    return(list(set(resList)))
         except:
-            self.__closeMetaDBConnector()
-            raise madrigal.admin.MadrigalError("Problem getting kindat list",
-                                              traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
+            raise madrigal.admin.MadrigalError("Problem getting kindat list", 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
     
     
     
@@ -8698,30 +8489,30 @@ class MadrigalInstrumentData:
         # NOTE 2 SELF: the way this is currently written may be 
         # quite inefficient, ideally you would want to cache these 
         # results somewhere
+        ts1 = datetime.datetime(year=year,month=1,day=1, tzinfo=datetime.timezone.utc).timestamp()
+        ts2 = datetime.datetime(year=year,month=12,day=31,hour=23,minute=59,second=59, tzinfo=datetime.timezone.utc).timestamp()
 
-        query1 = "SELECT id FROM expTab WHERE kinst={} AND ((sdt LIKE \"{}%%%%%%%%%%\") OR (edt LIKE \"{}%%%%%%%%%%\"))"
+        query1 = "SELECT id FROM expTab WHERE kinst={} AND ((sdt >= {}) OR (edt <= {}))"
         query2 = "SELECT kindat FROM fileTab WHERE eid IN {}"
 
         try:
-            self.__initMetaDBConnector()
-            result = self.__cursor.execute(query1.format(kinst, year, year))
-            resList = result.fetchall()
-
-            if not resList:
-                return(None)
-
-            resList = [item[0] for item in resList]
-            result = self.__cursor.execute(query2.format(tuple(resList)))
-            resList = result.fetchall()
-            self.__closeMetaDBConnector()
-
-            if not resList:
-                return(None)
-            
-            resList = [item[0] for item in resList]
-            return(list(set(resList)))
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query1.format(kinst, ts1, ts2))
+                    resList = res.fetchall()
+                    if not resList:
+                        return(None)
+                    
+                    resList = [item[0] for item in resList]
+                    result = cur.execute(query2.format(tuple(resList)))
+                    resList = result.fetchall()
+                    if not resList:
+                        return(None)
+                                
+                    resList = [item[0] for item in resList]
+                    return(list(set(resList)))
         except:
-            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError('Problem getting kindat list for kinst {} and year {}'.format(kinst, year),
                                                            traceback.format_exception(sys.exc_info()[0],
                                                                         sys.exc_info()[1],
@@ -8753,56 +8544,84 @@ class MadrigalInstrumentData:
         
         archive_sites = set([8,10])
         localSiteID = self.__madDB.getSiteID()
-        for i in range(madExpObj.getExpCount()):
-            siteID = madExpObj.getExpSiteIdByPosition(i)
-            security = madExpObj.getSecurityByPosition(i)
-            url = madExpObj.getExpUrlByPosition(i)
-            # skip test experiments
-            if self.__madDB.isTestExperiment(url, siteID) and security == 0:
-                continue
-            # skip all non-local archived data
-            if siteID != localSiteID and security in (2,3):
-                continue
-            kinst = madExpObj.getKinstByPosition(i)
-            sDTList = madExpObj.getExpStartDateTimeByPosition(i)
-            eDTList = madExpObj.getExpEndDateTimeByPosition(i)
-            # create a year list
-            yearList = list(range(sDTList[0], eDTList[0]+1))
-            # add to summDictPriv if not already there
-            if siteID not in summDictPriv:
-                summDictPriv[siteID] = {}
-            if kinst not in summDictPriv[siteID]:
-                summDictPriv[siteID][kinst] = [] # empty list of years
-            for thisYear in yearList:
-                if thisYear not in summDictPriv[siteID][kinst]:
-                    summDictPriv[siteID][kinst].append(thisYear)
-            # add to summDict if not already there and not private
-            if security in (0,2):
-                if siteID not in summDict:
-                    summDict[siteID] = {}
-                if kinst not in summDict[siteID]:
-                    summDict[siteID][kinst] = [] # empty list of years
+
+
+        query = "SELECT sid, url, kinst, sDT, eDT, security FROM expTab"
+
+        try:
+            with closing(sqlite3.connect(os.path.join(self.__madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
+
+            for expData in resList:
+                # expData is tuple of (sid, url, kinst, sTimestamp, eTimestamp, security)
+                try:
+                    siteID = int(expData[0])
+                    url = expData[1]
+                    kinst = int(expData[2])
+                    sTime = expData[3]
+                    eTime = expData[4]
+                    security = expData[5]
+                    # skip test experiments
+                    if self.__madDB.isTestExperiment(url, siteID) and security == 0:
+                        continue
+                    # skip all non-local archived data
+                    if siteID != localSiteID and security in (2,3):
+                        continue
+                    sDT = datetime.datetime.fromtimestamp(sTime, tz=datetime.timezone.utc)
+                    eDT = datetime.datetime.fromtimestamp(eTime, tz=datetime.timezone.utc)
+                except:
+                    traceback.print_exc()
+                    print(f"expData is {expData}")
+                    continue
+
+                # create a year list
+                yearList = list(range(sDT.year, eDT.year+1))
+                # add to summDictPriv if not already there
+                if siteID not in summDictPriv:
+                    summDictPriv[siteID] = {}
+                if kinst not in summDictPriv[siteID]:
+                    summDictPriv[siteID][kinst] = [] # empty list of years
                 for thisYear in yearList:
-                    if thisYear not in summDict[siteID][kinst]:
-                        summDict[siteID][kinst].append(thisYear)
-            # add to kinstDict
-            if kinst not in kinstDict:
-                kinstDict[kinst] = {}
-            if siteID not in list(kinstDict[kinst].keys()):
-                kinstDict[kinst][siteID] = 1
-                kinstSet = set(kinstDict[kinst].keys())
-                if len(kinstSet.difference(archive_sites)) > 1:
-                    print(('Note: kinst %i found at multiple non-archive sites: %s' % (kinst, str(kinstSet.difference(archive_sites)))))
-            else:
-                kinstDict[kinst][siteID] += 1
+                    if thisYear not in summDictPriv[siteID][kinst]:
+                        summDictPriv[siteID][kinst].append(thisYear)
+                # add to summDict if not already there and not private
+                if security in (0,2):
+                    if siteID not in summDict:
+                        summDict[siteID] = {}
+                    if kinst not in summDict[siteID]:
+                        summDict[siteID][kinst] = [] # empty list of years
+                    for thisYear in yearList:
+                        if thisYear not in summDict[siteID][kinst]:
+                            summDict[siteID][kinst].append(thisYear)
+                # add to kinstDict
+                if kinst not in kinstDict:
+                    kinstDict[kinst] = {}
+                if siteID not in list(kinstDict[kinst].keys()):
+                    kinstDict[kinst][siteID] = 1
+                    kinstSet = set(kinstDict[kinst].keys())
+                    if len(kinstSet.difference(archive_sites)) > 1:
+                        print(('Note: kinst %i found at multiple non-archive sites: %s' % (kinst, str(kinstSet.difference(archive_sites)))))
+                else:
+                    kinstDict[kinst][siteID] += 1
+        except:
+            raise madrigal.admin.MadrigalError('Problem building instrument data',
+                                                                       traceback.format_exception(sys.exc_info()[0],
+                                                                                    sys.exc_info()[1],
+                                                                                    sys.exc_info()[2]))
                 
         # write to output files
-        delimiter = ' '
-        outputNames = ('instData.txt', 'instDataPriv.txt')
+        outputNames = ('instData.json', 'instDataPriv.json')
         dictList = (summDict, summDictPriv)
+        finalDict = {}
+        finalDictPriv = {}
+        finalDicts = (finalDict, finalDictPriv)
+
         for i in range(len(outputNames)):
-            f = open(os.path.join(self.__madDB.getMadroot(), 'metadata', outputNames[i]), 'w', encoding='utf-8')
             thisDict = dictList[i]
+            currentFinalDict = finalDicts[i]
             siteIDKeys = list(thisDict.keys())
             siteIDKeys.sort()
             for siteID in siteIDKeys:
@@ -8827,712 +8646,13 @@ class MadrigalInstrumentData:
                     # this data is accepted - write it out
                     yearsList = thisDict[siteID][kinst]
                     yearsList.sort()
-                    yearsStrList = [str(year) for year in yearsList]
-                    yearsStr = delimiter.join(yearsStrList)
-                    f.write('%i,%i,%s\n' % (siteID, kinst, yearsStr))
-                    
-            f.close()
+
+                    if siteID not in currentFinalDict.keys():
+                        currentFinalDict[siteID] = {}
+                    if kinst not in currentFinalDict[siteID].keys():
+                        currentFinalDict[siteID][kinst] = yearsList
+            with open(os.path.join(self.__madDB.getMadroot(), 'metadata', outputNames[i]), 'w') as f:
+                json.dump(currentFinalDict, f)
 
     
-
-    # def rebuildInstDataTable(self):
-    #     """
-        
-    #     lets try something completely different
-
-    #     InstData is now effectively an array of 3 dictionaries:
-
-    #     KinstDict - key: kinst, value: (instDesc, yearList)
-    #     SiteDict - key: siteID, value: [kinstList]
-    #     CategoryDict - key: catID, value: [kinstList]
-
-
-    #     3 dictionaries will be converted to pandas.dataframes, which
-    #     will be exported to different groups in an hdf5 file
-
-
-
-    #     Inputs: None.
-        
-    #     Returns: None.
-
-    #     Affects: Writes file instKindatTab.txt in metadata directory
-
-    #     Exceptions: If unable to write instKindatTab.txt file.
-    #     """
-    #     localSite = self.__madDB.getSiteID()
-    #     expQuery = "SELECT kinst, sid, security, substring(sdt, 0, 5), substring(edt, 0, 5) FROM expTab"
-
-    #     kinstDict = {}
-    #     siteDict = {}
-    #     catDict = {}
-    #     kinstDict_priv = {}
-    #     siteDict_priv = {}
-    #     catDict_priv = {}
-
-    #     try:
-    #         self.__initMetaDBConnector()
-    #         res = self.__cursor.execute(expQuery)
-    #         resList = res.fetchall()
-    #         self.__closeMetaDBConnector()
-
-    #         if not resList:
-    #             raise("Unable to build instData table")
-            
-    #         # this may take a bit...
-    #         for expData in resList:
-    #             thiskinst = int(expData[0])
-    #             thissite = int(expData[1])
-    #             security = int(expData[2])
-    #             syear = int(expData[3])
-    #             eyear = int(expData[4])
-    #             thiscategory = self._madInstObj.getCategoryId(thiskinst)
-
-    #             # skip all non-local archived data
-    #             if thissite != localSite and security in (2,3):
-    #                 continue
-
-    #             if security < 0:
-    #                 # test exp, skip
-    #                 continue
-
-    #             if security not in (0, 2):
-    #                 # private data only
-
-    #                 # build kinstDict
-    #                 if thiskinst not in kinstDict_priv:
-    #                     kinstDict_priv[thiskinst] = [self._madInstObj.getInstrumentName(thiskinst), []]
-    #                 kinstDict_priv[thiskinst][1].append(syear)
-    #                 kinstDict_priv[thiskinst][1].append(eyear)
-
-    #                 # build siteDict
-    #                 if thissite not in siteDict_priv:
-    #                     siteDict_priv[thissite] = [[]]
-    #                 siteDict_priv[thissite][0].append(thiskinst)
-
-    #                 # build catDict
-    #                 if thiscategory not in catDict_priv:
-    #                     catDict_priv[thiscategory] = [[]]
-    #                 catDict_priv[thiscategory][0].append(thiskinst)
-
-
-    #             else:
-    #                 # public data, populate all needed dicts
-
-    #                 # build kinstDict
-    #                 if thiskinst not in kinstDict:
-    #                     kinstDict[thiskinst] = [self._madInstObj.getInstrumentName(thiskinst), []]
-    #                 kinstDict[thiskinst][1].append(syear)
-    #                 kinstDict[thiskinst][1].append(eyear)
-
-    #                 if thiskinst not in kinstDict_priv:
-    #                     kinstDict_priv[thiskinst] = [self._madInstObj.getInstrumentName(thiskinst), []]
-    #                 kinstDict_priv[thiskinst][1].append(syear)
-    #                 kinstDict_priv[thiskinst][1].append(eyear)
-
-
-    #                 # build siteDict
-    #                 if thissite not in siteDict:
-    #                     siteDict[thissite] = [[]]
-    #                 siteDict[thissite][0].append(thiskinst)
-
-    #                 if thissite not in siteDict_priv:
-    #                     siteDict_priv[thissite] = [[]]
-    #                 siteDict_priv[thissite][0].append(thiskinst)
-
-
-    #                 # build catDict
-    #                 if thiscategory not in catDict:
-    #                     catDict[thiscategory] = [[]]
-    #                 catDict[thiscategory][0].append(thiskinst)
-
-    #                 if thiscategory not in catDict_priv:
-    #                     catDict_priv[thiscategory] = [[]]
-    #                 catDict_priv[thiscategory][0].append(thiskinst)
-                    
-
-    #         # remove duplicate years
-    #         for kinst in kinstDict.keys():
-    #             kinstDict[kinst][1] = sorted(list(set(kinstDict[kinst][1])))
-    #         for kinst in kinstDict_priv.keys():
-    #             kinstDict_priv[kinst][1] = sorted(list(set(kinstDict_priv[kinst][1])))
-            
-    #         # remove duplicate kinsts
-    #         for siteID in siteDict.keys():
-    #             siteDict[siteID][0] = list(set(siteDict[siteID][0]))
-    #         for siteID in siteDict_priv.keys():
-    #             siteDict_priv[siteID][0] = list(set(siteDict_priv[siteID][0]))
-    #         for category in catDict.keys():
-    #             catDict[category][0] = list(set(catDict[category][0]))
-    #         for category in catDict_priv.keys():
-    #             catDict_priv[category][0] = list(set(catDict_priv[category][0]))
-
-    #         kinstDF = pandas.DataFrame.from_dict(kinstDict)
-    #         kinstDF_priv = pandas.DataFrame.from_dict(kinstDict_priv)
-    #         siteDF = pandas.DataFrame.from_dict(siteDict)
-    #         siteDF_priv = pandas.DataFrame.from_dict(siteDict_priv)
-    #         catDF = pandas.DataFrame.from_dict(catDict)
-    #         catDF_priv = pandas.DataFrame.from_dict(catDict_priv)
-
-    #         instDataFile = os.path.join(self.__madDB.getMetadataDir(), "instData.hdf5")
-    #         privInstDataFile = os.path.join(self.__madDB.getMetadataDir(), "instDataPriv.hdf5")
-
-    #         kinstDF.to_hdf(instDataFile, key="kinst")
-    #         siteDF.to_hdf(instDataFile, key="site")
-    #         catDF.to_hdf(instDataFile, key="category")
-
-    #         kinstDF_priv.to_hdf(privInstDataFile, key="kinst")
-    #         siteDF_priv.to_hdf(privInstDataFile, key="site")
-    #         catDF_priv.to_hdf(privInstDataFile, key="category")
-
-
-    #     except:
-    #         self.__closeMetaDBConnector()
-    #         raise madrigal.admin.MadrigalError('Problem rebuilding instData',
-    #                                                traceback.format_exception(sys.exc_info()[0],
-    #                                                                           sys.exc_info()[1],
-    #                                                                           sys.exc_info()[2]))
-        
-
-    # def getInstrumentsForWeb(self):
-    #     """getInstrumentsForWeb gets all (kinst, siteID) tuples needed
-    #     for getSingleRedirectList.
-
-    #     Inputs: None
-
-    #     Returns: list of (kinst, siteID) tuples
-        
-    #     """
-    #     if self.priv:
-    #         instDataFile = os.path.join(self.__madDB.getMetadataDir(), "instDataPriv.hdf5")
-    #     else:
-    #         instDataFile = os.path.join(self.__madDB.getMetadataDir(), "instData.hdf5")
-            
-    #     siteDF = pandas.read_hdf(instDataFile, key="site")
-    #     siteDict = siteDF.to_dict()
-
-    #     kinstList = []
-
-    #     for site in siteDict.keys():
-    #         kinstList += [(kinst, site) for kinst in siteDict[site][0]]
-
-    #     return(kinstList)
-    
-
-    # def getInstrumentsForFTP(self):
-    #     """getInstrumentsForFTP gets all (instDesc, kinst) tuples needed
-    #     for views.ftp.
-
-    #     Inputs: None
-
-    #     Returns: list of (instDesc, kinst) tuples
-        
-    #     """
-    #     if self.priv:
-    #         instDataFile = os.path.join(self.__madDB.getMetadataDir(), "instDataPriv.hdf5")
-    #     else:
-    #         instDataFile = os.path.join(self.__madDB.getMetadataDir(), "instData.hdf5")
-            
-    #     siteDF = pandas.read_hdf(instDataFile, key="site")
-    #     kinstDF = pandas.read_hdf(instDataFile, key="kinst")
-    #     siteDict = siteDF.to_dict()
-    #     kinstDict = kinstDF.to_dict()
-
-    #     localSiteID = self.__madDB.getSiteID()
-
-    #     kinstList = []
-
-    #     for kinst in siteDict[localSiteID][0]:
-    #         kinstList.append((kinstDict[kinst][0], kinst))
-        
-    #     return(kinstList)
-    
-
-    # def getInstrumentsFor(self, categoryID=0, local=False):
-    #     """
-        
-        
-    #     getInstruments returns a list of (kinst, instrument desc, siteID) tuples.
-
-    #     Inputs: 
-        
-    #         categoryID - category id to return instruments with data for. If 0, return all
-    #         local - if False, return all instruments with that category for which there is data 
-    #             anywhere in Madrigal. If True, only return local instruments, in which case siteID
-    #             is always the local siteID.
-        
-    #     Returns:  a list of (kinst, instrument desc, siteID) tuples
-
-    #     Affects: None
-
-    #     Exceptions: MadrigalError if any item in row cannot be cast to correct format
-    #     """
-
-    #     if self.priv:
-    #         instDataFile = os.path.join(self.__madDB.getMetadataDir(), "instDataPriv.hdf5")
-    #     else:
-    #         instDataFile = os.path.join(self.__madDB.getMetadataDir(), "instData.hdf5")
-            
-    #     siteDF = pandas.read_hdf(instDataFile, key="site")
-    #     kinstDF = pandas.read_hdf(instDataFile, key="kinst")
-    #     categoryDF = pandas.read_hdf(instDataFile, key="category")
-    #     siteDict = siteDF.to_dict()
-    #     kinstDict = kinstDF.to_dict()
-    #     catDict = categoryDF.to_dict()
-
-    #     localSiteID = self.__madDB.getSiteID()
-        
-
-
-    # def getCategories(self, local=False):
-    #     """getCategories returns the a list of (category id, category desc) tuples.
-
-    #     Inputs: 
-        
-    #         local - if False, return all categories for which there is data anywhere in Madrigal.
-    #             If True, only return local categories.
-        
-    #     Returns:  a list of (category id, category desc) tuples
-
-    #     Affects: None
-
-    #     Exceptions: MadrigalError if any item in row cannot be cast to correct format
-    #     """
-        
-    #     if local:
-
-    #         if self.priv:
-    #             instDataFile = os.path.join(self.__madDB.getMetadataDir(), "instDataPriv.hdf5")
-    #         else:
-    #             instDataFile = os.path.join(self.__madDB.getMetadataDir(), "instData.hdf5")
-                
-    #         siteDF = pandas.read_hdf(instDataFile, key="site")
-    #         siteDict = siteDF.to_dict()
-            
-    #         siteID = self.__madDB.getSiteID()
-    #         kinstList = siteDict[siteID][0]
-    #         catList = list(set([(self._madInstObj.getCategoryId(kinst), self._madInstObj.getCategory(kinst)) for kinst in kinstList]))
-    #         return(catList)
-
-    #     else:
-    #         query = "SELECT * FROM instType"
-
-
-    #         try:
-    #             self.__initMetaDBConnector()
-    #             result = self.__cursor.execute(query)
-    #             resList = result.fetchall()
-    #             self.__closeMetaDBConnector()
-
-    #             return(resList)
-    #         except:
-    #             self.__closeMetaDBConnector()
-    #             raise madrigal.admin.MadrigalError('Problem getting categories',
-    #                                                 traceback.format_exception(sys.exc_info()[0],
-    #                                                                             sys.exc_info()[1],
-    #                                                                             sys.exc_info()[2]))
-        
-            
-        
-
-
-    # def getInstruments(self, categoryID=0, local=False):
-    #     """
-        
-        
-    #     getInstruments returns a list of (kinst, instrument desc, siteID) tuples.
-
-    #     Inputs: 
-        
-    #         categoryID - category id to return instruments with data for. If 0, return all
-    #         local - if False, return all instruments with that category for which there is data 
-    #             anywhere in Madrigal. If True, only return local instruments, in which case siteID
-    #             is always the local siteID.
-        
-    #     Returns:  a list of (kinst, instrument desc, siteID) tuples
-
-    #     Affects: None
-
-    #     Exceptions: MadrigalError if any item in row cannot be cast to correct format
-    #     """
-
-    #     if self.priv:
-    #         instDataFile = os.path.join(self.__madDB.getMetadataDir(), "instDataPriv.hdf5")
-    #     else:
-    #         instDataFile = os.path.join(self.__madDB.getMetadataDir(), "instData.hdf5")
-            
-    #     siteDF = pandas.read_hdf(instDataFile, key="site")
-    #     kinstDF = pandas.read_hdf(instDataFile, key="kinst")
-    #     categoryDF = pandas.read_hdf(instDataFile, key="category")
-    #     siteDict = siteDF.to_dict()
-    #     kinstDict = kinstDF.to_dict()
-    #     catDict = categoryDF.to_dict()
-
-    #     localSiteID = self.__madDB.getSiteID()
-
-    #     # case 1: categoryID != 0 AND local
-    #     if (categoryID != 0) and local:
-    #         retList = []
-    #         kinsts = siteDict[localSiteID][0]
-    #         try:
-    #             retList = [(kinst, kinstDict[kinst][0], localSiteID) for kinst in kinsts if kinst in catDict[categoryID][0]]
-    #         except KeyError:
-    #             pass
-    #         return(retList)
-        
-    #     # case 2: categoryID != 0 
-    #     if (categoryID != 0) and (not local):
-    #         retList = []
-    #         for site in siteDict.keys():
-    #             kinsts = siteDict[site][0]
-    #             try:
-    #                 retList += [(kinst, kinstDict[kinst][0], site) for kinst in kinsts if kinst in catDict[categoryID][0]]
-    #             except KeyError:
-    #                 pass
-    #         return(retList)
-
-    #     # case 3: categoryID == 0 AND local
-    #     if (categoryID == 0) and local:
-    #         retList = [(kinst, kinstDict[kinst][0], localSiteID) for kinst in siteDict[localSiteID][0]]
-    #         return(retList)
-
-    #     # case 4: categoryID == 0
-    #     if (categoryID == 0) and (not local):
-    #         # retList = []
-    #         # for site in siteDict.keys():
-    #         #     retList += [(kinst, kinstDict[kinst][0], site) for kinst in siteDict[site][0]]
-    #         # default to cedar site?
-    #         retList = [(kinst, kinstDict[kinst][0], 10) for kinst in siteDict[10][0]]
-    #         return(retList)
-
-
-
-
-
-
-
-    #     # NOTE 2 SELF: the way this is currently written may be 
-    #     # quite inefficient, ideally you would want to cache these 
-    #     # results somewhere
-
-
-    #     # GETTING CATEGORY IS BROKEN
-    #     # FIX ME    
-
-
-    #     # want kinst and sid from expTab
-    #     # then want kinst where category = catid from instTab
-    #     # finally get intersecting kinsts
-
-    #     # siteID = self.__madDB.getSiteID()
-
-    #     # query1 = "SELECT kinst, sid FROM expTab"
-    #     # if local:
-    #     #     cond = (" WHERE sid={}").format(siteID)
-    #     #     query1 += cond
-
-    #     # query2 = "SELECT kinst, name FROM instTab"
-    #     # if categoryID != 0:
-    #     #     query2 += " WHERE category={}".format(categoryID)
-            
-
-    #     # # first get matching kinst list
-    #     # try:
-    #     #     self.__initMetaDBConnector()
-    #     #     result = self.__cursor.execute(query1)
-    #     #     resList1 = result.fetchall()
-
-    #     #     # key: kinst, value: site id
-    #     #     kinstdict = {}
-    #     #     for items in resList1:
-    #     #         if items[0] not in kinstdict.keys():
-    #     #             kinstdict[items[0]] = []
-    #     #             kinstdict[items[0]].append(items[1])
-    #     #         else:
-    #     #             if items[1] not in kinstdict[items[0]]:
-    #     #                 kinstdict[items[0]].append(items[1])
-
-    #     #     result = self.__cursor.execute(query2)
-    #     #     resList2 = result.fetchall()
-    #     #     # key: kinst, value: inst name
-    #     #     resList2 = {i[0]:i[1] for i in resList2}
-    #     #     self.__closeMetaDBConnector()
-
-    #     #     #print(resList2[30])
-    #     #     #print(kinstdict[30])
-    #     #     # retList = [(kinst, resList2[kinst], kinstdict[kinst]) for kinst in kinstdict.keys()]
-    #     #     retList = []
-
-    #     #     if categoryID != 0:
-    #     #         for kinst in set(kinstdict.keys()).intersection(set(resList2.keys())):
-    #     #             for site in kinstdict[kinst]:
-    #     #                 retList.append((kinst, resList2[kinst], site))
-    #     #     else:
-    #     #         for kinst in kinstdict.keys():
-    #     #             for site in kinstdict[kinst]:
-    #     #                 retList.append((kinst, resList2[kinst], site))
-            
-    #     #     return(retList)
-    #     # except:
-    #     #     self.__closeMetaDBConnector()
-    #     #     raise madrigal.admin.MadrigalError('Problem getting instruments',
-    #     #                                            traceback.format_exception(sys.exc_info()[0],
-    #     #                                                                       sys.exc_info()[1],
-    #     #                                                                       sys.exc_info()[2]))
-        
-    
-    # def getInstrumentYears(self, kinst):
-    #     """getInstrumentYears returns the a list of years (int) for instrument.
-
-    #     Inputs: 
-        
-    #         kinst - the instrument id
-        
-    #     Returns:  an ordered list of years as integers.  If none found, raises error
-
-    #     Affects: None
-
-    #     Exceptions: MadrigalError if any item in row cannot be cast to correct format
-    #     """
-    #     if self.priv:
-    #         instDataFile = os.path.join(self.__madDB.getMetadataDir(), "instDataPriv.hdf5")
-    #     else:
-    #         instDataFile = os.path.join(self.__madDB.getMetadataDir(), "instData.hdf5")
-            
-    #     kinstDF = pandas.read_hdf(instDataFile, key="kinst")
-    #     kinstDict = kinstDF.to_dict()
-
-    #     return(kinstDict[kinst][1])
-
-class MadrigalMetadata:
-    """MadrigalMetadata is a private class that parses a Madrigal metadata file.
-
-    Kept for instData table (for now).
-
-
-    This private class is used by all classes that need to parse a Madrigal
-    metadata file.  If the class is called with the name of the metadata file only,
-    the metadata file is assumed to be at $MAD_ROOT/metadata.  If a full path name is
-    given that includes a directory separator, then that is used instead.  The getList
-    method returns a list with one item for each line in the file.  That item for each
-    line is simply a list of strings found in the line.  The following is an example
-    metadata file and the list the method getList would return.
-
-    Metadata file example::
-
-        Tom, Dick,,Harry
-        ,,Joe,
-        Sally, Jane,Joe, Dick
-
-    The list returned by getList example::
-
-        [['Tom', 'Dick', '', 'Harry'],
-        ['', '', 'Joe', ''],
-        ['Sally', 'Jane', 'Joe', 'Dick']]
-
-        
-    Non-standard Python modules used:
-    None
-
-    MadrigalError exception thrown if:
-
-        1. Unable to open metadata file.
-	
-        2. All lines in metadata file do not have same number of items
-
-    Change history:
-
-    Written by "Bill Rideout":mailto:wrideout@haystack.mit.edu  Nov. 8, 2001
-
-    """
-
-    # constants
-
-    # file delimiter - presently a comma
-    __DELIMITER = ','
-    
-
-    def __init__(self, metadataFileName, madDB=None, allowedLenList=None, key=None):
-        """__init__ initializes the MadrigalCategoryList by reading from __privateList.
-
-        Inputs: String metadataFileName - if not a full path, then MadrigalDB.getMetadataDir
-            is included.
-
-            Existing MadrigalDB object, by default = None.
-            
-            allowedLenList - a list of allowed lengths (integers) for data lines.  If None (the default),
-            then the rule is that all lengths must be the same.
-            
-            key - which position in the file to use as a key.  Creates a attribute called self._dict,
-            which is a dictionary with keys = item in key position, value = line index.  Used for
-            faster lookup by key.  If None (the default), self._dict = None
-        
-        Returns: void
-
-        Affects: Initializes private member variable __categoryList.
-
-        Exceptions: None.
-        """
-
-        # get metadata dir
-        if madDB == None:
-            self.__madDB = madrigal.metadata.MadrigalDB()
-        else:
-            self.__madDB = madDB
-        
-        # create empty list to hold parsed data
-        self.__fileList = []
-
-        # used to check that every line has same number of words if allowedLenList == None
-        self.__numWords = 0
-        self._allowedLenList = allowedLenList
-        
-        if not key is None:
-            self._dict = {}
-        else:self._dict = None
-        
-        # get real filename 
-        self.__fileName = self.__getFullPath(metadataFileName)
-
-        # open configuration file
-        try:
-            self.__file = open(self.__fileName, "r")
-            
-        except IOError:
-            # do nothing, this class is now only used for instData, and this error will only occur
-            # if we haven't run updateMaster yet
-            raise FileNotFoundError
-            # raise madrigal.admin.MadrigalError("Unable to open metadata file " + self.__fileName,
-            #                                            traceback.format_exception(sys.exc_info()[0],
-            #                                                             sys.exc_info()[1],
-            #                                                             sys.exc_info()[2]))
-                                                       
-
-        # loop over each line in file, creating a list for each
-        line = self.__file.readline()
-        
-        count = 0
-        while (len(line.strip())):
-            self.__parseLine(line, key, count)
-            line = self.__file.readline()
-            count += 1
-
-        # close metadata file
-        self.__file.close()
-            
-
-    def __parseLine(self, line, key=None, count=None):
-        """__parseLine adds a list of items in line to __fileList.
-
-        Inputs: 
-            Line of file to parse (String).
-            key - position to add key for self._dict, value = line position
-                If None (the default), ignore
-            count - if None, ignore.  Else add to self._dict as value (see key above)
-        
-        
-        Returns: void
-
-        Affects: Adds a list of items in line to self.__fileList.
-
-        Exceptions: None.
-        """
-        list = line.split(self.__DELIMITER)
-
-        # create new list with leading and trailing whitespace stripped
-
-        strippedList = []
-        
-        for word in list:
-            strippedList.append(word.strip())
-
-        self.__fileList.append(strippedList)
-        
-        if not self._dict is None:
-            self._dict[list[key]] = count
-
-        # check correct number of words
-        if self._allowedLenList:
-            if len(strippedList) not in self._allowedLenList:
-                raise madrigal.admin.MadrigalError("Wrong number of items found in metadata file " + \
-                                                   self.__fileName + " at line " + \
-                                                   str(len(self.__fileList)),
-                                                   [traceback.format_exc()])
-        elif self.__numWords == 0:
-            self.__numWords = len(strippedList)
-            
-        elif self.__numWords != len(strippedList):
-            raise madrigal.admin.MadrigalError("Wrong number of items found in metadata file " + \
-                                                       self.__fileName + " at line " + \
-                                                       str(len(self.__fileList)),
-                                                       [traceback.format_exc()])
-
-    def __getFullPath(self, filename):
-        """getFullPath returns the full path name of the metafile.
-        
-        Inputs: filename passed in as argument
-        
-        Returns: The full path name of the metafile.  If the filename argument already is
-        a full path, filename is returned unchanged.  If the filename is simply the name
-        of a metadata file, then $MAD_ROOT/metadata is appended
-
-        Affects: Nothing
-
-        Exceptions: None
-        """
-
-        if (len(os.path.dirname(filename)) != 0):
-            return filename
-
-        fullName = self.__madDB.getMetadataDir() + "/" + filename
-
-        # normalize in case we run on a system without / as a separator
-
-        return os.path.normpath(fullName)
-
-
-    
-    # public methods
-
-    def getList(self):
-        """getList returns the list of lists of items in each line in the metafile.
-        
-        Inputs: None
-        
-        Returns: The list of lists of items in each line in the metafile.  That is, each
-        item in the returned list is itself a list, representing a single line in the
-        metafile. That single line's list is the list of items in that line.
-
-        Affects: Nothing
-
-        Exceptions: None
-        """
-
-        return(self.__fileList)
-    
-    
-    def getDict(self):
-        """getDict returns self_dict, which will be a dict with keys= key column set, value = line number,
-        of None if no key passed into constructor
-        """
-        return(self._dict)
-    
-
-    def toString(self):
-        """toString returns a simple string representation of a MadrigalMetadata object.
-
-        Inputs: None
-        
-        Returns: String describing a simple representation of a __MadrigalMetadat object.
-
-        Affects: Nothing
-
-        Exceptions: None
-        """
-
-        return str(self.__fileList)
-
-
-
-
 

@@ -26,6 +26,7 @@ import shutil
 import sqlite3
 import sys
 import re
+from contextlib import closing
 
 # third party imports
 import numpy
@@ -101,47 +102,6 @@ class MadrigalWeb:
         
         # cache Madrigal objects as needed to imprive performance
         self._madExpObjDate = None # will be set to a MadrigalExperiment object sorted by date when first needed
-
-
-    def __initMetaDBConnector(self):
-        """
-        __initMetaDBConnector initializes the sqlite3 connector to read from the metadata database.
-
-        Inputs: None
-
-        Returns: Void
-
-        Affects: Initializes private class member variables to connect to metadata.db
-        """
-        try:
-            self.__connector = sqlite3.connect(os.path.join(self._madDB.getMetadataDir(), METADB))
-            self.__cursor = self.__connector.cursor()
-        except:  
-            raise madrigal.admin.MadrigalError("Unable to connect to metadata.db",
-                                              traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
-        
-
-    def __closeMetaDBConnector(self):
-        """
-        __closeMetaDBConnector closes the connection to the sqlite3 database connector.
-
-        Inputs: None
-
-        Returns: Void
-
-        Affects: Closes connection to metadata.db
-        """
-        try:
-            self.__connector.close()
-        except:  
-            raise madrigal.admin.MadrigalError("Problem closing connection to metadata.db",
-                                              traceback.format_exception(sys.exc_info()[0],
-                                                                        sys.exc_info()[1],
-                                                                        sys.exc_info()[2]))
-
-
 
 
     def getRulesOfTheRoad(self, PI=None, PIEmail=None):
@@ -985,8 +945,8 @@ class MadrigalWeb:
         sDT = datetime.datetime(year,1,1,0,0,0, tzinfo=datetime.timezone.utc)
         eDT = datetime.datetime(year,12,31,23,59,59, tzinfo=datetime.timezone.utc)
 
-        sDate = sDT.strftime("%Y%m%d%H%M%S")
-        eDate = eDT.strftime("%Y%m%d%H%M%S")
+        sDate = sDT.timestamp()
+        eDate = eDT.timestamp()
 
         query = "SELECT sdt, edt FROM expTab WHERE sid={} AND kinst={} AND sdt >= {} AND edt <= {}".format(self._madDB.getSiteID(), kinst, sDate, eDate)
         
@@ -994,24 +954,22 @@ class MadrigalWeb:
             query += " AND security in {}".format((0,1,2,3))
         else:
             query += " AND security in {}".format((0,2))
-            
+
         try:
-            self.__initMetaDBConnector()
-            res = self.__cursor.execute(query)
-            resList = res.fetchall()
-            self.__closeMetaDBConnector()
+            with closing(sqlite3.connect(os.path.join(self._madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
         except:
-            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Problem getting months in year {} for kinst {}".format(year, kinst), 
-                                               traceback.format_exception(sys.exc_info()[0],
-                                                                          sys.exc_info()[1],
-                                                                          sys.exc_info()[2]))
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
         
         for times in resList:
-            thisSDT = datetime.datetime.strptime(times[0], "%Y%m%d%H%M%S")
-            thisEDT = datetime.datetime.strptime(times[1], "%Y%m%d%H%M%S")
-            thisSDT = thisSDT.replace(tzinfo=datetime.timezone.utc)
-            thisEDT = thisEDT.replace(tzinfo=datetime.timezone.utc)
+            thisSDT = datetime.datetime.fromtimestamp(times[0], tz=datetime.timezone.utc)
+            thisEDT = datetime.datetime.fromtimestamp(times[1], tz=datetime.timezone.utc)
 
             if thisSDT.year == year:
                 startMonth = thisSDT.month
@@ -1053,8 +1011,8 @@ class MadrigalWeb:
             sDT = datetime.datetime(year,1,1, tzinfo=datetime.timezone.utc)
             eDT = datetime.datetime(year,12,31,23,59,59, tzinfo=datetime.timezone.utc)
 
-        sDate = sDT.strftime("%Y%m%d%H%M%S")
-        eDate = eDT.strftime("%Y%m%d%H%M%S")
+        sDate = sDT.timestamp()
+        eDate = eDT.timestamp()
 
         query = "SELECT sdt, edt FROM expTab WHERE sid={} AND sdt >= {} AND edt <= {}".format(self._madDB.getSiteID(), sDate, eDate)
 
@@ -1064,22 +1022,20 @@ class MadrigalWeb:
             query += " AND security in {}".format((0,2))
 
         try:
-            self.__initMetaDBConnector()
-            res = self.__cursor.execute(query)
-            resList = res.fetchall()
-            self.__closeMetaDBConnector()
+            with closing(sqlite3.connect(os.path.join(self._madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(query)
+                    resList = res.fetchall()
         except:
-            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Problem getting days in year {} for kinst {}".format(year, kinst), 
-                                               traceback.format_exception(sys.exc_info()[0],
-                                                                          sys.exc_info()[1],
-                                                                          sys.exc_info()[2]))
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
         
         for times in resList:
-            thisSDT = datetime.datetime.strptime(times[0], "%Y%m%d%H%M%S")
-            thisEDT = datetime.datetime.strptime(times[1], "%Y%m%d%H%M%S")
-            thisSDT = thisSDT.replace(tzinfo=datetime.timezone.utc)
-            thisEDT = thisEDT.replace(tzinfo=datetime.timezone.utc)
+            thisSDT = datetime.datetime.fromtimestamp(times[0], tz=datetime.timezone.utc)
+            thisEDT = datetime.datetime.fromtimestamp(times[1], tz=datetime.timezone.utc)
 
             # loop over all days
             delta = datetime.timedelta(days=1)
@@ -1133,13 +1089,13 @@ class MadrigalWeb:
 
         if startDT:
             startDate = startDT.replace(tzinfo=datetime.timezone.utc)
-            sDate = startDate.strftime("%Y%m%d%H%M%S")
+            sDate = startDate.timestamp()
             thisCond = "sdt >= {}".format(sDate)
             expConditions.append(thisCond)
 
         if endDT:
             endDate = endDT.replace(tzinfo=datetime.timezone.utc)
-            eDate = endDate.strftime("%Y%m%d%H%M%S")
+            eDate = endDate.timestamp()
             thisCond = "edt <= {}".format(eDate)
             expConditions.append(thisCond)
 
@@ -1161,16 +1117,16 @@ class MadrigalWeb:
                     expQuery += " AND "
 
         try:
-            self.__initMetaDBConnector()
-            res = self.__cursor.execute(expQuery)
-            resList = res.fetchall()
-            self.__closeMetaDBConnector()
+            with closing(sqlite3.connect(os.path.join(self._madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(expQuery)
+                    resList = res.fetchall()
         except:
-            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Problem running expQuery in getExperimentList", 
-                                               traceback.format_exception(sys.exc_info()[0],
-                                                                          sys.exc_info()[1],
-                                                                          sys.exc_info()[2]))
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
         if not resList:
             # didn't find anything
@@ -1187,18 +1143,8 @@ class MadrigalWeb:
         for expData in resList:
             thisExpId = expData[0]
             thisExpName = expData[1]
-            thisSDT = datetime.datetime(int(expData[2][0:4]),
-                          int(expData[2][4:6]),
-                          int(expData[2][6:8]),
-                          int(expData[2][8:10]),
-                          int(expData[2][10:12]),
-                          int(expData[2][12:14]), tzinfo=datetime.timezone.utc)
-            thisEDT = datetime.datetime(int(expData[3][0:4]),
-                          int(expData[3][4:6]),
-                          int(expData[3][6:8]),
-                          int(expData[3][8:10]),
-                          int(expData[3][10:12]),
-                          int(expData[3][12:14]), tzinfo=datetime.timezone.utc)
+            thisSDT = datetime.datetime.fromtimestamp(expData[2], tz=datetime.timezone.utc)
+            thisEDT = datetime.datetime.fromtimestamp(expData[3], tz=datetime.timezone.utc)
             thisKinst = expData[4]
             thisSiteId = expData[5]
 
@@ -1269,8 +1215,8 @@ class MadrigalWeb:
         # mandatory conditions
         kinstCond = "kinst = {}".format(kinst)
         expConditions.append(kinstCond)
-        sDate = sDT.strftime("%Y%m%d%H%M%S")
-        eDate = eDT.strftime("%Y%m%d%H%M%S")
+        sDate = sDT.timestamp()
+        eDate = eDT.timestamp()
         startCond = "sdt < {}".format(eDate)
         endCond = "edt > {}".format(sDate)
         expConditions.append(startCond)
@@ -1298,16 +1244,16 @@ class MadrigalWeb:
                     expQuery += " AND "
 
         try:
-            self.__initMetaDBConnector()
-            res = self.__cursor.execute(expQuery)
-            resList = res.fetchall()
-            self.__closeMetaDBConnector()
+            with closing(sqlite3.connect(os.path.join(self._madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(expQuery)
+                    resList = res.fetchall()
         except:
-            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Problem running expQuery in getExpsOnDate", 
-                                               traceback.format_exception(sys.exc_info()[0],
-                                                                          sys.exc_info()[1],
-                                                                          sys.exc_info()[2]))
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
         if not resList:
             # didn't find anything
@@ -1324,18 +1270,8 @@ class MadrigalWeb:
         for expData in resList:
             expID = expData[0]
             expName = expData[1]
-            thisSDT = datetime.datetime(int(expData[2][0:4]),
-                          int(expData[2][4:6]),
-                          int(expData[2][6:8]),
-                          int(expData[2][8:10]),
-                          int(expData[2][10:12]),
-                          int(expData[2][12:14]), tzinfo=datetime.timezone.utc)
-            thisEDT = datetime.datetime(int(expData[3][0:4]),
-                          int(expData[3][4:6]),
-                          int(expData[3][6:8]),
-                          int(expData[3][8:10]),
-                          int(expData[3][10:12]),
-                          int(expData[3][12:14]), tzinfo=datetime.timezone.utc)
+            thisSDT = datetime.datetime.fromtimestamp(expData[2], tz=datetime.timezone.utc)
+            thisEDT = datetime.datetime.fromtimestamp(expData[3], tz=datetime.timezone.utc)
             thisExpPI = expData[4]
             thisExpPIEmail = expData[5]
             
@@ -2329,47 +2265,45 @@ class MadrigalWeb:
             expQuery += ", name"
 
         if startDate:
-            sDate = startDate.strftime("%Y%m%d%H%M%S")
+            sDate = startDate.timestamp()
             if seasonalStartDate:
-                jDate = seasonalStartDate[:2] + seasonalStartDate[3:]
-                sDate = sDate[:4] + jDate + sDate[8:]
+                thisCond = "strftime('%m%d', sdt, 'unixepoch') >= '{}'".format(seasonalStartDate[:2]+seasonalStartDate[3:])
+                expConditions.append(thisCond)
             if dateList:
                 dateListCond = "("
                 for d in range(len(dateList)):
-                    thisDate = dateList[d].strftime("%Y%m%d") + "______"
-                    dateListCond += f"sdt LIKE '{thisDate}'"
+                    thisDate = dateList[d].strftime("%Y%m%d")
+                    dateListCond += f"strftime('%Y%m%d', sdt, 'unixepoch') >= {thisDate}" # need ' ???
                     if d < (len(dateList)-1):
                         dateListCond += " OR "
                 dateListCond += ")"
-            else:
-                thisCond = "sdt >= {}".format(sDate)
-                expConditions.append(thisCond)
+                expConditions.append(dateListCond)
+            
+            thisCond = "sdt >= {}".format(sDate)
+            expConditions.append(thisCond)
         elif seasonalStartDate:
-            startDayOfYear = seasonalStartDate[:2] + seasonalStartDate[3:]
-            jDate = "____" + startDayOfYear + "______"
-            thisCond = "sdt LIKE {}".format(jDate)
+            thisCond = "strftime('%m%d', sdt, 'unixepoch') >= '{}'".format(seasonalStartDate[:2]+seasonalStartDate[3:])
             expConditions.append(thisCond)
             
         if endDate:
-            eDate = endDate.strftime("%Y%m%d%H%M%S")
+            eDate = endDate.timestamp()
             if seasonalEndDate:
-                jDate = seasonalEndDate[:2] + seasonalEndDate[3:]
-                eDate = eDate[:4] + jDate + eDate[8:]
+                thisCond = "strftime('%m%d', edt, 'unixepoch') <= '{}'".format(seasonalEndDate[:2]+seasonalEndDate[3:])
+                expConditions.append(thisCond)
             if dateList:
                 dateListCond = "("
                 for d in range(len(dateList)):
-                    thisDate = dateList[d].strftime("%Y%m%d") + "______"
-                    dateListCond += f"edt LIKE '{thisDate}'"
+                    thisDate = dateList[d].strftime("%Y%m%d")
+                    dateListCond += f"strftime('%Y%m%d', edt, 'unixepoch') <= {thisDate}"
                     if d < (len(dateList)-1):
                         dateListCond += " OR "
                 dateListCond += ")"
-            else:
-                thisCond = "edt <= {}".format(eDate)
-                expConditions.append(thisCond)
+                expConditions.append(dateListCond)
+            
+            thisCond = "edt <= {}".format(eDate)
+            expConditions.append(thisCond)
         elif seasonalEndDate:
-            endDayOfYear = seasonalEndDate[:2] + seasonalEndDate[3:]
-            jDate = "____" + endDayOfYear + "______"
-            thisCond = "edt LIKE {}".format(jDate)
+            thisCond = "strftime('%m%d', edt, 'unixepoch') <= '{}'".format(seasonalEndDate[:2]+seasonalEndDate[3:])
             expConditions.append(thisCond)
 
 
@@ -2432,16 +2366,16 @@ class MadrigalWeb:
                     expQuery += " AND "
 
         try:
-            self.__initMetaDBConnector()
-            res = self.__cursor.execute(expQuery)
-            resList = res.fetchall()
-            self.__closeMetaDBConnector()
+            with closing(sqlite3.connect(os.path.join(self._madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(expQuery)
+                    resList = res.fetchall()
         except:
-            self.__closeMetaDBConnector()
             raise madrigal.admin.MadrigalError("Problem getting experiments for global_file_search", 
-                                               traceback.format_exception(sys.exc_info()[0],
-                                                                          sys.exc_info()[1],
-                                                                          sys.exc_info()[2]))
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
 
         if not resList:
             # didn't find anything
@@ -2494,16 +2428,16 @@ class MadrigalWeb:
                     fileQuery += " AND "
                     
         try:
-            self.__initMetaDBConnector()
-            res = self.__cursor.execute(fileQuery)
-            resList = res.fetchall()
-            self.__closeMetaDBConnector()
+            with closing(sqlite3.connect(os.path.join(self._madDB.getMetadataDir(), METADB))) as con:
+                with con:
+                    cur = con.cursor()
+                    res = cur.execute(fileQuery)
+                    resList = res.fetchall()
         except:
-            self.__closeMetaDBConnector()
-            raise madrigal.admin.MadrigalError("Problem getting files for global_file_search",
-                                               traceback.format_exception(sys.exc_info()[0],
-                                                                          sys.exc_info()[1],
-                                                                          sys.exc_info()[2]))
+            raise madrigal.admin.MadrigalError("Problem getting files in global_file_search", 
+                                            traceback.format_exception(sys.exc_info()[0],
+                                                                                  sys.exc_info()[1],
+                                                                                  sys.exc_info()[2]))
         
         # resList is now either [(fname, expID, status)] or [(fname, expID)]
         # last things to do are apply fileDesc filter and possibly get citation
@@ -2526,7 +2460,7 @@ class MadrigalWeb:
             fileObj = madrigal.metadata.MadrigalMetaFile(self._madDB, os.path.join(expDir, "fileTab.txt"))
 
             if returnCitation:
-                retList.append(fileObj.getFileDOIUrlByFilename(fileData[0]))
+                retList.append(fileObj.getFileDOIUrlByFilename(os.path.join(expDir, fileData[0])))
             else:
                 retList.append(os.path.join(expDir, fileData[0]))
                     
