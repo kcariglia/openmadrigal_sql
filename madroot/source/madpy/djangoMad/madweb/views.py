@@ -2442,6 +2442,7 @@ def get_available_parms(fname, requestedParms):
     madKindatObj = madrigal.metadata.MadrigalKindat(madDB)
     madhapi_hdf_catalog = os.path.join(madDB.getMetadataDir(), "madhapi.hdf5")
     filesDF = pandas.read_hdf(madhapi_hdf_catalog, key="files")
+    filesDF = filesDF.reset_index(drop=True)
     #filesDict = filesDF.to_dict() # fname: startDT, endDT, parmList
     fileIdx = filesDF["file"].eq(fname).idxmax()
     standardTimeParms = ['year', 'month', 'day', 'hour', 'min', 'sec', 'ut1_unix']
