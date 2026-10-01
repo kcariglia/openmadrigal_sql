@@ -109,6 +109,7 @@ if (urltemplate + "experiments/1963/imf/27nov63") in allExpUrls:
     hasImf = True
 
 dirsneeded = [dir for dir in allExpDirs if ((urltemplate + dir[dir.find("experiments"):]) not in allExpUrls)]
+dirsseen = {} # keep track of dirs seen so far
 
 if len(dirsneeded) > 0:
     expText = ""
@@ -173,6 +174,11 @@ if len(dirsneeded) > 0:
                     raise
 
             # if we get here, then we were able to successfully read data for this expTab + fileTab
+            if thisDir not in dirsseen.keys():
+                dirsseen[thisDir] = thisDir
+            else:
+                print(f"Found duplicate expDir at {thisDir}")
+                raise
             expText += eText
             fileText += fText
             maxId += 1
