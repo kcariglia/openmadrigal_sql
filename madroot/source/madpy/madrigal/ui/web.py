@@ -1460,7 +1460,7 @@ class MadrigalWeb:
                 categoryStr = ''
             basename = madFileObj.getFilenameByPosition(i)
             kindat = madFileObj.getKindatByPosition(i)
-            kindatDesc = self._madKindatObj.getKindatDescription(kindat, kinst)
+            kindatDesc = self._madKindatObj.getKindatDescription(kindat, kinst=kinst)
             status = madFileObj.getStatusByPosition(i)
             fileDesc = '%s: %s%s - %s' % (basename, categoryStr, kindatDesc, status)
             if category != 4:
